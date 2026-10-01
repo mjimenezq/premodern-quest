@@ -5,13 +5,20 @@ const html = fs.readFileSync(require('path').join(__dirname,'../index.html'),'ut
 let source = [...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)].map(m=>m[1]).find(s=>s.includes('const CHARS'));
 const drawing = new Proxy({ measureText:s=>({width:String(s).length*4}), createRadialGradient:()=>({addColorStop(){}}), createLinearGradient:()=>({addColorStop(){}}), getImageData:()=>({data:new Uint8ClampedArray(960*640*4)}) },{get:(obj,k)=>obj[k] || (()=>{})});
 const elements = new Map();
-function element(){return { textContent:'',style:{},dataset:{},value:'',hidden:false,classList:{add(){},remove(){},toggle(){}},append(){},appendChild(node){if(node.id)elements.set(node.id,node);},addEventListener(){},setAttribute(){},focus(){},getContext:()=>drawing,getBoundingClientRect:()=>({left:0,top:0,width:960,height:640}),querySelectorAll:()=>[] };}
+function element(){return { listeners:new Map(),textContent:'',style:{},dataset:{},value:'',hidden:false,classList:{add(){},remove(){},toggle(){}},append(){},appendChild(node){if(node.id)elements.set(node.id,node);},addEventListener(type,fn){const list=this.listeners.get(type)||[];list.push(fn);this.listeners.set(type,list);},setAttribute(){},focus(){},getContext:()=>drawing,getBoundingClientRect:()=>({left:0,top:0,width:960,height:640}),querySelectorAll:()=>[] };}
+const padButtons=['up','down','left','right','a','b','c','v','menu'].map(k=>{const button=element();button.dataset.k=k;return button;});
 const storage=new Map();
 const sandbox={console,URLSearchParams,TextEncoder,TextDecoder,Uint8Array,Uint8ClampedArray,Buffer,Math:Object.create(Math),Date,performance:{now:()=>0},navigator:{maxTouchPoints:0},location:{hash:'',search:'',href:'http://localhost/',protocol:'http:'},requestAnimationFrame(){},setTimeout(){},clearTimeout(){},setInterval(){},clearInterval(){},matchMedia:()=>({matches:false}),addEventListener(){},localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v),removeItem:k=>storage.delete(k)},document:{body:element(),createElement:()=>element(),querySelectorAll:()=>[],getElementById(id){if(!elements.has(id))elements.set(id,element());return elements.get(id);}},btoa:s=>Buffer.from(s,'binary').toString('base64'),atob:s=>Buffer.from(s,'base64').toString('binary')};
-sandbox.window=sandbox;
-source=source.replace(/\}\)\(\);\s*$/, `globalThis.gameTest={CHARS,CUSTOM_CHAR,normalizeCustom,customCharacter,characterOf,newSave,loadSave,saveGame,slotKey,speed,defense,aquaticBonus,loadRoom,checkConnectivity,drawSelect,drawPerson,drawDuel,drawTour,beginDuel,updateDuel,oppPick,startTour,prepRound,updateItems,step,encodeSave,decodeSave,myState,remoteCharacter,FRIEND_LINES,FRIEND_DECK,FRIENDS_ON_MAP,getDef,SOLID,ROOMS,MOUNTS,shopItems,buyItem,mounted,goTo,friendCast,friendCredits,propSolidSet,K,updateWorld,blocked,npcHit,SLOTS,drawSlots,leagueMapMarks,drawWorldMap,BOAT_ROUTES,QUESTS,questHook,questProg,ensureContract,journalEntries,openQuestJournal,drawQuests,ARMOR,SWORDS,HOUSE,PRIZES,GEAR_SLOTS,dayPhase,DAY_PHASE_TICKS,SPELL_LVLS,spellLvl,petLevel,cardMatchXP,tournamentXP,RESPAWN_MS,killEnemy,hiddenSpot,searchHidden,MON,WORLD,DUNGEONS,startArcade,updateArcade,drawArcade,tennisPoint,requestArcadeExit,cancelArcade,drawWorld,drawHUD,changeRoom,setSelectScroll,selectMaxScroll,revealSelected,selectAt,G,PL,wizardDefaults,setS(value){S=value;},getS(){return S;},setFrame(value){frame=value;}};})();`);
+sandbox.window=sandbox;sandbox.document.addEventListener=()=>{};sandbox.document.querySelectorAll=selector=>selector==='#pad button'?padButtons:[];
+source=source.replace(/\}\)\(\);\s*$/, `globalThis.gameTest={CHARS,CUSTOM_CHAR,normalizeCustom,customCharacter,characterOf,newSave,loadSave,saveGame,slotKey,speed,defense,aquaticBonus,loadRoom,checkConnectivity,drawSelect,drawPerson,drawDuel,drawTour,tryInteract,meleeMissChance,meleeOutcome,beginDuel,updateDuel,resolveDuel,duelOptions,cardPower,rivalPower,drawMenu,menuClick,updateTour,oppPick,startTour,prepRound,updateItems,step,encodeSave,decodeSave,myState,remoteCharacter,FRIEND_LINES,FRIEND_DECK,FRIENDS_ON_MAP,getDef,SOLID,ROOMS,MOUNTS,shopItems,buyItem,mounted,goTo,friendCast,friendCredits,propSolidSet,K,updateWorld,blocked,npcHit,SLOTS,drawSlots,leagueMapMarks,drawWorldMap,BOAT_ROUTES,QUESTS,questHook,questProg,ensureContract,journalEntries,openQuestJournal,drawQuests,ARMOR,SWORDS,HOUSE,PRIZES,GEAR_SLOTS,dayPhase,DAY_PHASE_TICKS,SPELL_LVLS,spellLvl,petLevel,cardMatchXP,tournamentXP,RESPAWN_MS,killEnemy,hiddenSpot,searchHidden,MON,WORLD,DUNGEONS,startArcade,updateArcade,drawArcade,tennisPoint,requestArcadeExit,cancelArcade,drawWorld,drawHUD,changeRoom,setSelectScroll,selectMaxScroll,revealSelected,selectAt,G,PL,wizardDefaults,setS(value){S=value;},getS(){return S;},setFrame(value){frame=value;}};})();`);
 vm.runInNewContext(source,sandbox,{timeout:5000});
 const g=sandbox.gameTest;
+// Browser gesture suppression keeps held controls and simultaneous movement/attack.
+function emit(target,type,pointerId=1){let prevented=false;const event={pointerId,cancelable:true,preventDefault(){prevented=true;}};for(const fn of target.listeners.get(type)||[])fn(event);return prevented;}
+assert(emit(elements.get('game'),'touchstart'));assert(emit(elements.get('game'),'touchmove'));assert(emit(elements.get('pad'),'selectstart'));assert(emit(elements.get('pad'),'contextmenu'));
+emit(padButtons[0],'pointerdown',1);emit(padButtons[4],'pointerdown',2);g.step();assert.equal(g.K.up,1);assert.equal(g.K.a,1);
+emit(padButtons[0],'pointerdown',3);emit(padButtons[0],'pointerup',1);g.step();assert.equal(g.K.up,1);
+emit(padButtons[0],'pointercancel',3);emit(padButtons[4],'lostpointercapture',2);g.step();assert.equal(g.K.up,0);assert.equal(g.K.a,0);
 assert(g,'Test interface initialized');
 assert.equal(g.slotKey(1),'pmq_save_1');assert.equal(g.slotKey(2),'pmq_save_2');assert.equal(g.slotKey(3),'pmq_save_3');
 // Existing players retain their character, progression and inventory in the original slots.
@@ -61,9 +68,9 @@ g.loadRoom('pueblo',115,100);g.G.items=[{k:'coin',v:100,x:g.PL.x,y:g.PL.y,z:0,vz
 g.setS(g.newSave(12));assert(g.getS().spells.includes('bolt'));assert.equal(g.defense(),2);
 g.loadRoom('pueblo',115,100);g.G.state='world';g.G.dialog=null;g.G.enemies=[];g.getS().hp=2;g.setFrame(299);g.step();assert.equal(g.getS().hp,3);
 g.setS(g.newSave(13));g.beginDuel({name:'Javier',look:g.CHARS[14],deck:'langostino',bonus:0,cheats:false},{id:'life'},1000);g.updateDuel();const predicted=g.G.duel.predicted;assert(predicted);g.drawDuel();assert.equal(g.oppPick(g.G.duel),predicted);
-g.startTour('life');g.G.tour.opps[0].deck='life';g.G.tour.sel=0;sandbox.Math.random=()=>0.5;g.prepRound();const withForesight=g.G.tour.pwin;
-g.setS(g.newSave(0));g.getS().st={fue:3,des:5,agi:4,int:8};g.startTour('life');g.G.tour.opps[0].deck='life';g.G.tour.sel=0;g.prepRound();
-assert(Math.abs(withForesight-g.G.tour.pwin-0.08)<1e-9);
+g.startTour('life');g.G.tour.opps[0].deck='life';g.G.tour.intent='ctrl';g.G.tour.sel=0;sandbox.Math.random=()=>0.5;g.G.tour.sel=1;g.prepRound();g.G.tour.sel=1;g.prepRound();g.G.tour.sel=1;g.prepRound();const withForesight=g.G.tour.pwin;
+g.setS(g.newSave(0));g.getS().st={fue:3,des:5,agi:4,int:8};g.startTour('life');g.G.tour.opps[0].deck='life';g.G.tour.intent='ctrl';g.G.tour.sel=0;g.G.tour.sel=1;g.prepRound();g.G.tour.sel=1;g.prepRound();g.G.tour.sel=1;g.prepRound();
+assert(Math.abs(withForesight-g.G.tour.pwin-0.04)<1e-9);
 // Connectivity includes all appended NPCs, and every dungeon floor.
 g.checkConnectivity();const report=elements.get('conn').textContent;assert(report.startsWith('PROBLEMAS: 0'),report);
 assert.equal(g.remoteCharacter({ch:g.CUSTOM_CHAR,customChar:spec}).n,'MI PERSONAJE');
@@ -93,7 +100,7 @@ for (const y of [68,76,84]) {
 assert.equal(g.SLOTS,5);
 for(let slot=1;slot<=5;slot++){const save=g.newSave(slot+11);save.slot=slot;save.coins=slot*12345;g.setS(save);g.saveGame();assert.equal(g.loadSave(slot).coins,slot*12345);}
 g.G.slotSel=4;g.drawSlots();
-assert(!g.ROOMS.valpo.trails['9,1']);assert(g.ROOMS.valpo.npcs.some(n=>n.id==='caballerizo'));assert.equal(g.ROOMS.valpo.props.filter(p=>p.k==='montura'&&p.compact).length,5);
+assert(!g.ROOMS.valpo.trails['9,1']);assert.equal(g.ROOMS.valpo.doors['4,6'],'establo');assert(g.ROOMS.establo.npcs.some(n=>n.id==='caballerizo'));assert.equal(g.ROOMS.establo.props.filter(p=>p.k==='montura'&&p.compact).length,5);
 assert.equal(Math.min(...g.shopItems('monturas').map(it=>it.price)),100000);
 for(const routes of Object.values(g.BOAT_ROUTES))for(const [dest,fee] of routes)if(dest==='pmontt'||dest==='islote')assert.equal(fee,3000);
 g.setS(g.newSave(1));g.loadRoom('pueblo',115,84);
@@ -135,6 +142,30 @@ g.getS().surf=false;g.loadRoom('dunas',220,70);assert.equal(g.changeRoom('e'),fa
 g.loadRoom('arcade',115,116);
 for(const game of ['dkc2','tenis','pelea','kart','bloques','laberinto','smash']){g.startArcade(game);for(let i=0;i<120;i++)g.updateArcade();g.drawArcade();const t=g.G.arc.t,coins=g.getS().coins;g.requestArcadeExit();g.updateArcade();assert.equal(g.G.arc.t,t);g.drawArcade();g.cancelArcade();assert.equal(g.G.state,'world');assert.equal(g.getS().coins,coins);}
 g.startArcade('tenis');for(let i=0;i<12;i++)g.tennisPoint(g.G.arc,0);assert(g.G.arc.done&&g.G.arc.won);g.cancelArcade();
+// Accuracy depends on dexterity; critical and missed contact have distinct outcomes.
+assert(g.meleeMissChance({des:5})>g.meleeMissChance({des:50}));sandbox.Math.random=()=>.05;
+assert.equal(g.meleeOutcome({des:5}),'miss');assert.equal(g.meleeOutcome({des:80}),'crit');sandbox.Math.random=()=>.95;assert.equal(g.meleeOutcome({des:80}),'hit');
+// Dry southern connections and building entrances do not require Surf.
+for(const [from,side,to]of [['pmontt','s','puertoVaras'],['puertoVaras','s','frutillar'],['frutillar','n','puertoVaras'],['puertoVaras','n','pmontt']]){g.setS(g.newSave(0));g.loadRoom(from,115,116);g.getS().surf=false;assert(g.changeRoom(side));assert.equal(g.G.roomId,to);}
+for(const [room,tx,ty]of [['puertoVaras',4,3],['puertoVaras',11,6],['frutillar',4,3],['frutillar',11,7],['valpo',4,6]]){const q=reachablePositions(room,115,116);assert(q.some(([x,y])=>Math.hypot(x+5-(tx*16+8),y+4-((ty+1)*16+8))<10),'Dry doorway blocked '+room);}
+g.setS(g.newSave(0));g.loadRoom('cartasCurico',99,104);g.G.forcePhase='dusk';g.PL.dir=0;g.tryInteract();assert(g.G.dialog);assert(!JSON.stringify(g.G.dialog).includes('¿Conversamos o jugamos'));g.G.dialog=null;g.G.forcePhase=null;
+// Real directional transitions: one northern entrance, no southern return loop.
+g.setS(g.newSave(0));g.G.menu=null;g.G.dialog=null;g.G.state='world';g.loadRoom('talca',115,132);g.K.down=1;
+for(let i=0;i<100&&g.G.roomId==='talca';i++)g.updateWorld();
+assert.equal(g.G.roomId,'barrioTalca');assert(g.PL.y<40);
+for(let i=0;i<200;i++)g.updateWorld();assert.equal(g.G.roomId,'barrioTalca');assert(g.PL.y>110);g.K.down=0;
+g.loadRoom('barrioTalca',115,20);g.K.up=1;for(let i=0;i<100&&g.G.roomId==='barrioTalca';i++)g.updateWorld();g.K.up=0;assert.equal(g.G.roomId,'talca');
+// Walk into Viña's temple with every playable character (Tomo is present for others).
+for(let ci=0;ci<19;ci++){g.setS(ci===18?g.newSave(18,spec):g.newSave(ci));g.G.dialog=null;g.loadRoom('vina',35,132);g.K.up=1;for(let i=0;i<100&&g.G.roomId==='vina';i++)g.updateWorld();g.K.up=0;assert.equal(g.G.roomId,'cartasVina','Viña entrance blocked for '+ci);}
+for(const [id,d]of Object.entries(g.ROOMS))for(const pos of Object.keys(d.doors||{})){const [x,y]=pos.split(',').map(Number);assert(!(d.npcs||[]).some(n=>n.x===x&&(n.y===y||n.y===y+1)),id+' NPC occupies door or approach '+pos);}
+g.setS(g.newSave(0));g.G.menu={tab:5,sel:0,deck:null};g.drawMenu();g.menuClick({x:220,y:7});assert.equal(g.G.menu.tab,5);g.G.menu=null;
+// Deterministic choices dominate stats even at level 52 with all prizes.
+sandbox.Math.random=()=>.5;g.getS().lvl=52;g.getS().st={fue:150,des:150,agi:150,int:150};
+function roundChance(choice){g.startTour('life');g.G.tour.opps[0].deck='life';g.G.tour.intent='ctrl';for(let i=0;i<3;i++){g.G.tour.sel=choice;g.prepRound();if(i<2)assert.equal(g.G.tour.phase,'strategy');}assert.equal(g.G.tour.decisions.length,3);g.drawTour();return g.G.tour.pwin;}
+const weak=roundChance(0),strong=roundChance(2),observe=roundChance(3);assert(strong>weak+.45);assert(strong<.9);assert(observe>weak&&observe<strong);
+g.beginDuel({name:'Rival',look:g.CHARS[1],deck:'life',bonus:0},{id:'life'},1000);assert.equal(g.G.duel.opp.level,52);assert.equal(g.duelOptions().length,4);
+g.G.duel.myT='agro';g.resolveDuel(g.G.duel);assert(g.G.duel.pl<20,'Bad choice must lose life at high level');
+g.beginDuel({name:'Rival',look:g.CHARS[1],deck:'life',bonus:0},{id:'life'},1000);g.G.duel.myT='adapt';g.resolveDuel(g.G.duel);assert(g.G.duel.predicted);g.drawDuel();
 // Map collision audit includes NPC bodies, props and every interactable room.
 const failures=[];
 const auditRooms=[...new Set([...Object.keys(g.ROOMS),...Object.keys(g.WORLD),...Object.entries(g.DUNGEONS).flatMap(([id,d])=>Array.from({length:d.floors+1},(_,i)=>'D:'+id+':'+(i+1)))])];

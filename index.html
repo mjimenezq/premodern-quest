@@ -10,6 +10,11 @@
 <style>
   :root{ color-scheme: dark; --bg:#10161a; --panel:#1c2a2e; --ink:#eef6ee; --muted:#9db8a8; --gold:#fcd84a; --line:#2e4a44; --leaf:#5cae44; }
   html,body{height:100%}
+  html{overscroll-behavior:none}
+  body,.screen,.pad,button{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+  .screen,.pad{touch-action:none}
+  input,textarea,[contenteditable="true"],.on-code b{user-select:text;-webkit-user-select:text;-webkit-touch-callout:default}
+  .net button,.online button{touch-action:manipulation}
   body{margin:0;background:var(--bg);color:var(--ink);font-family:"Press Start 2P", ui-monospace, "Courier New", monospace;padding-inline:16px;box-sizing:border-box}
   .wrap{max-width:980px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:12px;padding-block:12px}
   h1{margin:0;font-size:clamp(12px,3.4vw,18px);color:var(--gold);text-shadow:3px 3px 0 #7a3a10;letter-spacing:.06em;text-align:center}
@@ -62,7 +67,7 @@
   .on-players li{background:#0e1618;border:2px solid var(--line);border-radius:14px;padding:5px 10px;color:#90f0b0}
   #netStatus{margin:0;color:var(--gold);line-height:1.7}
   .invite-banner{width:100%;max-width:560px;box-sizing:border-box;background:#1f5e3a;border:3px solid #50e080;border-radius:10px;padding:10px 14px;font-size:9px;line-height:1.7;color:#e8fff0}
-  @media (pointer:coarse){ .pad{display:flex} .keys{display:none} .screen{width:min(100%, calc((100dvh - 250px) * 1.5))} }
+  @media (pointer:coarse),(max-width:600px){ .pad{display:flex} .keys{display:none} .screen{width:min(100%, calc((100dvh - 250px) * 1.5))} }
   #characterWizard{width:min(650px,calc(100vw - 36px));max-height:85dvh;box-sizing:border-box;overflow:auto;background:var(--panel);color:var(--ink);border:3px solid var(--gold);border-radius:12px;padding:20px;font-family:system-ui,sans-serif;font-size:16px;line-height:1.5}
   #characterWizard::backdrop{background:rgba(0,0,0,.85)}
   #characterWizard h2{font-size:22px;color:var(--gold);margin:0 0 12px}
@@ -178,7 +183,7 @@ const K = {up:0,down:0,left:0,right:0,a:0,b:0,menu:0,c:0,v:0};
 const prevK = {...K};
 const kb = {}, touch = {};
 const keyMap = {ArrowUp:'up',KeyW:'up',ArrowDown:'down',KeyS:'down',ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',
-  KeyZ:'a',Space:'a',KeyJ:'a',KeyX:'b',KeyK:'b',Backspace:'b',Enter:'menu',Escape:'menu',KeyI:'menu',KeyC:'c',KeyL:'c',KeyV:'v',KeyU:'v'};
+  KeyZ:'a',Space:'a',KeyX:'b',KeyK:'b',Backspace:'b',Enter:'menu',Escape:'menu',KeyI:'menu',KeyC:'c',KeyL:'c',KeyV:'v',KeyU:'v'};
 addEventListener('keydown', e => {
   if (document.getElementById('characterWizard')?.open || /^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)) return;
   audioInit();
@@ -190,11 +195,24 @@ addEventListener('keydown', e => {
   const k = keyMap[e.code]; if (k) { kb[k] = 1; e.preventDefault(); }
 });
 addEventListener('keyup', e => { const k = keyMap[e.code]; if (k) { kb[k] = 0; e.preventDefault(); } });
-addEventListener('blur', () => { for (const k in kb) kb[k] = 0; });
+const touchPointers = new Map();
+function resetHeldInput(){
+  for(const k in kb)kb[k]=0;for(const k in touch)touch[k]=0;for(const k in K){K[k]=0;prevK[k]=0;}
+  touchPointers.clear();document.querySelectorAll('#pad button').forEach(b=>b.classList.remove('on'));
+  mouseHeld=false;selectDrag=null;
+}
+addEventListener('blur',resetHeldInput);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)resetHeldInput();});
+
+// Suppress browser long-press/selection gestures only on the game surfaces.
+const blockPlayGesture=e=>{if(e.cancelable)e.preventDefault();};
+for(const surface of [cvs,document.getElementById('pad')]){
+  for(const event of ['touchstart','touchmove','contextmenu','selectstart','dragstart'])surface.addEventListener(event,blockPlayGesture,{passive:false});
+}
 document.querySelectorAll('#pad button').forEach(b => {
   const k = b.dataset.k;
-  const on = e => { e.preventDefault(); audioInit(); touch[k] = 1; b.classList.add('on'); try { b.setPointerCapture(e.pointerId); } catch(_) {} };
-  const off = e => { e.preventDefault(); touch[k] = 0; b.classList.remove('on'); };
+  const on = e => { e.preventDefault(); audioInit();const pointers=touchPointers.get(k)||new Set();pointers.add(e.pointerId);touchPointers.set(k,pointers);touch[k]=1;b.classList.add('on');try{b.setPointerCapture(e.pointerId);}catch(_){} };
+  const off = e => { if(e.cancelable)e.preventDefault();const pointers=touchPointers.get(k);if(pointers)pointers.delete(e.pointerId);touch[k]=pointers&&pointers.size?1:0;b.classList.toggle('on',!!touch[k]); };
   b.addEventListener('pointerdown', on); b.addEventListener('pointerup', off);
   b.addEventListener('pointercancel', off); b.addEventListener('lostpointercapture', off);
   b.addEventListener('contextmenu', e => e.preventDefault());
@@ -932,7 +950,7 @@ function drawRider(x, y, P, dir, f){
   const tc = T(Math.floor((PL.x + 5) / TS), Math.floor((PL.y + 4) / TS));
   if (tc === '~' && S && S.surf) { drawSurfBoard(x - 1, y); drawPerson(x, y - 3, P, dir, 0); return; }
   const M = mounted();
-  if (!M || G.warp) { drawPerson(x, y, P, dir, f); return; }
+  if (!M || G.warp) { drawPerson(x, y-(PL.dance>0?(frame>>3&1)*2:0), P, dir, f); return; }
   const walk = Math.floor(PL.walk) % 2;
   drawMount(S.mount, x - 3, y, dir, walk, 'back');
   drawPerson(x, y - 10, P, dir, 0);
@@ -1255,15 +1273,15 @@ const FRIENDS_ON_MAP = [
   { ch:2, room:'bar', x:3, y:4, role:'beer' },
   { ch:3, room:'bar', x:11, y:4, role:'beer' },
   { ch:4, room:'pmontt', x:2, y:4, role:'rival' },
-  { ch:5, room:'bar', x:8, y:6, role:'beer' },
+  { ch:5, room:'bar', x:11, y:6, role:'beer' },
   { ch:7, room:'talca', x:5, y:6, role:'beer' },
   { ch:8, room:'pmontt', x:12, y:5, role:'beer' },
   { ch:9, room:'pmontt', x:13, y:7, role:'cheer' },
-  { ch:10, room:'vina', x:2, y:7, role:'beer' },
+  { ch:10, room:'vina', x:5, y:5, role:'beer' },
   { ch:11, room:'salaTempest', x:11, y:6, role:'rival' },
 ];
 for (const fr of FRIENDS_ON_MAP) ROOMS[fr.room].npcs = (ROOMS[fr.room].npcs || []).concat({ id:'friend', ch:fr.ch, role:fr.role, x:fr.x, y:fr.y });
-const FRIEND_PLACE = { pueblo:'la Villa', arena:'la Arena', bar:'La Ruca', liga:'la Liga Nacional', arcade:'el Arcade', taberna:'la Taberna El Mazo', pmontt:'Puerto Montt', vina:'la playa de Viña', salaTempest:'la Liga Tempest' };
+const FRIEND_PLACE = { pueblo:'la Villa', arena:'la Arena', bar:'Xcso Club', liga:'la Liga Nacional', arcade:'el Arcade', taberna:'la Taberna El Mazo', pmontt:'Puerto Montt', vina:'la playa de Viña', salaTempest:'la Liga Tempest' };
 const ROLE_LINES = {
   family:['¡Un abrazo! La familia te acompaña en esta aventura.'],
   engineer:['Javier y Rodolfo: compañeros de Ingeniería de Katy, inseparables desde la U.'],
@@ -1287,10 +1305,10 @@ const POKEMON_STORE_CARDS=['Pikachu','Charizard ex','Dragapult ex','Gardevoir ex
 function makeCardTemple(name,exitTo,leagueNpc,pokemon=false){
  return {name,theme:'inside',music:'town',interior:true,cardTemple:true,pokemon,exitTo,
   map:['kkkkkkkkkkkkkkk','kFFFFFFFFFFFFFk','kFFFFFFFFFFFFFk','kFFFFFFFFFFFFFk','kFFFFFFFFFFFFFk','kFFFFFFFFFFFFFk','kFFFFFFFFFFFFFk','kFFFFFFFFFFFFFk','kkkkkkkEkkkkkkk','kkkkkkkkkkkkkkk'],
-  npcs:[{id:'azul',x:4,y:1},{id:'diegoG',x:9,y:7},{id:leagueNpc,x:2,y:7},
-    ...(pokemon?POKEMON_TEMPLE_PLAYERS:TEMPLE_PLAYERS).map((id,i)=>({id,x:[3,7,11][i%3],y:i<3?3:5,dir:i<3?0:1}))],
+  npcs:[{id:'azul',x:4,y:1},{id:'diegoG',x:9,y:7},{id:leagueNpc,x:6,y:7},
+    ...(pokemon?POKEMON_TEMPLE_PLAYERS:TEMPLE_PLAYERS).map((id,i)=>({id,x:i===4?12:[3,7,11][i%3],y:i===4?7:i<3?3:5,dir:i<3?0:1}))],
   props:[{k:'mostrador',x:2,y:2,w:4},{k:'standings',x:7,y:1,w:2,h:2,act:'standings',solid:false,top:true},
-    {k:'juegosMesa',x:10,y:1,w:3,act:'boardShop'},...[[2,4],[6,4],[10,4]].map(([x,y])=>({k:'mesaCartas',x,y,w:3,act:'playCards'}))]};
+    {k:'juegosMesa',x:10,y:1,w:3,act:'boardShop'},...[[2,4],[6,4],[10,4]].map(([x,y])=>({k:'mesaCartas',x,y,w:3,act:'playCards',...(x===6?{waiting:true,opponent:pokemon?'ashT':'galindo'}:{})}))]};
 }
 ROOMS.tienda=makeCardTemple('LA GUARIDA DEL MONO · PREMODERN',ROOMS.tienda.exitTo,'ligaUrza');
 ROOMS.cartasSur=makeCardTemple('TEMPLO PREMODERN DEL SUR',ROOMS.cartasSur.exitTo,'ligaPmontt');
@@ -1308,6 +1326,21 @@ ROOMS.valpo.props.push({k:'cartel',x:3,y:5,solid:false,label:'ESTABLO',txt:'ESTA
  ...['caballo','mesa','nightmare','charger','mammoth'].map((id,i)=>({k:'montura',id,x:[2,4,6,3,5][i],y:i<3?6:8,compact:true,solid:false})));
 ROOMS.valpo.signs['6,4']='CURICO: ESTABLO AL COSTADO DEL RIO, ABAJO A LA IZQUIERDA. EL CABALLERIZO VENDE MONTURAS DESDE $100.000. TIENDA DE CARTAS Y TORNEOS ABAJO A LA DERECHA.';
 ROOMS.valpo.npcs=ROOMS.valpo.npcs.filter(n=>n.id!=='ligaCurico');
+// Same room/save identifier, new discotheque at the northwest corner.
+for(const y of [1,2,3]){
+ const row=ROOMS.valpo.map[y].split('');for(let x=1;x<=7;x++)row[x]='.';
+ for(let x=1;x<=5;x++)row[x]=y<3?'R':x===3?'D':'W';ROOMS.valpo.map[y]=row.join('');
+}
+delete ROOMS.valpo.doors['5,3'];ROOMS.valpo.doors['3,3']='bar';
+ROOMS.valpo.plaques[0]=['XCSO CLUB',56,19,'#401858'];
+ROOMS.valpo.npcs.find(n=>n.id==='huaso').x=1;ROOMS.valpo.npcs.find(n=>n.id==='huaso').y=5;
+ROOMS.valpo.signs['6,4']+=' XCSO CLUB DISCOTEQUE: ESQUINA SUPERIOR IZQUIERDA. MUSICA, BAILE Y PREMODERN.';
+ROOMS.bar.name='XCSO CLUB DISCOTEQUE';ROOMS.bar.music='electro';ROOMS.bar.party=true;ROOMS.bar.exitTo={room:'valpo',tx:3,ty:4};
+ROOMS.bar.map=['kkkkkkkkkkkkkkk',...Array(7).fill('kFFFFFFFFFFFFFk'),'kkkkkkkEkkkkkkk','kkkkkkkkkkkkkkk'];
+ROOMS.bar.props=[{k:'neon',x:1,y:0,w:13,solid:false},{k:'cartel',x:11,y:0,label:'XCSO CLUB',txt:'CONVERSAR, BAILAR Y JUGAR CARTAS',solid:false,top:true},
+ {k:'dj',x:7,y:1,act:'dj'},{k:'parlante',x:5,y:1},{k:'parlante',x:9,y:1},{k:'mostrador',x:3,y:2,w:3,label:'XCSO · BARRA'},
+ {k:'pista',x:6,y:4,w:3,h:3,solid:false,act:'dance'},{k:'mesaCartas',x:2,y:5,w:3,act:'playCards'},{k:'mesaCartas',x:10,y:5,w:3,act:'playCards'},
+ {k:'sofa',x:1,y:7,w:2},{k:'farol',x:13,y:7,solid:false}];
 ROOMS.vina.map[6]='sRRRsss=sssssJs';ROOMS.vina.map[7]='sWDWss.=.ssssss';ROOMS.vina.map[8]='sssssss=L~~~~~~';
 ROOMS.vina.doors['2,7']='cartasVina';ROOMS.vina.plaques.push(['CARTAS',40,87,'#1a2a58']);ROOMS.vina.npcs=ROOMS.vina.npcs.filter(n=>n.id!=='ligaVina');
 ROOMS.cartasPokemon=makeCardTemple('TEMPLO POKEMON TCG',{room:'tolaria',tx:3,ty:3},'ligaUrza',true);
@@ -1315,6 +1348,11 @@ for(const id of ['pueblo','tolaria','valpo','vina','pmontt','mercado','tempest',
  const d=ROOMS[id];d.props=d.props || [];
  for(const [x,y] of [[1,4],[13,5],[8,8]])if(!'TRWYywk#~'.includes(d.map[y][x]))d.props.push({k:'farol',x,y,solid:false,top:true});
  if(id==='pueblo'||id==='valpo'||id==='pmontt')d.props.push({k:'fogata',x:id==='pmontt'?12:8,y:8,solid:false,act:'waitPhase'});
+}
+for(const d of Object.values(ROOMS))if(d.props){d.props=d.props.filter(p=>p.k!=='farol'||p.x===1||p.x===13);for(const p of d.props)if(p.k==='farol'){p.solid=false;p.top=false;}}
+for(const [id,d]of Object.entries(ROOMS)){
+  if(d.cardTemple){d.party=true;d.props.push({k:'neon',x:1,y:0,w:13,solid:false},{k:'ligaNeon',x:6,y:6,solid:false,top:true});}
+  for(const [pos,to]of Object.entries(d.doors||{}))if(ROOMS[to]&&ROOMS[to].cardTemple){const [x,y]=pos.split(',').map(Number);d.props=d.props||[];d.props.push({k:'tcgNeon',x,y,solid:false,top:true});}
 }
 function templeStandings(){
  const roster=G.def.pokemon?POKEMON_TEMPLE_PLAYERS:TEMPLE_PLAYERS, results=(S.tableResults || {})[G.roomId] || {};
@@ -1333,12 +1371,42 @@ NPCDEF.curadoraTalca={...NPCDEF.posadera,n:'CURADORA DEL MAULE'};
 ROOMS.talca.map[3]='T.WWDWW.WWDWW.T';ROOMS.talca.map[9]='TTTTTTTE TTTTTT'.replace(' ','T');
 ROOMS.talca.doors={'4,3':'mercadoTalca','10,3':'museoTalca'};
 ROOMS.talca.plaques=[['COMPLETOS',72,19,'#5a1a1a'],['MUSEO',168,19,'#1a3a5a']];
-ROOMS.talca.trails={'7,9':{room:'barrioTalca',tx:7,ty:7}};
+ROOMS.talca.trails={'7,9':{room:'barrioTalca',tx:7,ty:1}};
 ROOMS.talca.props.push({k:'cartel',x:7,y:8,txt:'BARRIO UNIVERSITARIO',solid:false});
 function talcaInterior(name,tx,npcs,props){return {name,theme:'inside',music:'talca',interior:true,zone:'talca',exitTo:{room:'talca',tx,ty:4},map:['kkkkkkkkkkkkkkk',...Array(7).fill('kFFFFFFFFFFFFFk'),'kkkkkkkEkkkkkkk','kkkkkkkkkkkkkkk'],npcs,props};}
 ROOMS.mercadoTalca=talcaInterior('COMPLETOS MOJADOS Y TOSTADOS',4,[{id:'completero',x:5,y:2},{id:'friend',ch:7,role:'cheer',x:11,y:6}],[{k:'mostrador',x:3,y:3,w:4,label:'DON TOSTADO · MENU'},{k:'mesaComida',x:2,y:5,w:3},{k:'mesaComida',x:8,y:5,w:3},{k:'cartel',x:9,y:1,txt:'TOSTADOS DEL TEBAX',solid:false}]);
 ROOMS.museoTalca=talcaInterior('MUSEO DEL MAULE · RELIQUIAS',10,[{id:'curadoraTalca',x:7,y:6}],[{k:'cartel',x:3,y:2,txt:'RELIQUIA DEL SOL',act:'museum',solid:false},{k:'cartel',x:7,y:2,txt:'RELIQUIA DEL RIO',act:'museum',solid:false},{k:'cartel',x:11,y:2,txt:'RELIQUIA DEL BOSQUE',act:'museum',solid:false},{k:'cartel',x:7,y:0,txt:'SOL · RIO · BOSQUE · SOL',solid:false,top:true}]);
 ROOMS.barrioTalca={name:'BARRIO UNIVERSITARIO · TALCA',theme:'town',music:'electro',party:true,zone:'talca',map:['TTTTTTT.TTTTTTT','T.............T','T.............T','T.............T','T.............T','T.............T','T.............T','T.............T','T.............T','TTTTTTTE TTTTTT'.replace(' ','T')],trails:{'7,9':{room:'talca',tx:7,ty:8},'7,0':{room:'talca',tx:7,ty:8}},npcs:[{id:'friend',ch:7,role:'beer',x:10,y:4},{id:'completero',x:3,y:6}],props:[{k:'dj',x:7,y:2,act:'dj'},{k:'parlante',x:5,y:2},{k:'parlante',x:9,y:2},{k:'neon',x:2,y:1,w:11,solid:false},{k:'pool',x:2,y:4,w:2,act:'pool'},{k:'pingpong',x:11,y:6,w:2,act:'pong'},{k:'fogata',x:5,y:7,act:'waitPhase',solid:false},{k:'cartel',x:11,y:1,txt:'LA NOCHE DEL TEBAX',solid:false},{k:'farol',x:1,y:3,solid:false},{k:'farol',x:13,y:3,solid:false}]};
+ROOMS.talca.map[9]='TTTTTTT=TTTTTTT';ROOMS.talca.map[8]=ROOMS.talca.map[8].slice(0,7)+'='+ROOMS.talca.map[8].slice(8);
+ROOMS.barrioTalca.map[0]='TTTTTTT=TTTTTTT';ROOMS.barrioTalca.map[9]='TTTTTTTTTTTTTTT';delete ROOMS.barrioTalca.trails['7,9'];
+ROOMS.barrioTalca.props.find(p=>p.k==='dj').x=10;ROOMS.barrioTalca.props.filter(p=>p.k==='parlante').forEach((p,i)=>p.x=8+i*4);
+ROOMS.valpo.plaques.push(['LIGA',176,99,'#805020']);
+// Southern towns and a closed stable beside Curico's river; existing save IDs remain.
+ROOMS.valpo.props=ROOMS.valpo.props.filter(p=>p.k!=='montura'&&!(p.k==='cartel'&&p.label==='ESTABLO'));
+ROOMS.valpo.npcs=ROOMS.valpo.npcs.filter(n=>n.id!=='caballerizo');ROOMS.valpo.npcs.find(n=>n.id==='huaso').x=12;ROOMS.valpo.npcs.find(n=>n.id==='huaso').y=8;
+for(const [y,tiles]of [[5,'RRRR'],[6,'WWDW']]){const row=ROOMS.valpo.map[y].split('');for(let i=0;i<4;i++)row[i+2]=tiles[i];row[6]='.';ROOMS.valpo.map[y]=row.join('');}
+ROOMS.valpo.doors['4,6']='establo';ROOMS.valpo.plaques.push(['ESTABLO',72,68,'#5a3418']);
+ROOMS.establo.exitTo={room:'valpo',tx:4,ty:7};ROOMS.establo.props.forEach(p=>{if(p.k==='montura')p.compact=true;});
+ROOMS.valpo.signs['6,4']='CURICO: XCSO CLUB EN LA ESQUINA SUPERIOR IZQUIERDA. ESTABLO CERRADO JUNTO AL RIO, ENTRA Y HABLA CON EL CABALLERIZO: MONTURAS DESDE $100.000. TIENDA TCG AL SURESTE: LIGAS Y DUELOS.';
+for(const d of Object.values(ROOMS)){for(const plaque of d.plaques||[])if(plaque[0]==='CARTAS')plaque[0]='TIENDA TCG';if(d.cardTemple&&!d.pokemon)d.name=d.name.replace(/CARTAS Y TORNEOS/,'TIENDA TCG').replace('TEMPLO PREMODERN','TIENDA TCG PREMODERN');}
+ROOMS.cartasSur.name='GRAN CENTRO TCG DEL SUR · PUERTO MONTT';
+ROOMS.cartasSur.map[5]='kFFFFFFFFFFFFDk';ROOMS.cartasSur.doors={'13,5':'anexoTCG'};
+ROOMS.cartasSur.props.push({k:'cartel',x:12,y:5,label:'MAS MESAS',txt:'GRAN CENTRO TCG DEL SUR: ENTRA AL SALON DE JUEGO Y EVENTOS.',solid:false});
+ROOMS.anexoTCG=makeCardTemple('CENTRO TCG DEL SUR · SALON DE EVENTOS',{room:'cartasSur',tx:12,ty:5},'ligaPmontt');ROOMS.anexoTCG.zone='pmontt';
+ROOMS.anexoTCG.props.push({k:'mesaCartas',x:1,y:6,w:3,act:'playCards',waiting:true,opponent:'durandal'});
+ROOMS.pmontt.plaques.find(p=>p[0]==='TIENDA TCG')[0]='CENTRO TCG';
+ROOMS.pmontt.signs['3,5']='PUERTO MONTT: EL GRAN CENTRO TCG DEL SUR TIENE TIENDA, SALON DE EVENTOS, STANDINGS Y LIGA NOCTURNA. AL SUR, EL CAMINO A PUERTO VARAS Y FRUTILLAR. TODO ACCESIBLE A PIE.';
+ROOMS.puertoVaras={name:'PUERTO VARAS · LAGO LLANQUIHUE',theme:'town',music:'town',rain:true,zone:'puertoVaras',
+ map:['TTTTTTT=TTTTTTT','T.RRRR.=......T','T.RRRR.=......T','T.WWDW.=......T','T......=......T','T..S...=......T','T......=......T','T......=......T','~~~~~~~=~~~~~~~','~~~~~~~=~~~~~~~'],doors:{'4,3':'cafeVaras'},npcs:[{id:'turista',x:3,y:5}],signs:{'3,5':'PUERTO VARAS: CASAS DE TRADICION ALEMANA, EL LAGO LLANQUIHUE Y EL VOLCAN OSORNO. NORTE: PUERTO MONTT. SUR: COSTANERA HACIA FRUTILLAR.'},
+ props:[{k:'casaAlemana',x:2,y:1,w:4,h:3,solid:false},{k:'volcanOsorno',x:10,y:1,w:4,h:3,solid:false},{k:'cartel',x:10,y:7,label:'LLANQUIHUE',txt:'COSTANERA DEL LAGO LLANQUIHUE. EL CAMINO CENTRAL PERMITE RECORRER LAS CIUDADES SIN SURF.',solid:false},{k:'farol',x:1,y:4,solid:false},{k:'farol',x:13,y:5,solid:false}]};
+ROOMS.frutillar={name:'FRUTILLAR · TEATRO DEL LAGO',theme:'town',music:'town',rain:true,zone:'frutillar',
+ map:['TTTTTTT=TTTTTTT','T.RRRR.=......T','T.RRRR.=......T','T.WWDW.=......T','T......=......T','T..S...=......T','T......=.RRRRTT','T......=.WWDWTT','~~~~~~~======~~','~~~~~~~~~~~~~~~'],doors:{'4,3':'cafeFrutillar','11,7':'teatroLago'},npcs:[{id:'sureno',x:5,y:5}],signs:{'3,5':'FRUTILLAR: PASEA POR LA COSTANERA, PRUEBA KUCHEN Y VISITA EL TEATRO DEL LAGO A LA DERECHA. NORTE: PUERTO VARAS. EL LAGO AL FRENTE.'},
+ props:[{k:'casaAlemana',x:2,y:1,w:4,h:3,solid:false},{k:'teatroLago',x:9,y:6,w:4,h:2,solid:false},{k:'cartel',x:10,y:5,label:'TEATRO DEL LAGO',txt:'TEATRO DEL LAGO: FUNCIONES, MUSICA Y CULTURA EN LA COSTANERA.',solid:false},{k:'farol',x:1,y:4,solid:false},{k:'farol',x:13,y:5,solid:false}]};
+for(const [id,city]of [['cafeVaras','puertoVaras'],['cafeFrutillar','frutillar']])ROOMS[id]={name:'CAFE Y KUCHEN · '+(city==='puertoVaras'?'PUERTO VARAS':'FRUTILLAR'),theme:'inside',music:'tavern',interior:true,zone:city,exitTo:{room:city,tx:4,ty:4},map:['kkkkkkkkkkkkkkk',...Array(7).fill('kFFFFFFFFFFFFFk'),'kkkkkkkEkkkkkkk','kkkkkkkkkkkkkkk'],npcs:[{id:'tortera',x:4,y:2}],props:[{k:'mostrador',x:2,y:3,w:4,label:'CAFE · KUCHEN',act:'southFood'},{k:'mesaComida',x:9,y:4,w:3,act:'southFood'}]};
+for(const [y,tiles]of [[4,'RRRR'],[5,'RRRR'],[6,'WWDW']]){const row=ROOMS.puertoVaras.map[y].split('');for(let i=0;i<4;i++)row[9+i]=tiles[i];ROOMS.puertoVaras.map[y]=row.join('');}
+ROOMS.puertoVaras.doors['11,6']='casaVaras';ROOMS.puertoVaras.props.push({k:'casaAlemana',x:9,y:4,w:4,h:3,label:'CASA ALEMANA',solid:false});
+ROOMS.casaVaras={...ROOMS.cafeVaras,name:'CASA DE TRADICION ALEMANA',exitTo:{room:'puertoVaras',tx:11,ty:7},npcs:[{id:'vecina',x:4,y:2}],props:[{k:'fogata',x:11,y:2,solid:false,act:'waitPhase'},{k:'sofa',x:2,y:5,w:3},{k:'cartel',x:7,y:3,label:'HISTORIA DEL LAGO',txt:'MADERA, TECHOS INCLINADOS Y TRADICION ALEMANA EN LA ARQUITECTURA DE PUERTO VARAS.',solid:false}]};
+ROOMS.teatroLago={name:'TEATRO DEL LAGO · FRUTILLAR',theme:'inside',music:'town',interior:true,zone:'frutillar',exitTo:{room:'frutillar',tx:11,ty:8},map:['kkkkkkkkkkkkkkk',...Array(7).fill('kFFFFFFFFFFFFFk'),'kkkkkkkEkkkkkkk','kkkkkkkkkkkkkkk'],npcs:[],props:[{k:'escenarioLago',x:2,y:1,w:11,h:2,solid:false,act:'concert'},{k:'cartel',x:1,y:6,label:'CONCIERTO',txt:'ACERCATE AL ESCENARIO PARA ESCUCHAR EL CONCIERTO DEL LAGO.',solid:false,act:'concert'},...[3,5,9,11].map(x=>({k:'sofa',x,y:4,w:1}))]};
 function eatTalca(kind){const price=kind==='tostado'?2500:3000;if(S.coins<price){say(['DON TOSTADO: Te faltan lucas, compadre.']);return;}S.coins-=price;S.hp=S.maxHp;S.mp=maxMp();S.foodTalca=S.foodTalca||{};const first=!S.foodTalca[kind];if(first){S.foodTalca[kind]=true;S.maxHp+=2;S.hp=S.maxHp;addXP(100);}SFX.heal();saveGame();say([kind==='tostado'?'TEBAX: ¡Mi favorito! Crujiente por fuera, queso derretido por dentro.':'DON TOSTADO: Completo mojado talquino. ¡Servilletas al lado!',first?'Primera degustacion: +1 corazon permanente y 100 EXP.':'Vida y magia recuperadas.']);}
 function museumPuzzle(step=0){const pattern=['SOL','RIO','BOSQUE','SOL'];if(step===0)say(['CURADORA: Memoriza la secuencia de las reliquias: SOL, RIO, BOSQUE, SOL. Activa las vitrinas en ese orden.'],null,()=>museumPuzzle(1));else say(['RELIQUIAS: elige el simbolo '+step+' de 4.'],['SOL','RIO','BOSQUE'].map(symbol=>({t:symbol,fn:()=>{if(symbol!==pattern[step-1]){say(['La luz se apaga. Mira de nuevo las pistas y vuelve a intentar.']);return;}if(step<4){museumPuzzle(step+1);return;}if(!S.museumTalca){S.museumTalca=true;S.coins+=50000;S.st.int+=2;addXP(250);saveGame();say(['¡Las reliquias despiertan! +2 INT, $50.000 y 250 EXP.']);}else say(['Las reliquias te reconocen. Ya recibiste su recompensa.']);}})).concat([{t:'SALIR',fn:null}]));}
 
@@ -1353,9 +1421,9 @@ function travelBoat(dest){ SFX.door(); tone(160, 120, 0.6, 'triangle', 0.4); con
 /* ============ WORLD MAP, WILD ZONES & DUNGEONS ============ */
 const WORLD = { guarida:[2,0], cerro:[1,1], bosque:[2,1], bosqueProf:[3,1], minas:[4,1],
   ruinas:[0,2], pradera:[1,2], pueblo:[2,2], pantano:[3,2], tolaria:[4,2], valpo:[1,3], costa:[2,3], pantanoProf:[3,3], mercado:[4,3], vina:[1,4], dunas:[2,4], islote:[2,5], pmontt:[3,4],
-  volcan:[3,0], glaciar:[4,0], urborg:[0,3], pampa:[1,0], fabrica:[0,0], quietud:[0,1], bosqueRoca:[0,4], tempest:[4,4], talca:[1,5], lascondes:[4,5] };
+  volcan:[3,0], glaciar:[4,0], urborg:[0,3], pampa:[1,0], fabrica:[0,0], quietud:[0,1], bosqueRoca:[0,4], tempest:[4,4], talca:[1,5], lascondes:[4,5],puertoVaras:[3,5],frutillar:[3,6] };
 const SHORT = { guarida:'GUARIDA', cerro:'CERRO MOX', bosque:'BOSQUE', bosqueProf:'B. PROFUNDO', minas:'MINAS', ruinas:'RUINAS',
-  pradera:'PRADERA', pueblo:'VILLA', pantano:'PANTANO', tolaria:'TOLARIA', valpo:'CURICO', costa:'PICHILEMU', dunas:'DUNAS', pantanoProf:'P. PROFUNDO', islote:'ISLOTE', mercado:'MERCADO', vina:'VIÑA', pmontt:'P. MONTT', volcan:'VOLCAN', glaciar:'GLACIAR', urborg:'URBORG', pampa:'PAMPA', fabrica:'FABRICA', quietud:'QUIETUD', bosqueRoca:'LA ROCA', tempest:'TEMPEST', talca:'TALCA', lascondes:'LAS CONDES' };
+  pradera:'PRADERA', pueblo:'VILLA', pantano:'PANTANO', tolaria:'TOLARIA', valpo:'CURICO', costa:'PICHILEMU', dunas:'DUNAS', pantanoProf:'P. PROFUNDO', islote:'ISLOTE', mercado:'MERCADO', vina:'VIÑA', pmontt:'P. MONTT', volcan:'VOLCAN', glaciar:'GLACIAR', urborg:'URBORG', pampa:'PAMPA', fabrica:'FABRICA', quietud:'QUIETUD', bosqueRoca:'LA ROCA', tempest:'TEMPEST', talca:'TALCA', lascondes:'LAS CONDES',puertoVaras:'P.VARAS',frutillar:'FRUTILLAR' };
 const WILD = {
   cerro:{ name:'CERRO MOX', theme:'dirt', music:'field', walls:['r','r','T','b'], decks:['burn','goblins','langostino'], enemies:['gob','pup','merfolk','ball'], n:5, chest:'hierro' },
   bosqueProf:{ name:'BOSQUE PROFUNDO', theme:'forest', music:'field', walls:['T','T','T','b'], decks:['goblins','black'], enemies:['gob','shade','pup','specter'], n:6, chest:'bolsa' },
@@ -1422,13 +1490,14 @@ function genMaze(seed, braid, openP){
 const CELLS = []; for (let j = 0; j < 4; j++) for (let i = 0; i < 7; i++) CELLS.push([1 + 2 * i, 1 + 2 * j]);
 const OPEN_TILES = { n:[[6,0],[7,0],[8,0],[6,1],[7,1],[8,1]], s:[[6,8],[7,8],[8,8],[6,9],[7,9],[8,9]], w:[[0,4],[1,4],[0,5],[1,5]], e:[[13,4],[14,4],[13,5],[14,5]] };
 function zoneNeighbors(id){
+  if(id==='puertoVaras')return {n:'pmontt',s:'frutillar'};if(id==='frutillar')return {n:'puertoVaras'};
   const p = WORLD[id]; if (!p) return {};
   const at = (x, y) => Object.keys(WORLD).find(k => WORLD[k][0] === x && WORLD[k][1] === y);
   const at0 = at;
   const atOk = (x, y) => { const k = at0(x, y); return k && !BOAT_ONLY.has(k) && !BOAT_ONLY.has(id) ? k : undefined; };
   const out = {}, n = atOk(p[0], p[1] - 1), s = atOk(p[0], p[1] + 1), w = atOk(p[0] - 1, p[1]), e = atOk(p[0] + 1, p[1]);
   if (n) out.n = n; if (s) out.s = s; if (w) out.w = w; if (e) out.e = e;
-  Object.assign(out,SURF_LINKS[id] || {});
+  Object.assign(out,SURF_LINKS[id] || {});if(id==='pmontt')out.s='puertoVaras';if(id==='lascondes')delete out.w;
   return out;
 }
 function farCell(m, from){
@@ -2105,7 +2174,7 @@ function gatherLights(dark){
     else if ((c === 'U' || c === 'V') && dark) add(x, y, 24, '200,200,255', 0.5);
   }
   for (const p of (G.def.props || [])) { const px = p.x * TS + (p.w || 1) * 8, py = p.y * TS + 8;
-    if(p.k==='farol'&&(ph==='night'||ph==='dusk'))add(px,py-12,38,'255,210,120',.85);else if (p.k === 'fogata') add(px, py, 40 + Math.sin(frame * 0.2) * 3, '255,140,50', 1); else if (p.k === 'dj') add(px, py, 44, hslRgb((frame * 3) % 360), 0.9); else if (p.k === 'neon') add(px, py + 6, 60, hslRgb((frame * 2) % 360), 0.5); else if (p.k === 'parlante') add(px, py, 18, '120,120,255', 0.4); }
+    if(p.k==='ligaNeon')add(px,py,60,hslRgb((frame*3)%360),1);else if(p.k==='farol'&&(ph==='night'||ph==='dusk'))add(px,py-12,38,'255,210,120',.85);else if (p.k === 'fogata') add(px, py, 40 + Math.sin(frame * 0.2) * 3, '255,140,50', 1); else if (p.k === 'dj') add(px, py, 44, hslRgb((frame * 3) % 360), 0.9); else if (p.k === 'neon') add(px, py + 6, 60, hslRgb((frame * 2) % 360), 0.5); else if (p.k === 'parlante') add(px, py, 18, '120,120,255', 0.4); }
   if (G.def.party) for (let i = 0; i < 4; i++) add(W / 2 + Math.cos(frame * 0.03 + i * 1.57) * 70, 70 + Math.sin(frame * 0.04 + i * 1.57) * 30, 30, hslRgb((frame * 3 + i * 90) % 360), 0.8);
   for (const s of G.shots) { const sp = SPELLS[s.id]; if (sp && sp.col) add(s.x, s.y, 26, hexRgb(sp.col), 1); }
   for (const s of (G.eshots || [])) add(s.x, s.y, 16, hexRgb(s.col || '#ff6040'), 0.8);
@@ -2169,9 +2238,17 @@ const propAt = (tx, ty) => (G.def.props || []).find(p => tx >= p.x && tx < p.x +
 function outl(x, y, w, hh, col){ R(x - 1, y - 1, w + 2, hh + 2, '#1a1020'); R(x, y, w, hh, col); }
 function drawProp(p){
   const X = p.x * TS, Y = p.y * TS, wpx = (p.w || 1) * TS, t = frame;
+  if(p.waiting){outl(X+wpx/2-4,Y+18,8,6,'#e8c080');tiny('TU ASIENTO',X+wpx/2,Y+27,'#a0ffb0','center');}
   switch (p.k) {
+    case 'ligaNeon': {const color='hsl('+((frame*3)%360)+',90%,70%)';outl(X-7,Y+4,30,10,'#181020');R(X-6,Y+5,28,1,color);R(X-6,Y+12,28,1,color);tiny('LIGA',X+8,Y+7,color,'center');R(X+7,Y+18,3,2,color);R(X+6,Y+17,5,1,color);break;}
+    case 'tcgNeon': {const color='hsl('+((frame*2)%360)+',90%,70%)',cx=clamp(X+8,27,W-27);outl(cx-26,Y-12,52,9,'#181020');tiny('TIENDA TCG',cx,Y-10,color,'center');break;}
+    case 'pista': {for(let y=0;y<(p.h||1)*TS;y+=8)for(let x=0;x<wpx;x+=8){R(X+x,Y+y,7,7,'hsl('+((t*2+x*3+y*5)%360)+',65%,38%)');}tiny('PISTA DE BAILE',X+wpx/2,Y-7,'#ff90e0','center');break;}
     case 'mesaComida': {outl(X,Y+3,wpx,12,'#9a6030');R(X+2,Y+4,wpx-4,8,'#d8b888');for(const dx of [7,wpx-17]){disc(X+dx+4,Y+8,5,'#f4f4e8');R(X+dx,Y+5,9,5,'#dc9848');R(X+dx+1,Y+6,7,2,'#b84830');R(X+dx+1,Y+7,7,1,'#68b850');R(X+dx+3,Y+5,2,5,'#f8f0c0');}break;}
-    case 'farol': {R(X+7,Y,2,16,'#343440');R(X+4,Y+14,8,2,'#4a4a58');outl(X+4,Y-6,8,8,'#282830');R(X+5,Y-5,6,5,dayPhase()==='night'||dayPhase()==='dusk'?'#ffe0a0':'#b8c8c8');break;}
+    case 'farol': {const c=['puertoVaras','frutillar','pmontt'].includes(G.roomId)?'#244238':'#243448';R(X+6,Y+1,3,14,c);R(X+3,Y+13,9,2,c);R(X+4,Y+11,7,2,'#53666a');R(X+5,Y-2,5,4,c);outl(X+3,Y-10,9,8,c);R(X+4,Y-9,7,6,dayPhase()==='night'||dayPhase()==='dusk'?'#ffe5a0':'#c1d5df');R(X+7,Y-9,1,7,c);R(X+3,Y-12,9,2,c);R(X+5,Y-14,5,2,c);R(X+7,Y-16,1,2,c);break;}
+    case 'casaAlemana': {outl(X,Y+24,wpx,24,'#f3ead2');for(let dx=0;dx<wpx;dx+=16){R(X+dx,Y+24,2,24,'#5a3825');R(X+dx+2,Y+26,11,2,'#5a3825');R(X+dx+3,Y+29,8,9,'#6497ad');R(X+dx+7,Y+29,1,9,'#f8edd4');}for(let j=0;j<24;j++)R(X+24-j,Y+j,Math.max(1,wpx-48+j*2),1,'#7e3535');R(X+TS*2+2,Y+34,12,14,'#573725');tiny(p.label||'CAFE · KUCHEN',X+wpx/2,Y+19,'#fff','center');break;}
+    case 'volcanOsorno': {for(let j=0;j<40;j++){const half=3+j*.7;R(X+wpx/2-half,Y+j,half*2,1,j<15?'#f3f5ff':'#819b9d');}tiny('OSORNO',X+wpx/2,Y+42,'#fff','center');break;}
+    case 'teatroLago': {outl(X,Y,wpx,28,'#6b2e26');for(let dx=3;dx<wpx;dx+=8){R(X+dx,Y+5,5,16,'#6796a2');R(X+dx,Y+4,5,2,'#d7af78');}R(X,Y-3,wpx,3,'#a24c31');R(X+TS*2+2,Y+17,12,11,'#452c24');tiny('TEATRO DEL LAGO',X+wpx/2,Y-11,'#fff','center');break;}
+    case 'escenarioLago': {outl(X,Y,wpx,28,'#623f2c');R(X,Y,wpx,3,'#b52949');for(const dx of [0,wpx-12])R(X+dx,Y,12,26,'#94213e');tiny('CONCIERTO DEL LAGO',X+wpx/2,Y+7,'#ffe090','center');for(const dx of [36,70,110]){R(X+dx,Y+16,2,10,'#181828');disc(X+dx+1,Y+15,3,'#e8c18d');}break;}
     case 'pesca': {ctx.strokeStyle='#b08040';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(X+10,Y+7);ctx.lineTo(X+16,Y+18);ctx.stroke();ctx.strokeStyle='#c8d8e8';ctx.lineWidth=.4;ctx.beginPath();ctx.moveTo(X+16,Y+18);ctx.lineTo(X+10,Y+26);ctx.stroke();disc(X+10,Y+26,1,'#e83040');break;}
     case 'mesaCartas': {const poke=G.def.pokemon;outl(X,Y+2,wpx,12,poke?'#285888':'#704820');R(X+2,Y+3,wpx-4,9,poke?'#78b8d8':'#246840');for(const dx of [8,wpx-15]){outl(X+dx,Y+4,6,7,poke?'#f8f4e8':'#202038');R(X+dx+1,Y+5,4,3,poke?'#e85050':'#b88a40');}if(poke){disc(X+wpx/2,Y+8,4,'#f8f8f8');R(X+wpx/2-4,Y+4,8,4,'#e83040');R(X+wpx/2-4,Y+8,8,1,'#182030');}break;}
     case 'mostrador': {outl(X,Y+3,wpx,13,G.def.pokemon?'#286898':'#784828');R(X,Y+3,wpx,3,'#d4b080');for(let i=4;i<wpx;i+=10){outl(X+i,Y+5,6,8,'#182030');R(X+i+1,Y+6,4,3,G.def.pokemon?'#f05050':'#c0a050');}tiny(p.label || 'AZUL · CARTAS',X+wpx/2,Y+17,'#fcd84a','center');break;}
@@ -2275,7 +2352,7 @@ function cloudShadows(){
 function drawLights(){
   const th = G.def.theme, ph = dayPhase(), out = !G.def.interior && OUTDOOR_THEMES.has(th);
   const dark = th === 'mine' || th === 'crypt' || th === 'necro' || (th === 'volcano' && !!G.def.dungeonKey) || (th === 'ice' && !!G.def.dungeonKey);
-  let shade = dark ? 0.8 : th === 'tower' ? 0.35 : G.def.party ? 0.45 : 0, tint = null;
+  let shade = dark ? 0.8 : th === 'tower' ? 0.35 : G.def.cardTemple ? 0.12 : G.def.party ? 0.45 : 0, tint = null;
   if (out && !dark) { if (ph === 'night') { shade = 0.5; tint = 'rgba(30,40,110,.18)'; } else if (ph === 'dusk') { shade = 0.14; tint = 'rgba(255,120,50,.12)'; } else if (ph === 'dawn') tint = 'rgba(255,170,190,.09)'; }
   if (tint) { ctx.fillStyle = tint; ctx.fillRect(0, 0, W, H); }
   const L = gatherLights(dark || shade > 0.3);
@@ -3001,9 +3078,10 @@ function loadRoom(id, px, py){
   const friendChars = CHARS.map((_, i) => i).filter(i => i !== S.ch && i !== CUSTOM_CHAR);
   G.npcs = (d.npcs || []).filter(n => !(n.id === 'klaus' && CH().id === 'klaus') && !(n.id === 'friend' && n.ch === S.ch)).map(n => ({ id:n.id, x:n.x * TS + 3, y:n.y * TS + 8, w:10, h:8, dir:0,
     ch: n.id === 'friend' ? (n.ch !== undefined ? n.ch : friendChars[n.slot]) : undefined, role:n.role, dir:n.dir || 0 }));
-  PL.x = px; PL.y = py; PL.kb = 0; PL.atk = 0;
+  PL.x = px; PL.y = py; PL.kb = 0; PL.atk = 0; PL.dance=0;
   unstuckPlayer();
   G.cacheDirty = true; G.zoneT = d.interior ? 0 : 110; G.fade = 14;
+  if(d.cardTemple&&!G.preview){S.leagueVisits=S.leagueVisits||{};if(!S.leagueVisits[id]){S.leagueVisits[id]=true;toast('¡HAY LIGA! INSCRIPCIONES JUNTO A LA ENTRADA','#ffe880');}}
   findChimneys(); spawnQuestItems();
   if ((WILD[id] || d.dungeonKey) && Math.random() < 0.4) {
     const cand = []; for (let y = 1; y <= 8; y++) for (let x = 1; x <= 13; x++) if ('.,sm'.includes(G.map[y][x])) cand.push([x, y]);
@@ -3078,6 +3156,8 @@ function addXP(n){
   }
 }
 const meleeDamage = (st=stats()) => 1 + Math.floor(st.fue / 3) + Math.floor((S.lvl - 1) / 3);
+const meleeMissChance = (st=stats()) => clamp(.22-st.des*.004,.02,.22);
+function meleeOutcome(st=stats()){return Math.random()<meleeMissChance(st)?'miss':Math.random()<Math.min(.75,st.des*.03)?'crit':'hit';}
 const aquaticBonus = e => CH().fishExpert && ['merfolk','dread','kjeldor'].includes(e.type) ? 3 : 0;
 const meleeCritDamage = (st=stats()) => meleeDamage(st) * 2;
 function addCard(id){
@@ -3197,11 +3277,15 @@ function hostTalk(n){
   return false;
 }
 function propAction(p){
+  if(p.act==='southFood'){say(['CAFE DEL LAGO: Kuchen con cafe por $3.000. Recupera vida y magia.'],[{t:'PROBAR KUCHEN',fn:()=>{if(S.coins<3000){say(['Te faltan monedas.']);return;}S.coins-=3000;S.hp=S.maxHp;S.mp=maxMp();saveGame();SFX.heal();say(['¡Un sabor del sur! Vida y magia recuperadas.']);}},{t:'DESPUES',fn:null}]);return;}
+  if(p.act==='concert'){seq([523,659,784,659,587,698,880,784,659,587,523],.18,'triangle',.35);if(!S.concertLago){S.concertLago=true;addXP(150);saveGame();}say(['TEATRO DEL LAGO: Las notas llenan la sala mientras el lago brilla afuera. Tu primera visita inspira al heroe: 150 EXP.']);return;}
+
+  if(p.act==='dance'){say(['XCSO CLUB: ¡La pista esta prendida! ¿Quieres bailar con tus amigos?'],[{t:'¡A BAILAR!',fn:()=>{G.moveTarget=null;PL.dance=360;SFX.ok();}},{t:'SEGUIR CONVERSANDO',fn:null}]);return;}
   if(p.act==='museum'){museumPuzzle();return;}
   if(p.act==='waitPhase'){say(['DESCANSO: ¿Quieres esperar al siguiente momento del dia?'],[{t:'ESPERAR',fn:waitNextPhase},{t:'SEGUIR',fn:null}]);return;}
   if(p.act==='standings'){showStandings();return;}
   if(p.act==='boardShop'){openShop('mesa','JUEGOS DE MESA');return;}
-  if(p.act==='playCards'){say(['MESA DE CARTAS: aqui se juega Premodern. Habla con un jugador para desafiarlo o con el organizador para disputar la liga.']);return;}
+  if(p.act==='playCards'){const rival=p.opponent?G.npcs.find(n=>n.id===p.opponent):G.roomId==='bar'?G.npcs.filter(n=>n.id==='friend').sort((a,b)=>Math.hypot(a.x-p.x*TS,a.y-p.y*TS)-Math.hypot(b.x-p.x*TS,b.y-p.y*TS))[0]:null;if(rival){say(['¡Ven a jugar! Te estaba esperando: este asiento es para ti.'],[{t:'SENTARME Y JUGAR',fn:()=>{if(G.def.pokemon)talkTo(rival.id,rival);else offerDuel(rival);}},{t:'EN OTRO MOMENTO',fn:null}]);}else say(['MESA DE CARTAS: habla con un jugador para desafiarlo o con el organizador para disputar la liga.']);return;}
   if (p.act === 'saco') {
     say(['ARRIENDO DE SACOS: Un saco para tirarte por la duna, $500. ¿Te lanzas?'], [{ t:'¡ME LANZO! ($500)', fn:() => { if (S.coins < 500) { say(['No tienes ni para el saco...']); return; } S.coins -= 500; G.slide = { t:0, x:2 * TS + 3, y:2 * TS + 2, y1:7 * TS + 4 }; PL.x = G.slide.x; PL.y = G.slide.y; SFX.ok(); } }, { t:'MEJOR NO', fn:null }]);
   } else if (p.act === 'reposera') {
@@ -3209,7 +3293,7 @@ function propAction(p){
     say([pick(['Te tiras en la reposera con una chela en la mano. Puro chill.', 'Sol, arena y el ruido de las olas. Recuperas toda la vida y la magia.', 'Te quedas dormido un rato. Despiertas medio quemado, pero como nuevo.'])]);
   } else if (p.act === 'dj') {
     const set = m => () => { G.djMusic = m; playMusic(m); toast(m === 'electro' ? '¡ELECTRONICA!' : '¡DALE QUE VA! REGUETON', '#ff60d0'); };
-    say([(G.roomId==='barrioTalca'?'DJ TEBAX: Barrio universitario, ¡que suene Talca!':'DJ IVAN: ¿Que ponemos, compadre? La casa esta prendida.')], [{ t:'ELECTRONICA', fn:set('electro') }, { t:'REGUETON', fn:set('reggaeton') }, { t:'DEJALO ASI', fn:null }]);
+    say([(G.roomId==='bar'?'DJ XCSO: ¡Bienvenidos al club! ¿Que ponemos?':G.roomId==='barrioTalca'?'DJ TEBAX: Barrio universitario, ¡que suene Talca!':'DJ IVAN: ¿Que ponemos, compadre? La casa esta prendida.')], [{ t:'ELECTRONICA', fn:set('electro') }, { t:'REGUETON', fn:set('reggaeton') }, { t:'DEJALO ASI', fn:null }]);
   } else if (p.act === 'hielera') {
     if (G.hielera) { say(['La hielera ya esta vacia. Ivan dice que la proxima la traes tu.']); return; }
     G.hielera = true; S.hp = Math.min(S.maxHp, S.hp + 8); SFX.beer(); say(['Sacas una chela helada de la hielera de Ivan. ¡Salud!']);
@@ -3231,7 +3315,7 @@ function tryInteract(){
     for (const n of G.npcs) if (pt.x > n.x - 4 && pt.x < n.x + n.w + 4 && pt.y > n.y - 10 && pt.y < n.y + n.h + 4) {
       n.dir = PL.dir === 0 ? 1 : PL.dir === 1 ? 0 : PL.dir === 2 ? 3 : 2;
       if (n.id === 'friend' && hostTalk(n)) return true;
-      if (isDuelist(n) && !questMarker(n.id)) offerDuel(n); else talkTo(n.id, n);
+      if(LEAGUE_BY_NPC[n.id]||n.id==='ligaOrg')talkTo(n.id,n);else if (isDuelist(n) && !questMarker(n.id)) offerDuel(n); else talkTo(n.id, n);
       return true;
     }
     const tx = Math.floor(pt.x / TS), ty = Math.floor(pt.y / TS), c = T(tx, ty);
@@ -3552,6 +3636,7 @@ function unstuckPlayer_(){
 function updateWorld(){
   tickDay();
   const p = PL;
+  if(p.dance>0){if(G.moveTarget||K.up||K.down||K.left||K.right||pressed('a')||pressed('b'))p.dance=0;else{p.dance--;p.dir=Math.floor(frame/30)%4;p.walk+=.25;if(frame%12===0)G.parts.push({k:'note',x:p.x+5,y:p.y-14,vx:(Math.random()-.5)*.4,vy:-.4,t:0,c:'#ff90e0'});if(p.dance===0){S.dances=(S.dances||0)+1;toast('¡QUE BUEN BAILE!','#ff90e0');saveGame();}}}
   if (G.slide) { updateSlide(); return; }
   updateSurfers();
   updateAnimals();
@@ -3594,10 +3679,10 @@ function updateWorld(){
         const ex = e.x + e.w / 2, ey = e.y + e.h / 2;
         if (Math.hypot(hx - ex, hy - ey) < e.w / 2 + 4) {
           e.lastSwing = G.swing;
-          const crit = Math.random() < Math.min(0.75, st.des * 0.03);
+          const result=meleeOutcome(st);if(result==='miss'){floatText('MISS',PL.x+5,PL.y-18,'#ff3030');continue;}const crit=result==='crit';
           const dmg = (meleeDamage(st) + aquaticBonus(e)) * (crit ? 2 : 1);
           SFX.hit();
-          floatText(crit ? dmg + '!' : String(dmg), ex, e.y - 4, crit ? '#fcd84a' : '#fff');
+          floatText(crit ? 'CRITICO '+dmg : String(dmg), ex, e.y - 10, crit ? '#ff3030' : '#fff');
           const kd = Math.hypot(ex - cx, ey - cy) || 1, kf = MON[e.type].boss ? 0.6 : 2.6;
           const kx = (ex - cx) / kd * kf, ky = (ey - cy) / kd * kf;
           for (let i = 0; i < 4; i++) G.parts.push({ k:'spark', x:hx, y:hy, vx:(Math.random() - 0.5) * 3, vy:(Math.random() - 0.5) * 3, t:0 });
@@ -4227,6 +4312,11 @@ function leagueTalk(key){
   }).concat([{ t:'TIENDA DE CARTAS', fn:() => openShop('liga', L.n + ' - TIENDA') }, { t:'VOLVER', fn:null }]));
 }
 function talkTo(id, npc, skipQuest){
+  if(G.roomId==='puertoVaras'&&id==='turista'){say(['¡Bienvenido a Puerto Varas! Recorre las casas de tradicion alemana, toma un cafe con kuchen y mira el volcan Osorno sobre el lago Llanquihue.','Norte: Puerto Montt. Sur: Frutillar, por la costanera sin necesitar Surf.']);return;}
+  if(G.roomId==='frutillar'&&id==='sureno'){say(['FRUTILLAR: El lago esta al frente y el Teatro del Lago a la derecha. Entra a escuchar una funcion o prueba el kuchen en el cafe.']);return;}
+  if(['cafeVaras','cafeFrutillar'].includes(G.roomId)&&id==='tortera'){propAction({act:'southFood'});return;}
+  if(G.roomId==='casaVaras'&&id==='vecina'){say(['Esta casa conserva el estilo de madera y entramados de la tradicion alemana. Descansa junto al fuego y sigue recorriendo el lago.']);return;}
+
   if(id==='completero'){if(!skipQuest&&questHook(id,npc))return;say(['DON TOSTADO: Completos mojados y tostados, como le gustan al Tebax. Comer restaura vida y magia. La primera degustacion de cada receta da un corazon.'],[{t:'TOSTADO ($2.500)',fn:()=>eatTalca('tostado')},{t:'MOJADO ($3.000)',fn:()=>eatTalca('mojado')},{t:'SALIR',fn:null}]);return;}
   if(id==='curadoraTalca'){if(!skipQuest&&questHook(id,npc))return;museumPuzzle();return;}
 
@@ -4501,18 +4591,26 @@ function startTour(deck, cfg){
   const roster=G.def.cardTemple?TEMPLE_PLAYERS.filter(id=>!cfg.liga||id!=='galindo').map(id=>NPCDEF[id].n):OPP_NAMES;
   const names = [...roster].sort(() => Math.random() - 0.5).slice(0, cfg.rounds-(cfg.liga?1:0));
   if(cfg.liga)names.push(NPCDEF.galindo.n);
-  G.tour = { deck, cfg, room:G.roomId, px:PL.x, py:PL.y, round:0, wins:0, phase:'strategy', sel:0, tactic:null, t:0, buzz:S.buzz, opps:names.map(n => {const id=TEMPLE_PLAYERS.find(id=>NPCDEF[id].n===n);return {n,deck:id?DUELIST_DECK[id]:pick(DECKS).id,look:id?NPCDEF[id]:randomLook(n)};}), ev:[], ei:0, lives:[20, 20], cur:null, pops:[] };
+  G.tour = { deck, cfg, room:G.roomId, px:PL.x, py:PL.y, round:0, wins:0, phase:'strategy', stage:0, decisions:[], strategyScore:0, sel:0, tactic:null, t:0, buzz:S.buzz, opps:names.map(n => {const id=TEMPLE_PLAYERS.find(id=>NPCDEF[id].n===n);return {n,deck:id?DUELIST_DECK[id]:pick(DECKS).id,look:id?NPCDEF[id]:randomLook(n)};}), ev:[], ei:0, lives:[20, 20], cur:null, pops:[] };
   S.buzz = 0; S.beers = 0;
-  G.state = 'tour'; playMusic('fanfare'); SFX.ok();
+  prepareCardQuestion(G.tour);G.state = 'tour'; playMusic('fanfare'); SFX.ok();
 }
+function prepareCardQuestion(t){const style=DECK_STYLE[t.opps[t.round].deck];t.intent=t.hint||((Math.random()<.65)?style:pick(['agro','ctrl','combo']));t.hint=null;t.question={agro:'¿COMO FRENAS SU ATAQUE?',ctrl:'¿COMO ROMPES SUS RESPUESTAS?',combo:'¿COMO DETIENES SU COMBO?'}[t.intent];}
+const CARD_ANSWERS=['PRESIONAR CON CRIATURAS','RESERVAR RESPUESTA','PREPARAR MI COMBO','OBSERVAR Y ADAPTAR'];
 function prepRound(){
-  const T_ = G.tour, o = T_.opps[T_.round], st = stats(), tactics = TACTICS.slice(0, 3), style = DECK_STYLE[o.deck];
-  const tactic = tactics[T_.sel].id, counter = BEATS[tactic] === style, exposed = BEATS[style] === tactic;
-  T_.tactic = tactic; T_.roll = [1 + rnd(6), 1 + rnd(6)]; T_.counter = counter; T_.exposed = exposed;
-  const statBonus = Math.min(0.12, (st.fue + st.des + st.agi) * 0.004);
-  const pw = clamp(0.5 + (CH().foresight ? 0.08 : 0) + mu(T_.deck, o.deck) + (st.int - 5) * 0.03 + statBonus + T_.buzz * 0.02 + (owned(LEGEND) ? 0.05 : 0) + houseBonus('tourInt') * 0.02 + (counter ? 0.12 : exposed ? -0.12 : 0) + (T_.roll[0] - T_.roll[1]) * 0.035 - T_.round * 0.04 - T_.cfg.diff, 0.08, 0.92);
-  T_.pwin = pw; T_.iwin = Math.random() < pw;
-  T_.ev = genDuel(T_.deck, o.deck, T_.iwin); T_.ei = 0; T_.lives = [20, 20]; T_.cur = null; T_.phase = 'vs'; T_.t = 0; T_.pops = [];
+  const t=G.tour,o=t.opps[t.round],tactic=TACTICS[t.sel].id,style=DECK_STYLE[o.deck];
+  const rival=t.intent||style;
+  const counter=BEATS[tactic]===rival,exposed=BEATS[rival]===tactic;
+  t.tactic=tactic;t.counter=counter;t.exposed=exposed;
+  t.strategyScore=(t.strategyScore||0)+(counter?.16:exposed?-.16:0)+(DECK_STYLE[t.deck]===tactic?.025:0);
+  t.decisions=t.decisions||[];t.decisions.push({tactic,rival,counter,exposed});
+  if(tactic==='adapt')t.hint=style;
+  t.feedback=tactic==='adapt'?'LEISTE EL RIVAL: '+TACTICS.find(v=>v.id===style).n:counter?'BUENA RESPUESTA: GANAS VENTAJA':exposed?'EL RIVAL TE CONTRARRESTA':'JUGADA EQUILIBRADA';
+  t.stage=(t.stage||0)+1;t.sel=0;
+  if(t.stage<3){prepareCardQuestion(t);SFX.move();return;}
+  t.roll=[1+rnd(6),1+rnd(6)];o.level=Math.max(S.lvl,1+t.round*3);
+  const pw=clamp(.5+t.strategyScore+clamp(mu(t.deck,o.deck),-.1,.1)+(cardPower()-rivalPower(o.level,o.n===NPCDEF.galindo.n?4:0))*.04+(CH().foresight?.04:0)+Math.min(.04,t.buzz*.01)+(t.roll[0]-t.roll[1])*.012-t.round*.015-(t.cfg.diff||0),.1,.85);
+  t.pwin=pw;t.iwin=Math.random()<pw;t.ev=genDuel(t.deck,o.deck,t.iwin);t.ei=0;t.lives=[20,20];t.cur=null;t.phase='vs';t.t=0;t.pops=[];
 }
 function genDuel(myDeck, oppDeck, iWin){
   const L = [20, 20], ev = [], winner = iWin ? 0 : 1; let turn = rnd(2), guard = 0;
@@ -4534,7 +4632,7 @@ function updateTour(){
   for (const p of T_.pops) p.t++;
   T_.pops = T_.pops.filter(p => p.t < 40);
   if (T_.phase === 'strategy') {
-    const n = TACTICS.length - 1;
+    const n = 4;
     if (pressed('up') || pressed('left')) { T_.sel = (T_.sel + n - 1) % n; SFX.move(); }
     if (pressed('down') || pressed('right')) { T_.sel = (T_.sel + 1) % n; SFX.move(); }
     if (pressed('a')) { prepRound(); SFX.ok(); }
@@ -4556,7 +4654,7 @@ function updateTour(){
     }
   } else if (T_.phase === 'res') {
     if (T_.t > 40 && pressed('a')) {
-      if (T_.iwin && T_.round < T_.cfg.rounds - 1) { T_.round++; T_.sel = 0; T_.phase = 'strategy'; T_.t = 0; }
+      if (T_.iwin && T_.round < T_.cfg.rounds - 1) { T_.round++; T_.sel = 0; T_.stage=0;T_.decisions=[];T_.strategyScore=0;T_.hint=null;T_.feedback=null;prepareCardQuestion(T_); T_.phase = 'strategy'; T_.t = 0; }
       else { T_.phase = 'end'; T_.t = 0; finishTour(); }
     }
   } else if (T_.phase === 'end') {
@@ -4617,12 +4715,14 @@ function drawTour(){
   lifeBox(34, T_.lives[0]); lifeBox(206, T_.lives[1]);
   for (const p of T_.pops) txt(p.s, p.side === 0 ? 34 : 206, 50 - p.t * 0.5, p.col, 'center', '#000', 16);
   if (T_.phase === 'strategy') {
-    R(34, 55, 172, 48, '#080610'); R(36, 57, 168, 44, '#302044');
-    tiny('ELIGE TU PLAN PARA ESTA RONDA', 120, 59, '#fcd84a', 'center');
-    const oppStyle = DECK_STYLE[o.deck];
-    TACTICS.slice(0, 3).forEach((t, i) => { const y = 68 + i * 10, on = T_.sel === i, mark = BEATS[t.id] === oppStyle ? ' +VENTAJA' : BEATS[oppStyle] === t.id ? ' -PELIGRO' : ' NEUTRO'; if (on) R(43, y - 1, 154, 10, '#59406e'); tiny(t.n + mark, 48, y, on ? '#fff' : '#bdb0d0'); });
-    tiny('RIVAL: ' + ({agro:'AGRESIVO',ctrl:'CONTROL',combo:'COMBO'})[oppStyle] + '  /  TU MAZO: ' + ({agro:'AGRO',ctrl:'CONTROL',combo:'COMBO'})[DECK_STYLE[T_.deck]], 120, 104, '#d8c8e8', 'center');
-    if (CH().foresight) tiny('VISION DEL FUTURO: +8% EN ESTA RONDA',120,145,'#90e8ff','center');
+    R(34, 47, 172, 60, '#080610'); R(36, 49, 168, 56, '#302044');
+    tiny(T_.question||'¿QUE JUGADA ELIGES?',120,39,'#90e8ff','center');
+    tiny(['1/3 APERTURA','2/3 RESPUESTA','3/3 CIERRE'][T_.stage||0]+' · RIVAL NV '+Math.max(S.lvl,1+T_.round*3),120,51,'#fcd84a','center');
+    const oppStyle = T_.intent||DECK_STYLE[o.deck];
+    TACTICS.slice(0, 4).forEach((t, i) => { const y = 61 + i * 10, on = T_.sel === i, mark = BEATS[t.id] === oppStyle ? ' +VENTAJA' : BEATS[oppStyle] === t.id ? ' -PELIGRO' : ' NEUTRO'; if (on) R(43, y - 1, 154, 10, '#59406e'); tiny(CARD_ANSWERS[i],48,y,on?'#fff':'#bdb0d0'); });
+    tiny(T_.hint?'LECTURA: '+TACTICS.find(v=>v.id===T_.hint).n:'SU JUGADA: '+TACTICS.find(v=>v.id===oppStyle).n,120,102,'#d8c8e8','center');
+    tiny(T_.feedback||'AGRO > COMBO > CONTROL > AGRO',120,145,'#90e8ff','center');
+
     tiny('FLECHAS ELIGEN · A CONFIRMA', 120, 151, '#fcd84a', 'center');
   } else if (T_.phase === 'vs') {
     txt('VS', 120, 60, '#fcd84a', 'center', '#7a3a10', 16);
@@ -4675,8 +4775,8 @@ function updateMenu(){
     return;
   }
   if (pressed('menu') || pressed('b')) { G.menu = null; SFX.back(); saveGame(); return; }
-  if (pressed('left')) { m.tab = (m.tab + 4) % 5; m.sel = 0; SFX.move(); }
-  if (pressed('right')) { m.tab = (m.tab + 1) % 5; m.sel = 0; SFX.move(); }
+  if (pressed('left')) { m.tab = (m.tab + 5) % 6; m.sel = 0; SFX.move(); }
+  if (pressed('right')) { m.tab = (m.tab + 1) % 6; m.sel = 0; SFX.move(); }
   const n = m.tab === 0 ? DECKS.length : m.tab === 1 ? 6 : m.tab === 4 ? 2 : 0;
   if(m.tab===4&&m.sel===1){if(pressed('up'))m.questScroll=Math.max(0,(m.questScroll||0)-1);if(pressed('down'))m.questScroll=(m.questScroll||0)+1;if(pressed('a')){const q=journalEntries()[m.questScroll||0];if(q)questDetail(q);return;}return;}
   if (n) { if (pressed('up')) { m.sel = (m.sel + n - 1) % n; SFX.move(); } if (pressed('down')) { m.sel = (m.sel + 1) % n; SFX.move(); } }
@@ -4700,7 +4800,7 @@ function leagueMapMarks(id){
   }));
 }
 function drawWorldMap(){
-  const cw = 44, chh = 20, ox = 10, oy = 20, rows = 6, cur = zoneOf(G.roomId), vis = S.visited || {};
+  const cw = 44, chh = 17, ox = 10, oy = 20, rows = 7, cur = zoneOf(G.roomId), vis = S.visited || {};
   const center = id => [ox + WORLD[id][0] * cw + cw / 2, oy + WORLD[id][1] * chh + chh / 2];
   R(ox - 4, oy - 2, cw * 5 + 8, chh * rows + 4, '#d8c090'); R(ox - 3, oy - 1, cw * 5 + 6, chh * rows + 2, '#e8d8a8');
   for (const id in WORLD) {
@@ -4770,13 +4870,23 @@ function goToTitle(){
   G.state = 'title'; G.titleSel = S ? 1 : 0; G.map = null; playMusic(null); SFX.back();
 }
 const sortedSwords = () => SWORD_ORDER.filter(s => S.swords.includes(s));
+function drawLeagueProgress(){
+  txt('CAMINO AL CAMPEONATO',120,22,'#fcd84a','center',null);
+  tiny('LIGAS REGIONALES '+leaguesDone()+'/5',120,35,'#fff','center');
+  R(20,44,200,4,'#283838');R(20,44,40*leaguesDone(),4,'#60d890');
+  Object.entries(LEAGUES).forEach(([key,l],i)=>{const y=54+i*14,won=!!(S.leagues&&S.leagues[key]);tiny(l.n,8,y,won?'#90f0a0':'#fff');tiny(won?'GANADA':'PENDIENTE',232,y,won?'#90f0a0':'#ffd080','right');tiny(l.place+' · '+DAY_LABELS[LEAGUE_PHASE[key]],8,y+6,'#9db8a8');});
+  const champion=(S.ligaWins||0)>0,ready=leaguesDone()===5&&bossesDone()===ALL_BOSSES.length;
+  tiny('LIGA NACIONAL · TOLARIA · MEDIODIA',8,126,'#fcd84a');
+  tiny(champion?'¡CAMPEON NACIONAL!':ready?'DISPONIBLE: HABLA CON EL ORGANIZADOR':'REQUIERE 5 LIGAS Y TODOS LOS JEFES',8,135,champion?'#90f0a0':'#fff');
+  tiny('JEFES '+bossesDone()+'/'+ALL_BOSSES.length+' · BUSCAOBJETOS '+(S.finder?'OBTENIDO':leaguesDone()+'/4 LIGAS'),120,150,'#9db8a8','center');
+}
 function drawMenu(){
   const m = G.menu;
   R(0, 0, W, H, '#10161a'); R(0, 0, W, 16, '#1c2a2e');
-  ['MAZOS','EQUIPO','ESTADO','MAPA','MISIONES'].forEach((t, i) => {
-    const x = 2 + i * 47.2;
-    if (i === m.tab) R(Math.round(x), 2, 46, 13, '#2e4a44');
-    tiny(t, Math.round(x + 23), 6, i === m.tab ? '#fcd84a' : '#9db8a8', 'center');
+  ['MAZOS','EQUIPO','ESTADO','MAPA','MISIONES','LIGAS'].forEach((t, i) => {
+    const x = i * 40;
+    if (i === m.tab) R(Math.round(x), 2, 39, 13, '#2e4a44');
+    tiny(t, Math.round(x + 20), 6, i === m.tab ? '#fcd84a' : '#9db8a8', 'center');
   });
   if (m.tab === 0) {
     if (m.deck === null) {
@@ -4830,6 +4940,8 @@ function drawMenu(){
     tiny('A: CAMBIAR. EQUIPO: COFRES, CRIATURAS Y MERCADO', 120, 151, '#6a8a80', 'center');
   } else if (m.tab === 3) {
     drawWorldMap();
+  } else if (m.tab === 5) {
+    drawLeagueProgress();
   } else if (m.tab === 4) {
     drawMissions();
   } else {
@@ -5113,6 +5225,8 @@ function drawWorld(){
   drawHUD();
 }
 function drawHUD(){
+  for(const p of G.def.props||[])if(p.k==='ligaNeon'||p.k==='tcgNeon')drawProp(p);
+  for(const n of G.npcs||[])if(!G.def.cardTemple&&(LEAGUE_BY_NPC[n.id]||n.id==='ligaOrg')){R(n.x-9,n.y-19,28,9,'#684018');tiny('LIGA',n.x+5,n.y-17,'#ffe880','center');}
   if(S.finder){const h=hiddenSpot();if(h){const d=Math.hypot(h.x-PL.x-5,h.y-PL.y-4);tiny('BUSCAOBJETOS '+(d<22?'¡AQUI!':d<55?'CERCA':'ACTIVO'),120,139,'#fcd84a','center');disc(h.x,h.y-4,2+(frame>>4&1),'#fcd84a');}else if(!areaCleared())tiny('LIMPIA LA ZONA PARA BUSCAR',120,139,'#c8d8d0','center');}
   const ph=dayPhase();R(106,2,66,10,'rgba(10,18,30,.7)');if(ph==='night'){disc(112,7,3,'#d8e8ff');disc(114,5,3,'#1a2838');}else disc(112,7,3,ph==='dusk'?'#f89850':'#ffe080');tiny(DAY_LABELS[ph],142,5,'#fff','center');
   if(S.pet!==null && POKE[S.pet]){R(172,148,66,9,'rgba(10,18,30,.65)');tiny(POKE[S.pet].n.slice(0,8)+' NV '+petLevel(),205,151,'#b0f0a0','center');}
@@ -6208,9 +6322,10 @@ function drawMaze(A){
 
 /* ============ DUELOS DE CARTAS CONTRA PERSONAJES ============ */
 const TACTICS = [
-  { id:'agro', n:'AGRESIVO', desc:'Pegar fuerte (+2 dano). Gana a COMBO, pierde con CONTROL.', col:'#e84040' },
+  { id:'agro', n:'AGRESIVO', desc:'Pegar fuerte (+1 dano). Gana a COMBO, pierde con CONTROL.', col:'#e84040' },
   { id:'ctrl', n:'CONTROL', desc:'Frenar y responder (+1 vida). Gana a AGRESIVO, pierde con COMBO.', col:'#4080e8' },
-  { id:'combo', n:'COMBO', desc:'La jugada grande (+5 si ganas por 3). Gana a CONTROL, pierde con AGRESIVO.', col:'#b060e0' },
+  { id:'combo', n:'COMBO', desc:'La jugada grande (+2 si ganas por 3). Gana a CONTROL, pierde con AGRESIVO.', col:'#b060e0' },
+  { id:'adapt', n:'OBSERVAR', desc:'Cede dano para leer la proxima jugada rival. Reduce el dano recibido.', col:'#48b8a0' },
   { id:'trick', n:'TRAMPA', desc:'Espias al rival y eliges la tactica que le gana. Si te pillan (30%) pierdes 3 vidas.', col:'#e8c040' },
 ];
 const BEATS = { agro:'combo', ctrl:'agro', combo:'ctrl' };
@@ -6234,15 +6349,19 @@ function setupDuel(n){
   say(['¿Con que mazo juegas?'], deckChoices(done, d => pickBet({ id:d.id })));
 }
 function beginDuel(opp, deck, bet){
+  opp={...opp,level:Math.max(S.lvl,opp.bonus>=4?15:1)};
   G.duel = { opp, deck:deck.id, borrowed:!!deck.borrowed, bet, pl:20, op:20, phase:'choose', sel:0, t:0, dice:[1, 1], card:null, pops:[], tricks:CH().cheat ? 2 : 0, turn:1, last:null, lines:[] };
   G.state = 'duel'; playMusic('fanfare'); SFX.ok();
 }
-function duelOptions(){ const d = G.duel; return TACTICS.filter(t => t.id !== 'trick' || d.tricks > 0); }
+function duelOptions(){ const d=G.duel;return TACTICS.slice(0,3).concat(TACTICS.find(t=>t.id===(d.tricks>0?'trick':'adapt'))); }
+function cardPower(){const st=stats();return Math.min(3,Math.log2(1+Math.max(0,st.int-5)+houseBonus('tourInt'))*.35+Math.sqrt(Math.max(0,S.lvl-1))*.12+(owned(LEGEND)?.25:0));}
+function rivalPower(level,expert=0){return Math.min(3,Math.sqrt(Math.max(0,level-1))*.22+Math.min(1.2,expert*.3));}
 function oppPick(d){
   if (d.predicted) { const choice = d.predicted; d.predicted = null; return choice; }
   const r = Math.random();
-  if (r < 0.4) return DECK_STYLE[d.opp.deck];
-  if (r < 0.7 && d.last) return LOSES_TO[d.last];
+  if (r < Math.min(.4,.15+d.opp.level*.004) && d.last && LOSES_TO[d.last]) return LOSES_TO[d.last];
+  if (r < 0.65) return DECK_STYLE[d.opp.deck];
+  if (r < 0.7 && LOSES_TO[d.last]) return LOSES_TO[d.last];
   return pick(['agro','ctrl','combo']);
 }
 function resolveDuel(d){
@@ -6250,27 +6369,27 @@ function resolveDuel(d){
   let myT = d.myT, caught = false;
   d.opT = oppPick(d);
   if (myT === 'trick') { d.tricks--; if (Math.random() < 0.3) { caught = true; myT = pick(['agro','ctrl','combo']); } else myT = LOSES_TO[d.opT]; }
-  if (d.opp.cheats && Math.random() < 0.25) d.opT = LOSES_TO[myT];
+  if (d.opp.cheats && LOSES_TO[myT] && Math.random() < 0.25) d.opT = LOSES_TO[myT];
   d.myTact = myT; d.caught = caught; d.last = myT;
   const r1 = 1 + rnd(6), r2 = 1 + rnd(6);
-  const myAdv = BEATS[myT] === d.opT ? 2 : 0, opAdv = BEATS[d.opT] === myT ? 2 : 0;
+  const myAdv = BEATS[myT] === d.opT ? 4 : 0, opAdv = BEATS[d.opT] === myT ? 4 : 0;
   const myDeck = DECK_STYLE[d.deck] === myT ? 1 : 0, opDeck = DECK_STYLE[d.opp.deck] === d.opT ? 1 : 0;
-  const myInt = Math.floor(st.int / 5) + houseBonus('tourInt'), myStats = Math.floor((st.fue + st.des + st.agi) / 12), myLvl = Math.floor((S.lvl - 1) / 10), pen = d.borrowed ? -1 : 0, luck = (CH().cheat ? 1 : 0) + (owned(LEGEND) ? 1 : 0);
-  const matchup = Math.round(mu(d.deck, d.opp.deck) * 10);
-  const my = r1 + myAdv + myDeck + myInt + myStats + myLvl + pen + luck + matchup, op = r2 + opAdv + opDeck + d.opp.bonus + (d.opp.cheats ? 1 : 0);
-  d.dice = [r1, r2]; d.tot = [my, op];
-  d.lines = ['TU: dado ' + r1 + (myAdv ? ' +2 ventaja' : '') + (myDeck ? ' +1 mazo' : '') + (myInt ? ' +' + myInt + ' INT' : '') + (myStats ? ' +' + myStats + ' STATS' : '') + (myLvl ? ' +' + myLvl + ' NIVEL' : '') + (luck ? ' +' + luck + ' suerte' : '') + (pen ? ' -1 prestado' : '') + (matchup ? ' ' + (matchup > 0 ? '+' : '') + matchup + ' duelo' : '') + ' = ' + my,
-             'RIVAL: dado ' + r2 + (opAdv ? ' +2 ventaja' : '') + (opDeck ? ' +1 mazo' : '') + (d.opp.bonus ? ' +' + d.opp.bonus + ' experto' : '') + (d.opp.cheats ? ' +1 trampa' : '') + ' = ' + op];
+  const power=cardPower(), enemyPower=rivalPower(d.opp.level,d.opp.bonus), pen=d.borrowed?-1:0;
+  const matchup=clamp(Math.round(mu(d.deck,d.opp.deck)*5),-1,1);
+  const my=r1*.5+myAdv+myDeck+power+pen+matchup,op=r2*.5+opAdv+opDeck+enemyPower;
+  d.dice=[r1,r2];d.tot=[my,op];
+  d.lines=['TU: tactica +'+myAdv+' / dominio '+power.toFixed(1)+' = '+my.toFixed(1),'RIVAL NV '+d.opp.level+': tactica +'+opAdv+' / dominio '+enemyPower.toFixed(1)+' = '+op.toFixed(1)];
+  if(myT==='adapt'){d.predicted=oppPick(d);d.lines[0]='OBSERVAS: proxima jugada '+TACTICS.find(t=>t.id===d.predicted).n;}
   const diff = my - op;
   d.pops = [];
   if (caught) { d.pl -= 3; d.pops.push({ s:'-3', side:0, col:'#e8c040', t:0 }); }
   if (diff > 0) {
-    const big = myT === 'combo' && diff >= 3, dmg = diff + (myT === 'agro' ? 2 : 0) + (big ? 5 : 0);
+    const big = myT === 'combo' && diff >= 3, dmg = myT==='adapt'?1:Math.min(7,Math.ceil(diff)+(myT==='agro'?1:0)+(big?2:0));
     d.op -= dmg; if (myT === 'ctrl') d.pl += 1;
     d.card = pick(DECK[d.deck].cards); d.who = 0; d.pops.push({ s:'-' + dmg, side:1, col:'#ff6040', t:0 });
     if (big) d.pops.push({ s:'COMBO!', side:1, col:'#e0a0ff', t:-10 });
   } else if (diff < 0) {
-    const big = d.opT === 'combo' && -diff >= 3, dmg = -diff + (d.opT === 'agro' ? 2 : 0) + (big ? 5 : 0);
+    const big = d.opT === 'combo' && -diff >= 3, dmg = myT==='adapt'?1:Math.min(7,Math.ceil(-diff)+(d.opT==='agro'?1:0)+(big?2:0));
     d.pl -= dmg; if (d.opT === 'ctrl') d.op += 1;
     d.card = pick(DECK[d.opp.deck].cards); d.who = 1; d.pops.push({ s:'-' + dmg, side:0, col:'#ff6040', t:0 });
   } else { d.pl -= 1; d.op -= 1; d.card = null; d.pops.push({ s:'-1', side:0, col:'#ff6040', t:0 }, { s:'-1', side:1, col:'#ff6040', t:0 }); }
@@ -6314,7 +6433,7 @@ function drawDuel(){
   for (let i = 0; i < 15; i++) R(i * 16, 100, 16, 60, i % 2 ? '#2a2248' : '#241c40');
   R(40, 96, 160, 6, '#5a3418'); R(40, 96, 160, 1, '#8a5a30');
   txt('DUELO - TURNO ' + d.turn, 120, 3, '#fcd84a', 'center', '#000');
-  tiny('APUESTA ' + money(d.bet), 120, 13, '#c8c0e8', 'center');
+  tiny('RIVAL NV '+d.opp.level+' · APUESTA ' + money(d.bet), 120, 13, '#c8c0e8', 'center');
   ctx.save(); ctx.translate(14, 28); ctx.scale(2, 2); drawPerson(0, 0, playerLook(), 3, 0); ctx.restore();
   ctx.save(); ctx.translate(194, 28); ctx.scale(2, 2); drawPerson(0, 0, d.opp.look, 2, 0); ctx.restore();
   tiny(CH().n, 30, 64, '#fff', 'center'); tiny(DECK[d.deck].n, 30, 71, DECK[d.deck].col, 'center');
@@ -6758,6 +6877,7 @@ function loop(now){
       if (extra === 'viajar' || extra === 'volar') { S.stones = { home:true, tolaria:true }; if (extra === 'volar') for (const d of DECKS.slice(0, 6)) for (const c of d.cards) S.cards[c] = 1; openTravel(); G.dialog.ch = 999; G.dialog.showChoices = true; }
       if (extra === 'atascado') { loadRoom('bosqueRoca', W - PL.w - 2, 7 * TS + 4); }
       if (extra === 'mox') addCard(LEGEND);
+      if(extra==='liga52'){S.lvl=52;S.st={fue:55,des:45,agi:40,int:60};S.coins=100000;startTour('life',{...LEAGUES.curico,league:'curico',name:LEAGUES.curico.n});}
       if (G.freeTest) { startFree(G.freeTest); const A = G.arc; if (A.serve) A.serve = 0; G.freeze = true; }
       if (G.lujoTest) { S.lvl = 40; S.coins = 3000000; openShop('lujo', 'EL MARCHANTE'); }
       if (extra === 'trabada') { let px = 0, py = 0; for (let y = 2; y < 8; y++) for (let x = 2; x < 13; x++) if (!px && G.map[y][x] === 'P' && G.map[y - 1][x] !== 'P' && G.map[y + 1][x] !== 'P') { px = x; py = y; } S.pet = 24; G.pet = { x:px * TS + 3, y:(py - 1) * TS + 4, t:0, cd:40 }; PL.x = px * TS + 3; PL.y = (py + 1) * TS + 4; PL.dir = 0; G.enemies = []; const before = [G.pet.x, G.pet.y]; for (let i = 0; i < 80; i++) step(); const pre = document.createElement('pre'); pre.id = 'conn'; pre.textContent = 'PILAR ' + px + ',' + py + ' MASCOTA ANTES ' + before.map(Math.round) + ' DESPUES ' + [G.pet.x, G.pet.y].map(Math.round) + ' JUGADOR ' + [PL.x, PL.y].map(Math.round) + ' DIST ' + Math.round(Math.hypot(G.pet.x - PL.x, G.pet.y - PL.y)); document.body.append(pre); G.freeze = true; }
@@ -6797,6 +6917,7 @@ function pointerClick(p, right){
     const d = G.duel; if (d.phase === 'choose') { (d.rects || []).forEach((r, i) => { if (inRect(p, r)) { if (d.sel === i) pulseKey = 'a'; else { d.sel = i; SFX.move(); } } }); } else pulseKey = 'a';
     return;
   }
+  if(st==='tour'&&G.tour.phase==='strategy'){if(p.x>=40&&p.x<=200&&p.y>=59&&p.y<100){const i=Math.floor((p.y-59)/10);if(G.tour.sel===i)pulseKey='a';else{G.tour.sel=i;SFX.move();}}return;}
   if (st !== 'world') { pulseKey = 'a'; return; }
   if (G.cardGet) { pulseKey = 'a'; return; }
   if (G.dialog) { dialogClick(p); return; }
@@ -6813,6 +6934,7 @@ function pointerClick(p, right){
   const npc = G.npcs.find(n => p.x > n.x - 6 && p.x < n.x + n.w + 6 && p.y > n.y - 16 && p.y < n.y + n.h + 4);
   if (npc && Math.hypot(npc.x + 5 - pc.x, npc.y + 4 - pc.y) < 30) { faceTo(npc.x + 5, npc.y + 4); G.moveTarget = null; pulseKey = 'b'; return; }
   const tx = Math.floor(p.x / TS), ty = Math.floor(p.y / TS), c = T(tx, ty);
+  const pr=propAt(tx,ty);if(pr&&pr.act&&Math.hypot(p.x-pc.x,p.y-pc.y)<30){G.moveTarget=null;propAction(pr);return;}
   if (c && ('ScZ^' + [...HOUSE_SET].join('')).includes(c) && Math.hypot(tx * TS + 8 - pc.x, ty * TS + 8 - pc.y) < 30) { faceTo(tx * TS + 8, ty * TS + 8); G.moveTarget = null; pulseKey = 'b'; return; }
   G.moveTarget = { x:p.x, y:p.y, t:0 };
 }
@@ -6827,7 +6949,7 @@ function dialogClick(p){
 }
 function menuClick(p){
   const m = G.menu;
-  if (p.y < 16) { const t = Math.floor((p.x - 2) / 47.2); if (t >= 0 && t < 5) { m.tab = t; m.sel = 0; m.deck = null; m.sub = null; SFX.move(); } return; }
+  if (p.y < 16) { const t = Math.floor(p.x / 40); if (t >= 0 && t < 6) { m.tab = t; m.sel = 0; m.deck = null; m.sub = null; SFX.move(); } return; }
   if (m.tab === 0) {
     if (m.deck === null) { const i = Math.floor((p.y - 18) / 12); if (i >= 0 && i < DECKS.length) { m.sel = i; pulseKey = 'a'; } }
     else { for (let i = 0; i <= DECK_SIZE; i++) { const [x, y] = deckCellPos(i); if (inRect(p, [x, y, 24, 34])) { m.cs = i; SFX.move(); return; } } if (p.y > 144) pulseKey = 'b'; }
@@ -6845,6 +6967,7 @@ function finishSelectDrag(e){
 }
 cvs.addEventListener('wheel',e=>{if(G.menu&&G.menu.tab===4&&G.menu.sel===1){e.preventDefault();G.menu.questScroll=Math.max(0,(G.menu.questScroll||0)+(e.deltaY>0?1:-1));return;}if(G.state!=='select')return;e.preventDefault();if(!Number.isFinite(G.selectScroll))revealSelected();setSelectScroll(G.selectScroll+e.deltaY*(e.deltaMode===1?12:e.deltaMode===2?81:0.3));},{passive:false});
 cvs.addEventListener('pointerdown', e => {
+  if(e.cancelable)e.preventDefault();
   audioInit(); cvs.focus();
   const p = canvasPos(e);
   if (location.hash.startsWith('#pokedex') || location.hash === '#monturas' || location.hash === '#bestiario' || location.hash === '#zonas' || location.hash === '#nuevos' || location.hash === '#bestiario2') return;
