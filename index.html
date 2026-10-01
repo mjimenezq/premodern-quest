@@ -11,9 +11,9 @@
   :root{ color-scheme: dark; --bg:#10161a; --panel:#1c2a2e; --ink:#eef6ee; --muted:#9db8a8; --gold:#fcd84a; --line:#2e4a44; --leaf:#5cae44; }
   html,body{height:100%}
   html{overscroll-behavior:none}
-  body,.screen,.pad,button{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+  html,body,body *{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
   .screen,.pad{touch-action:none}
-  input,textarea,[contenteditable="true"],.on-code b{user-select:text;-webkit-user-select:text;-webkit-touch-callout:default}
+  input,textarea,[contenteditable="true"],[contenteditable="true"] *{user-select:text;-webkit-user-select:text;-webkit-touch-callout:default}
   .net button,.online button{touch-action:manipulation}
   body{margin:0;background:var(--bg);color:var(--ink);font-family:"Press Start 2P", ui-monospace, "Courier New", monospace;padding-inline:16px;box-sizing:border-box}
   .wrap{max-width:980px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:12px;padding-block:12px}
@@ -204,7 +204,18 @@ function resetHeldInput(){
 addEventListener('blur',resetHeldInput);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)resetHeldInput();});
 
-// Suppress browser long-press/selection gestures only on the game surfaces.
+// Block long-press selection across the game page, including labels and nested controls.
+// Text fields stay editable for character names and multiplayer codes.
+const editableTarget=node=>!!(node?.closest?.('input,textarea,[contenteditable="true"]'));
+function blockPageSelection(e){if(!editableTarget(e.target)&&e.cancelable)e.preventDefault();}
+for(const event of ['contextmenu','selectstart','dragstart','copy'])document.addEventListener(event,blockPageSelection,{capture:true,passive:false});
+function clearGameSelection(){
+  const selection=window.getSelection?.();
+  const anchor=selection?.anchorNode;
+  if(selection?.rangeCount&&!editableTarget(document.activeElement)&&!editableTarget(anchor?.nodeType===1?anchor:anchor?.parentElement))selection.removeAllRanges();
+}
+document.addEventListener('selectionchange',clearGameSelection);
+document.addEventListener('touchstart',clearGameSelection,{capture:true,passive:true});
 const blockPlayGesture=e=>{if(e.cancelable)e.preventDefault();};
 for(const surface of [cvs,document.getElementById('pad')]){
   for(const event of ['touchstart','touchmove','contextmenu','selectstart','dragstart'])surface.addEventListener(event,blockPlayGesture,{passive:false});
