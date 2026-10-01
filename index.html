@@ -315,6 +315,17 @@ function makeSong(o){
 }
 // los nombres con 'b' (Bb, Eb, Ab) son acordes; las melodías usan sostenidos (A#4 = Si bemol)
 const SONGS = {
+  // Original hopeful medieval RPG theme: "El templo de la esperanza".
+  tcg:makeSong({bpm:112,chords:['D','G','Bm','A','D','G','Em','A','Bm','G','D','A','G','D','A','D'],leadInst:'brass',leadVol:.085,padVol:.055,bass:'walk',bassVol:.22,arpInst:'harp',arpVol:.065,arpPat:[0,2,1,3,2,1,2,3],drums:'soft',drumVol:.16,
+    lead:[
+      'F#4:2 A4:1 B4:1 D5:3 C#5:1','B4:2 D5:2 G5:3 F#5:1','F#5:2 E5:1 D5:1 B4:2 D5:2','C#5:2 E5:2 A5:3 G5:1',
+      'F#5:3 E5:1 D5:2 A4:2','B4:2 D5:1 E5:1 G5:2 A5:2','G5:2 F#5:2 E5:3 B4:1','C#5:2 E5:2 A5:4',
+      'B5:2 A5:1 F#5:1 D5:2 F#5:2','G5:3 F#5:1 E5:2 D5:2','F#5:2 A5:2 D6:3 C#6:1','B5:2 A5:2 E5:2 C#5:2',
+      'D5:2 G5:2 B5:2 A5:2','F#5:2 E5:1 D5:1 A4:2 D5:2','E5:2 F#5:2 A5:2 C#6:2','D6:4 A5:2 D5:2'
+    ].join(' '),counter:[
+      'D4:6 F#4:2','G4:6 A4:2','B4:4 F#4:4','A4:6 E4:2','D4:4 F#4:4','G4:6 B4:2','E4:6 G4:2','A4:8',
+      'D5:4 B4:4','B4:4 G4:4','A4:4 F#4:4','E4:6 A4:2','G4:4 B4:4','F#4:4 A4:4','E4:4 G4:4','F#4:4 D4:4'
+    ].join(' ')}),
   title: makeSong({ bpm:96, chords:['Cm','Ab','Eb','Bb','Cm','Ab','Bb','Bb'], leadInst:'brass', leadVol:0.1, bass:'half', drums:'soft', padVol:0.045,
     lead:'G4:4 C5:2 D5:2 D#5:4 D5:2 C5:2 G5:6 F5:1 D#5:1 D5:8 C5:2 D5:2 D#5:2 G5:2 G#5:4 G5:2 F5:2 F5:3 D#5:1 D5:2 F5:2 G5:8' }),
   town: makeSong({ bpm:92, chords:['F','C','Dm','Bb','F','C','Bb','C'], leadInst:'flute', leadVol:0.1, bass:'half', drums:'none', arpPat:[0,1,2,1,3,1,2,1],
@@ -374,7 +385,7 @@ function voice(inst, f, t, dur, vol){
       break; }
   }
 }
-const roomMusic = () => (G.def && G.def.party && G.djMusic) || (G.def && G.def.music);
+const roomMusic = () => G.def&&G.def.cardTemple?'tcg':(G.def && G.def.party && G.djMusic) || (G.def && G.def.music);
 function playMusic(name){
   if (musicName === name && music) return;
   musicName = name;
@@ -1351,7 +1362,7 @@ for(const id of ['pueblo','tolaria','valpo','vina','pmontt','mercado','tempest',
 }
 for(const d of Object.values(ROOMS))if(d.props){d.props=d.props.filter(p=>p.k!=='farol'||p.x===1||p.x===13);for(const p of d.props)if(p.k==='farol'){p.solid=false;p.top=false;}}
 for(const [id,d]of Object.entries(ROOMS)){
-  if(d.cardTemple){d.party=true;d.props.push({k:'neon',x:1,y:0,w:13,solid:false},{k:'ligaNeon',x:6,y:6,solid:false,top:true});}
+  if(d.cardTemple){d.music='tcg';d.party=true;d.props.push({k:'neon',x:1,y:0,w:13,solid:false},{k:'ligaNeon',x:6,y:6,solid:false,top:true});}
   for(const [pos,to]of Object.entries(d.doors||{}))if(ROOMS[to]&&ROOMS[to].cardTemple){const [x,y]=pos.split(',').map(Number);d.props=d.props||[];d.props.push({k:'tcgNeon',x,y,solid:false,top:true});}
 }
 function templeStandings(){
@@ -3090,7 +3101,7 @@ function loadRoom(id, px, py){
   const boss = G.enemies.find(e => MON[e.type].boss);
   if (boss) { SFX.boss(); G.bossBar = boss; if (MON[boss.type].raid) toast('JEFE RAID: SE RECOMIENDAN 2 O 3 JUGADORES', '#ff9040'); } else G.bossBar = null;
   if (d.mult >= 1.8 && !d.dungeonKey && !d.interior) toast('ZONA PELIGROSA: CRIATURAS MUY FUERTES', '#ff8060');
-  playMusic(boss ? 'boss' : (d.party && G.djMusic) || d.music);
+  playMusic(boss ? 'boss' : roomMusic());
   S.room = id; S.x = px; S.y = py; saveGame();
 }
 function spawnEnemy(type, x, y){
