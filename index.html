@@ -426,6 +426,7 @@ function disc(cx, cy, r, col){
   for (let dy = -r; dy <= r; dy++) { const w = Math.floor(Math.sqrt(r * r - dy * dy)); ctx.fillRect(Math.round(cx - w), Math.round(cy + dy), w * 2 + 1, 1); }
 }
 function txt(s, x, y, col='#fff', al='left', sh='#000', size=8){
+  s=realmText(s);
   ctx.font = `${size}px "Press Start 2P", ui-monospace, monospace`;
   ctx.textAlign = al; ctx.textBaseline = 'top';
   if (sh) { ctx.fillStyle = sh; ctx.fillText(s, x + 1, y + 1); }
@@ -450,8 +451,8 @@ const F3 = {
   '%':'101001010100101','=':'000111000111000','<':'001010100010001','>':'100010001010100','*':'000101010101000'
 };
 const norm = s => String(s).toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[¡¿]/g, '');
-function tiny(s, x, y, col='#fff', al='left'){
-  s = norm(s);
+function tiny(s, x, y, col='#fff', al='left', raw=false){
+  s = norm(raw?s:realmText(s));
   if (al === 'center') x = Math.round(x - (s.length * 4 - 1) / 2);
   else if (al === 'right') x = x - (s.length * 4 - 1);
   ctx.fillStyle = col;
@@ -801,7 +802,7 @@ const SWORDS = {
 };
 const SWORD_ORDER = ['palo','hierro','goblin','sombra','urza','mar','serra','mishra','tourach','avatar','campeon','shivanSword','hachaKjeldor','guadana','garra','baculo','hachaRoca','martilloKarn','argivia','phyrexia','masticoreBlade','yawgmoth','moxEterno'];
 // Economia (30 sept): todo cuesta mucho mas. Un sobre vale $80.000 (pedido de Matias: que cueste juntar plata).
-const PACK_PRICE = 80000;
+const PACK_PRICE = 600000;
 const SWORD_PRICE = { hierro:10000, sombra:35000, urza:40000, mar:38000 };
 
 /* ============ EQUIPO, MAGIA, CASA Y PREMIOS ============ */
@@ -899,11 +900,12 @@ const MOUNTS = {
   nightmare:{ n:'Nightmare', price:150000, spd:0.45, kind:'horse', body:'#2a2032', mane:'#f86020', fire:true, desc:'Caballo negro de crin en llamas. +45% velocidad.' },
   charger:{ n:'Pegasus Charger', price:250000, spd:0.55, kind:'horse', body:'#f8ecd0', mane:'#80c0ff', wings:true, desc:'Pegaso de carga. +55% velocidad.' },
   mammoth:{ n:'War Mammoth', price:350000, spd:0.25, def:4, kind:'mammoth', body:'#8a6a50', mane:'#5a4030', desc:'Mamut de guerra. +25% velocidad y +4 DEF.' },
-  caballo:{ n:'Caballo chileno', price:100000, spd:0.3, kind:'horse', body:'#7a4a24', mane:'#2a1a10', desc:'Caballo del establo de Curico. +30% velocidad.' },
+  caballo:{ n:'Caballo chileno', price:300000, spd:0.3, kind:'horse', body:'#7a4a24', mane:'#2a1a10', desc:'Caballo del establo de Curico. +30% velocidad.' },
   crosis:{ n:'Crosis, the Purger', spd:0.9, def:4, kind:'dragon', body:'#2a3a7a', mane:'#80c0ff', boss:true, desc:'Dragon legendario de Invasion. +90% velocidad y +4 DEF.' },
   darigaaz:{ n:'Darigaaz, the Igniter', spd:1.0, def:6, kind:'dragon', body:'#6a1010', mane:'#60c040', boss:true, desc:'El dragon mas temido de Dominaria. Doble de velocidad y +6 DEF.' },
   shivan:{ n:'Shivan Dragon', spd:0.8, def:2, kind:'dragon', body:'#d83020', mane:'#f8c030', boss:true, desc:'Se gana venciendo al Shivan Dragon. +80% velocidad.' },
 };
+for(const id of ['mesa','nightmare','charger','mammoth'])MOUNTS[id].price=Math.max(300000,MOUNTS[id].price*3);
 const mounted = () => S && S.mount && MOUNTS[S.mount] && G.def && !G.def.interior ? MOUNTS[S.mount] : null;
 function giveMount(id){
   S.mounts = S.mounts || []; if (S.mounts.includes(id)) return;
@@ -1011,7 +1013,11 @@ for(let i=0;i<10;i++){
 
 // Plata con puntos de mil, como en Chile: $10.000
 const COIN_X = 50; // monedas que sueltan las criaturas y el arcade (30 sept: bajado de 150, daban demasiado)
-const QUEST_COIN_X = 150; // las recompensas en plata de los encargos
+function questCoins(reward,level=S.lvl){const raw=reward.coins||0;if(!raw)return 0;const base=raw<=100?raw*70:1200+Math.sqrt(raw)*65;return Math.round(Math.min(6000,base)*(.5+Math.min(100,Math.max(1,level))*.025)/100)*100;}
+function levelCoins(base,level=S.lvl){return Math.max(10,Math.round(base*(.35+Math.min(100,Math.max(1,level))*.018)/10)*10);}
+function itemLevel(kind,id){const luxury=LUXURY.find(it=>it.kind===kind&&it.id===id);if(luxury&&luxury.req)return luxury.req.lvl||1;if(kind==='sword')return Math.max(1,(SWORD_ORDER.indexOf(id)-1)*2);if(kind==='armor')return Math.max(1,((ARMOR[id]||{}).tier-1)*6);return 1;}
+function usableDrop(kind,id){if(id&&itemLevel(kind,id)<=S.lvl)return id;const pool=kind==='sword'?SWORD_ORDER:Object.keys(ARMOR);return pool.filter(key=>itemLevel(kind,key)<=S.lvl).sort((a,b)=>itemLevel(kind,b)-itemLevel(kind,a))[0]||null;}
+
 const money = n => '$' + String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 const houseBonus = key => { let v = 0; for (const [id, o] of Object.entries(HOUSE)) if (S.house && S.house[id]) v += o.bonus[key] || 0; for (const [id, o] of Object.entries(PRIZES)) if (S.house && S.house[id]) v += o.bonus[key] || 0; return v; };
 const ZONE_TIER = { condell:2, talca:1, lascondes:1, pueblo:1, bosque:1, pradera:1, costa:2, pantano:2, cerro:2, valpo:1, tolaria:1, mercado:1, bosqueProf:3, pantanoProf:3, minas:3, ruinas:3, guarida:3, islote:3, vina:1, pmontt:1, volcan:4, glaciar:4, urborg:4, dunas:2, pampa:4, fabrica:4, quietud:4, bosqueRoca:4, tempest:1 };
@@ -1033,7 +1039,7 @@ function addGear(id){
   S.armor.push(id); SFX.chest();
   const cur = S.gear[A.slot], better = !cur || ARMOR[cur].def < A.def;
   if (better) S.gear[A.slot] = id;
-  say(['¡Nuevo equipo: ' + A.n.toUpperCase() + '!', '+' + A.def + ' DEF' + (Object.keys(A.st).length ? ', ' + statLine(A.st) : '') + (better ? ' (equipado)' : ' (cambialo en el menu EQUIPO)')]);
+  lootNotice(A.n.toUpperCase()+' · +'+A.def+' DEF'+(better?' · EQUIPADO':''),'#b0e8ff');
   saveGame();
 }
 function learnSpell(id){
@@ -1178,7 +1184,7 @@ const ROOMS = {
     roof:(tx) => tx >= 9 ? 'green' : 'red',
     plaques:[['LA RUCA',88,19,'#5a3418'],['CASA',192,35,'#1a4a2a'],['ESTABLO',176,87,'#5a3418']],
     doors:{'5,3':'bar','12,3':'casa','10,7':'establo'},
-    signs:{'6,4':'CURICÓ, TIERRA DE HUASOS, VINOS, TORTAS Y PREMODERN. EL ESTABLO ESTA ABAJO A LA DERECHA: ALLI CONSIGUES TU CABALLO. AQUÍ SE ABRIÓ LA CAJA DE URZA. ARRIBA A LA DERECHA: IR AL ESTABLO, DONDE COMPRAS MONTURAS DESDE $100.000. NORTE: PRADERA. ESTE: PICHILEMU. SUR: VIÑA.'},
+    signs:{'6,4':'CURICÓ, TIERRA DE HUASOS, VINOS, TORTAS Y PREMODERN. EL ESTABLO ESTA ABAJO A LA DERECHA: ALLI CONSIGUES TU CABALLO. AQUÍ SE ABRIÓ LA CAJA DE URZA. ARRIBA A LA DERECHA: IR AL ESTABLO, DONDE COMPRAS MONTURAS DESDE $300.000. NORTE: PRADERA. ESTE: PICHILEMU. SUR: VIÑA.'},
     npcs:[{id:'marinero',x:10,y:4},{id:'pescador',x:8,y:4},{id:'barquero',x:2,y:7},{id:'huaso',x:3,y:4},{id:'tortera',x:4,y:6}] },
   establo:{ name:'ESTABLO DE CURICÓ', theme:'inside', music:'huaso', interior:true, exitTo:{room:'valpo',tx:9,ty:2},
     map:['kkkkkkkkkkkkkkk','kFFFFFFFFFFFFFk','kFFFFFFFFFFFFFk','kFFFFFFFFFFFFFk','kFFFFFFFFFFFFFk','kFkkkFFFFFkkkFk','kFFFFFFFFFFFFFk','kFFFFFFFFFFFFFk','kkkkkkkEkkkkkkk','kkkkkkkkkkkkkkk'],
@@ -1309,10 +1315,10 @@ NPCDEF.diegoG={...NPCDEF.juez,n:'DIEGO GONZALEZ · JUEZ'};
 NPCDEF.galindo.n='GALINDO · REFERENTE PREMODERN';
 NPCDEF.azul={...NPCDEF.tendero,n:'AZUL',c:{...NPCDEF.tendero.c,hat:'#3a8ad8',hatD:'#1a4a88',shirt:'#60b8e8',shirtD:'#2878a8'}};
 NPCDEF.fernando={...NPCDEF.fan1,n:'FERNANDO CIFUENTES',c:{...NPCDEF.fan1.c,shirt:'#f4f4f8',shirtD:'#a0a8c0',emblem:'#e83040'}};
-const BOARD_GAMES = {catan:{n:'Catan',price:35000},carcassonne:{n:'Carcassonne',price:28000},azul:{n:'Azul',price:32000}};
+const BOARD_GAMES = {catan:{n:'Catan',price:35000},carcassonne:{n:'Risk clasico',price:28000},azul:{n:'Domino de madera',price:32000}};
 const POKEMON_TEMPLE_PLAYERS=['fernando','ashT','mistyT','brockT','erikaT','lanceT'];
 for(const [i,id] of POKEMON_TEMPLE_PLAYERS.entries())if(id!=='fernando')NPCDEF[id]={...NPCDEF[TEMPLE_PLAYERS[i]],n:['FERNANDO CIFUENTES','ASH','MISTY','BROCK','ERIKA','LANCE'][i]};
-const POKEMON_STORE_CARDS=['Pikachu','Charizard ex','Dragapult ex','Gardevoir ex','Lugia VSTAR','Iron Thorns ex','Raging Bolt ex','N\'s Zoroark ex','Mega Lucario ex','Mega Excadrill ex','Team Rocket\'s Mewtwo ex','Terapagos ex'];
+const POKEMON_STORE_CARDS=['Pikachu','Charizard holo','Blastoise holo','Venusaur holo','Alakazam holo','Gyarados holo','Mewtwo holo','Zapdos holo','Dragonite holo','Snorlax holo','Lapras holo','Mew promocional'];
 function makeCardTemple(name,exitTo,leagueNpc,pokemon=false){
  return {name,theme:'inside',music:'town',interior:true,cardTemple:true,pokemon,exitTo,
   map:['kkkkkkkkkkkkkkk','kFFFFFFFFFFFFFk','kFFFFFFFFFFFFFk','kFFFFFFFFFFFFFk','kFFFFFFFFFFFFFk','kFFFFFFFFFFFFFk','kFFFFFFFFFFFFFk','kFFFFFFFFFFFFFk','kkkkkkkEkkkkkkk','kkkkkkkkkkkkkkk'],
@@ -1333,9 +1339,9 @@ ROOMS.valpo.animals=[];ROOMS.valpo.npcs=ROOMS.valpo.npcs.filter(n=>n.id!=='torte
 ROOMS.valpo.npcs.find(n=>n.id==='pescador').x=0;ROOMS.valpo.npcs.find(n=>n.id==='pescador').y=7;
 ROOMS.valpo.map[7]='JJ.....=.WDWW.T';ROOMS.valpo.props.push({k:'pesca',x:0,y:7,solid:false,top:true});
 ROOMS.valpo.npcs.push({id:'caballerizo',x:4,y:5},{id:'barquero',x:2,y:8},{id:'tortera',x:12,y:5});
-ROOMS.valpo.props.push({k:'cartel',x:3,y:5,solid:false,label:'ESTABLO',txt:'ESTABLO JUNTO AL RIO: HABLA CON EL CABALLERIZO PARA COMPRAR MONTURAS DESDE $100.000.'},
+ROOMS.valpo.props.push({k:'cartel',x:3,y:5,solid:false,label:'ESTABLO',txt:'ESTABLO JUNTO AL RIO: HABLA CON EL CABALLERIZO PARA COMPRAR MONTURAS DESDE $300.000.'},
  ...['caballo','mesa','nightmare','charger','mammoth'].map((id,i)=>({k:'montura',id,x:[2,4,6,3,5][i],y:i<3?6:8,compact:true,solid:false})));
-ROOMS.valpo.signs['6,4']='CURICO: ESTABLO AL COSTADO DEL RIO, ABAJO A LA IZQUIERDA. EL CABALLERIZO VENDE MONTURAS DESDE $100.000. TIENDA DE CARTAS Y TORNEOS ABAJO A LA DERECHA.';
+ROOMS.valpo.signs['6,4']='CURICO: ESTABLO AL COSTADO DEL RIO, ABAJO A LA IZQUIERDA. EL CABALLERIZO VENDE MONTURAS DESDE $300.000. TIENDA DE CARTAS Y TORNEOS ABAJO A LA DERECHA.';
 ROOMS.valpo.npcs=ROOMS.valpo.npcs.filter(n=>n.id!=='ligaCurico');
 // Same room/save identifier, new discotheque at the northwest corner.
 for(const y of [1,2,3]){
@@ -1363,10 +1369,10 @@ for(const id of ['pueblo','tolaria','valpo','vina','pmontt','mercado','tempest',
 for(const d of Object.values(ROOMS))if(d.props){d.props=d.props.filter(p=>p.k!=='farol'||p.x===1||p.x===13);for(const p of d.props)if(p.k==='farol'){p.solid=false;p.top=false;}}
 for(const [id,d]of Object.entries(ROOMS)){
   if(d.cardTemple){d.music='tcg';d.party=true;d.props.push({k:'neon',x:1,y:0,w:13,solid:false},{k:'ligaNeon',x:6,y:6,solid:false,top:true});}
-  for(const [pos,to]of Object.entries(d.doors||{}))if(ROOMS[to]&&ROOMS[to].cardTemple){const [x,y]=pos.split(',').map(Number);d.props=d.props||[];d.props.push({k:'tcgNeon',x,y,solid:false,top:true});}
+
 }
 function templeStandings(){
- const roster=G.def.pokemon?POKEMON_TEMPLE_PLAYERS:TEMPLE_PLAYERS, results=(S.tableResults || {})[G.roomId] || {};
+ const roster=G.def.roster||(G.def.pokemon?POKEMON_TEMPLE_PLAYERS:TEMPLE_PLAYERS), results=(S.tableResults || {})[G.roomId] || {};
  return [CH().n,...roster.map(id=>NPCDEF[id].n)].map(name=>({name,...(results[name] || {points:0,wins:0,matches:0})})).sort((a,b)=>b.points-a.points||b.wins-a.wins);
 }
 function recordTempleMatch(name,won){
@@ -1398,7 +1404,7 @@ ROOMS.valpo.npcs=ROOMS.valpo.npcs.filter(n=>n.id!=='caballerizo');ROOMS.valpo.np
 for(const [y,tiles]of [[5,'RRRR'],[6,'WWDW']]){const row=ROOMS.valpo.map[y].split('');for(let i=0;i<4;i++)row[i+2]=tiles[i];row[6]='.';ROOMS.valpo.map[y]=row.join('');}
 ROOMS.valpo.doors['4,6']='establo';ROOMS.valpo.plaques.push(['ESTABLO',72,68,'#5a3418']);
 ROOMS.establo.exitTo={room:'valpo',tx:4,ty:7};ROOMS.establo.props.forEach(p=>{if(p.k==='montura')p.compact=true;});
-ROOMS.valpo.signs['6,4']='CURICO: XCSO CLUB EN LA ESQUINA SUPERIOR IZQUIERDA. ESTABLO CERRADO JUNTO AL RIO, ENTRA Y HABLA CON EL CABALLERIZO: MONTURAS DESDE $100.000. TIENDA TCG AL SURESTE: LIGAS Y DUELOS.';
+ROOMS.valpo.signs['6,4']='CURICO: XCSO CLUB EN LA ESQUINA SUPERIOR IZQUIERDA. ESTABLO CERRADO JUNTO AL RIO, ENTRA Y HABLA CON EL CABALLERIZO: MONTURAS DESDE $300.000. TIENDA TCG AL SURESTE: LIGAS Y DUELOS.';
 for(const d of Object.values(ROOMS)){for(const plaque of d.plaques||[])if(plaque[0]==='CARTAS')plaque[0]='TIENDA TCG';if(d.cardTemple&&!d.pokemon)d.name=d.name.replace(/CARTAS Y TORNEOS/,'TIENDA TCG').replace('TEMPLO PREMODERN','TIENDA TCG PREMODERN');}
 ROOMS.cartasSur.name='GRAN CENTRO TCG DEL SUR · PUERTO MONTT';
 ROOMS.cartasSur.map[5]='kFFFFFFFFFFFFDk';ROOMS.cartasSur.doors={'13,5':'anexoTCG'};
@@ -1668,7 +1674,7 @@ const ATK = 14;
 function newSave(ci, custom){
   const ch = ci === CUSTOM_CHAR ? customCharacter(custom) : CHARS[ci];
   return { v:1, ch:ci, ...(ci === CUSTOM_CHAR ? {customChar:normalizeCustom(custom)} : {}), lvl:1, xp:0, st:{...ch.st}, hp:6, maxHp:6, coins:1500, econ:2, leagues:{}, cards:{}, swords:['palo'], eq:'palo',
-    chests:{}, bosses:{}, trophies:0, buzz:0, beers:0, room:'pueblo', x:7*TS+3, y:6*TS+6, complete:{}, visited:{}, ligaWins:0, arcadeBest:0, lore:false, quests:{}, kills:{}, killsTotal:0, beerTotal:0,
+    chests:{}, bosses:{}, trophies:0, buzz:0, beers:0, room:'hogar', x:2*TS+3, y:3*TS+4, complete:{}, visited:{}, ligaWins:0, arcadeBest:0, lore:false, quests:{}, kills:{}, killsTotal:0, beerTotal:0,
     gear:{ shield:null, head:null, body:null, legs:null, feet:null }, armor:[], spells:ch.superBaby ? ['bolt'] : [], spellSel:0, mp:4, house:{}, found:{}, foundZones:{}, stones:{}, pet:null, dex:{}, keys:{}, relics:{}, spellXp:{}, mounts:[], mount:null, surf:false, talca:{}, sacos:0 };
 }
 const SLOTS = 5, SLOT_TOP = 20, SLOT_ROW_H = 24, slotKey = n => 'pmq_save_' + n;
@@ -1920,7 +1926,7 @@ function drawTile(c, tx, ty, theme){
       const below = T(tx, ty + 1);
       if (below && 'FAEKBtPZ'.includes(below)) { R(x, y + 11, 16, 5, '#3a2010'); R(x, y + 11, 16, 1, '#7a5030'); R(x, y + 15, 16, 1, '#1a0c06'); }
       break; }
-    case 'F': if (G.roomId === 'casino') { R(x, y, 16, 16, (tx + ty) % 2 ? '#6a0a1a' : '#5a0816'); R(x + 7, y + 7, 2, 2, '#c8a030'); R(x, y, 16, 1, '#7a1424'); } else if (G.roomId === 'arcade') { R(x, y, 16, 16, '#1a1430'); R(x + ((tx + ty) % 2 ? 3 : 11), y + ((tx * 3 + ty) % 2 ? 4 : 11), 2, 2, (tx + ty) % 3 ? '#3a2a78' : '#0a6a5a'); } else floorF(x, y, tx, ty); break;
+    case 'F': if(G.def&&G.def.cardTemple&&G.def.identity){const p=G.def.identity;R(x,y,16,16,(tx+ty)%2?'#303044':'#242638');R(x,y,16,1,p.color);R(x,y,1,16,'#484860');if((tx+ty)%3===0){R(x+7,y+7,2,2,p.color);}}else if(G.roomId==='santuarioPortal'){R(x,y,16,16,(tx+ty)%2?'#24283e':'#30324b');R(x,y,16,1,'#494960');R(x,y,1,16,'#494960');}else if (G.roomId === 'casino') { R(x, y, 16, 16, (tx + ty) % 2 ? '#6a0a1a' : '#5a0816'); R(x + 7, y + 7, 2, 2, '#c8a030'); R(x, y, 16, 1, '#7a1424'); } else if (G.roomId === 'arcade') { R(x, y, 16, 16, '#1a1430'); R(x + ((tx + ty) % 2 ? 3 : 11), y + ((tx * 3 + ty) % 2 ? 4 : 11), 2, 2, (tx + ty) % 3 ? '#3a2a78' : '#0a6a5a'); } else floorF(x, y, tx, ty); break;
     case 'A': floorA(x, y, tx, ty); break;
     case 'K':
       if (G.roomId === 'arena' || G.roomId === 'liga') floorA(x, y, tx, ty); else floorF(x, y, tx, ty);
@@ -2060,7 +2066,7 @@ function drawHouseTile(c, x, y, tx, ty){
   if (!houseTileOwned(c)) { if (onWall) { R(x + 4, y + 4, 8, 6, 'rgba(0,0,0,.2)'); } return; }
   const O = '#1a0c06';
   switch (c) {
-    case '1': if (S.house.cama) { R(x + 1, y - 4, 14, 20, O); R(x + 2, y - 3, 12, 5, '#f4ecd8'); R(x + 2, y + 2, 12, 12, '#c83a50'); R(x + 2, y + 2, 12, 2, '#e86070'); R(x + 1, y - 5, 14, 3, '#8a5428'); }
+    case '1': if(S.house.cama) { R(x + 1, y - 4, 14, 20, O); R(x + 2, y - 3, 12, 5, '#f4ecd8'); R(x + 2, y + 2, 12, 12, '#c83a50'); R(x + 2, y + 2, 12, 2, '#e86070'); R(x + 1, y - 5, 14, 3, '#8a5428'); }
                else { R(x + 2, y - 1, 12, 16, O); R(x + 3, y, 10, 4, '#d8d0c0'); R(x + 3, y + 4, 10, 10, '#8a7a5a'); } break;
     case '2': R(x + 1, y, 14, 16, O); R(x + 2, y + 1, 12, 15, '#8a8494'); R(x + 4, y + 6, 8, 9, '#1a0a06'); const f = (frame >> 3) % 3; R(x + 5, y + 10 - f, 6, 4 + f, '#f88820'); R(x + 6, y + 11 - f, 4, 3, '#fce040'); R(x + 2, y + 1, 12, 2, '#aaa4b4'); break;
     case '3': R(x + 1, y, 14, 16, O); R(x + 2, y + 1, 12, 14, '#6a3c18'); for (let r = 0; r < 3; r++) { R(x + 2, y + 5 + r * 4, 12, 1, O); for (let b = 0; b < 5; b++) R(x + 3 + b * 2, y + 2 + r * 4, 1, 3, ['#c83a20','#2a5ad0','#2a8a3a','#e8c040','#7a3ab0'][(b + r) % 5]); } break;
@@ -2146,8 +2152,9 @@ function buildCache(){
     txt('ARCADE TOLARIA', 120, 4, '#ff80e0', 'center', '#6a0a5a');
     for (let x = 16; x < 224; x += 4) R(x, 128, 2, 1, (x / 4) % 2 ? '#ff40c0' : '#40f0ff');
   }
-  else if (G.def.interior && G.roomId !== 'arena' && G.roomId !== 'liga') plaque(G.def.name, 120, 3, '#2a180c');
-  if (G.roomId === 'arena' || G.roomId === 'liga') {
+  else if (G.def.interior && G.roomId !== 'arena' && G.roomId !== 'liga' && G.roomId !== 'santuarioPortal'&&!G.def.cardTemple) plaque(G.def.name, 120, 3, '#2a180c');
+  if(G.def.cardTemple){R(6,130,228,10,'#222638');tiny(G.def.name.slice(0,55),120,133,G.def.identity?G.def.identity.color:'#e8d8ff','center');}
+  if (G.roomId === 'arena') {
     plaque(G.def.name, 120, 3, '#1a1a38');
     DECKS.forEach((d, i) => { const bx = 20 + i * 38; R(bx, 16, 12, 18, '#1a1020'); R(bx + 1, 16, 10, 16, d.col); R(bx + 1, 16, 2, 16, 'rgba(255,255,255,.25)'); R(bx + 1, 32, 5, 2, d.col); R(bx + 6, 32, 5, 1, d.col); R(bx + 4, 20, 4, 4, '#fce8b0'); });
   }
@@ -2251,6 +2258,17 @@ function drawProp(p){
   const X = p.x * TS, Y = p.y * TS, wpx = (p.w || 1) * TS, t = frame;
   if(p.waiting){outl(X+wpx/2-4,Y+18,8,6,'#e8c080');tiny('TU ASIENTO',X+wpx/2,Y+27,'#a0ffb0','center');}
   switch (p.k) {
+    case 'portalPillar': {outl(X+2,Y-10,12,26,'#343650');R(X+4,Y-8,8,23,'#74748c');R(X+4,Y-8,2,23,'#aaa8bc');R(X,Y-11,16,4,'#d8c896');R(X,Y+13,16,3,'#d8c896');disc(X+8,Y-15,3,'#b0d8ff');break;}
+    case 'gymSigil':{disc(X+8,Y+8,10,'#24243e');disc(X+8,Y+8,8,p.color);drawPoke(p.pokeId,X,Y,frame,false);break;}
+    case 'homePoster':{outl(X,Y-2,wpx,22,'#584030');R(X+2,Y,wpx-4,17,pokemonRealm()?'#304870':'#302848');ctx.save();ctx.translate(X+wpx/2-8,Y+1);if(pokemonRealm())drawPoke(p.id||24,0,0,frame,false);else{ctx.scale(16/MON[p.mon||'angel'].size,16/MON[p.mon||'angel'].size);drawMon(p.mon||'angel',0,0,0,false,true);}ctx.restore();tiny(pokemonRealm()?'MAESTRO POKEMON':'CAMPEON MAGIC',X+wpx/2,Y+22,'#f0d898','center');break;}
+    case 'homeKitchen':{outl(X,Y,wpx,15,'#784c30');R(X+1,Y+1,wpx-2,4,'#e4d8bc');R(X+2,Y+6,13,8,'#444856');disc(X+6,Y+9,2,'#1c2030');disc(X+12,Y+9,2,'#1c2030');R(X+20,Y+7,10,5,'#b0c8d0');R(X+24,Y+3,2,5,'#e8f0f4');tiny('COCINA',X+wpx/2,Y+18,'#d8e0c8','center');break;}
+    case 'retroStreet':{if(p.style==='phone'){outl(X+3,Y,10,18,'#547498');R(X+4,Y+1,8,4,'#e0d8a0');R(X+5,Y+6,6,5,'#24384a');R(X+6,Y+6,2,4,'#101824');tiny('TEL',X+8,Y+2,'#243040','center');}else{outl(X,Y,16,13,'#ead8a8');tiny('TCG',X+8,Y+2,'#584030','center');R(X+2,Y+9,12,1,'#a87850');}break;}
+    case 'retroShelf':{outl(X,Y,wpx,16,'#805838');for(let i=0;i<4;i++){R(X+3+i*7,Y+2,5,10,['#9c789c','#7898b0','#b89c58','#78a080'][i]);R(X+4+i*7,Y+3,3,2,'#ece0c8');}tiny('VHS · CASETES',X+wpx/2,Y+18,'#d0c098','center');break;}
+    case 'homeComputer':{outl(X,Y+9,32,8,'#7c5030');R(X+3,Y-4,24,16,'#252838');R(X+5,Y-2,20,11,'#163a28');tiny('IA',X+15,Y+1,'#98f0a8','center');R(X+6,Y+7,5+(frame>>4)%8,1,'#70c878');R(X+7,Y+13,18,2,'#c8c8cc');R(X+14,Y+10,3,3,'#565868');break;}
+    case 'urzaBox':{outl(X+1,Y+4,14,10,'#887050');R(X+2,Y+5,12,3,'#d0ac68');R(X+7,Y+8,2,4,S.boxClosed?'#80c8a0':'#c888f0');if(!S.boxClosed)disc(X+8,Y+2,3,'rgba(160,128,255,.5)');break;}
+    case 'realmPortal': drawRealmPortal(X+wpx/2,Y+24);break;
+    case 'realmCrest': drawRealmCrest(X+8,Y+8,p);break;
+    case 'leagueRelic': drawLeagueRelic(X,Y,p);break;
     case 'ligaNeon': {const color='hsl('+((frame*3)%360)+',90%,70%)';outl(X-7,Y+4,30,10,'#181020');R(X-6,Y+5,28,1,color);R(X-6,Y+12,28,1,color);tiny('LIGA',X+8,Y+7,color,'center');R(X+7,Y+18,3,2,color);R(X+6,Y+17,5,1,color);break;}
     case 'tcgNeon': {const color='hsl('+((frame*2)%360)+',90%,70%)',cx=clamp(X+8,27,W-27);outl(cx-26,Y-12,52,9,'#181020');tiny('TIENDA TCG',cx,Y-10,color,'center');break;}
     case 'pista': {for(let y=0;y<(p.h||1)*TS;y+=8)for(let x=0;x<wpx;x+=8){R(X+x,Y+y,7,7,'hsl('+((t*2+x*3+y*5)%360)+',65%,38%)');}tiny('PISTA DE BAILE',X+wpx/2,Y-7,'#ff90e0','center');break;}
@@ -2263,7 +2281,7 @@ function drawProp(p){
     case 'pesca': {ctx.strokeStyle='#b08040';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(X+10,Y+7);ctx.lineTo(X+16,Y+18);ctx.stroke();ctx.strokeStyle='#c8d8e8';ctx.lineWidth=.4;ctx.beginPath();ctx.moveTo(X+16,Y+18);ctx.lineTo(X+10,Y+26);ctx.stroke();disc(X+10,Y+26,1,'#e83040');break;}
     case 'mesaCartas': {const poke=G.def.pokemon;outl(X,Y+2,wpx,12,poke?'#285888':'#704820');R(X+2,Y+3,wpx-4,9,poke?'#78b8d8':'#246840');for(const dx of [8,wpx-15]){outl(X+dx,Y+4,6,7,poke?'#f8f4e8':'#202038');R(X+dx+1,Y+5,4,3,poke?'#e85050':'#b88a40');}if(poke){disc(X+wpx/2,Y+8,4,'#f8f8f8');R(X+wpx/2-4,Y+4,8,4,'#e83040');R(X+wpx/2-4,Y+8,8,1,'#182030');}break;}
     case 'mostrador': {outl(X,Y+3,wpx,13,G.def.pokemon?'#286898':'#784828');R(X,Y+3,wpx,3,'#d4b080');for(let i=4;i<wpx;i+=10){outl(X+i,Y+5,6,8,'#182030');R(X+i+1,Y+6,4,3,G.def.pokemon?'#f05050':'#c0a050');}tiny(p.label || 'AZUL · CARTAS',X+wpx/2,Y+17,'#fcd84a','center');break;}
-    case 'juegosMesa': {outl(X,Y,wpx,24,'#4a2a18');for(let i=0;i<6;i++){const bx=X+3+(i%3)*14,by=Y+2+Math.floor(i/3)*11;outl(bx,by,11,9,['#e09028','#38a0c8','#b03870'][i%3]);tiny(['CAT','CAR','AZU'][i%3],bx+5,by+3,'#fff','center');}tiny('JUEGOS DE MESA',X+wpx/2,Y+26,'#fcd84a','center');break;}
+    case 'juegosMesa': {outl(X,Y,wpx,24,'#4a2a18');for(let i=0;i<6;i++){const bx=X+3+(i%3)*14,by=Y+2+Math.floor(i/3)*11;outl(bx,by,11,9,['#e09028','#38a0c8','#b03870'][i%3]);tiny(['CAT','RIS','DOM'][i%3],bx+5,by+3,'#fff','center');}tiny('JUEGOS DE MESA',X+wpx/2,Y+26,'#fcd84a','center');break;}
     case 'standings': {const rows=templeStandings();outl(X-7,Y-1,44,27,'#f4ead0');tiny('STANDINGS',X+15,Y+1,'#5a3018','center');rows.slice(0,3).forEach((r,i)=>tiny((i+1)+' '+norm(r.name).split(' ')[0].slice(0,6)+' '+r.points,X-4,Y+8+i*6,'#302018'));break;}
     case 'reposera': { const c = p.c || '#e83040'; R(X + 2, Y + 13, 1, 3, '#8a8a90'); R(X + 13, Y + 13, 1, 3, '#8a8a90'); outl(X + 1, Y + 8, 14, 5, c); for (let i = 0; i < 14; i += 4) R(X + 1 + i, Y + 8, 2, 5, '#ffffff'); outl(X + 11, Y + 2, 4, 7, c); R(X + 12, Y + 3, 2, 5, '#ffffff'); break; }
     case 'quitasol': { const c = p.c || '#e83040', cx = X + 8, cy = Y - 2; R(cx - 1, cy, 2, 18, '#e8e0d0'); softShadow(cx + 4, Y + 15, 12, 3, 0.35);
@@ -2649,8 +2667,13 @@ function renderShapes(x, y, sz, flip, shapes){
     }
   }
 }
-function drawMon(type, x, y, t, flip){
-  if(G.preview && S.realm==='pokemon'){const ids=[0,3,6,24,38,59,62,77,88,94,111,123,131,143,149],id=MON[type].boss?149:ids[Object.keys(MON).indexOf(type)%ids.length];ctx.save();ctx.translate(x,y);ctx.scale(MON[type].size/16,MON[type].size/16);drawPoke(id,0,0,t,flip);ctx.restore();return;}
+function pokemonRealm(){return !!S&&S.realm==='pokemon';}
+// One identity supplies both the visible sprite and its name. Magic IDs stay internal.
+const POKEMON_ENEMY_IDS=Object.fromEntries(Object.keys(MON).map((type,i)=>[type,MON[type].boss?149:[0,3,6,24,38,59,62,77,88,94,111,123,131,143,149][i%15]]));
+function pokemonEnemy(type){const m=MON[type],id=POKEMON_ENEMY_IDS[type],species=POKE[id].n,variant=m.size>=24?'GIGANTE':['chase','charge','shooter','archer','bomber'].includes(m.ai)?'FURIOSO':'SALVAJE';return {id,species,variant,name:species+' '+variant};}
+function enemyName(type){return pokemonRealm()?pokemonEnemy(type).name:MON[type].n;}
+function drawMon(type, x, y, t, flip, forceMagic=false){
+  if(pokemonRealm()&&!forceMagic){const {id}=pokemonEnemy(type);ctx.save();ctx.translate(x,y);ctx.scale(MON[type].size/16,MON[type].size/16);drawPoke(id,0,0,t,flip);ctx.restore();return;}
   if(type==='arqueroGoblin'||type==='bombardero'){drawMon('gob',x,y,t,flip);if(type==='arqueroGoblin'){ctx.strokeStyle='#b88848';ctx.lineWidth=1;ctx.beginPath();ctx.arc(x+13,y+8,5,-1.4,1.4);ctx.stroke();R(x+12,y+2,1,12,'#e8d8a0');}else{disc(x+12,y+10,4,'#303038');R(x+12,y+4,1,3,'#f8b040');}return;}
   if(type==='espinero'){R(x+7,y+8,2,8,'#386838');for(const dx of [-4,4]){disc(x+8+dx,y+8,4,'#508838');R(x+8+dx,y+4,1,2,'#b8d878');}disc(x+8,y+5,5,'#b85878');R(x+5,y+4,2,2,'#fcd84a');R(x+10,y+4,2,2,'#fcd84a');return;}
   if(type==='mimic'){outl(x+1,y+4,14,11,'#b08038');R(x+1,y+8,14,3,'#181820');for(let i=0;i<5;i++)R(x+2+i*3,y+8,1,2,'#fff');R(x+4,y+3,2,2,'#e83040');R(x+10,y+3,2,2,'#e83040');return;}
@@ -3016,6 +3039,7 @@ const CCOL = { R:{fr:'#c83a24',bg:'#f0a070'}, B:{fr:'#3a2a48',bg:'#7a6a8a'}, U:{
 const MANA = { R:'#e05030', B:'#2a2030', U:'#3a7ae8', W:'#f8f0d0', G:'#2a9a4a' };
 function drawArt(id, x, y, px){
   const c = CARDS[id];
+  if(pokemonRealm()){const poke=c.mon&&MON[c.mon]?pokemonEnemy(c.mon).id:strHash(String(id))%151;ctx.save();ctx.translate(x,y);ctx.scale(px/16,px/16);drawPoke(poke,0,0,frame,false);ctx.restore();return;}
   if (c.mon) {
     const sz = MON[c.mon].size, s = px / sz;
     ctx.save(); ctx.translate(x, y); ctx.scale(s, s); drawMon(c.mon, 0, 0, 0, false); ctx.restore();
@@ -3033,9 +3057,9 @@ function drawCardSmall(id, x, y, have, count){
 function drawCardBig(id, x, y){
   const c = CARDS[id], k = CCOL[c.c];
   R(x, y, 92, 128, '#111'); R(x + 2, y + 2, 88, 124, k.fr);
-  R(x + 4, y + 4, 84, 11, '#f4ecd8'); tiny(c.n.length > 20 ? c.n.slice(0, 20) : c.n, x + 6, y + 7, '#1a1020');
+  R(x + 4, y + 4, 84, 11, '#f4ecd8'); tiny(realmText(c.n).slice(0,20), x + 6, y + 7, '#1a1020');
   R(x + 5, y + 16, 82, 52, '#1a1020'); R(x + 6, y + 17, 80, 50, k.bg);
-  if (c.mon) { const sz = MON[c.mon].size; const s = sz === 16 ? 3 : sz === 24 ? 2 : sz === 48 ? 1 : 1.5; const w = sz * s; ctx.save(); ctx.translate(x + 46 - w / 2, y + 42 - w / 2); ctx.scale(s, s); drawMon(c.mon, 0, 0, frame, false); ctx.restore(); }
+  if(pokemonRealm())drawArt(id,x+22,y+18,48);else if (c.mon) { const sz = MON[c.mon].size; const s = sz === 16 ? 3 : sz === 24 ? 2 : sz === 48 ? 1 : 1.5; const w = sz * s; ctx.save(); ctx.translate(x + 46 - w / 2, y + 42 - w / 2); ctx.scale(s, s); drawMon(c.mon, 0, 0, frame, false); ctx.restore(); }
   else drawIcon(c.art, x + 22, y + 18, 4);
   R(x + 4, y + 70, 84, 10, '#f4ecd8'); tiny(c.t, x + 6, y + 73, '#1a1020');
   const cost = c.cost.split('');
@@ -3045,20 +3069,196 @@ function drawCardBig(id, x, y){
     else { disc(cx, cy, 3, '#1a1020'); disc(cx, cy, 2, MANA[m]); }
   });
   R(x + 4, y + 82, 84, 32, '#f4ecd8');
-  wrap(norm(c.tx), 20).slice(0, 4).forEach((l, i) => tiny(l, x + 6, y + 85 + i * 7, '#1a1020'));
-  if (c.pt) { R(x + 64, y + 114, 24, 11, '#1a1020'); R(x + 65, y + 115, 22, 9, '#f4ecd8'); tiny(c.pt, x + 76, y + 117, '#1a1020', 'center'); }
+  wrap(norm(pokemonRealm()?'Pokemon liberado de una carta. Tu estrategia puede calmar su furia.':c.tx), 20).slice(0, 4).forEach((l, i) => tiny(l, x + 6, y + 85 + i * 7, '#1a1020'));
+  if (!pokemonRealm()&&c.pt) { R(x + 64, y + 114, 24, 11, '#1a1020'); R(x + 65, y + 115, 22, 9, '#f4ecd8'); tiny(c.pt, x + 76, y + 117, '#1a1020', 'center'); }
   const deck = DECKS.find(d => d.cards.includes(id));
   tiny(c.legend ? 'LEGENDARIA' : deck ? deck.n : '', x + 6, y + 118, c.c === 'W' ? '#6a5a3a' : '#f4ecd8');
 }
 
 /* ============ WORLD ============ */
+// Each temple owns a cast, layout and tactical identity. Save identifiers stay fixed.
+const TEMPLE_IDENTITIES={
+ cartasCurico:{name:'SANTUARIO DE LA VENDIMIA',host:'ELVIRA PARRA',judge:'DON LAUTARO',color:'#c89648',motif:'parra',line:'Soy Elvira, encuadernadora y nieta de viñateros. En este santuario las cartas brotan como la parra: paciencia antes de la cosecha.',challenge:'COSECHA: aprende a frenar un combo antes de que madure.',styles:['combo','ctrl','combo','agro','ctrl','agro'],players:['NICO EL TEMPORERO','ROSA DE LOS QUEÑES','BETO DEL RIO','INES LA ARTESANA','PEDRO ARRIERO','LUZ DE RAUCO'],tables:[[2,4],[9,3],[9,6]],shop:[2,2]},
+ cartasVina:{name:'OBSERVATORIO DE LAS MAREAS',host:'CELESTE BRISA',judge:'DON ANSELMO',color:'#68c8d8',motif:'tablas',line:'¡Pasa, viajero! Soy Celeste, restauradora de cartas y surfista al amanecer. Aqui leemos al rival como quien lee una ola.',challenge:'MAREAS: las respuestas de control cambian el ritmo del duelo.',styles:['ctrl','agro','ctrl','combo','ctrl','agro'],players:['MARA LONGBOARD','SIMON CERRO ARRIBA','PALOMA DEL MUELLE','RENZO ACUARELA','LIA DEL RELOJ','VICENTE SALITRE'],tables:[[2,3],[6,5],[10,3]],shop:[2,6]},
+ cartasSur:{name:'CATEDRAL DE LA LLUVIA',host:'AURELIA DEL ESTERO',judge:'CAPITAN NICANOR',color:'#80b8a8',motif:'fogata',line:'Soy Aurelia, hija de carpinteros de ribera. Deja tu abrigo junto al fuego. Mientras llueva en Puerto Montt, ninguna mesa se queda sin compañero.',challenge:'TEMPORAL: rivales de control, desgaste y un cierre de combo.',styles:['ctrl','ctrl','agro','ctrl','combo','combo'],players:['MILENA DEL ASTILLERO','OSVALDO LANCHERO','LEONOR DEL MERCADO','FELIPE QUELLE','AMALIA DEL CANAL','TOMAS CHILOTE'],tables:[[2,3],[9,3],[2,6]],shop:[9,6]},
+ tienda:{name:'ARCHIVO DE LAS CINCO LUNAS',host:'AMARANTA DEL ASTROLABIO',judge:'MAESE ELIAS',color:'#a898ef',motif:'torre',line:'Soy Amaranta. Colecciono cartas y relatos de quienes cruzan Tolaria. Cinco lunas vigilan el archivo: ninguna estrategia gobierna para siempre.',challenge:'ASTROLABIO: combina lectura del rival y preparacion de combo.',styles:['combo','ctrl','combo','ctrl','agro','combo'],players:['TEO CARTOGRAFO','INES TINTA AZUL','BRUNO RELOJERO','ALMA DEL COMETA','NOE ARCHIVISTA','VERA ASTRONOMA'],tables:[[2,4],[6,4],[10,6]],shop:[9,2]},
+ salaTempest:{name:'FORJA DEL TRUENO',host:'BRUNILDA COBRE',judge:'MAESTRO AMARO',color:'#f09858',motif:'fogata',line:'¡Que ardan las dudas! Soy Brunilda, grabadora de metal. Aqui forjamos cartas bajo tormentas: una jugada lenta puede costarte la ronda.',challenge:'FORJA: presion agresiva; protege tu preparacion de combo.',styles:['agro','agro','combo','agro','ctrl','agro'],players:['SAUL HERRERO','GRETA CENTELLA','MATEO CARBON','OLIVIA DEL YUNQUE','FELIX COBRE','NORA TORMENTA'],tables:[[2,3],[10,3],[6,6]],shop:[6,2]},
+ liga:{name:'SALON DEL ECLIPSE',host:'DOÑA ISADORA',judge:'MAESE BALTASAR',color:'#e8d898',motif:'torre',line:'Soy Isadora, guardiana de los campeones. Cada ciudad te enseño una forma de jugar; el Eclipse exige dominarlas todas. Tras la victoria, el umbral despertara.',challenge:'ECLIPSE: todos los estilos; Galindo custodia la ultima ronda.',styles:['agro','ctrl','combo','ctrl','agro','combo'],players:['ANTONIA DEL ALBA','GASPAR PLATERO','FLORA DEL ECLIPSE','JULIAN DE LOS ANDES','ESTELA NOCTURNA','MARTIN DEL SOL'],tables:[[2,4],[6,3],[10,6]],shop:[2,6]}
+};
+function configureTemples(){
+ for(const [room,p]of Object.entries(TEMPLE_IDENTITIES)){
+  const d=ROOMS[room],org=d.npcs.find(n=>n.id.startsWith('liga'));
+  p.room=room;p.roster=[];d.name=p.name;d.identity=p;d.party=false;NPCDEF[org.id]={...NPCDEF[org.id],n:p.judge};
+  const make=(id,name,i)=>{NPCDEF[id]={...NPCDEF.vecina,n:name,style:['curly','beanie','spiky','bun','cap','curly'][i%6],c:{...NPCDEF.vecina.c,hair:['#643818','#dcaa68','#30202c','#906840','#c8c8d8'][i%5],hat:p.color,hatD:'#302028',shirt:p.color,shirtD:'#384450',skin:i%2?'#e8b088':'#f1c9a0'}};return id;};
+  p.shopId=make('localShop_'+room,p.host,3);p.judgeId=make('localJudge_'+room,p.judge,1);
+  p.players.forEach((name,i)=>{const id=make('localPlayer_'+room+'_'+i,name,i);p.roster.push(id);});
+  d.roster=p.roster;d.npcs=[{id:p.shopId,x:p.shop[0]+1,y:p.shop[1]-1},{id:p.judgeId,x:12,y:7},org,...p.roster.map((id,i)=>({id,x:p.tables[Math.floor(i/2)][0]+(i%2?2:0),y:p.tables[Math.floor(i/2)][1]+(i%2?1:-1),dir:i%2?1:0}))];
+  d.props=[{k:'retroShelf',x:1,y:6,w:2,solid:false},{k:'mostrador',x:p.shop[0],y:p.shop[1],w:3,label:p.host.split(' ')[0],act:'localShop'},
+   {k:'standings',x:7,y:1,w:2,h:2,solid:false,top:true,act:'standings'},
+   {k:'juegosMesa',x:11,y:1,w:2,act:'boardShop'},
+   ...p.tables.map(([x,y],i)=>({k:'mesaCartas',x,y,w:3,act:'playCards',waiting:i===1,opponent:p.roster[i*2]})),
+   {k:'ligaNeon',x:6,y:6,solid:false,top:true},
+   {k:'leagueRelic',x:1,y:1,w:2,solid:false,identity:room},
+   {k:p.motif,x:13,y:6,solid:false},
+   ...[3,9].map(x=>({k:'realmCrest',x,y:0,solid:false,color:p.color}))];
+  // Open chair is physically free; rivals never stand in the entrance corridor.
+  d.npcs=d.npcs.filter(n=>n.id!==p.roster[3]);
+ }
+ const a=ROOMS.anexoTCG,p=TEMPLE_IDENTITIES.cartasSur;
+ a.identity=p;a.name='CATEDRAL DE LA LLUVIA · SALON DE EVENTOS';a.roster=p.roster.slice();
+ a.npcs=a.npcs.map((n,i)=>n.id==='azul'?{...n,id:p.shopId}:n.id==='diegoG'?{...n,id:p.judgeId}:TEMPLE_PLAYERS.includes(n.id)?{...n,id:p.roster[TEMPLE_PLAYERS.indexOf(n.id)]}:n);
+ for(const prop of a.props){if(prop.k==='mostrador')prop.label='AURELIA';if(prop.opponent)prop.opponent=p.roster[0];}
+ ROOMS.cartasPokemon={...ROOMS.tienda,name:'ARCHIVO POKEMON DE LAS CINCO LUNAS',pokemon:true,exitTo:ROOMS.cartasPokemon.exitTo};
+ for(const d of Object.values(ROOMS)){d.props=(d.props||[]).filter(p=>p.k!=='tcgNeon'&&(!d.cardTemple||!['juegosMesa','retroShelf'].includes(p.k)));if(!d.interior&&d.plaques)d.props.push({k:'realmCrest',x:13,y:4,solid:false});}
+ // National temple is the entrance to a sanctuary, in either realm.
+ ROOMS.liga.map[5]='kFFFFFFFFFFFFDk';ROOMS.liga.doors={...(ROOMS.liga.doors||{}),'13,5':'santuarioPortal'};
+ ROOMS.liga.props.push({k:'cartel',x:12,y:5,solid:false,label:'UMBRAL',txt:'EL SANTUARIO DEL UMBRAL: SE ABRE AL CAMPEON DE LA LIGA NACIONAL.'});
+ ROOMS.santuarioPortal={name:'SANTUARIO DEL UMBRAL',zone:'tolaria',theme:'inside',music:'tcg',interior:true,exitTo:{room:'liga',tx:12,ty:5},map:['kkkkkkkkkkkkkkk',...Array(7).fill('kFFFFFFFFFFFFFk'),'kkkkkkkEkkkkkkk','kkkkkkkkkkkkkkk'],npcs:[],props:[{k:'urzaBox',x:3,y:7,solid:false,act:'urzaBox'},{k:'realmPortal',x:5,y:2,w:5,h:4,solid:false,act:'realmPortal'},...[2,12].flatMap(x=>[2,5].map(y=>({k:'portalPillar',x,y,solid:false}))),{k:'realmCrest',x:2,y:7,solid:false},{k:'realmCrest',x:12,y:7,solid:false}],signs:{'7,7':'EL UMBRAL UNE DOS REFLEJOS DEL MISMO MUNDO. EL PODER DE LAS CARTAS ABRE EL CAMINO.'}};
+}
+configureTemples();
+NPCDEF.urzaEcho={...NPCDEF.viejo,n:'URZA · ECO DEL ARTIFICE',c:{...NPCDEF.viejo.c,hair:'#e8e0c8',shirt:'#446888',shirtD:'#283858',emblem:'#e8c878'}};NPCDEF.alerceEcho={...NPCDEF.profesor,n:'PROFESOR ALERCE · ECO DEL REFLEJO'};ROOMS.santuarioPortal.npcs.push({id:'urzaEcho',x:12,y:7});
+for(const id of ['pueblo','valpo','vina','talca','pmontt','puertoVaras','frutillar','tolaria','tempest','mercado'])ROOMS[id].props.push({k:'retroStreet',x:1,y:8,solid:false,style:'phone'},{k:'retroStreet',x:13,y:1,solid:false,style:'magazine'});
+ROOMS.hogar.props=[{k:'retroShelf',x:11,y:6,w:2,solid:false},...(ROOMS.hogar.props||[]),{k:'homeKitchen',x:10,y:2,w:3,act:'homeCook'},{k:'homeComputer',x:5,y:2,w:2,act:'homeAI'},{k:'mesaComida',x:6,y:6,w:3,act:'homeCook'},...[{x:2,id:24,mon:'angel'},{x:6,id:5,mon:'shivan'},{x:10,id:149,mon:'dread'}].map(p=>({k:'homePoster',...p,y:0,w:2,solid:false}))];
+const MAGIC_COMPANIONS={
+ angel:{n:'Serra Angel',shape:'w',tier:3,type:'normal'},shivan:{n:'Shivan Dragon',shape:'w',tier:3,type:'fire'},dread:{n:'Phyrexian Dreadnought',shape:'q',tier:3,type:'normal'},masticore:{n:'Masticore',shape:'q',tier:3,type:'normal'},juggernaut:{n:'Juggernaut',shape:'q',tier:3,type:'normal'},birds:{n:'Birds of Paradise',shape:'w',tier:3,type:'grass'},metalworker:{n:'Metalworker',shape:'q',tier:3,type:'normal'},hermit:{n:'Deranged Hermit',shape:'q',tier:3,type:'grass'},monger:{n:'Spiritmonger',shape:'q',tier:3,type:'ghost'}
+};
+function companionInfo(){return pokemonRealm()?MAGIC_COMPANIONS[S.magicPet||'shivan']:(S&&POKE[S.pet]||null);}
+function drawCompanion(x,y,t,flip){if(!pokemonRealm()){drawPoke(S.pet,x,y,t,flip);return;}const type=S.magicPet||'shivan';ctx.save();ctx.translate(x,y);ctx.scale(16/MON[type].size,16/MON[type].size);drawMon(type,0,0,t,flip,true);ctx.restore();}
+function chooseMagicPet(page=0){const entries=Object.entries(MAGIC_COMPANIONS);const choices=entries.slice(page*3,page*3+3).map(([id,p])=>({t:p.n,fn:()=>{S.magicPet=id;G.pet={x:PL.x-14,y:PL.y,t:0,cd:40};saveGame();toast('COMPAÑERO: '+p.n,'#b8e8ff');}}));if(page*3+3<entries.length)choices.push({t:'MAS CRIATURAS',fn:()=>chooseMagicPet(page+1)});if(page>0)choices.push({t:'ANTERIORES',fn:()=>chooseMagicPet(page-1)});choices.push({t:'VOLVER',fn:null});say(['Elige una criatura antigua de Magic. Su nivel crece junto al tuyo.'],choices);G.dialog.magicCompanions=true;}
+
+NPCDEF.cerveceraLago={...NPCDEF.vecina,n:'HILDEGARD DEL LAGO',style:'bun',c:{...NPCDEF.vecina.c,hair:'#b87838',shirt:'#508868',shirtD:'#305840',pants:'#304038'}};
+NPCDEF.ottoCata={...NPCDEF.sureno,n:'DON OTTO CATADOR',style:'beanie',c:{...NPCDEF.sureno.c,hat:'#486848',hatD:'#284838',shirt:'#c89858'}};
+NPCDEF.luchoBarril={...NPCDEF.marinero,n:'LUCHO DEL BARRIL',style:'curly',c:{...NPCDEF.marinero.c,shirt:'#986858',hair:'#503028'}};
+ROOMS.cafeVaras.map[5]='kFFFFFFFFFFFFDk';ROOMS.cafeVaras.doors={'13,5':'oktoberfest'};ROOMS.cafeVaras.props.push({k:'cartel',x:12,y:5,label:'OKTOBERFEST',txt:'EL PATIO CERVECERO DEL LAGO ESTA AL OTRO LADO.',solid:false});ROOMS.puertoVaras.signs['3,5']+=' OKTOBERFEST DEL LAGO: ENTRA AL CAFE Y SIGUE AL PATIO CERVECERO.';
+ROOMS.oktoberfest={name:'OKTOBERFEST DEL LAGO',zone:'puertoVaras',theme:'inside',music:'tavern',interior:true,party:true,exitTo:{room:'cafeVaras',tx:12,ty:5},map:['kkkkkkkkkkkkkkk',...Array(7).fill('kFFFFFFFFFFFFFk'),'kkkkkkkEkkkkkkk','kkkkkkkkkkkkkkk'],npcs:[{id:'cerveceraLago',x:4,y:1},{id:'ottoCata',x:11,y:5},{id:'luchoBarril',x:3,y:6}],props:[{k:'mostrador',x:2,y:2,w:5,label:'HILDEGARD · CERVEZA',act:'festBeer'},{k:'cartel',x:10,y:0,label:'PROST!',txt:'OKTOBERFEST: BRINDIS, BARRILES Y CARTAS JUNTO AL LAGO.',solid:false},...[2,6,10].map(x=>({k:'barril',x,y:3,solid:false})),{k:'mesaCartas',x:2,y:5,w:3,act:'festCards'},{k:'mesaComida',x:7,y:5,w:3,act:'festBeer'},{k:'fogata',x:13,y:6,solid:false},{k:'retroShelf',x:1,y:7,w:2,solid:false}]};
+
+
+function festivalBeer(){say(['HILDEGARD: ¡Bienvenido a la Oktoberfest del lago! Una jarra y un pretzel por $3.000. Nuestra IA intento inventar una IPA: resulto un Instantaneo Pale Ale.'],[{t:'JARRA Y PRETZEL',fn:()=>{if(S.coins<3000){say(['Te faltan monedas para el menu. Puedes disfrutar de la fiesta y conversar igual.']);return;}S.coins-=3000;S.hp=S.maxHp;S.mp=maxMp();S.beerTotal=(S.beerTotal||0)+1;SFX.beer();saveGame();say(['¡PROST! El brindis recupera vida y magia. Don Otto te espera para el desafio de cata; Lucho para jugar cartas.']);}},{t:'DESAFIO DE CATA',fn:festivalTasting},{t:'VOLVER',fn:null}]);}
+function festivalTasting(){if((S.festivalNextAt||0)>Date.now()){say(['DON OTTO: Tu diploma de catador sigue fresco. Conversa, juega cartas y vuelve en unos minutos para otro desafio.']);return;}const rounds=[{q:'El jardinero trae el ingrediente que da amargor y aroma. ¿Cual eliges?',a:['LUPULO','ARROZ CON LECHE','UN MOX DIAMOND','CABLE DE MODEM'],correct:0},{q:'La receta empieza con cereal preparado. ¿Que saco abres?',a:['AZUCAR DEL ARCADE','MALTA','FUNDAS DE CARTAS','DISQUETES'],correct:1},{q:'El ultimo ingrediente hace fermentar la mezcla. ¿A quien llamas?',a:['AL JUEZ','A LA IA','LEVADURA','A UN GOBLIN'],correct:2}];let i=0,score=0;const ask=()=>{const r=rounds[i];say(['DON OTTO: '+r.q],r.a.map((t,j)=>({t,fn:()=>{if(j===r.correct)score++;if(++i<rounds.length){ask();return;}S.festivalNextAt=Date.now()+180000;const xp=score===3?200:50;addXP(xp);S.festivalMedals=(S.festivalMedals||0)+(score===3?1:0);saveGame();say([score===3?'¡CATADOR DEL LAGO! Acertaste las tres. Tu diploma dice: este heroe domina cartas y barriles.':'DON OTTO: '+score+'/3. Buena practica: el paladar tambien aprende.', '+'+xp+' EXP. ¡Prost!']);}})));};ask();}
+
+function homeOracle(){const next=Object.keys(LEAGUES).find(k=>!S.leagues[k]);say(['ORACULO IA: ¡Buenos dias, '+CH().n+'! Tu sueño de ser campeon sigue vivo. Hoy eres '+reputationTitle()+'.'],[{t:'MI PROXIMO RETO',fn:()=>say([next?'Tu siguiente liga pendiente es '+LEAGUES[next].place+'. Revisa LIGAS en el menu para ver su horario.':'Ya ganaste las cinco ligas. Busca al campeon nacional en Tolaria.',pokemonRealm()?'Visita cuatro mesas: tres retadores y el lider. Los signos ! muestran el siguiente rival.':'Completa una baraja y practica antes de inscribirte.'])},{t:'CONSEJO DE CARTAS',fn:()=>say(['Presion vence al combo; combo supera al control; control frena la presion. Observar permite leer al rival.','Ganar cartas y ligas te da mucha experiencia. La estrategia importa incluso a nivel alto.'])},{t:'MI GRAN SUEÑO',fn:()=>say(['Quiero armar la mejor baraja, dominar a las criaturas liberadas y salvar ambos mundos.','Mis trofeos, mis cartas y las personas que conozco contaran esta aventura.'])},{t:'VOLVER',fn:null}]);}
+
+let REALM_WORDS=null,REALM_PATTERN=null,REALM_LOOKUP=null;
+function realmText(value){
+ const text=String(value);if(!pokemonRealm()||text.startsWith('COMPAÑERO:')||(G.dialog&&G.dialog.magicCompanions))return text;
+ if(!REALM_WORDS){const words=new Map([['Magic the Gathering','Pokemon TCG'],['Premodern','Pokemon'],['PREMODERN','POKEMON'],['Magic','Pokemon'],['MAGIC','POKEMON'],['Caja de Urza','sello de la Entidad'],['Urza','Alerce'],['MOX','CRISTAL'],['goblins','Pokemon salvajes'],['Phyrexian','Sombrio']]);
+  for(const [id,m]of Object.entries(MON))words.set(m.n,pokemonEnemy(id).name);
+  for(const [id,c]of Object.entries(CARDS))if(c.n)words.set(c.n,c.mon&&MON[c.mon]?pokemonEnemy(c.mon).species+' · '+(c.type||'Carta'):POKE[strHash(String(id))%151].n+' · '+(c.type||'Carta'));
+  REALM_WORDS=[...words].sort((a,b)=>b[0].length-a[0].length);REALM_LOOKUP=new Map(REALM_WORDS.map(([a,b])=>[a.toLowerCase(),b]));REALM_PATTERN=new RegExp(REALM_WORDS.map(([a])=>a.replace(/[.*+?^${}()|[\]\\]/g,'\\  REALM_WORDS=[...words].sort((a,b)=>b[0].length-a[0].length);}')).join('|'),'gi');}
+ return text.replace(REALM_PATTERN,match=>REALM_LOOKUP.get(match.toLowerCase()));
+}
+const POKEMON_GYMS={
+ cartasCurico:{key:'curico',leader:'ERIKA',type:'PLANTA',style:'combo',color:'#78c878',pokemon:2,names:['AMANDA DEL HUERTO','RAMIRO SEMILLAS','VERONICA PARRA'],challenge:'JARDIN: prepara tu combo, pero una ofensiva rapida puede marchitarlo.',boast:'Mi jardin florece con cada carta. ¡No me venceras con una baraja improvisada!'},
+ cartasVina:{key:'vina',leader:'MISTY',type:'AGUA',style:'ctrl',color:'#68b8ed',pokemon:8,names:['CAMILA DEL MUELLE','BENJAMIN BUZO','ROCIO CORRIENTE'],challenge:'MAREA: guarda respuestas y anticipa el siguiente ataque.',boast:'¡Soy la lider de las mareas! Mi control arrastrara tu mejor jugada.'},
+ cartasSur:{key:'pmontt',leader:'LORELEI',type:'HIELO',style:'ctrl',color:'#a0dce8',pokemon:130,names:['ELENA DEL CANAL','NICOLAS ESCARCHA','MARGARITA AUSTRAL'],challenge:'ESCARCHA: supera el control sin quedarte sin recursos.',boast:'El sur me enseño a resistir. ¡Tu baraja se congelara antes de vencerme!'},
+ tienda:{key:'urza',leader:'SABRINA',type:'PSIQUICO',style:'combo',color:'#d898e8',pokemon:64,names:['DARIO ASTROLABIO','LUCIA DEL ORACULO','SEBASTIAN COMETA'],challenge:'ORACULO: lee las señales; interrumpe el combo antes del desenlace.',boast:'Ya vi tu proxima jugada. ¡Prueba que puedes cambiar el destino!'},
+ salaTempest:{key:'tempest',leader:'BLAINE',type:'FUEGO',style:'agro',color:'#f09858',pokemon:5,names:['SOFIA BRASA','GABRIEL DEL HORNO','RENATA CENIZA'],challenge:'BRASA: controla la presion; un combo expuesto arde rapido.',boast:'¡Mi mazo es una hoguera! Veremos si tus respuestas soportan el calor.'},
+ liga:{key:'nacional',leader:'FERNANDO CIFUENTES',type:'MAESTROS',style:'ctrl',color:'#e8d898',pokemon:149,names:['ANTONIA ESTELAR','MIGUEL DEL ALBA','VALENTINA ECLIPSE'],challenge:'MAESTROS: tres estilos distintos antes del campeon Fernando.',boast:'Llegaste muy lejos. Ahora demuestra que tu lectura de cartas merece el titulo mundial.'}
+};
+function applyPokemonGym(d){
+ const room=d.identity.room,spec=POKEMON_GYMS[room];if(!spec)return;
+ const ids=[0,1,2,3].map(i=>'gym_'+spec.key+'_'+i),names=[...spec.names,spec.leader];
+ ids.forEach((id,i)=>{if(!NPCDEF[id])NPCDEF[id]={...NPCDEF[i===3&&spec.key==='nacional'?'fernando':d.identity.roster[i]],n:names[i],c:{...NPCDEF[d.identity.roster[i]].c,shirt:spec.color,shirtD:'#3a4058',hat:spec.color}};});
+ d.gym={spec,ids,key:spec.key};d.name='GIMNASIO '+spec.type+' · '+d.identity.name;d.roster=ids;
+ d.npcs=d.npcs.filter(n=>!d.identity.roster.includes(n.id)&&!n.id.startsWith('liga'));
+ d.npcs.push(...ids.map((id,i)=>({id,x:i===3?6:d.identity.tables[i][0],y:i===3?7:d.identity.tables[i][1]-1,dir:0})));
+ d.props=d.props.map(p=>p.k==='mesaCartas'?{...p,waiting:true,opponent:ids[d.identity.tables.findIndex(([x,y])=>p.x===x&&p.y===y)]||ids[0]}:p.k==='leagueRelic'?{...p,color:spec.color,pokeId:spec.pokemon}:p);
+ d.props.push({k:'gymSigil',x:2,y:0,solid:false,pokeId:spec.pokemon,color:spec.color},{k:'gymSigil',x:12,y:0,solid:false,pokeId:spec.pokemon,color:spec.color});
+}
+function gymRun(key=G.def.gym&&G.def.gym.key){S.gymRuns=S.gymRuns||{};return S.gymRuns[key]=S.gymRuns[key]||{next:0,won:false};}
+function nextGymTrainer(){if(!G.def.gym)return null;const run=gymRun();return G.npcs.find(n=>n.id===G.def.gym.ids[Math.min(run.next,3)]);}
+function reputationCount(){return leaguesDone()+((S.ligaWins||0)>0?1:0);}
+function reputationTitle(){const n=reputationCount();return n>=6?'LEYENDA DE LAS CARTAS':n>=4?'MAESTRO DE LIGAS':n>=2?'RETADOR RECONOCIDO':n>=1?'CAMPEON LOCAL':'PROMESA DE LAS CARTAS';}
+function reputationGreeting(id){const p=NPCDEF[id];return (p?p.n:'VECINO')+': ¡'+CH().n+'! Te reconoceria en cualquier parte: '+reputationTitle()+'. Has ganado '+reputationCount()+' ligas. '+(reputationCount()>=4?'¡Los niños ya intercambian cartas hablando de tus victorias!':'Dicen que tu ultima victoria hizo vibrar toda la tienda.');}
+function pokemonGymTalk(id,npc){
+ const gym=G.def.gym;if(!gym||!gym.ids.includes(id))return false;
+ const i=gym.ids.indexOf(id),run=gymRun(),name=NPCDEF[id].n;
+ if(run.won){say([name+': '+CH().n+', '+reputationTitle()+'. Ganaste nuestra medalla. El gimnasio recuerda tu victoria.'],[{t:'REPETIR RECORRIDO',fn:()=>{S.gymRuns[gym.key]={next:0,won:false};saveGame();say(['Comienza otra vez por '+NPCDEF[gym.ids[0]].n+'.']);}},{t:'VOLVER',fn:null}]);return true;}
+ if(i!==run.next){say([name+': '+(i<run.next?'Ya me venciste. ¡Sigue adelante!':i===3?gym.spec.boast:'Primero vence a los retadores anteriores.'),'Siguiente rival: '+NPCDEF[gym.ids[run.next]].n+'. Tres retadores y despues el lider. Tu avance se guarda entre partidas.']);return true;}
+ const phase=LEAGUE_PHASE[gym.key];if(dayPhase()!==phase){say([name+': Los retos abren '+DAY_LABELS[phase]+'. Ahora es '+DAY_LABELS[dayPhase()]+'. Puedes comprar cartas y explorar mientras esperas.']);return true;}
+ if(gym.key==='nacional'&&leaguesDone()<5){say(['FERNANDO: Conquista las cinco medallas regionales. Entonces aceptare tu desafio.']);return true;}
+ say([name+': '+(i===3?gym.spec.boast:'¡Te vi entrar! Soy el retador '+(i+1)+'. No pasaras esta mesa sin una buena estrategia.'),gym.spec.challenge],[{t:'DESAFIAR CON CARTAS',fn:()=>beginPokemonGymMatch(i)},{t:'PREPARARME',fn:null}]);return true;
+}
+function beginPokemonGymMatch(i){
+ const gym=G.def.gym,run=gymRun();if(i!==run.next||run.won)return;
+ const id=gym.ids[i],style=i===3?gym.spec.style:['agro','ctrl','combo'][i],deck={agro:'goblins',ctrl:'landstill',combo:'replenish'}[style],opp={name:NPCDEF[id].n,look:NPCDEF[id],deck,bonus:i===3?4:i,gym:{key:gym.key,index:i,npc:id}};
+ const done=DECKS.filter(d=>deckDone(d.id));if(!done.length){say(['Te prestamos una baraja para el reto. Armar una propia eliminara la desventaja.'],[{t:'USAR BARAJA PRESTADA',fn:()=>beginDuel(opp,{id:'goblins',borrowed:true},0)},{t:'VOLVER',fn:null}]);return;}
+ say(['Elige tu baraja. Este reto de gimnasio no necesita apuesta.'],deckChoices(done,d=>beginDuel(opp,{id:d.id},0)).concat([{t:'VOLVER',fn:null}]));
+}
+function finishPokemonGymMatch(challenge,won){
+ const run=gymRun(challenge.key);if(!won){say(['No ganaste esta mesa. Tu recorrido conserva las victorias anteriores: puedes volver a intentarlo.']);return;}
+ if(run.next!==challenge.index||run.won)return;
+ run.next++;addXP(350+challenge.index*150);
+ if(run.next===4){run.won=true;if(challenge.key==='nacional')S.ligaWins=(S.ligaWins||0)+1;else S.leagues[challenge.key]=true;S.coins+=levelCoins(challenge.key==='nacional'?80000:30000);S.trophies=(S.trophies||0)+1;addXP(tournamentXP(4,true));if(leaguesDone()>=4)S.finder=true;say([NPCDEF[challenge.npc].n+': ¡Me venciste! Has ganado la medalla de cartas.','Tu nombre crece: '+reputationTitle()+'. La gente de las ciudades recordara tus victorias.']);}
+ else say([NPCDEF[challenge.npc].n+': Buena partida. ¡Puedes avanzar a la siguiente mesa!','Retadores vencidos: '+run.next+'/4. Busca el signo ! del siguiente rival.']);
+ saveGame();
+}
+function updateTrainerSight(){const n=nextGymTrainer();if(!n||gymRun().won||G.dialog||G.menu||G.shop)return;if(Math.hypot(n.x-PL.x,n.y-PL.y)<60){n.gymSeen=true;const dx=PL.x-n.x,dy=PL.y-n.y;n.dir=Math.abs(dx)>Math.abs(dy)?dx>0?3:2:dy>0?0:1;}}
+function drawTrainerMarkers(){const n=nextGymTrainer();if(!n||gymRun().won)return;if(n.gymSeen||Math.hypot(n.x-PL.x,n.y-PL.y)<60){outl(n.x-1,n.y-25,12,12,'#f8df70');tiny('!',n.x+5,n.y-22,'#2a2030','center');}}
+
+function realmDefinition(id,base){
+ if(!pokemonRealm())return base;
+ const d={...base,pokemon:true,name:'REFLEJO · '+realmText(base.name),roof:()=> 'blue',props:(base.props||[]).map(p=>({...p,pokemon:true})),npcs:(base.npcs||[]).map(n=>({...n})),signs:Object.fromEntries(Object.entries(base.signs||{}).map(([k,v])=>[k,realmText(v)])),plaques:(base.plaques||[]).map(p=>[realmText(p[0]),...p.slice(1)])};
+ d.props.push(...[2,12].map(x=>({k:'realmCrest',x,y:0,solid:false,pokemon:true})));
+ if(id==='santuarioPortal')d.npcs=d.npcs.map(n=>n.id==='urzaEcho'?{...n,id:'alerceEcho'}:n);
+ if(id==='tienda'){d.npcs.push({id:'fernando',x:1,y:7});}
+ if(d.cardTemple&&d.identity)applyPokemonGym(d);
+ return d;
+}
+function localTempleTalk(id,npc,skipQuest){
+ const p=G.def.identity;if(!p)return false;
+ if(!skipQuest&&(id===p.shopId||id===p.judgeId)&&questHook(id,npc))return true;
+ if(id===p.shopId){say([p.host+': '+(pokemonRealm()?'Este gimnasio guarda cartas Pokemon rescatadas de la Entidad. Cada rival protege una mesa: vence a los tres y luego al lider.':p.line+' Las ligas te enseñaran a dominar los mazos: asi devolveremos las criaturas a las cartas y cerraremos la Caja de Urza.'),pokemonRealm()?G.def.gym.spec.challenge:p.challenge], [{t:pokemonRealm()?'CARTAS POKEMON':'COMPRAR CARTAS',fn:()=>openShop('liga',G.def.name)},{t:'SOBRES ($600.000)',fn:()=>sellPacks(p.host,'¡Un sobre para tu aventura!')},{t:'CONOCER LA LIGA',fn:()=>G.def.gym?pokemonGymTalk(G.def.gym.ids[3],G.npcs.find(n=>n.id===G.def.gym.ids[3])):talkTo((G.npcs.find(n=>LEAGUE_BY_NPC[n.id]||n.id==='ligaOrg')||{}).id)},{t:'VOLVER',fn:null}]);return true;}
+ if(id===p.judgeId){say([p.judge+': '+(G.def.gym?G.def.gym.spec.challenge:p.challenge),'Tres decisiones por ronda: presion, respuesta, combo o lectura del rival. El mazo influye, pero cada jugada importa.']);return true;}
+ if(p.roster.includes(id)){say([NPCDEF[id].n+': '+['Trabajo al amanecer y juego al caer el sol. Esta mesa guarda mis mejores historias.','Cada viaje trae una carta nueva. Hoy me falta alguien frente a la mesa.','Los rumores del umbral me trajeron aqui. Antes del viaje, una partida.'][p.roster.indexOf(id)%3],p.challenge],[{t:'JUGAR UNA PARTIDA',fn:()=>setupDuel({...npc,id})},{t:'VOLVER',fn:null}]);return true;}
+ return false;
+}
+function localPlayerDeck(id){for(const p of Object.values(TEMPLE_IDENTITIES)){const i=p.roster.indexOf(id);if(i>=0)return {agro:'goblins',ctrl:'landstill',combo:'replenish'}[p.styles[i]];}return null;}
+function lootNotice(s,col){const prev=G.toasts.find(t=>t.loot&&t.s===s);if(prev){prev.t=0;return;}toast(s,col);G.toasts[G.toasts.length-1].loot=true;}
+function drawRealmCrest(x,y,p){
+ disc(x,y,7,'#16162c');if(p.pokemon||pokemonRealm()){disc(x,y,6,'#f4e8d8');R(x-5,y-5,11,5,'#e85858');R(x-6,y,13,1,'#28243a');disc(x,y,2,'#28243a');disc(x,y,1,'#fff');}
+ else{const colors=['#e8ddaa','#6098d8','#907898','#df7860','#80b878'];for(let i=0;i<5;i++)disc(x+Math.cos(i*1.256-1.57)*4,y+Math.sin(i*1.256-1.57)*4,2,colors[i]);disc(x,y,1,'#fff');}
+}
+function drawLeagueRelic(x,y,p){const a=TEMPLE_IDENTITIES[p.identity];outl(x,y,30,24,'#202238');R(x+2,y+2,26,20,a.color);const sym={cartasCurico:'VID',cartasVina:'MAR',cartasSur:'SUR',tienda:'LUNA',salaTempest:'FORJA',liga:'SOL'}[p.identity];tiny(sym,x+15,y+4,'#202238','center');drawRealmCrest(x+15,y+16,p);}
+function drawRealmPortal(cx,cy){
+ const pulse=1+Math.sin(frame*.045)*.08;ctx.save();
+ const glow=ctx.createRadialGradient(cx,cy,5,cx,cy,68);glow.addColorStop(0,'rgba(142,104,255,.65)');glow.addColorStop(1,'rgba(40,64,150,0)');ctx.fillStyle=glow;ctx.fillRect(cx-72,cy-66,144,130);
+ for(let i=4;i>=0;i--){ctx.fillStyle=i%2?'#5a587e':'#32384e';ctx.beginPath();ctx.ellipse(cx,cy+39+i*3,43+i*5,7,0,0,Math.PI*2);ctx.fill();}
+ ctx.strokeStyle='#e8d8a0';ctx.lineWidth=6;ctx.beginPath();ctx.ellipse(cx,cy,32,44,0,0,Math.PI*2);ctx.stroke();ctx.strokeStyle='#665590';ctx.lineWidth=2;ctx.stroke();
+ ctx.fillStyle='#0b102a';ctx.beginPath();ctx.ellipse(cx,cy,28,40,0,0,Math.PI*2);ctx.fill();ctx.save();ctx.clip();
+ for(let i=0;i<100;i++){const a=i*2.399+frame*.008,r=(i*7%42)*pulse;R(cx+Math.cos(a)*r,cy+Math.sin(a)*r*1.4,i%7?1:2,1,['#b898ff','#8cdcff','#fff8da'][i%3]);}
+ ctx.strokeStyle='#9678db';ctx.lineWidth=1;for(let i=0;i<3;i++){ctx.beginPath();ctx.ellipse(cx,cy,8+i*8,10+i*10,frame*.008+i,0,Math.PI*2);ctx.stroke();}ctx.restore();
+ for(let i=0;i<12;i++){const a=i*Math.PI/6,xx=cx+Math.cos(a)*33,yy=cy+Math.sin(a)*45;disc(xx,yy,2,['#e8d8a0','#88c8e8','#c888e8'][i%3]);}
+ for(const dx of [-40,40]){R(cx+dx-3,cy+9,6,33,'#555470');R(cx+dx-4,cy+9,8,3,'#e0cf98');disc(cx+dx,cy+6+Math.sin(frame*.07)*2,4,'#acdcff');}
+ tiny('UMBRAL DE LOS DOS MUNDOS',cx,cy-55,'#e8d8ff','center');tiny(pokemonRealm()?'REGRESAR A MAGIC':'UN UNIVERSO TE ESPERA',cx,cy+58,'#b8d8ff','center');ctx.restore();
+}
+function portalUnlocked(){return pokemonRealm()||G.preview||S.ligaWins>0;}
+function portalTalk(){if(!portalUnlocked()){say(['EL UMBRAL DUERME. Conquista las cinco ligas, derrota a los guardianes y gana la Liga Nacional. Solo el campeon puede cruzar.']);return;}say(['El umbral responde a tus cartas. Al otro lado estan las mismas ciudades, transformadas por una entidad que libero Pokemon salvajes.','Tu compañero sera una criatura antigua de Magic. Tu avance en este mundo te espera al regresar.'],[{t:'SELLAR LA CAJA',fn:closeUrzaBox},{t:pokemonRealm()?'REGRESAR A MAGIC':'CRUZAR EL UMBRAL',fn:startRealmTravel},{t:'ELEGIR COMPAÑERO MAGIC',fn:chooseMagicPet},{t:'TODAVIA NO',fn:null}]);}
+const REALM_PROGRESS=['cards','complete','bosses','leagues','quests','kills','killsTotal','ligaWins','trophies','finder','hiddenFound','tableResults','chests','keys','found','foundZones','killedAt','leagueVisits','gymRuns','boxClosed','storyHeard'];
+function switchRealm(target){
+ const source=S.realm||'magic';S.realmProgress=S.realmProgress||{};
+ S.realmProgress[source]=Object.fromEntries(REALM_PROGRESS.map(k=>[k,structuredClone(S[k]??(k==='killsTotal'||k==='ligaWins'||k==='trophies'?0:k==='finder'||k==='boxClosed'?false:{}))]));
+ const next=S.realmProgress[target]||newSave(S.ch,S.customChar);for(const k of REALM_PROGRESS)S[k]=structuredClone(next[k]??(k==='killsTotal'||k==='ligaWins'||k==='trophies'?0:k==='finder'||k==='boxClosed'?false:{}));
+ S.realm=target;if(target==='pokemon')S.magicPet=S.magicPet||'shivan';saveGame();
+}
+function sealReady(){return DECKS.every(d=>deckDone(d.id))&&guardiansDone()>=5&&leaguesDone()>=5&&(S.ligaWins||0)>0;}
+function closeUrzaBox(){if(pokemonRealm()){say(['Este es el reflejo de la maldicion. Primero regresa al mundo de Magic para sellar la Caja de Urza.']);return;}if(S.boxClosed){say(['La Caja de Urza esta sellada. Las criaturas regresaron a sus cartas y las ciudades recuperaron la paz.']);return;}if(!sealReady()){say(['El hechizo de cierre exige entender cada forma de magia. Domina los '+DECKS.length+' mazos, vence a los cinco guardianes y conquista las cinco ligas y la Nacional.','Mazos completos: '+DECKS.filter(d=>deckDone(d.id)).length+'/'+DECKS.length+'. El dominio de las cartas puede devolver las criaturas a su origen.']);return;}S.boxClosed=true;G.enemies=[];G.eshots=[];G.aoes=[];saveGame();say(['Tu baraja responde al sello. Cada criatura se transforma en luz y regresa a su carta. La Caja de Urza se cierra.','Las ciudades vuelven a respirar. Tu sueño de ser campeon salvo al mundo. ¡Ahora podemos brindar en paz!'],null,()=>{G.state='ending';G.t=0;playMusic('tcg');});}
+function startRealmTravel(){G.dialog=null;G.realmTravel={t:0,target:pokemonRealm()?'magic':'pokemon'};G.state='realmTravel';playMusic('tcg');seq([196,294,392,587,784,1174],.22,'triangle',.2);}
+function updateRealmTravel(){const v=G.realmTravel;if(++v.t>=420){switchRealm(v.target);G.realmTravel=null;G.state='world';loadRoom('santuarioPortal',115,116);toast(pokemonRealm()?'EL REFLEJO POKEMON: LA ENTIDAD DESPERTO':'HAS REGRESADO AL MUNDO DE MAGIC','#d0b8ff');}}
+function drawRealmTravel(){
+ const t=G.realmTravel.t,cx=120+Math.sin(t*.013)*10,cy=76+Math.cos(t*.009)*7;
+ R(0,0,W,H,'#050819');const neb=ctx.createRadialGradient(cx,cy,2,cx,cy,150);neb.addColorStop(0,'#545299');neb.addColorStop(.3,'#272952');neb.addColorStop(.7,'#152340');neb.addColorStop(1,'#050819');ctx.fillStyle=neb;ctx.fillRect(0,0,W,H);
+ for(let g=0;g<3;g++){const gx=30+g*88+Math.sin(t*.006+g)*10,gy=35+(g%2)*65;ctx.save();ctx.translate(gx,gy);ctx.rotate(-.6+g*.5+t*.003);ctx.scale(1,.35);for(let i=0;i<70;i++){const a=i*.38+t*.005,r=i*.42;disc(Math.cos(a)*r,Math.sin(a)*r,i%8?1:2,['#8c70b8','#88c8dc','#e0b8df'][g]);}disc(0,0,4,'#fff0d8');ctx.restore();}
+ for(let i=0;i<150;i++){const a=i*2.399,depth=((i*43+t*2.4)%310)/310,r=4+depth*170,x=cx+Math.cos(a)*r,y=cy+Math.sin(a)*r*.7;ctx.strokeStyle=i%3?'rgba(190,220,255,.7)':'rgba(208,168,255,.8)';ctx.lineWidth=i%9? .6:1.4;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(cx+Math.cos(a)*(r+depth*28),cy+Math.sin(a)*(r+depth*28)*.7);ctx.stroke();}
+ const hx=cx-8,hy=cy+8;for(let i=0;i<5;i++)disc(hx-8-i*4,hy+18+i*3,4-i*.6,'rgba(136,200,255,'+(.4-i*.06)+')');ctx.save();ctx.translate(hx,hy);ctx.rotate(-.35);drawPerson(0,0,CH(),3,(t>>3)%2);ctx.restore();
+ tiny('ENTRE LAS GALAXIAS',120,12,'#e0d8ff','center');tiny(G.realmTravel.target==='pokemon'?'EL REFLEJO POKEMON TE LLAMA':'LA LUZ DE MAGIC TE GUIA',120,140,'#a8d8ff','center');
+ const fade=t<45?1-t/45:t>380?(t-380)/40:0;if(fade>0){ctx.fillStyle='rgba(224,232,255,'+fade+')';ctx.fillRect(0,0,W,H);}
+}
+
 function loadRoom(id, px, py){
   if(leaguesDone()>=4)S.finder=true;
   let d = getDef(id);
-  if(G.preview && S.realm==='pokemon'){
-    if(d.cardTemple)d=makeCardTemple('TEMPLO POKEMON TCG · '+(SHORT[zoneOf(id)] || 'LIGA'),d.exitTo,(d.npcs.find(n=>LEAGUE_BY_NPC[n.id]) || {id:'ligaOrg'}).id,true);
-    else d={...d,pokemon:true,name:'POKEMON · '+d.name,roof:()=> 'blue'};
-  }
+  d=realmDefinition(id,d);
   G.roomId = id; G.def = d;
   if (S.visited) S.visited[zoneOf(id)] = true;
   PL.lock = Math.floor((px + 5) / TS) + ',' + Math.floor((py + 4) / TS);
@@ -3068,8 +3268,8 @@ function loadRoom(id, px, py){
   // Las criaturas que mataste no vuelven a aparecer hasta que pasen RESPAWN_MS (3 minutos)
   S.killedAt=S.killedAt || {};G.killedAt=S.killedAt;
   let bossResting = false;
-  (d.enemies || []).forEach(([t, x, y], i) => {
-    const k = id + ':' + i;
+  (S.boxClosed&&!pokemonRealm()?[]:d.enemies || []).forEach(([t, x, y], i) => {
+    const k = (pokemonRealm()?'pokemon:':'') + id + ':' + i;
     if (G.killedAt[k] && Date.now() - G.killedAt[k] < RESPAWN_MS) { if (MON[t].boss) bossResting = true; return; }
     const e = spawnEnemy(t, x * TS, y * TS); e.spawnKey = k;
     if (d.mult && d.mult !== 1) { e.hp = e.max = Math.round(e.hp * d.mult); e.dmgMult = d.mult > 1.6 ? 2 : 1; }
@@ -3079,11 +3279,11 @@ function loadRoom(id, px, py){
   G.animals = (d.animals || []).map(a => ({ k:a.k, x:a.x * TS, y:a.y * TS, tx:a.x * TS, ty:a.y * TS, box:a.box, t:rnd(100), wait:rnd(60), flip:false }));
   G.surfers = []; for (let i = 0; i < (d.surfers || 0); i++) G.surfers.push({ x:[20, 180, 12][i] || 60, y:[9, 9, 7][i] * TS + 2, vx:[0.6, -0.5, 0.35][i] || 0.4, t:rnd(100), board:['#f05a8a','#40b8e0','#f8d040'][i % 3] });
   if (d.safari) { S.safariBalls = 15; for (let i = 0; i < 6; i++) spawnWildPoke(); }
-  G.pet = S.pet !== null ? { x:px - 14, y:py + 2, t:0, cd:40, tgt:null } : null;
+  G.pet = companionInfo() ? { x:px - 14, y:py + 2, t:0, cd:40, tgt:null } : null;
   if (d.keyPos && !(S.keys && S.keys[id])) G.items.push({ k:'key', id, x:d.keyPos[0] * TS + 3, y:d.keyPos[1] * TS + 3, z:0, vz:0, t:20 });
   G.turrets = [];for(let ty=0;ty<10;ty++)for(let tx=0;tx<15;tx++)if(G.map[ty][tx]==='j'){
-   G.map[ty][tx]='.';const key=id+':danger:'+tx+','+ty;
-   if(!G.killedAt[key]||Date.now()-G.killedAt[key]>=RESPAWN_MS){const types=['arqueroGoblin','bombardero','espinero','mimic'];const e=spawnEnemy(types[(tx+ty+strHash(id))%types.length],tx*TS,ty*TS);e.spawnKey=key;}
+   G.map[ty][tx]='.';const key=(pokemonRealm()?'pokemon:':'')+id+':danger:'+tx+','+ty;
+   if(!S.boxClosed&&(!G.killedAt[key]||Date.now()-G.killedAt[key]>=RESPAWN_MS)){const types=['arqueroGoblin','bombardero','espinero','mimic'];const e=spawnEnemy(types[(tx+ty+strHash(id))%types.length],tx*TS,ty*TS);e.spawnKey=key;}
   }
   G.swarmT = 0;
   const friendChars = CHARS.map((_, i) => i).filter(i => i !== S.ch && i !== CUSTOM_CHAR);
@@ -3149,7 +3349,7 @@ function moveBox_(e, dx, dy, fly, isPlayer){
 const DIRV = [[0,1],[0,-1],[-1,0],[1,0]];
 
 function toast(s, col='#fff'){ G.toasts.push({ s, t:0, col }); if (G.toasts.length > 3) G.toasts.shift(); }
-function floatText(s, x, y, col='#fff'){ G.floats.push({ s, x, y, t:0, col }); }
+function floatText(s, x, y, col='#fff'){ G.floats=G.floats.filter(f=>Math.hypot(f.x-x,f.y-y)>10||f.t>12);G.floats.push({ s, x, y, t:0, col });if(G.floats.length>6)G.floats.shift(); }
 
 const MAX_LVL = 200; // nivel máximo (1 oct): la mitad Premodern llega cerca del 100, el mundo Pokémon lleva al 200
 function addXP(n){
@@ -3179,8 +3379,8 @@ function addCard(id){
     for (const d of DECKS) if (d.cards.includes(id) && deckDone(d.id) && !S.complete[d.id]) {
       S.complete[d.id] = true; cg.done = d.n;
     }
-    if (G.cardGet) G.cardQueue.push(cg); else { G.cardGet = cg; SFX.card(); }
-  } else { SFX.coin(); toast('REPETIDA: ' + CARDS[id].n + ' (X' + (was + 1) + ')', '#c8d8e8'); }
+    SFX.card();lootNotice('CARTA: '+CARDS[id].n+(cg.done?' · MAZO COMPLETO':''),'#fcd84a');
+  } else { SFX.coin(); lootNotice('REPETIDA: ' + CARDS[id].n + ' (X' + (was + 1) + ')', '#c8d8e8'); }
   saveGame();
 }
 function addSword(id){
@@ -3189,7 +3389,7 @@ function addSword(id){
   const cur = SWORDS[S.eq].st, nw = SWORDS[id].st, sum = o => Object.values(o).reduce((a, b) => a + b, 0);
   const auto = sum(nw) > sum(cur);
   if (auto) S.eq = id;
-  say(['¡Encontraste ' + SWORDS[id].n.toUpperCase() + '!', statLine(nw) + (auto ? ' (equipada)' : ' (equípala en el menú)')]);
+  lootNotice(SWORDS[id].n.toUpperCase()+(auto?' · EQUIPADA':''),'#b0e8ff');
   saveGame();
 }
 const statLine = st => Object.entries(st).map(([k, v]) => '+' + v + ' ' + k.toUpperCase()).join(' ') || 'SIN BONOS';
@@ -3198,6 +3398,8 @@ function dropLoot(e){
   const m = MON[e.type], cx = e.x + e.w / 2, cy = e.y + e.h / 2;
   addXP(m.xp);
   const drop = (k, id, v) => {
+    if(k==='gear'||k==='sword'){id=usableDrop(k==='gear'?'armor':'sword',id);if(!id){k='coin';v=levelCoins(500);}}
+    if(k==='coin')v=levelCoins(v||100);
     let x = cx - 5 + rnd(10) - 5, y = cy - 5 + rnd(10) - 5;
     if (blocked(x, y, 10, 10)) { x = cx - 5; y = cy - 5; if (blocked(x, y, 10, 10)) { x = PL.x; y = PL.y - 2; } }
     G.items.push({ k, id, v, x, y, z:0, vz:-2.2, t:0 });
@@ -3239,7 +3441,7 @@ function dropLoot(e){
 const RESPAWN_MS = 3 * 60 * 1000;
 const areaCleared=()=>!G.enemies.some(e=>!e.dead)&&!G.eshots.length&&!G.aoes.length;
 function hiddenSpot(){if(!S.finder||!areaCleared()||G.def.interior||G.def.safari)return null;if(S.hiddenFound&&S.hiddenFound[G.roomId])return null;for(let i=0;i<60;i++){const x=1+(strHash(G.roomId)+i*7)%13,y=1+(strHash(G.roomId)+i*3)%7;if(!blocked(x*TS+3,y*TS+4,10,8)&&!G.npcs.some(n=>Math.hypot(n.x-x*TS,n.y-y*TS)<20))return{x:x*TS+8,y:y*TS+8};}return null;}
-function searchHidden(){if(!S.finder){toast('BUSCAOBJETOS: GANA AL MENOS 4 LIGAS MAGIC','#fcd84a');return;}if(!areaCleared()){toast('PRIMERO LIMPIA LA ZONA DE ENEMIGOS','#fcd84a');return;}const h=hiddenSpot();if(!h){toast('NO HAY MAS TESOROS OCULTOS AQUI','#c8d8d0');return;}const dist=Math.hypot(PL.x+5-h.x,PL.y+4-h.y);if(dist>22){toast('BUSCAOBJETOS: '+(dist<55?'¡CERCA!':'SIGUE LA SEÑAL DORADA'),'#fcd84a');return;}S.hiddenFound=S.hiddenFound || {};S.hiddenFound[G.roomId]=true;const coins=10000*zoneTier();S.coins+=coins;addXP(80);const miss=missingCards();if(miss.length)addCard(miss[strHash(G.roomId)%miss.length]);say(['¡TESORO OCULTO! '+money(coins)+' y 80 EXP. El Buscaobjetos premia tu dominio de las criaturas y las cartas.']);saveGame();}
+function searchHidden(){if(!S.finder){toast('BUSCAOBJETOS: GANA AL MENOS 4 LIGAS MAGIC','#fcd84a');return;}if(!areaCleared()){toast('PRIMERO LIMPIA LA ZONA DE ENEMIGOS','#fcd84a');return;}const h=hiddenSpot();if(!h){toast('NO HAY MAS TESOROS OCULTOS AQUI','#c8d8d0');return;}const dist=Math.hypot(PL.x+5-h.x,PL.y+4-h.y);if(dist>22){toast('BUSCAOBJETOS: '+(dist<55?'¡CERCA!':'SIGUE LA SEÑAL DORADA'),'#fcd84a');return;}S.hiddenFound=S.hiddenFound || {};S.hiddenFound[G.roomId]=true;const coins=levelCoins(2500*Math.min(4,zoneTier()));S.coins+=coins;addXP(80);const miss=missingCards();if(miss.length)addCard(miss[strHash(G.roomId)%miss.length]);say(['¡TESORO OCULTO! '+money(coins)+' y 80 EXP. El Buscaobjetos premia tu dominio de las criaturas y las cartas.']);saveGame();}
 function killEnemy(e){
   if (e.dead) return;
   if (e.spawnKey) { S.killedAt=S.killedAt || {};G.killedAt=S.killedAt;G.killedAt[e.spawnKey]=Date.now(); }
@@ -3276,7 +3478,7 @@ function hostTalk(n){
   if (n.ch === 7 && G.roomId === 'talca') {
     S.talca = S.talca || {}; const seen = TALCA_SPOTS.filter(k => S.talca[k]).length;
     if (S.talcaDone) { say(['TEBAX: ' + pick(['Te dije que Talca era lo mejor. Talca, Paris y Londres, en ese orden.', '¿Otro vinito del Maule? Yo invito... bueno, tu invitas.', 'Cuando seas campeon, haz la celebracion aqui. Hay vino para todos.'])], [{ t:'JUGAR UNA PARTIDA', fn:() => offerDuel(n) }, { t:'CHAO', fn:null }]); return true; }
-    if (seen >= TALCA_SPOTS.length) { S.talcaDone = true; S.coins += 30000; S.st.int += 1; SFX.win(); saveGame(); say(['TEBAX: ¡Viste todo Talca! El letrero, el Museo O\'Higginiano y los vinos del Maule.', 'Toma, $30.000 y +1 INT. Ahora eres talquino honorario, compadre.']); return true; }
+    if (seen >= TALCA_SPOTS.length) { S.talcaDone = true; const reward=levelCoins(6000);S.coins += reward; S.st.int += 1; SFX.win(); saveGame(); say(['TEBAX: ¡Viste todo Talca! El letrero, el Museo O\'Higginiano y los vinos del Maule.', 'Toma, '+money(reward)+' y +1 INT. Ahora eres talquino honorario, compadre.']); return true; }
     say(['TEBAX: ¡Bienvenido a Talca, mi tierra! Aqui la cerveza es buena, pero el vino del Maule es mejor.', 'Haz el tour: lee el letrero de la plaza, el del Museo O\'Higginiano y el del Mercado. Despues vuelve conmigo. (' + seen + '/' + TALCA_SPOTS.length + ')'], [{ t:'VAMOS', fn:null }, { t:'MEJOR UNA PARTIDA', fn:() => offerDuel(n) }]);
     return true;
   }
@@ -3288,6 +3490,13 @@ function hostTalk(n){
   return false;
 }
 function propAction(p){
+  if(p.act==='urzaBox'){closeUrzaBox();return;}
+  if(p.act==='festBeer'){festivalBeer();return;}
+  if(p.act==='festCards'){const n=G.npcs.find(n=>n.id==='luchoBarril');setupDuel(n);return;}
+  if(p.act==='homeAI'){homeOracle();return;}
+  if(p.act==='homeCook'){S.hp=S.maxHp;S.mp=maxMp();saveGame();say(['Preparas un desayuno antes de salir. Vida y magia recuperadas. ¡Hoy comienza una nueva aventura!']);return;}
+  if(p.act==='realmPortal'){portalTalk();return;}
+  if(p.act==='localShop'){localTempleTalk(G.def.identity.shopId);return;}
   if(p.act==='southFood'){say(['CAFE DEL LAGO: Kuchen con cafe por $3.000. Recupera vida y magia.'],[{t:'PROBAR KUCHEN',fn:()=>{if(S.coins<3000){say(['Te faltan monedas.']);return;}S.coins-=3000;S.hp=S.maxHp;S.mp=maxMp();saveGame();SFX.heal();say(['¡Un sabor del sur! Vida y magia recuperadas.']);}},{t:'DESPUES',fn:null}]);return;}
   if(p.act==='concert'){seq([523,659,784,659,587,698,880,784,659,587,523],.18,'triangle',.35);if(!S.concertLago){S.concertLago=true;addXP(150);saveGame();}say(['TEATRO DEL LAGO: Las notas llenan la sala mientras el lago brilla afuera. Tu primera visita inspira al heroe: 150 EXP.']);return;}
 
@@ -3296,6 +3505,7 @@ function propAction(p){
   if(p.act==='waitPhase'){say(['DESCANSO: ¿Quieres esperar al siguiente momento del dia?'],[{t:'ESPERAR',fn:waitNextPhase},{t:'SEGUIR',fn:null}]);return;}
   if(p.act==='standings'){showStandings();return;}
   if(p.act==='boardShop'){openShop('mesa','JUEGOS DE MESA');return;}
+  if(p.act==='playCards'&&G.def.gym){const trainer=G.npcs.find(n=>n.id===p.opponent)||nextGymTrainer();if(trainer)pokemonGymTalk(trainer.id,trainer);return;}
   if(p.act==='playCards'){const rival=p.opponent?G.npcs.find(n=>n.id===p.opponent):G.roomId==='bar'?G.npcs.filter(n=>n.id==='friend').sort((a,b)=>Math.hypot(a.x-p.x*TS,a.y-p.y*TS)-Math.hypot(b.x-p.x*TS,b.y-p.y*TS))[0]:null;if(rival){say(['¡Ven a jugar! Te estaba esperando: este asiento es para ti.'],[{t:'SENTARME Y JUGAR',fn:()=>{if(G.def.pokemon)talkTo(rival.id,rival);else offerDuel(rival);}},{t:'EN OTRO MOMENTO',fn:null}]);}else say(['MESA DE CARTAS: habla con un jugador para desafiarlo o con el organizador para disputar la liga.']);return;}
   if (p.act === 'saco') {
     say(['ARRIENDO DE SACOS: Un saco para tirarte por la duna, $500. ¿Te lanzas?'], [{ t:'¡ME LANZO! ($500)', fn:() => { if (S.coins < 500) { say(['No tienes ni para el saco...']); return; } S.coins -= 500; G.slide = { t:0, x:2 * TS + 3, y:2 * TS + 2, y1:7 * TS + 4 }; PL.x = G.slide.x; PL.y = G.slide.y; SFX.ok(); } }, { t:'MEJOR NO', fn:null }]);
@@ -3339,7 +3549,7 @@ function tryInteract(){
       const key = G.roomId + ':' + tx + ',' + ty;
       G.map[ty][tx] = 'C'; S.chests[key] = true; G.cacheDirty = true;
       const loot = G.def.chests && G.def.chests[tx + ',' + ty];
-      if (loot === 'bolsa' || !loot) { const n = (600 + rnd(500)) * Math.max(1, zoneTier()); S.coins += n; SFX.chest(); say(['¡Una bolsa con ' + money(n) + '!']); saveGame(); }
+      if (loot === 'bolsa' || !loot) { const n = levelCoins((600 + rnd(500)) * Math.min(3,Math.max(1, zoneTier()))); S.coins += n; SFX.chest(); say(['¡Una bolsa con ' + money(n) + '!']); saveGame(); }
       else addSword(loot);
       return true;
     }
@@ -3367,7 +3577,7 @@ function changeRoom(side){
     if(frame-(G.surfMsg || -999)>90){G.surfMsg=frame;toast('NECESITAS SURF: ESCUELA EN PICHILEMU','#88c8f8');}
     return false;
   }
-  if (G.roomId === 'pueblo' && S.pet === null) {
+  if (G.roomId === 'pueblo' && !pokemonRealm() && S.pet === null) {
     const [dx, dy] = { n:[0,1], s:[0,-1], w:[1,0], e:[-1,0] }[side]; PL.x += dx * 10; PL.y += dy * 10; PL.kb = 0; G.moveTarget = null;
     say(['PROFESOR ALERCE: ¡Espera! Es peligroso salir sin un compañero.', 'Ve a la ZONA SAFARI, la casita verde abajo a la izquierda de la Villa, y atrapa tu primer Pokémon. Te va a ayudar a pelear.']);
     return true;
@@ -3483,7 +3693,7 @@ function hitWithSpell(e, s, splash){
   const d = Math.hypot(s.vx, s.vy) || 1, kx = s.vx / d * 1.6, ky = s.vy / d * 1.6;
   floatText(String(dmg), e.x + e.w / 2, e.y - 4, sp.col);
   if (sp.slow) e.slow = 150 + 30 * (lv - 1);
-  if (e.remote) { e.flash = 10; if (NET.host && NET.host.open) NET.host.send({ t:'hit', room:G.roomId, id:e.nid, dmg, kx, ky }); }
+  if (e.remote) { e.flash = 10; if (NET.host && NET.host.open) NET.host.send({ t:'hit', realm:S.realm||'magic', room:G.roomId, id:e.nid, dmg, kx, ky }); }
   else applyHit(e, dmg, kx, ky);
 }
 function updateShots(){
@@ -3608,9 +3818,9 @@ function petRescue(pt){
 }
 // La mascota: sigue al jugador y ataca a la criatura más cercana
 function updatePet(){
-  const pt = G.pet; if (!pt || S.pet === null) return;
+  const pt = G.pet; if (!pt || !companionInfo()) return;
   pt.t++; if (pt.cd > 0) pt.cd--;
-  const P = POKE[S.pet], px = PL.x + 5, py = PL.y + 4;
+  const P = companionInfo(), px = PL.x + 5, py = PL.y + 4;
   if (Math.hypot(pt.x - px, pt.y - py) > 140) { pt.x = PL.x; pt.y = PL.y; }
   if (pt.calm > 0) pt.calm--;
   const foe = pt.calm > 0 ? null : G.enemies.filter(e => !e.dead && Math.hypot(e.x + e.w / 2 - px, e.y + e.h / 2 - py) < 90).sort((a, b2) => Math.hypot(a.x - pt.x, a.y - pt.y) - Math.hypot(b2.x - pt.x, b2.y - pt.y))[0];
@@ -3626,7 +3836,7 @@ function updatePet(){
     const dmg = P.tier * 2 + Math.floor(petLevel() / 3), kx = Math.sign(foe.x - pt.x) * 1.2, ky = Math.sign(foe.y - pt.y) * 1.2;
     pt.cd = 45; floatText(String(dmg), foe.x + foe.w / 2, foe.y - 4, POKE_TYPE[P.type][1]);
     for (let i = 0; i < 5; i++) G.parts.push({ k:'spark', x:foe.x + foe.w / 2, y:foe.y + foe.h / 2, vx:(Math.random() - 0.5) * 2, vy:(Math.random() - 0.5) * 2, t:0 });
-    if (foe.remote) { foe.flash = 10; if (NET.host && NET.host.open) NET.host.send({ t:'hit', room:G.roomId, id:foe.nid, dmg, kx, ky }); }
+    if (foe.remote) { foe.flash = 10; if (NET.host && NET.host.open) NET.host.send({ t:'hit', realm:S.realm||'magic', room:G.roomId, id:foe.nid, dmg, kx, ky }); }
     else applyHit(foe, dmg, kx, ky);
   }
 }
@@ -3693,11 +3903,11 @@ function updateWorld(){
           const result=meleeOutcome(st);if(result==='miss'){floatText('MISS',PL.x+5,PL.y-18,'#ff3030');continue;}const crit=result==='crit';
           const dmg = (meleeDamage(st) + aquaticBonus(e)) * (crit ? 2 : 1);
           SFX.hit();
-          floatText(crit ? 'CRITICO '+dmg : String(dmg), ex, e.y - 10, crit ? '#ff3030' : '#fff');
+          floatText(String(dmg), ex, e.y - 10, crit ? '#ff5050' : '#fff');if(crit)G.floats[G.floats.length-1].crit=true;
           const kd = Math.hypot(ex - cx, ey - cy) || 1, kf = MON[e.type].boss ? 0.6 : 2.6;
           const kx = (ex - cx) / kd * kf, ky = (ey - cy) / kd * kf;
           for (let i = 0; i < 4; i++) G.parts.push({ k:'spark', x:hx, y:hy, vx:(Math.random() - 0.5) * 3, vy:(Math.random() - 0.5) * 3, t:0 });
-          if (e.remote) { e.flash = 10; if (NET.host && NET.host.open) NET.host.send({ t:'hit', room:G.roomId, id:e.nid, dmg, kx, ky }); }
+          if (e.remote) { e.flash = 10; if (NET.host && NET.host.open) NET.host.send({ t:'hit', realm:S.realm||'magic', room:G.roomId, id:e.nid, dmg, kx, ky }); }
           else applyHit(e, dmg, kx, ky);
         }
       }
@@ -3899,15 +4109,15 @@ function updateItems(){
     }
     if (it.t > 12 && ov(box, { x:it.x, y:it.y, w:10, h:10 })) {
       it.dead = true;
-      if (it.k === 'coin') { const value = Math.round(it.v * (CH().finance ? 1.2 : 1)); S.coins += value; SFX.coin(); floatText('+' + money(value), it.x, it.y, '#fcd84a'); }
-      else if (it.k === 'heart') { S.hp = Math.min(S.maxHp, S.hp + 2); SFX.heart(); }
+      if (it.k === 'coin') { const value = Math.round(it.v * (CH().finance ? 1.2 : 1)); S.coins += value; SFX.coin(); lootNotice('MONEDAS +'+money(value),'#fcd84a'); }
+      else if (it.k === 'heart') { S.hp = Math.min(S.maxHp, S.hp + 2); SFX.heart();lootNotice('CORAZON · +2 VIDA','#ff90a0'); }
       else if (it.k === 'key') { S.keys = S.keys || {}; S.keys[it.id] = true; SFX.chest(); toast('¡LLAVE DEL PISO! YA PUEDES BAJAR', '#fcd84a'); saveGame(); }
       else if (it.k === 'relic') { S.relics = S.relics || {}; S.relics[it.id] = (S.relics[it.id] || 0) + 1; SFX.chest(); toast('ANTIGUEDAD: ' + RELICS[it.id].n.toUpperCase() + ' (' + money(RELICS[it.id].v) + ')', '#e8c040'); saveGame(); }
-      else if (it.k === 'beer') { const hl = CH().beer ? 8 : 4; S.hp = Math.min(S.maxHp, S.hp + hl); S.beersFound = (S.beersFound || 0) + 1; SFX.beer(); if (CH().piscola) { PL.piscola = 600; toast('¡PISCOLITA! CORRES MAS RAPIDO', '#f0e040'); } floatText('¡SALUD! +' + hl / 2, it.x, it.y, '#fce060'); for (let i = 0; i < 6; i++) G.parts.push({ k:'bubble', x:it.x + 5, y:it.y, vx:0, vy:-0.5 - Math.random() * 0.4, t:0 }); }
+      else if (it.k === 'beer') { const hl = CH().beer ? 8 : 4; S.hp = Math.min(S.maxHp, S.hp + hl); S.beersFound = (S.beersFound || 0) + 1; SFX.beer(); if (CH().piscola) { PL.piscola = 600; toast('¡PISCOLITA! CORRES MAS RAPIDO', '#f0e040'); } lootNotice('CERVEZA · +'+hl+' VIDA','#fce060'); for (let i = 0; i < 6; i++) G.parts.push({ k:'bubble', x:it.x + 5, y:it.y, vx:0, vy:-0.5 - Math.random() * 0.4, t:0 }); }
       else if (it.k === 'card') addCard(it.id);
       else if (it.k === 'sword') addSword(it.id);
       else if (it.k === 'gear') addGear(it.id);
-      else if (it.k === 'mana') { S.mp = Math.min(maxMp(), (S.mp || 0) + 3); SFX.heal(); floatText('+MP', it.x, it.y, '#88e0ff'); }
+      else if (it.k === 'mana') { S.mp = Math.min(maxMp(), (S.mp || 0) + 3); SFX.heal(); lootNotice('MANA · +3 MP','#88e0ff'); }
       else if (it.k === 'qitem') { const Q = QUESTS[it.q]; S.found[it.q] = (S.found[it.q] || 0) + 1; S.foundZones[it.q + '@' + G.roomId] = true; SFX.chest();
         toast('ENCONTRASTE: ' + Q.itemName + ' (' + Math.min(Q.n, S.found[it.q]) + '/' + Q.n + ')', '#60e070'); saveGame(); }
     }
@@ -3925,7 +4135,7 @@ function updateParts(){
 /* ============ DIALOG ============ */
 function say(pages, choices, onEnd){
   const lines = [];
-  for (const p of pages) { const l = wrap(p, 27); for (let i = 0; i < l.length; i += 3) lines.push(l.slice(i, i + 3)); }
+  for (const p of pages) { const l = wrap(realmText(p), 27); for (let i = 0; i < l.length; i += 3) lines.push(l.slice(i, i + 3)); }
   G.dialog = { pages:lines, pi:0, ch:0, choices:choices || null, sel:0, onEnd:onEnd || null, showChoices:false };
 }
 function updateDialog(){
@@ -4000,7 +4210,8 @@ const QUESTS = {
   q_piedraTolaria:{ giver:'mago', title:'La Piedra Tolaria', desc:'Recupera 3 runas: Ruinas de Serra, Pantano Profundo y Minas de Mishra piso 1.', type:'find', zones:['ruinas','pantanoProf','D:minas:1'], n:3, itemName:'RUNA', icon:'rune', reward:{ stone:'tolaria' } },
 };
 // Permanent quests continue the existing chains; contracts remain renewable.
-QUESTS.q_mazo2.giver='diegoG';QUESTS.q_mazo.giver='diegoG';QUESTS.q_cartas.giver='azul';
+QUESTS.q_mazo2.giver='localJudge_tienda';QUESTS.q_mazo.giver='localJudge_cartasCurico';QUESTS.q_cartas.giver='localShop_tienda';
+QUESTS.q_maltaLago={giver:'cerveceraLago',title:'La malta del Oktoberfest',minLvl:3,desc:'Recupera 3 sacos de malta entre Puerto Montt, Puerto Varas y Frutillar.',type:'find',zones:['pmontt','puertoVaras','frutillar'],n:3,itemName:'MALTA DEL LAGO',icon:'beer',reward:{coins:60,xp:200}};
 const EXTRA_QUESTS=[
  ['azul','Juegos extraviados','find',['bosqueRoca','ruinas'],2,'JUEGO DE MESA','deck'],
  ['diegoG','Protege a los jugadores','kill',['arqueroGoblin','bombardero'],12],
@@ -4018,14 +4229,14 @@ const EXTRA_QUESTS=[
  ['viejo','Memorias del viajero','find',['volcan','glaciar','urborg'],3,'MEMORIA','page'],
  ['marinero','Expedicion sin fronteras','visit',null,28]
 ];
-EXTRA_QUESTS.forEach(([giver,title,type,target,n,itemName,icon],i)=>{QUESTS['q_nueva'+i]={giver,title,type,n,desc:type==='find'?'Recupera '+n+' '+itemName.toLowerCase()+' en '+target.join(', ')+'.':type==='kill'?'Derrota '+n+' '+target.join(' o ')+'.':type==='killAll'?'Derrota '+n+' criaturas desde que aceptes.':type==='decks'?'Completa '+n+' barajas.':type==='cards'?'Colecciona '+n+' cartas distintas.':type==='visit'?'Visita '+n+' zonas.':'Alcanza '+n+' puntos en el arcade.',...(type==='find'?{zones:target,itemName,icon}:type==='kill'?{target}:{}),reward:{st:{[i%2?'des':'int']:2},coins:1000+i*100,xp:300+i*50}};});
-function ensureContract(){S.contractRound=S.contractRound||0;for(let i=0;i<=S.contractRound;i++){const id='q_contrato'+i;if(!QUESTS[id])QUESTS[id]={giver:'cronista',title:'Patrulla '+(i+1),type:'killAll',n:20+Math.min(80,i*5),desc:'Derrota criaturas y vuelve al cronista de la Villa. Siempre habra otra patrulla.',reward:{coins:800+i*100,xp:500+i*50}};}return 'q_contrato'+S.contractRound;}
+EXTRA_QUESTS.forEach(([giver,title,type,target,n,itemName,icon],i)=>{QUESTS['q_nueva'+i]={giver,title,type,n,desc:type==='find'?'Recupera '+n+' '+itemName.toLowerCase()+' en '+target.join(', ')+'.':type==='kill'?'Derrota '+n+' '+target.join(' o ')+'.':type==='killAll'?'Derrota '+n+' criaturas desde que aceptes.':type==='decks'?'Completa '+n+' barajas.':type==='cards'?'Colecciona '+n+' cartas distintas.':type==='visit'?'Visita '+n+' zonas.':'Alcanza '+n+' puntos en el arcade.',...(type==='find'?{zones:target,itemName,icon}:type==='kill'?{target}:{}),minLvl:5+i*2,reward:{st:{[i%2?'des':'int']:2},coins:1000+i*100,xp:300+i*50}};});
+function ensureContract(){S.contractRound=S.contractRound||0;for(let i=0;i<=S.contractRound;i++){const id='q_contrato'+i;if(!QUESTS[id])QUESTS[id]={giver:'cronista',title:'Patrulla '+(i+1),minLvl:Math.min(80,1+i*3),type:'killAll',n:20+Math.min(80,i*5),desc:'Derrota criaturas y vuelve al cronista de la Villa. Siempre habra otra patrulla.',reward:{coins:800+i*100,xp:500+i*50}};}return 'q_contrato'+S.contractRound;}
 
 const GIVER_PLACE = {completero:'COMPLETOS (TALCA)',curadoraTalca:'MUSEO (TALCA)',vinero:'TALCA',talquino:'TALCA',caballerizo:'ESTABLO (CURICO)',azul:'TIENDA DE CARTAS',diegoG:'TIENDA DE CARTAS',galindo:'TIENDA DE CARTAS', vecina:'VILLA', cronista:'VILLA', cantinero:'TABERNA DE LA VILLA', klaus:'TABERNA DE LA VILLA', coleccionista:'TABERNA DE LA VILLA',
   organizador:'ARENA DE LA VILLA', pescador:'CURICO', marinero:'CURICO', viejo:'CASA DEL VIEJO (CURICO)', juez:'TOLARIA', fan2:'TOLARIA',
   tendero:'TIENDA (TOLARIA)', posadera:'POSADA (TOLARIA)', arcadeOrg:'ARCADE (TOLARIA)', mueblero:'MERCADO DE MOX', mago:'MERCADO DE MOX' };
 const STN = { fue:'FUE', des:'DES', agi:'AGI', int:'INT' };
-const rewardText = r => [Object.entries(r.st || {}).map(([k, v]) => '+' + v + ' ' + STN[k]).join(' '), r.maxHp ? '+' + r.maxHp / 2 + ' CORAZÓN' : '', r.coins ? money(r.coins * QUEST_COIN_X) : '', r.spell ? 'HECHIZO ' + SPELLS[r.spell].n.toUpperCase() : '', r.stone ? STONES[r.stone].n : '',r.xp ? '+'+r.xp+' EXP' : ''].filter(Boolean).join(', ');
+const rewardText = r => [Object.entries(r.st || {}).map(([k, v]) => '+' + v + ' ' + STN[k]).join(' '), r.maxHp ? '+' + r.maxHp / 2 + ' CORAZÓN' : '', r.coins ? money(questCoins(r)) : '', r.spell ? 'HECHIZO ' + SPELLS[r.spell].n.toUpperCase() : '', r.stone ? STONES[r.stone].n : '',r.xp ? '+'+r.xp+' EXP' : ''].filter(Boolean).join(', ');
 const killsOf = ts => ts.reduce((a, t) => a + ((S.kills || {})[t] || 0), 0);
 function questBase(q){ const Q = QUESTS[q]; return Q.type === 'kill' ? killsOf(Q.target) : Q.type === 'killAll' ? (S.killsTotal || 0) : Q.type === 'beer' ? (S.beerTotal || 0) : 0; }
 function questProg(q){
@@ -4045,7 +4256,7 @@ function questProg(q){
   }
   return 0;
 }
-const questsOf = id => {if(id==='cronista')ensureContract();return Object.keys(QUESTS).filter(q => QUESTS[q].giver === id&&(!q.startsWith('q_contrato')||Number(q.slice(10))<=(S.contractRound||0)));};
+const questsOf = id => {if(id==='cronista')ensureContract();return Object.keys(QUESTS).filter(q => QUESTS[q].giver === id&&((S.lvl||1)>=(QUESTS[q].minLvl||1)||!!S.quests[q])&&(!q.startsWith('q_contrato')||Number(q.slice(10))<=(S.contractRound||0)));};
 function questMarker(id){
   if (!S || !S.quests) return null;
   const list = questsOf(id); if (!list.length) return null;
@@ -4057,14 +4268,14 @@ function questHook(id, npc){
   const list = questsOf(id), who = NPCDEF[id] ? NPCDEF[id].n : id.toUpperCase();
   if (!list.length) return false;
   for (const q of list) {
-    const st = S.quests[q], Q = QUESTS[q];
+    const st = S.quests[q], Q = QUESTS[q],cashReward=questCoins(Q.reward);
     if (st && st.st === 'active' && questProg(q) >= Q.n) {
       st.st = 'done';
       if(q.startsWith('q_contrato')){S.contractRound=(S.contractRound||0)+1;ensureContract();}
       if(Q.reward.xp)addXP(Q.reward.xp);
       for (const [k, v] of Object.entries(Q.reward.st || {})) S.st[k] += v;
       if (Q.reward.maxHp) { S.maxHp += Q.reward.maxHp; }
-      S.hp = S.maxHp; S.coins += (Q.reward.coins || 0) * QUEST_COIN_X;
+      S.hp = S.maxHp; S.coins += cashReward;
       if (Q.reward.spell) learnSpell(Q.reward.spell);
       if (Q.reward.stone) { S.stones = S.stones || {}; S.stones[Q.reward.stone] = true; toast(STONES[Q.reward.stone].n + ': USALA CON EL BOTON VIAJAR (TECLA T)', '#c8a0ff'); }
       SFX.lvl(); saveGame();
@@ -4131,10 +4342,12 @@ function shopItems(kind){
       L.push({ kind:it.kind, id:it.id, name, price:it.price, info, owned, req:it.req }); } }
   else if (kind === 'hogar') { for (const [id, h] of Object.entries(HOUSE)) if (!h.lux) L.push({ kind:'house', id, name:h.n, price:h.price, info:h.desc,req:h.req, owned:!!S.house[id] }); }
   else { for (const [id, h] of Object.entries(PRIZES)) L.push({ kind:'house', id, name:h.n, price:h.price, info:h.desc, owned:!!S.house[id] }); }
-  return L;
+  for(const it of L)if(it.kind==='sword'||it.kind==='armor')it.req={...(it.req||{}),lvl:itemLevel(it.kind,it.id)};
+  return L.filter(it=>reqOk(it.req));
 }
 function openShop(kind, title){ G.shop = { kind, title, sel:0, scroll:0, items:shopItems(kind), msg:null, msgT:0 }; SFX.ok(); }
 function buyItem(it){
+  if((it.kind==='sword'||it.kind==='armor')&&itemLevel(it.kind,it.id)>S.lvl){if(G.shop){G.shop.msg='DISPONIBLE EN NIVEL '+itemLevel(it.kind,it.id);G.shop.msgT=80;}return;}
   const sh = G.shop;
   if (it.owned) { sh.msg = 'YA LO TIENES'; sh.msgT = 60; SFX.back(); return; }
   if (it.req && !reqOk(it.req)) { sh.msg = reqText(it.req); sh.msgT = 80; SFX.back(); return; }
@@ -4185,7 +4398,7 @@ function drawShop(){
 function houseInteract(c){
   const key = HOUSE_TILE[c], owned = houseTileOwned(c);
   if (c === '1') {
-    if (S.house.cama) { S.hp = S.maxHp; S.mp = maxMp(); G.fade = 40; SFX.heal(); saveGame(); say(['Dormiste en tu cama de plumas. Vida y magia al maximo. Partida guardada.']); }
+    if (true) { S.hp = S.maxHp; S.mp = maxMp(); G.fade = 40; SFX.heal(); saveGame(); say(['Descansaste en tu cama. Vida y magia al maximo. Partida guardada.']); }
     else { S.hp = Math.max(S.hp, Math.ceil(S.maxHp / 2)); SFX.heal(); say(['Descansas en tu catre viejo. Recuperas algo de vida.', 'Una Cama de plumas del Mercado de Mox te dejaria como nuevo.']); }
     return;
   }
@@ -4202,7 +4415,9 @@ function deckChoices(list, fn, page){
   return ch;
 }
 function sellPacks(who, hello){
-  say([who + ': ' + hello + ' Sobres de colección, Cuarta Edición a Scourge. Cada sobre trae 3 cartas y vale ' + money(PACK_PRICE) + '.', who + ': Dicen que en algunos sobres sale un Mox Diamond... pero es rarísimo.'],
+  if(pokemonRealm())hello=hello+' Sobres Pokemon clasicos, holograficas y recuerdos de la primera generacion.';
+  hello=hello+' Las cartas han subido mucho de precio; con eso de los scalpers que compran y compran, cada vez cuesta mas conseguir sobres.';
+  say([who + ': ' + hello + (pokemonRealm()?' Sobres de la primera generacion Pokemon. Cada sobre trae 3 cartas y vale ':' Sobres antiguos de coleccion, con el espiritu de los años 90 y las ediciones clasicas de Magic. Cada sobre trae 3 cartas y vale ') + money(PACK_PRICE) + '.', who + ': Dicen que en algunos sobres sale un Mox Diamond... pero es rarísimo.'],
     [{ t:'COMPRAR SOBRE (' + money(PACK_PRICE) + ')', fn:() => {
         if (S.coins < PACK_PRICE) { say([who + ': Te faltan ' + money(PACK_PRICE - S.coins) + ', compadre. Anda a pegarle a unos monos.']); return; }
         S.coins -= PACK_PRICE; SFX.chest();
@@ -4323,6 +4538,19 @@ function leagueTalk(key){
   }).concat([{ t:'TIENDA DE CARTAS', fn:() => openShop('liga', L.n + ' - TIENDA') }, { t:'VOLVER', fn:null }]));
 }
 function talkTo(id, npc, skipQuest){
+  if(id==='urzaEcho'){say(['URZA: Soy un eco del artifice de Dominaria. Mi rivalidad con Mishra dejo una herida en el mundo. Karn y mis artefactos nacieron de la guerra contra Phyrexia.','No todos mis actos fueron nobles. La obsesion por detener a Yawgmoth me hizo tratar vidas como piezas de una maquina. No repitas mis errores.','Esta caja de nuestra historia contiene ecos de criaturas. Un hechizo ajeno rompio su sello y las libero contra las personas.','Cada mazo comprende un lenguaje distinto: agresion, control, vida, muerte y artefactos. Dominalos todos y podras invertir el hechizo. Las criaturas regresaran a sus cartas; el mundo tendra paz.'],[{t:'REVISAR EL SELLO',fn:closeUrzaBox},{t:'EL OTRO MUNDO',fn:portalTalk},{t:'VOLVER',fn:null}]);return;}
+  if(id==='alerceEcho'){say(['ALERCE: Este reflejo tambien fue alcanzado por el hechizo. La Entidad arranco a los Pokemon de sus cartas y los dejo salvajes.','Las medallas de cartas guardan parte del conocimiento perdido. Tu compañero de Magic conserva el vinculo entre mundos.']);return;}
+  const warnings={vecina:'Las criaturas atacan nuestras casas. Un hechizo abrio la Caja de Urza como una caja de Pandora. ¡Hay que cerrarla!',pescador:'Vi criaturas salir de cartas junto al rio. Ahora son hostiles. Ni la mejor espada cerrara la Caja de Urza: necesitas dominar los mazos.',huaso:'Los caballos sienten la maldicion. Cuando el campeon cierre la Caja de Urza, el campo volvera a estar en paz.',marinero:'Las cartas trajeron monstruos al mar. Vence a los guardianes y aprende todas las barajas para devolverlos a sus cartas.',cronista:'El sello de Urza fue roto por un hechizo. Las criaturas perdieron su voluntad y atacan a las personas. Las ligas enseñan la magia necesaria para cerrar la caja.',viejo:'Abrimos la Caja de Urza y un hechizo desperto sus cartas, como la caja de Pandora. Mi error condeno a estas ciudades. Solo quien domine todos los mazos podra devolver las criaturas y sellarla.'};
+  S.storyHeard=S.storyHeard||{};if(!skipQuest&&warnings[id]&&!S.storyHeard[id]){S.storyHeard[id]=true;saveGame();say([(NPCDEF[id]||{}).n+': '+warnings[id]],null,()=>talkTo(id,npc,true));return;}
+
+  if(id==='cerveceraLago'){if(!skipQuest&&questHook(id,npc))return;festivalBeer();return;}
+  if(id==='ottoCata'){festivalTasting();return;}
+  if(id==='luchoBarril'){say(['LUCHO: Pedi a la IA que armara mi mazo. Me respondio: primero baraja, humano. ¡Hagamos una partida entre barriles!'],[{t:'JUGAR CARTAS',fn:()=>setupDuel(npc)},{t:'PROST!',fn:()=>{PL.dance=180;say(['¡Salud, cartas y amistad! El lago acompaña el brindis.']);}}]);return;}
+  if(!skipQuest&&!G.def.cardTemple&&!questMarker(id)&&['vecina','turista','sureno','huaso','marinero'].includes(id)&&reputationCount()>0){say([reputationGreeting(id),pokemonRealm()?'Tus medallas de cartas traen esperanza a los refugios. Dicen que puedes devolver la calma a los Pokemon.':'Tu baraja ya es conocida en las tiendas. Cada liga que ganas inspira a otros jugadores.']);return;}
+  if(pokemonGymTalk(id,npc))return;
+  if(localTempleTalk(id,npc,skipQuest))return;
+  if(pokemonRealm()&&['cronista','viejo','maga','fan1','fan2','fan3','fan4','friend'].includes(id)){say(['Un ente arranco a los Pokemon de sus cartas. Ahora recorren estas mismas ciudades en estado salvaje.','Las ligas Pokemon protegen los refugios. Tu compañero de Magic conserva la memoria del otro mundo: juntos podemos liberarlos.']);return;}
+  if(pokemonRealm()&&id==='profesor'){chooseMagicPet();return;}
   if(G.roomId==='puertoVaras'&&id==='turista'){say(['¡Bienvenido a Puerto Varas! Recorre las casas de tradicion alemana, toma un cafe con kuchen y mira el volcan Osorno sobre el lago Llanquihue.','Norte: Puerto Montt. Sur: Frutillar, por la costanera sin necesitar Surf.']);return;}
   if(G.roomId==='frutillar'&&id==='sureno'){say(['FRUTILLAR: El lago esta al frente y el Teatro del Lago a la derecha. Entra a escuchar una funcion o prueba el kuchen en el cafe.']);return;}
   if(['cafeVaras','cafeFrutillar'].includes(G.roomId)&&id==='tortera'){propAction({act:'southFood'});return;}
@@ -4332,11 +4560,12 @@ function talkTo(id, npc, skipQuest){
   if(id==='curadoraTalca'){if(!skipQuest&&questHook(id,npc))return;museumPuzzle();return;}
 
   if(id==='ligaOrg' && dayPhase()!==LEAGUE_PHASE.nacional){say(['LA LIGA NACIONAL ABRE AL MEDIODIA. AHORA ES '+DAY_LABELS[dayPhase()]+'.']);return;}
-  if(G.def.pokemon && id==='azul'){say(['AZUL: ¡Bienvenido al templo Pokemon TCG! Cartas Pokemon en el mostrador, mesas de juego y Fernando Cifuentes de visita.'],[{t:'CARTAS POKEMON',fn:()=>openShop('pokemon','POKEMON TCG')},{t:'JUEGOS DE MESA',fn:()=>openShop('mesa','JUEGOS DE MESA')},{t:'VOLVER',fn:null}]);return;}
-  if(G.def.pokemon && (POKEMON_TEMPLE_PLAYERS.includes(id)||LEAGUE_BY_NPC[id])){say([NPCDEF[id].n+': ¡Estamos preparando nuestras barajas Pokemon! '+(id==='fernando'?'Soy el campeon mundial Masters 2024.':'Las mesas son el centro de nuestra aventura.')]);return;}
+  if(G.def.pokemon && id==='azul'){say(['AZUL: ¡Bienvenido al templo Pokemon TCG! Cartas Pokemon en el mostrador, mesas de juego y Fernando Cifuentes de visita.'],[{t:'CARTAS POKEMON',fn:()=>openShop('pokemon','POKEMON TCG')},{t:'VOLVER',fn:null}]);return;}
+  if(G.def.pokemon && (POKEMON_TEMPLE_PLAYERS.includes(id))){if(id==='fernando'){say(['FERNANDO CIFUENTES: Un ente oscuro saco a los Pokemon de las cartas y los dejo en estado salvaje.','Los enemigos son Pokemon furiosos y gigantes. No eligieron atacar: debemos enfrentar al ente y liberarlos.']);return;}say([NPCDEF[id].n+': ¡Estamos preparando nuestras barajas Pokemon! '+(id==='fernando'?'Soy el campeon mundial Masters 2024.':'Las mesas son el centro de nuestra aventura.')]);return;}
   if(!skipQuest&&!G.def.pokemon&&['azul','diegoG',...TEMPLE_PLAYERS].includes(id)&&questHook(id,npc))return;
-  if(id==='azul'){say(['AZUL: Bienvenido al templo de las cartas. Tenemos cartas sueltas, sobres y juegos de mesa. Diego es el juez; el organizador te inscribe en la liga.'],[{t:'CARTAS SUELTAS',fn:()=>openShop('liga','CARTAS DE AZUL')},{t:'SOBRES',fn:()=>sellPacks('AZUL','¡A mejorar esa baraja!')},{t:'JUEGOS DE MESA',fn:()=>openShop('mesa','JUEGOS DE MESA')},{t:'VOLVER',fn:null}]);return;}
+  if(id==='azul'){say(['AZUL: Bienvenido al templo de las cartas. Tenemos cartas sueltas y sobres. Diego es el juez; el organizador te inscribe en la liga.'],[{t:'CARTAS SUELTAS',fn:()=>openShop('liga','CARTAS DE AZUL')},{t:'SOBRES',fn:()=>sellPacks('AZUL','¡A mejorar esa baraja!')},{t:'VOLVER',fn:null}]);return;}
   if(id==='diegoG'){say(['DIEGO GONZALEZ: Soy el juez. Una baraja completa abre las ligas; ganar cartas y partidas tambien te da experiencia. Los standings estan colgados en la muralla.'],[{t:'VER STANDINGS',fn:showStandings},{t:'VOLVER',fn:null}]);return;}
+  if(pokemonRealm()&&id==='fernando'){say(['FERNANDO CIFUENTES: Un ente oscuro saco a los Pokemon de las cartas y los dejo en estado salvaje.','Los que atacan no son nuestros compañeros: veras Pokemon furiosos y gigantes. Nuestro poder en las cartas puede ayudarnos a liberarlos.']);return;}
   if(id==='fernando'){say(['FERNANDO CIFUENTES: ¡Bienvenido al templo Pokemon TCG! Fui campeon mundial de la categoria Masters en 2024. Una buena lista, practicar y conocer tus cartas hacen la diferencia.']);return;}
   if(TEMPLE_PLAYERS.includes(id)){if(id==='galindo')say(['GALINDO: ¡Vamos, cabro! Premodern se aprende jugando. Arma tu mejor baraja y prueba si puedes ganarme.'],null,()=>offerDuel(npc));else offerDuel(npc);return;}
   if (!skipQuest && questHook(id, npc)) return;
@@ -4394,7 +4623,7 @@ function talkTo(id, npc, skipQuest){
     say(['EL MARCHANTE: Bienvenido a mi boveda del Mercado de Mox. Aqui no hay ofertas, cabro. Solo piezas unicas de Dominaria para los jugadores de verdad.', 'Tienes ' + have + ' de ' + LUXURY.length + ' piezas de mi coleccion. Algunas piden nivel y trofeos de liga: no le vendo un Mox Eterno a cualquiera.'], null, () => openShop('lujo', 'EL MARCHANTE'));
     return;
   }
-  if (id === 'huaso') { say(['HUASO: ' + pick(['¡Buenas, patron! Aqui en Curico tenemos el mejor vino, las tortas mas ricas y los caballos mas mansos de Chile.', 'En marzo es la Fiesta de la Vendimia de Curico. Se pisa la uva, se baila cueca y se toma harto vinito.', 'Junto al rio esta el establo. El caballerizo vende monturas desde $100.000, patron.', 'Las vacas no se pelean con nadie. El problema son los Goblins que les roban la leche.', 'Las cerezas de Curico salen pa\' afuera, hasta China. Aqui se las come uno del arbol.'])]); return; }
+  if (id === 'huaso') { say(['HUASO: ' + pick(['¡Buenas, patron! Aqui en Curico tenemos el mejor vino, las tortas mas ricas y los caballos mas mansos de Chile.', 'En marzo es la Fiesta de la Vendimia de Curico. Se pisa la uva, se baila cueca y se toma harto vinito.', 'Junto al rio esta el establo. El caballerizo vende monturas desde $300.000, patron.', 'Las vacas no se pelean con nadie. El problema son los Goblins que les roban la leche.', 'Las cerezas de Curico salen pa\' afuera, hasta China. Aqui se las come uno del arbol.'])]); return; }
   if (id === 'tortera') {
     say(['TORTERA: ¡Tortas de Curico, las mas famosas de Chile! Una torta, $4.000.', 'Te deja con la guata llena y la vida entera.'],
       [{ t:'UNA TORTA ($4.000)', fn:() => { if (S.coins < 4000) { say(['TORTERA: Sin lucas no hay torta, mijito.']); return; } S.coins -= 4000; S.hp = S.maxHp; S.mp = maxMp(); SFX.heal(); saveGame(); say(['¡Que torta mas rica! Quedaste con toda la vida y la magia.']); } }, { t:'OTRO DIA', fn:null }]);
@@ -4426,7 +4655,7 @@ function talkTo(id, npc, skipQuest){
     for (const m of own) ch.push({ t:'MONTAR ' + MOUNTS[m].n.toUpperCase(), fn:() => { S.mount = m; saveGame(); toast('MONTADO EN ' + MOUNTS[m].n.toUpperCase(), '#fcd84a'); } });
     if (S.mount) ch.push({ t:'IR A PIE', fn:() => { S.lastMount = S.mount; S.mount = null; saveGame(); } });
     ch.push({ t:'NADA', fn:null });
-    say(['CABALLERIZO: ¡Bienvenido al establo de Curico, patron! El caballo chileno cuesta $100.000 y te lleva un 30% mas rapido. Tambien tenemos Mesa Pegasus, Nightmare, Pegasus Charger y War Mammoth.', 'El Shivan Dragon no se vende: hay que vencerlo. Con R te subes y te bajas. Aqui mismo junto al rio puedes ver los caballos y probar tu montura.'], ch.slice(0, 6));
+    say(['CABALLERIZO: ¡Bienvenido al establo de Curico, patron! El caballo chileno cuesta $300.000 y te lleva un 30% mas rapido. Tambien tenemos Mesa Pegasus, Nightmare, Pegasus Charger y War Mammoth.', 'El Shivan Dragon no se vende: hay que vencerlo. Con R te subes y te bajas. Aqui mismo junto al rio puedes ver los caballos y probar tu montura.'], ch.slice(0, 6));
     return;
   }
   if (id === 'mago') { say(['MAGA: ¿Quieres aprender magia? Cada libro te enseña un hechizo para siempre.'], null, () => openShop('magia', 'LIBROS DE MAGIA')); return; }
@@ -4448,7 +4677,7 @@ function talkTo(id, npc, skipQuest){
   if (id === 'viejo') {
     S.lore = true;
     say(['VIEJO DEL RÍO: Siéntate, siéntate. Te voy a contar cómo empezó todo esto.',
-      'Fue en 2003, el año de Scourge. Llegó a la feria de Curicó una caja sellada, en un camión que venía del puerto, con un sello que decía "Tienda de Urza". Nadie la reclamó.',
+      'Fue una tarde de los años noventa. Llegó a la feria de Curicó una caja sellada, en un camión que venía del puerto, con un sello que decía "Tienda de Urza". Nadie la reclamó.',
       'Una noche de temporal la abrí aquí mismo, junto al río. Adentro había sobres de todas las ediciones: desde Cuarta Edición hasta Scourge. Ni una carta más nueva.',
       'Cuando rompí el primer sobre, un Goblin Lackey me saltó a la cara. Y después otro. Y un Jackal Pup. Las cartas... despertaron.',
       'Desde entonces las criaturas andan sueltas por Chile, y cinco guardianes protegen el poder de la caja.',
@@ -4501,10 +4730,10 @@ function talkTo(id, npc, skipQuest){
   }
   if (id === 'ligaOrg') {
     const done = DECKS.filter(d => deckDone(d.id)), lg = leaguesDone(), bs = bossesDone();
-    if (lg < 5 || bs < ALL_BOSSES.length) {
+    if (lg < 5) {
       say(['ORGANIZADORA: La Liga Nacional es solo para leyendas.',
         'Primero gana las 5 ligas regionales: Viña, Curicó, Puerto Montt, Urza Saga (aquí en Tolaria) y Tempest (al sur del Mercado de Mox). Llevas ' + lg + ' de 5.',
-        'Y derrota a TODOS los jefes de Chile: llevas ' + bs + ' de ' + ALL_BOSSES.length + '. Los jefes vuelven a aparecer siempre, así que puedes pelear con ellos las veces que quieras.']);
+        'Cada liga entrega una medalla. Reune las cinco de este mundo para acceder a la Gran Liga Nacional de Tolaria. Puedes revisar ambas colecciones en MENU > MEDALLAS.']);
       return;
     }
     if (!done.length) { say(['ORGANIZADORA: Necesitas un mazo completo de ' + DECK_SIZE + ' cartas para inscribirte.'], [{ t:'TIENDA DE CARTAS', fn:() => openShop('liga', 'LIGA NACIONAL - TIENDA') }, { t:'VOLVER', fn:null }]); return; }
@@ -4599,10 +4828,10 @@ function randomLook(name){
 }
 function startTour(deck, cfg){
   cfg = cfg || { rounds:3, diff:0, liga:false, name:'TORNEO' };
-  const roster=G.def.cardTemple?TEMPLE_PLAYERS.filter(id=>!cfg.liga||id!=='galindo').map(id=>NPCDEF[id].n):OPP_NAMES;
+  const localRoster=G.def.roster;const roster=localRoster?localRoster.map(id=>NPCDEF[id].n):cfg.liga||cfg.league?TEMPLE_PLAYERS.filter(id=>!cfg.liga||id!=='galindo').map(id=>NPCDEF[id].n):OPP_NAMES;
   const names = [...roster].sort(() => Math.random() - 0.5).slice(0, cfg.rounds-(cfg.liga?1:0));
-  if(cfg.liga)names.push(NPCDEF.galindo.n);
-  G.tour = { deck, cfg, room:G.roomId, px:PL.x, py:PL.y, round:0, wins:0, phase:'strategy', stage:0, decisions:[], strategyScore:0, sel:0, tactic:null, t:0, buzz:S.buzz, opps:names.map(n => {const id=TEMPLE_PLAYERS.find(id=>NPCDEF[id].n===n);return {n,deck:id?DUELIST_DECK[id]:pick(DECKS).id,look:id?NPCDEF[id]:randomLook(n)};}), ev:[], ei:0, lives:[20, 20], cur:null, pops:[] };
+  if(cfg.liga)names.push(pokemonRealm()?NPCDEF.fernando.n:NPCDEF.galindo.n);
+  G.tour = { deck, cfg, room:G.roomId, px:PL.x, py:PL.y, round:0, wins:0, phase:'strategy', stage:0, decisions:[], strategyScore:0, sel:0, tactic:null, t:0, buzz:S.buzz, opps:names.map(n => {const id=[...(G.def.roster||[]),...TEMPLE_PLAYERS,'fernando'].find(id=>NPCDEF[id].n===n);return {n,deck:id?DUELIST_DECK[id]:pick(DECKS).id,look:id?NPCDEF[id]:randomLook(n)};}), ev:[], ei:0, lives:[20, 20], cur:null, pops:[] };
   S.buzz = 0; S.beers = 0;
   prepareCardQuestion(G.tour);G.state = 'tour'; playMusic('fanfare'); SFX.ok();
 }
@@ -4681,7 +4910,7 @@ function finishTour(){
   const T_ = G.tour, w = T_.wins, N = T_.cfg.rounds, champ = w === N, liga = T_.cfg.liga;
   if(G.def.cardTemple)for(let i=0;i<=T_.round;i++)recordTempleMatch(T_.opps[i].n,i<w);
   const big = liga || !!T_.cfg.league;
-  const coins = w * (T_.cfg.perWin || 2000) + (champ ? (T_.cfg.champ || 5000) : 0);
+  const coins = levelCoins(w * (T_.cfg.perWin || 2000) + (champ ? (T_.cfg.champ || 5000) : 0));
   const earnedXP=tournamentXP(T_.cfg,w,T_.round+1);S.coins += coins; addXP(earnedXP);
   const lines = [champ ? (liga ? '¡CAMPEÓN NACIONAL DE PREMODERN! Ganaste las ' + N + ' rondas de la Liga.' : T_.cfg.league ? '¡CAMPEÓN DE LA ' + T_.cfg.name + '! Ganaste las ' + N + ' rondas.' : '¡CAMPEÓN DEL TORNEO PREMODERN! Ganaste las ' + N + ' rondas.') : 'Ganaste ' + w + ' de ' + (T_.round + 1) + ' partidas.', 'Premio: ' + money(coins) + '.'];
   const reward = { lines };
@@ -4788,6 +5017,7 @@ function updateMenu(){
   if (pressed('menu') || pressed('b')) { G.menu = null; SFX.back(); saveGame(); return; }
   if (pressed('left')) { m.tab = (m.tab + 5) % 6; m.sel = 0; SFX.move(); }
   if (pressed('right')) { m.tab = (m.tab + 1) % 6; m.sel = 0; SFX.move(); }
+  if(m.tab===5){if(pressed('up')||pressed('down')||pressed('a')){m.medalRealm=(m.medalRealm||S.realm||'magic')==='magic'?'pokemon':'magic';SFX.move();}return;}
   const n = m.tab === 0 ? DECKS.length : m.tab === 1 ? 6 : m.tab === 4 ? 2 : 0;
   if(m.tab===4&&m.sel===1){if(pressed('up'))m.questScroll=Math.max(0,(m.questScroll||0)-1);if(pressed('down'))m.questScroll=(m.questScroll||0)+1;if(pressed('a')){const q=journalEntries()[m.questScroll||0];if(q)questDetail(q);return;}return;}
   if (n) { if (pressed('up')) { m.sel = (m.sel + n - 1) % n; SFX.move(); } if (pressed('down')) { m.sel = (m.sel + 1) % n; SFX.move(); } }
@@ -4807,7 +5037,7 @@ const LEAGUE_MAP = { vina:'vina', curico:'valpo', pmontt:'pmontt', urza:'tolaria
 function leagueMapMarks(id){
   return Object.entries(LEAGUE_MAP).filter(([,place]) => place === id).map(([key]) => ({key,
     won:key === 'nacional' ? (S.ligaWins || 0) > 0 : !!(S.leagues && S.leagues[key]),
-    available:dayPhase()===LEAGUE_PHASE[key] && (key !== 'nacional' || (leaguesDone() === 5 && bossesDone() === ALL_BOSSES.length))
+    available:dayPhase()===LEAGUE_PHASE[key] && (key !== 'nacional' || (leaguesDone() === 5))
   }));
 }
 function drawWorldMap(){
@@ -4852,17 +5082,7 @@ function drawMissions(){
   if (G.menu && G.menu.sel === 1) { drawQuests(); return; }
   txt('LA CAJA DE URZA', 8, 21, '#fcd84a', 'left', '#000');
   const g = guardiansDone(), rd = RAIDS.filter(r => S.bosses[r]).length, nb = NEW_BOSSES.filter(r => S.bosses[r]).length, lg = leaguesDone();
-  const items = [
-    ['Completa tu primer mazo de ' + DECK_SIZE + ' cartas', DECKS.some(d => deckDone(d.id))],
-    ['Gana un torneo en la Arena de Villa Premodern', S.trophies > 0],
-    ['Escucha al viejo del rio en Curico', !!S.lore],
-    ['Derrota a los 5 guardianes (' + g + '/5)', g >= 5],
-    ['Derrota a los 3 jefes raid: Shivan, Kjeldor, Pit (' + rd + '/3)', rd >= 3],
-    ['Derrota a los 4 jefes nuevos: Terravore, Conclave,', nb >= 4],
-    ['   Spiritmonger y Masticore (' + nb + '/4)', nb >= 4],
-    ['Gana las 5 ligas regionales (' + lg + '/5)', lg >= 5],
-    ['Gana la Liga Nacional en Tolaria', (S.ligaWins || 0) > 0],
-  ];
+  const items=[['Escucha al viejo del rio en Curico',!!S.lore],['Devuelve el poder de los 5 guardianes ('+g+'/5)',g>=5],['Domina todos los mazos ('+DECKS.filter(d=>deckDone(d.id)).length+'/'+DECKS.length+')',DECKS.every(d=>deckDone(d.id))],['Gana las 5 ligas regionales ('+lg+'/5)',lg>=5],['Gana la Liga Nacional en Tolaria',(S.ligaWins||0)>0],['Sella la Caja de Urza en el santuario',!!S.boxClosed],['Devuelve las criaturas y restaura la paz',!!S.boxClosed]];
   items.forEach(([t, ok], i) => {
     const y = 36 + i * 12;
     R(8, y, 7, 7, '#1a1020'); R(9, y + 1, 5, 5, ok ? '#60e070' : '#2a3a3a');
@@ -4881,20 +5101,35 @@ function goToTitle(){
   G.state = 'title'; G.titleSel = S ? 1 : 0; G.map = null; playMusic(null); SFX.back();
 }
 const sortedSwords = () => SWORD_ORDER.filter(s => S.swords.includes(s));
+function medalProgress(realm){
+ const data=realm===(S.realm||'magic')?S:(S.realmProgress||{})[realm]||{};
+ const count=Object.keys(LEAGUES).filter(k=>data.leagues&&data.leagues[k]).length;
+ return {data,count,national:(data.ligaWins||0)>0};
+}
+function drawMedal(x,y,won,color){
+ R(x-3,y-5,3,5,won?'#c04048':'#34404a');R(x+1,y-5,3,5,won?'#3868b8':'#34404a');
+ disc(x,y+2,5,won?'#f0d078':'#53606c');disc(x,y+2,3,won?color:'#293440');
+ if(won)R(x-1,y,2,3,'#fff0b0');
+}
 function drawLeagueProgress(){
-  txt('CAMINO AL CAMPEONATO',120,22,'#fcd84a','center',null);
-  tiny('LIGAS REGIONALES '+leaguesDone()+'/5',120,35,'#fff','center');
-  R(20,44,200,4,'#283838');R(20,44,40*leaguesDone(),4,'#60d890');
-  Object.entries(LEAGUES).forEach(([key,l],i)=>{const y=54+i*14,won=!!(S.leagues&&S.leagues[key]);tiny(l.n,8,y,won?'#90f0a0':'#fff');tiny(won?'GANADA':'PENDIENTE',232,y,won?'#90f0a0':'#ffd080','right');tiny(l.place+' · '+DAY_LABELS[LEAGUE_PHASE[key]],8,y+6,'#9db8a8');});
-  const champion=(S.ligaWins||0)>0,ready=leaguesDone()===5&&bossesDone()===ALL_BOSSES.length;
-  tiny('LIGA NACIONAL · TOLARIA · MEDIODIA',8,126,'#fcd84a');
-  tiny(champion?'¡CAMPEON NACIONAL!':ready?'DISPONIBLE: HABLA CON EL ORGANIZADOR':'REQUIERE 5 LIGAS Y TODOS LOS JEFES',8,135,champion?'#90f0a0':'#fff');
-  tiny('JEFES '+bossesDone()+'/'+ALL_BOSSES.length+' · BUSCAOBJETOS '+(S.finder?'OBTENIDO':leaguesDone()+'/4 LIGAS'),120,150,'#9db8a8','center');
+ const realm=G.menu.medalRealm||S.realm||'magic',p=medalProgress(realm),poke=realm==='pokemon';
+ for(const [i,r] of ['magic','pokemon'].entries()){R(12+i*112,20,104,13,realm===r?'#34554e':'#202c38');tiny(r.toUpperCase(),64+i*112,24,realm===r?'#ffe090':'#9db8a8','center',true);}
+ const badges={vina:['MAREAS','#68b8ed'],curico:['VENDIMIA','#78c878'],pmontt:['LLUVIA','#a0dce8'],urza:['CINCO LUNAS','#d898e8'],tempest:['TRUENO','#f09858']};
+ Object.entries(LEAGUES).forEach(([key,l],i)=>{const y=41+i*16,won=!!(p.data.leagues&&p.data.leagues[key]),gym=Object.values(POKEMON_GYMS).find(g=>g.key===key);
+  drawMedal(16,y+4,won,poke?gym.color:badges[key][1]);
+  tiny('MEDALLA '+(poke?gym.type:badges[key][0]),29,y,won?'#f8e0a0':'#c8d8d0','left',true);
+  tiny(l.place+(poke?' · '+gym.leader:''),29,y+7,'#9db8a8','left',true);
+  tiny(won?'GANADA':'PENDIENTE',233,y+2,won?'#90f0a0':'#85909c','right',true);
+ });
+ drawMedal(16,126,p.national,'#fff0a0');tiny('GRAN LIGA NACIONAL · TOLARIA',29,120,'#fcd84a','left',true);
+ tiny(p.national?'MEDALLA NACIONAL GANADA':p.count===5?'ACCESO ABIERTO · '+DAY_LABELS[LEAGUE_PHASE.nacional]:'REUNE LAS 5 MEDALLAS DE ESTE MUNDO',29,129,p.national?'#90f0a0':'#c8d8d0','left',true);
+ tiny(p.count+'/5 REGIONALES · COLECCIONES SEPARADAS',120,141,'#9db8a8','center',true);
+ tiny('TOCA MAGIC / POKEMON · ARRIBA/ABAJO: CAMBIAR',120,152,'#9db8a8','center',true);
 }
 function drawMenu(){
   const m = G.menu;
   R(0, 0, W, H, '#10161a'); R(0, 0, W, 16, '#1c2a2e');
-  ['MAZOS','EQUIPO','ESTADO','MAPA','MISIONES','LIGAS'].forEach((t, i) => {
+  ['MAZOS','EQUIPO','ESTADO','MAPA','MISIONES','MEDALLAS'].forEach((t, i) => {
     const x = i * 40;
     if (i === m.tab) R(Math.round(x), 2, 39, 13, '#2e4a44');
     tiny(t, Math.round(x + 20), 6, i === m.tab ? '#fcd84a' : '#9db8a8', 'center');
@@ -4973,7 +5208,7 @@ function drawMenu(){
     tiny('VIDA ' + S.hp / 2 + '/' + S.maxHp / 2 + '   MONEDAS ' + money(S.coins) + '   TROFEOS ' + S.trophies, 76, 104, '#c8d8d0');
     tiny('GOLPE ' + meleeDamage(st) + ' / CRIT ' + meleeCritDamage(st) + '  DES ' + Math.min(75, Math.round(st.des * 3)) + '%', 76, 112, '#fcd84a');
     tiny('CARTAS: ' + totalCards() + '/' + ALL_CARDS.length + '   MAZOS COMPLETOS: ' + DECKS.filter(d => deckDone(d.id)).length + '/' + DECKS.length, 76, 120, '#c8d8d0');
-    tiny('COMPAÑERO: ' + (S.pet !== null && S.pet !== undefined ? POKE[S.pet].n : 'NINGUNO') + '   POKEDEX ' + Object.keys(S.dex || {}).length + '/151', 76, 128, '#c8f0a0');
+    tiny('COMPAÑERO: ' + (companionInfo()?companionInfo().n:'NINGUNO') + '   POKEDEX ' + Object.keys(S.dex || {}).length + '/151', 76, 128, '#c8f0a0');
     tiny('ANTIGUEDADES: ' + relicCount() + ' (' + money(relicValue()) + ')   MONTURA: ' + (S.mount ? MOUNTS[S.mount].n.toUpperCase() : (S.mounts || []).length ? 'A PIE (R)' : 'NINGUNA'), 76, 136, '#e8c040');
     if (S.buzz) tiny('CERVEZA: +' + S.buzz + ' INT EN EL PROXIMO TORNEO', 76, 144, '#fcd84a');
     tiny('SE GUARDA SOLA.  ' + (TOUCH ? 'A' : 'Z') + ': VOLVER AL TITULO / OTRO PERSONAJE', 120, 151, '#fcd84a', 'center');
@@ -5174,9 +5409,10 @@ function drawWorld(){
   // sprites sorted by y
   const list = [];
   for (const it of G.items) list.push({ y:it.y + 8, f:() => drawItem(it) });
-  if (G.pet && S.pet !== null) list.push({ y:G.pet.y + 10, f:() => { const px = Math.round(G.pet.x - 3), py = Math.round(G.pet.y - 6); rgbAura(px, py, false, true); drawPoke(S.pet, px, py, G.pet.t, !!G.pet.flip); if (((G.pet.t >> 5) & 3) === 0) { R(px + 6, py - 5, 2, 1, '#ff5a8a'); R(px + 9, py - 5, 2, 1, '#ff5a8a'); R(px + 6, py - 4, 5, 1, '#ff5a8a'); R(px + 7, py - 3, 3, 1, '#ff5a8a'); R(px + 8, py - 2, 1, 1, '#ff5a8a'); } } });
+  if (G.pet && companionInfo()) list.push({ y:G.pet.y + 10, f:() => { const px = Math.round(G.pet.x - 3), py = Math.round(G.pet.y - 6); rgbAura(px, py, false, true); drawCompanion(px,py,G.pet.t,!!G.pet.flip); if (((G.pet.t >> 5) & 3) === 0) { R(px + 6, py - 5, 2, 1, '#ff5a8a'); R(px + 9, py - 5, 2, 1, '#ff5a8a'); R(px + 6, py - 4, 5, 1, '#ff5a8a'); R(px + 7, py - 3, 3, 1, '#ff5a8a'); R(px + 8, py - 2, 1, 1, '#ff5a8a'); } } });
   for (const w of (G.wild || [])) list.push({ y:w.y + 10, f:() => { drawPoke(w.id, Math.round(w.x - 3), Math.round(w.y - 6), w.t, !!w.flip); if (Math.hypot(w.x - PL.x, w.y - PL.y) < 56) { const nm = POKE[w.id].n, ww = nm.length * 4 + 3; ctx.fillStyle = 'rgba(10,8,20,.6)'; ctx.fillRect(Math.round(w.x + 5 - ww / 2), Math.round(w.y - 16), ww, 7); tiny(nm, Math.round(w.x + 5), Math.round(w.y - 15), POKE[w.id].tier === 4 ? '#fcd84a' : S.dex[w.id] ? '#9db8a8' : '#fff', 'center'); } } });
   for (const b of (G.balls || [])) list.push({ y:b.y + 4, f:() => { disc(b.x, b.y - 4, 3, '#1a1020'); R(Math.round(b.x) - 2, Math.round(b.y) - 6, 5, 2, '#58b048'); R(Math.round(b.x) - 2, Math.round(b.y) - 4, 5, 2, '#f4f4f8'); R(Math.round(b.x), Math.round(b.y) - 5, 1, 1, '#1a1020'); } });
+  if(G.waking>0){list.push({y:1002,f:()=>{ctx.save();ctx.translate(24,49);ctx.rotate(-Math.PI/2);drawPerson(-8,-8,CH(),0,0);ctx.restore();tiny('Z',29,32,'#d8e8ff');}});}
   for (const n of G.npcs) list.push({ y:n.y + n.h, f:() => drawPerson(n.x - 3, n.y - 8, n.id === 'friend' ? Object.assign({}, CHARS[n.ch], n.role === 'beer' && !CHARS[n.ch].piscola ? { mug:true } : {}) : (NPCDEF[n.id] || NPCDEF.vecina), n.dir, (n.role === 'cheer' && (frame >> 4) & 1) ? 1 : 0) });
   for (const n of G.npcs) { const mk = questMarker(n.id); if (mk) list.push({ y:1001, f:() => {
     const bx = n.x + 1, by = n.y - 26 + Math.round(Math.sin(frame * 0.12) * 1.5);
@@ -5191,7 +5427,7 @@ function drawWorld(){
     const m = MON[e.type], cx = Math.round(e.x + e.w / 2), top = Math.round(e.y - 2) - (m.size > 16 ? 2 : 0);
     // el nombre solo se ve de cerca, herido o si es jefe (así no se llena la pantalla de letreros)
     if (!m.boss && e.hp >= e.max && Math.hypot(cx - PL.x - 5, e.y - PL.y) > 56) return;
-    const nm = norm(m.n), w = nm.length * 4 + 3, ly = Math.max(1, top - 10);
+    const nm = norm(enemyName(e.type)), w = nm.length * 4 + 3, ly = Math.max(1, top - 10);
     ctx.fillStyle = 'rgba(10,8,20,.6)'; ctx.fillRect(cx - Math.ceil(w / 2), ly - 1, w, 7);
     tiny(nm, cx, ly, m.boss ? '#ffb040' : '#f4f0ff', 'center');
     if (!m.boss && e.hp < e.max) { R(cx - 6, ly + 6, 12, 2, '#3a1010'); R(cx - 6, ly + 6, Math.round(12 * e.hp / e.max), 2, '#e83040'); }
@@ -5204,7 +5440,7 @@ function drawWorld(){
     const nm = norm(o.name), w = nm.length * 4 + 3;
     R(x + 5 - w / 2, y - 22, w, 8, 'rgba(0,0,0,.55)'); tiny(nm, x + 5, y - 20, '#60e070', 'center');
   } });
-  list.push({ y:PL.y + PL.h, f:() => {
+  if(!G.waking)list.push({ y:PL.y + PL.h, f:() => {
     if (PL.atk > 0 && PL.dir === 1) drawSword();
     if (!(PL.inv > 0 && (PL.inv >> 1) & 1)) { const [wy, wa] = warpPlayer(); if (wa > 0) { ctx.globalAlpha = Math.max(0, Math.min(1, wa)); drawRider(Math.round(PL.x - 3), Math.round(PL.y - 8) + wy, playerLook(), G.warp && G.warp.mode === 'fly' ? 0 : PL.dir, G.warp ? (frame >> 3) & 1 : PL.atk > 0 ? 1 : Math.floor(PL.walk) % 2); ctx.globalAlpha = 1; } }
     if (PL.atk > 0 && PL.dir !== 1) drawSword();
@@ -5232,16 +5468,31 @@ function drawWorld(){
   drawLights();
   fineParticles();
   drawHazards();
-  for (const f of G.floats) tiny(f.s, Math.round(f.x), Math.round(f.y), f.col, 'center');
+  for (const f of G.floats){ctx.globalAlpha=Math.min(1,(45-f.t)/14);tiny(f.s,Math.round(f.x),Math.round(f.y),f.col,'center');if(f.crit&&f.t<28)tiny('CRITICO',Math.round(f.x),Math.round(f.y)+7,'#ff8080','center');ctx.globalAlpha=1;}
   drawHUD();
 }
+function drawBottomNotices(){
+  const notices=G.toasts.slice(-2);notices.forEach((t,i)=>{const y=H-11-(notices.length-1-i)*10;R(2,y,W-4,9,'rgba(8,12,24,.85)');tiny(realmText(t.s).slice(0,57),120,y+2,t.col,'center');});G.toasts.forEach(t=>t.t++);
+  G.toasts = G.toasts.filter(t => t.t < 150);
+}
 function drawHUD(){
+  drawTrainerMarkers();
+  if(G.roomId==='santuarioPortal'){R(32,148,176,9,'rgba(12,16,40,.8)');tiny(G.preview?'VISTA PREVIA · NO SE GUARDA':'ACERCATE AL UMBRAL · X: HABLAR',120,151,'#c8d8ff','center');return;}
   for(const p of G.def.props||[])if(p.k==='ligaNeon'||p.k==='tcgNeon')drawProp(p);
+  if(G.def.cardTemple){
+    tiny(DAY_LABELS[dayPhase()],5,4,'#e8e8d0');tiny(money(S.coins),235,4,'#ffe0a0','right');
+    const p=medalProgress(S.realm||'magic');
+    if(G.def.gym)tiny('RETADORES '+Math.min(gymRun().next,4)+'/4',120,118,'#ffe0a0','center');
+    tiny('MEDALLAS '+p.count+'/5 · MENU: VER COLECCION',120,141,'#c8e8d8','center');
+    if(G.preview)tiny('VISTA PREVIA · NO SE GUARDA',120,151,'#9db8a8','center');
+    drawBottomNotices();return;
+  }
   for(const n of G.npcs||[])if(!G.def.cardTemple&&(LEAGUE_BY_NPC[n.id]||n.id==='ligaOrg')){R(n.x-9,n.y-19,28,9,'#684018');tiny('LIGA',n.x+5,n.y-17,'#ffe880','center');}
   if(S.finder){const h=hiddenSpot();if(h){const d=Math.hypot(h.x-PL.x-5,h.y-PL.y-4);tiny('BUSCAOBJETOS '+(d<22?'¡AQUI!':d<55?'CERCA':'ACTIVO'),120,139,'#fcd84a','center');disc(h.x,h.y-4,2+(frame>>4&1),'#fcd84a');}else if(!areaCleared())tiny('LIMPIA LA ZONA PARA BUSCAR',120,139,'#c8d8d0','center');}
   const ph=dayPhase();R(106,2,66,10,'rgba(10,18,30,.7)');if(ph==='night'){disc(112,7,3,'#d8e8ff');disc(114,5,3,'#1a2838');}else disc(112,7,3,ph==='dusk'?'#f89850':'#ffe080');tiny(DAY_LABELS[ph],142,5,'#fff','center');
-  if(S.pet!==null && POKE[S.pet]){R(172,148,66,9,'rgba(10,18,30,.65)');tiny(POKE[S.pet].n.slice(0,8)+' NV '+petLevel(),205,151,'#b0f0a0','center');}
-  if(G.preview){R(64,148,112,10,'#143858');tiny('VISTA POKEMON · NO SE GUARDA',120,151,'#fff','center');}
+  if(companionInfo()){R(172,138,66,9,'rgba(10,18,30,.65)');tiny(companionInfo().n.slice(0,8)+' NV '+petLevel(),205,141,'#b0f0a0','center',true);}
+  if(G.def.gym){const run=gymRun();R(30,118,180,9,'rgba(12,18,36,.85)');tiny(G.def.gym.spec.type+' · RETADORES '+Math.min(run.next,4)+'/4 · '+reputationTitle(),120,120,'#f0dca0','center');}
+  if(G.preview){R(64,148,112,10,'#143858');tiny('VISTA PREVIA · NO SE GUARDA',120,151,'#fff','center');}
   // Si el jugador camina por debajo del panel, el panel se vuelve casi transparente (no tapa entradas ni escaleras)
   const under = (x0, x1, y1) => PL.x + 10 > x0 && PL.x < x1 && PL.y - 8 < y1;
   const aL = under(0, 72, 38) ? 0.25 : 0.9, aR = under(168, W, 26) ? 0.25 : 0.9;
@@ -5290,10 +5541,9 @@ function drawHUD(){
   if (G.bossBar && !G.bossBar.dead) {
     const b = G.bossBar, raid = MON[b.type].raid;
     R(30, 147, 180, 10, raid ? '#ff9040' : '#000'); R(31, 148, 178, 8, '#000'); R(32, 149, Math.round(176 * Math.max(0, b.hp) / b.max), 6, raid ? '#ff5020' : '#d83020');
-    tiny((raid ? 'RAID - ' : '') + MON[b.type].n + '  ' + Math.max(0, Math.ceil(b.hp)) + '/' + b.max, 120, 140, raid ? '#ffb070' : '#fff', 'center');
+    tiny((raid ? 'RAID - ' : '') + enemyName(b.type) + '  ' + Math.max(0, Math.ceil(b.hp)) + '/' + b.max, 120, 140, raid ? '#ffb070' : '#fff', 'center');
   }
-  G.toasts.forEach((t, i) => { t.t++; const w = norm(t.s).length * 4 + 8; R(120 - w / 2, 40 + i * 11, w, 10, 'rgba(0,0,0,.7)'); tiny(t.s, 120, 42 + i * 11, t.col, 'center'); });
-  G.toasts = G.toasts.filter(t => t.t < 150);
+  drawBottomNotices();
 }
 
 /* ============ CARD GET / DEATH ============ */
@@ -5399,7 +5649,7 @@ function drawIntro(){
   ctx.save(); ctx.translate(180 - meet * 36, 58); ctx.scale(2.5, 2.5); drawPerson(0, 0, CHARS[7], 2, 0); ctx.restore();
   drawMug(112, 60 - Math.round(meet * 6), 2, k);
   if (k > 55) { for (let i = 0; i < 8; i++) R(Math.round(120 + Math.cos(i * 0.8) * (k - 55) * 0.6), Math.round(62 + Math.sin(i * 0.8) * (k - 55) * 0.4), 2, 2, '#fce060'); txt('¡SALUD!', 120, 26, '#fce060', 'center', '#0f380f', 16); }
-  introBars('...Y UNA CAJA DE URZA POR CERRAR.');
+  introBars('DOMINA LAS CARTAS. CIERRA LA CAJA DE URZA.');
   if (t > INTRO_LEN - 20) { ctx.fillStyle = 'rgba(255,255,255,' + (t - INTRO_LEN + 20) / 20 + ')'; ctx.fillRect(0, 0, W, H); }
 }
 function drawTitle(){
@@ -5550,13 +5800,7 @@ function updateSelect(){
 }
 function beginAdventure(ci, custom){
     S = newSave(ci, custom); S.slot = G.newSlot || 1; G.state = 'world';
-    loadRoom('pueblo', S.x, S.y);
-    say(['Bienvenido a VILLA PREMODERN, ' + CH().n + '.',
-      'Por aquí las criaturas salen de las cartas... y cuando las derrotas, sueltan cartas.',
-      'Antes de salir de la Villa, ve a la ZONA SAFARI (la casita verde de la izquierda) y atrapa tu primer Pokémon: será tu compañero de aventura.',
-      'Junta un mazo completo (12 cartas) y juega el torneo en la ARENA.',
-      '¿Sed? En la TABERNA hay cerveza y gente para cambiar cartas.',
-      TOUCH ? 'A: atacar. B: hablar. MENÚ: tus mazos, espadas y estado.' : 'Z: atacar. X: hablar. ENTER: tus mazos, espadas y estado.']);
+    loadRoom('hogar',S.x,S.y);G.waking=120;saveGame();
 }
 
 /* ============ CREADOR DE PERSONAJES ============ */
@@ -6342,7 +6586,7 @@ const TACTICS = [
 const BEATS = { agro:'combo', ctrl:'agro', combo:'ctrl' };
 const LOSES_TO = { agro:'ctrl', ctrl:'combo', combo:'agro' };
 const DECK_STYLE = { burn:'agro', goblins:'agro', black:'ctrl', life:'ctrl', replenish:'combo', langostino:'combo', terragedon:'agro', landstill:'ctrl', rock:'ctrl', mud:'combo' };
-const DUELIST_DECK = { durandal:'rock',galindo:'landstill',jorgew:'goblins',cesar:'burn',jgu:'replenish',macias:'mud', fan1:'goblins', fan2:'burn', fan3:'black', fan4:'life', klaus:'black', marinero:'langostino', pescador:'replenish', juez:'replenish', coleccionista:'langostino', cantinero:'burn', ligaVina:'terragedon', ligaCurico:'rock', ligaPmontt:'landstill', ligaUrza:'mud', ligaTempest:'landstill' };
+const DUELIST_DECK = { luchoBarril:'goblins', durandal:'rock',galindo:'landstill',jorgew:'goblins',cesar:'burn',jgu:'replenish',macias:'mud', fan1:'goblins', fan2:'burn', fan3:'black', fan4:'life', klaus:'black', marinero:'langostino', pescador:'replenish', juez:'replenish', coleccionista:'langostino', cantinero:'burn', ligaVina:'terragedon', ligaCurico:'rock', ligaPmontt:'landstill', ligaUrza:'mud', ligaTempest:'landstill' };
 const FRIEND_DECK = ['goblins','burn','replenish','black','langostino','terragedon','rock','landstill','mud','life','goblins','burn','life','replenish','langostino','burn','mud','rock'];
 const isDuelist = n => n.id === 'friend' || DUELIST_DECK[n.id] !== undefined;
 function offerDuel(n){
@@ -6352,7 +6596,7 @@ function offerDuel(n){
 }
 function setupDuel(n){
   const isF = n.id === 'friend', name = isF ? CHARS[n.ch].n : NPCDEF[n.id].n;
-  const opp = { name, look:isF ? CHARS[n.ch] : NPCDEF[n.id], deck:isF ? FRIEND_DECK[n.ch] : DUELIST_DECK[n.id], bonus:n.id==='galindo'?4:(n.id === 'juez' || n.id === 'coleccionista') ? 1 : 0, cheats:isF && !!CHARS[n.ch].cheat };
+  const opp = { name, look:isF ? CHARS[n.ch] : NPCDEF[n.id], deck:isF ? FRIEND_DECK[n.ch] : (localPlayerDeck(n.id)||DUELIST_DECK[n.id]), bonus:n.id==='galindo'?4:(n.id === 'juez' || n.id === 'coleccionista') ? 1 : 0, cheats:isF && !!CHARS[n.ch].cheat };
   const done = DECKS.filter(d => deckDone(d.id));
   const pickBet = deck => say(['¿Cuanto apuestas? Si ganas te llevas el doble.'],
     [1000, 5000, 15000].map(b => ({ t:money(b), fn:() => { if (S.coins < b) { say(['No te alcanza para esa apuesta.']); return; } S.coins -= b; beginDuel(opp, deck, b); } })).concat([{ t:'MEJOR NO', fn:null }]));
@@ -6426,7 +6670,8 @@ function updateDuel(){
     if (d.t > 40 && pressed('a')) {
       G.state = 'world'; playMusic(roomMusic());
       const earnedXP=cardMatchXP(d.won,d.turn);addXP(earnedXP);recordTempleMatch(d.opp.name,d.won);
-      if (d.won) { S.coins += d.bet * 2; say([d.opp.name + ': ¡Buena partida! Me ganaste.', 'Ganaste ' + money(d.bet * 2) + ' y '+earnedXP+' EXP de cartas.']); }
+      if(d.opp.gym){finishPokemonGymMatch(d.opp.gym,d.won);}
+      else if (d.won) { S.coins += d.bet * 2; say([d.opp.name + ': ¡Buena partida! Me ganaste.', 'Ganaste ' + money(d.bet * 2) + ' y '+earnedXP+' EXP de cartas.']); }
       else say([d.opp.name + ': ¡Gane! La suerte estuvo de mi lado.', 'Perdiste la apuesta de ' + money(d.bet) + '. Aprendiste: +'+earnedXP+' EXP de cartas.']);
       S.duelsWon = (S.duelsWon || 0) + (d.won ? 1 : 0);
       G.duel = null; saveGame();
@@ -6484,14 +6729,13 @@ function drawDuel(){
 }
 
 /* ============ FINAL ============ */
-const ENDING = ['¡CAMPEÓN NACIONAL DE PREMODERN!', '', 'Con los cinco guardianes derrotados', 'y la Liga Nacional ganada,', 'la Caja de Urza vuelve a tus manos.', '',
-  'Esa noche, en el Bar La Ruca de Curicó,', 'se brindó por el nuevo campeón.', 'Klaus pagó la primera ronda.', '',
-  'La caja quedó abierta.', 'Porque el Premodern chileno', 'nunca se cierra del todo.', '', ...friendCredits(), '', 'UN JUEGO DE MATÍAS GAMES PRODUCTION', '', 'GRACIAS POR JUGAR', '¡SALUD!', '', 'MAGIC THE BEER QUEST'];
+const ENDING=['LA CAJA DE URZA ESTA SELLADA','', 'Dominaste todos los mazos.', 'Cada criatura regreso a su carta.', 'La maldicion abandono las ciudades.', 'El mundo vuelve a estar en paz.','', 'En Xcso Club y la Oktoberfest del lago', 'se brindo por el heroe de las cartas.','',...friendCredits(),'','UN JUEGO DE MATIAS GAMES PRODUCTION','¡SALUD!','MAGIC THE BEER QUEST'];
+const CHAMPION_ENDING=['¡CAMPEON NACIONAL!','', 'Tu nombre vive en todas las tiendas.', 'El umbral entre mundos desperto.','', 'Pero la Caja de Urza sigue abierta.', 'Domina todos los mazos y regresa', 'al santuario para sellar la maldicion.','', 'Tu sueño de salvar el mundo continua.','¡SALUD!'];
 function drawEnding(){
   R(0, 0, W, H, '#0e0a24');
   for (let i = 0; i < 40; i++) R(Math.round(hash(i) * 240), Math.round(hash(i + 40) * 160), 1, 1, (frame + i * 5) % 60 < 4 ? '#6a64a8' : '#fff');
   const off = 160 - G.t * 0.35;
-  ENDING.forEach((l, i) => { const y = Math.round(off + i * 14); if (y > -10 && y < 160) (i === 0 || i === ENDING.length - 1 ? txt(l, 120, y, '#fcd84a', 'center', '#7a3a10') : tiny(l, 120, y + 2, '#e8e4ff', 'center')); });
+  const credits=S.boxClosed?ENDING:CHAMPION_ENDING;credits.forEach((l, i) => { const y = Math.round(off + i * 14); if (y > -10 && y < 160) (i === 0 || i === credits.length - 1 ? txt(l, 120, y, '#fcd84a', 'center', '#7a3a10') : tiny(l, 120, y + 2, '#e8e4ff', 'center')); });
   if (G.t > 200 && (frame >> 4) & 1) tiny('A PARA SEGUIR JUGANDO', 120, 150, '#9a90d0', 'center');
 }
 
@@ -6575,14 +6819,14 @@ function remoteCharacter(o){
   try { return characterOf(o) || CHARS[0]; } catch (_) { return CHARS[0]; }
 }
 function myState(){
-  return { pid:NET.pid, name:CH().n, ch:S.ch, customChar:S.customChar || null, room:G.roomId, x:Math.round(PL.x), y:Math.round(PL.y), dir:PL.dir, atk:PL.atk, walk:Math.floor(PL.walk) % 2, hp:S.hp, max:S.maxHp };
+  return { pid:NET.pid, name:CH().n, ch:S.ch, customChar:S.customChar || null, realm:S.realm||'magic', room:G.roomId, x:Math.round(PL.x), y:Math.round(PL.y), dir:PL.dir, atk:PL.atk, walk:Math.floor(PL.walk) % 2, hp:S.hp, max:S.maxHp };
 }
-const sendAll = m => { for (const c of NET.conns) if (c.open) c.send(m); };
+const sendAll = m => {if(m.room)m={...m,realm:S.realm||'magic'}; for (const c of NET.conns) if (c.open) c.send(m); };
 function sendTo(pid, m){ if (NET.role === 'host') { const c = NET.conns.find(x => x.pid === pid); if (c && c.open) c.send(m); } }
 function hostRecv(c, d){
   if (d.t === 'st') { d.pid = c.pid; const o = NET.others[c.pid]; if (!o) toast(d.name + ' SE UNIO', '#60e070'); NET.others[c.pid] = Object.assign(o || { rx:d.x, ry:d.y }, d); }
   else if (d.t === 'hit') {
-    if (d.room !== G.roomId || G.state !== 'world') return;
+    if (d.room !== G.roomId || G.state !== 'world'||(d.realm||'magic')!==(S.realm||'magic')) return;
     const e = G.enemies.find(o => o.nid === d.id && !o.dead);
     if (e) applyHit(e, d.dmg, d.kx, d.ky);
   } else if (d.t === 'gift') {
@@ -6590,6 +6834,7 @@ function hostRecv(c, d){
   }
 }
 function clientRecv(d){
+  if(['en','kill','fx'].includes(d.t)&&(d.realm||'magic')!==(S.realm||'magic'))return;
   if (d.t === 'hello') NET.pid = d.pid;
   else if (d.t === 'full') { netStatus('La sala está llena (máximo 3).'); netLeave(true); }
   else if (d.t === 'pl') {
@@ -6597,7 +6842,7 @@ function clientRecv(d){
     for (const s of d.list) {
       if (s.pid === NET.pid) continue;
       seen[s.pid] = true;
-      if (s.pid === 'h') NET.hostRoom = s.room;
+      if (s.pid === 'h'){NET.hostRoom=s.room;NET.hostRealm=s.realm||'magic';}
       const o = NET.others[s.pid]; if (!o) toast(s.name + ' ESTA EN LA SALA', '#60e070');
       NET.others[s.pid] = Object.assign(o || { rx:s.x, ry:s.y }, s);
     }
@@ -6621,7 +6866,7 @@ function sendGift(to, card){
   if (NET.role === 'host') sendTo(to, m); else if (NET.host) NET.host.send(m);
   toast('REGALASTE ' + CARDS[card].n, '#c8d8e8'); SFX.ok();
 }
-const clientSynced = () => NET.role === 'client' && NET.hostRoom === G.roomId && frame - NET.gotEn < 60;
+const clientSynced = () => NET.role === 'client' && NET.hostRoom === G.roomId&&(NET.hostRealm||'magic')===(S.realm||'magic') && frame - NET.gotEn < 60;
 function applyEnemySnap(list){
   NET.gotEn = frame;
   const seen = new Set();
@@ -6646,14 +6891,14 @@ function netTick(){
   if (frame % 4) return;
   if (NET.role === 'host') {
     if (!NET.conns.length) return;
-    const list = [myState()].concat(Object.values(NET.others).map(o => ({ pid:o.pid, name:o.name, ch:o.ch, room:o.room, x:o.x, y:o.y, dir:o.dir, atk:o.atk, walk:o.walk, hp:o.hp, max:o.max })));
+    const list = [myState()].concat(Object.values(NET.others).map(o => ({ pid:o.pid, name:o.name, ch:o.ch,customChar:o.customChar||null,realm:o.realm||'magic', room:o.room, x:o.x, y:o.y, dir:o.dir, atk:o.atk, walk:o.walk, hp:o.hp, max:o.max })));
     sendAll({ t:'pl', list });
     if (G.state === 'world') sendAll({ t:'en', room:G.roomId, list:G.enemies.filter(e => !e.dead).map(e => [e.nid, e.type, Math.round(e.x), Math.round(e.y), e.hp, e.max, e.flip ? 1 : 0, e.flash > 0 ? 1 : 0]) });
   } else if (NET.host && NET.host.open) {
     NET.host.send(Object.assign({ t:'st' }, myState()));
   }
 }
-const othersHere = () => Object.values(NET.others).filter(o => o.room === G.roomId);
+const othersHere = () => Object.values(NET.others).filter(o => o.room === G.roomId&&(o.realm||'magic')===(S.realm||'magic'));
 
 /* ---- Pasar la partida entre dispositivos (link o codigo, sin cuentas) ---- */
 async function encodeSave(s){
@@ -6771,13 +7016,15 @@ function step(){
   else if (G.state === 'title') updateTitle();
   else if (G.state === 'select') updateSelect();
   else if (G.state === 'slots') updateSlots();
+  else if (G.state === 'realmTravel') updateRealmTravel();
   else if (G.state === 'tour') updateTour();
   else if (G.state === 'arcade') updateArcade();
   else if (G.state === 'duel') { if (G.dialog) updateDialog(); else updateDuel(); }
   else if (G.state === 'ending') { if (G.t > 200 && pressed('a')) { G.state = 'world'; playMusic(roomMusic()); } }
   else if (G.state === 'world') {
     if (G.fade > 0) G.fade--;
-    if (G.warp) updateWarp();
+    if(G.waking>0){G.waking--;if(G.waking===0)say(['¡Un nuevo dia! Soy '+CH().n+' y mi gran sueño es ser campeon de las cartas Magic.','Mi cocina, mi comedor y la computadora con IA estan listos. En la pared, los campeones que me inspiran.','Un hechizo rompio el sello de la Caja de Urza. Las criaturas salieron de las cartas, perdieron su voluntad y se volvieron hostiles contra las personas.','Solo quien domine todos los mazos puede comprender el hechizo inverso: devolver las criaturas a sus cartas y cerrar la caja para recuperar la paz.','Las cinco ligas y sus guardianes guardan ese conocimiento. Mi poder como heroe nacera de mi dominio de las cartas.','Primero visitare el Safari para encontrar un compañero. ¡Hoy empieza mi aventura!']);}
+    else if (G.warp) updateWarp();
     else if (G.cardGet) { G.cardGet.t++; if (G.cardGet.t > 30 && (pressed('a') || pressed('b'))) { const done = G.cardGet.done; G.cardGet = G.cardQueue.shift() || null; if (G.cardGet) SFX.card(); else SFX.ok(); if (done) toast('¡MAZO ' + done + ' COMPLETO!', '#fcd84a'); } }
     else if (G.dialog) updateDialog();
     else if (G.shop) updateShop();
@@ -6796,7 +7043,7 @@ function step(){
       if (PL.piscola > 0) PL.piscola--;
       if (CH().music && frame % 14 === 0) G.parts.push({ k:'note', x:PL.x + 5 + rnd(10) - 5, y:PL.y - 12, vx:(Math.random() - 0.5) * 0.5, vy:-0.55, t:0, c:pick(['#40f0e0','#e83078','#fce040','#a060ff']) });
       if (frame % 26 === 0) for (const n of G.npcs) if (n.id === 'friend' && CHARS[n.ch] && CHARS[n.ch].music) G.parts.push({ k:'note', x:n.x + 5 + rnd(10) - 5, y:n.y - 12, vx:(Math.random() - 0.5) * 0.5, vy:-0.55, t:0, c:pick(['#40f0e0','#e83078','#fce040','#a060ff']) });
-      updateWorld();
+      updateWorld();updateTrainerSight();
     }
     if ((G.cardGet || G.dialog || G.menu) && NET.role === 'host' && NET.conns.length) { updateEnemies(); updateParts(); }
     for (const t of G.toasts) if (G.dialog || G.menu) t.t = Math.min(t.t, 140);
@@ -6812,12 +7059,12 @@ function drawBestiary(){
   small.forEach((k, i) => {
     const x = 6 + (i % 4) * 58, y = 20 + Math.floor(i / 4) * 44;
     ctx.save(); ctx.translate(x + 13, y + 6); ctx.scale(2, 2); drawMon(k, 0, 0, frame, false); ctx.restore();
-    tiny(MON[k].n, x + 29, y, '#fff', 'center');
+    tiny(enemyName(k), x + 29, y, '#fff', 'center');
   });
   [['negator',6],['angel',64],['siege',124],['dread',184]].forEach(([k, x]) => {
     const sz = MON[k].size, s = sz === 24 ? 1.5 : 1;
     ctx.save(); ctx.translate(x + 26 - sz * s / 2, 118); ctx.scale(s, s); drawMon(k, 0, 0, frame, false); ctx.restore();
-    tiny(MON[k].n.split(' ').pop(), x + 26, 111, '#fff', 'center');
+    tiny(enemyName(k).split(' ').pop(), x + 26, 111, '#fff', 'center');
   });
 }
 function drawBestiary2(){
@@ -6827,9 +7074,9 @@ function drawBestiary2(){
   ['elf','mongrel','faerie','birds','factory','magoAzul','metalworker','squirrel','servo','hermit'].forEach((k, i) => {
     const x = 4 + (i % 5) * 47, y = 16 + Math.floor(i / 5) * 38;
     ctx.save(); ctx.translate(x + 8, y + 6); ctx.scale(2, 2); drawMon(k, 0, 0, frame, false); ctx.restore();
-    tiny(MON[k].n.split(' ')[0], x + 24, y, '#fff', 'center');
+    tiny(enemyName(k).split(' ')[0], x + 24, y, '#fff', 'center');
   });
-  ['terravore','baloth','monger','juggernaut'].forEach((k, i) => { const x = 8 + i * 58; ctx.save(); ctx.translate(x + 2, 98); ctx.scale(1.5, 1.5); drawMon(k, 0, 0, frame, false); ctx.restore(); tiny(MON[k].n.split(' ').pop(), x + 20, 92, '#fff', 'center'); });
+  ['terravore','baloth','monger','juggernaut'].forEach((k, i) => { const x = 8 + i * 58; ctx.save(); ctx.translate(x + 2, 98); ctx.scale(1.5, 1.5); drawMon(k, 0, 0, frame, false); ctx.restore(); tiny(enemyName(k).split(' ').pop(), x + 20, 92, '#fff', 'center'); });
   drawMon('masticore', 190, 108, frame, false);
 }
 function drawZonesPreview(list, bosses){
@@ -6857,6 +7104,7 @@ function render(){
   else if (G.state === 'title') drawTitle();
   else if (G.state === 'select') drawSelect();
   else if (G.state === 'slots') drawSlots();
+  else if (G.state === 'realmTravel') drawRealmTravel();
   else if (G.state === 'tour') drawTour();
   else if (G.state === 'arcade') {drawArcade();if(G.arc&&!G.arc.exitConfirm){R(197,0,43,9,'#182030');tiny('MENU:SALIR',219,2,'#fff','center');}}
   else if (G.state === 'duel') { drawDuel(); if (G.dialog) drawDialog(); }
@@ -6880,7 +7128,10 @@ function loop(now){
   requestAnimationFrame(loop);
   acc += Math.min(100, now - last); last = now;
   try {
-    if(location.hash.startsWith('#vista=pokemon') && !G.tested){G.tested=true;G.preview=true;S=newSave(0);S.realm='pokemon';S.lvl=80;S.maxHp=S.hp=200;S.coins=1000000;S.surf=true;S.pet=24;S.visited=Object.fromEntries(Object.keys(WORLD).map(id=>[id,true]));G.state='world';loadRoom('tienda',115,116);}
+    if(location.hash.startsWith('#vista=casa')&&!G.tested){G.tested=true;G.preview=true;S=newSave(0);if(location.hash.includes('pokemon')){S.realm='pokemon';S.magicPet='angel';}G.state='world';loadRoom('hogar',35,52);G.waking=120;if(location.hash.includes('captura')){G.fade=0;G.freeze=true;}}
+    if(location.hash.startsWith('#vista=portal')&&!G.tested){G.tested=true;G.preview=true;S=newSave(0);S.lvl=80;S.ligaWins=1;S.magicPet='shivan';G.state='world';loadRoom('santuarioPortal',115,116);if(location.hash.includes('viaje')){startRealmTravel();if(location.hash.includes('captura')){G.realmTravel.t=210;G.freeze=true;}}}
+    if(location.hash.startsWith('#vista=liga')&&!G.tested){G.tested=true;G.preview=true;S=newSave(0);G.state='world';const id=new URLSearchParams(location.hash.split('&').slice(1).join('&')).get('zona')||'cartasCurico';if(ROOMS[id]&&ROOMS[id].cardTemple)loadRoom(id,115,116);else loadRoom('cartasCurico',115,116);}
+    if(location.hash.startsWith('#vista=pokemon') && !G.tested){G.tested=true;G.preview=true;S=newSave(0);S.realm='pokemon';S.lvl=80;S.maxHp=S.hp=200;S.coins=1000000;S.surf=true;S.pet=24;S.magicPet='shivan';S.visited=Object.fromEntries(Object.keys(WORLD).map(id=>[id,true]));G.state='world';const zone=new URLSearchParams(location.hash.split('&').slice(1).join('&')).get('zona');const room=zone&&(Object.hasOwn(ROOMS,zone)||Object.hasOwn(WILD,zone))?zone:'tienda';loadRoom(room,115,room==='tienda'?116:84);toast('UN ENTE LOS SACO DE LAS CARTAS: AHORA SON SALVAJES','#ffb070');}
     if (location.hash === '#test-arcade' && !G.tested) { G.tested = true; S = newSave(0); S.coins = 50; G.state = 'world'; loadRoom('arcade', 7 * TS + 3, 7 * TS + 4); }
     if (location.hash.startsWith('#elegir') && !G.tested) { G.tested = true; G.state = 'select'; G.sel = +location.hash.slice(8) || 0; }
     if (location.hash.startsWith('#intro=') && !G.tested) { G.tested = true; const n = +location.hash.slice(7); for (let i = 0; i < n; i++) step(); G.freeze = true; }
@@ -6961,6 +7212,7 @@ function dialogClick(p){
 function menuClick(p){
   const m = G.menu;
   if (p.y < 16) { const t = Math.floor(p.x / 40); if (t >= 0 && t < 6) { m.tab = t; m.sel = 0; m.deck = null; m.sub = null; SFX.move(); } return; }
+  if(m.tab===5){if(p.y>=20&&p.y<=34){m.medalRealm=p.x<120?'magic':'pokemon';SFX.move();}else if(p.y>=145)pulseKey='a';return;}
   if (m.tab === 0) {
     if (m.deck === null) { const i = Math.floor((p.y - 18) / 12); if (i >= 0 && i < DECKS.length) { m.sel = i; pulseKey = 'a'; } }
     else { for (let i = 0; i <= DECK_SIZE; i++) { const [x, y] = deckCellPos(i); if (inRect(p, [x, y, 24, 34])) { m.cs = i; SFX.move(); return; } } if (p.y > 144) pulseKey = 'b'; }

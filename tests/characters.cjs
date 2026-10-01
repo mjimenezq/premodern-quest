@@ -8,9 +8,9 @@ const elements = new Map();
 function element(){return { listeners:new Map(),textContent:'',style:{},dataset:{},value:'',hidden:false,classList:{add(){},remove(){},toggle(){}},append(){},appendChild(node){if(node.id)elements.set(node.id,node);},addEventListener(type,fn){const list=this.listeners.get(type)||[];list.push(fn);this.listeners.set(type,list);},setAttribute(){},focus(){},getContext:()=>drawing,getBoundingClientRect:()=>({left:0,top:0,width:960,height:640}),querySelectorAll:()=>[] };}
 const padButtons=['up','down','left','right','a','b','c','v','menu'].map(k=>{const button=element();button.dataset.k=k;return button;});
 const storage=new Map();
-const sandbox={console,URLSearchParams,TextEncoder,TextDecoder,Uint8Array,Uint8ClampedArray,Buffer,Math:Object.create(Math),Date,performance:{now:()=>0},navigator:{maxTouchPoints:0},location:{hash:'',search:'',href:'http://localhost/',protocol:'http:'},requestAnimationFrame(){},setTimeout(){},clearTimeout(){},setInterval(){},clearInterval(){},matchMedia:()=>({matches:false}),addEventListener(){},localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v),removeItem:k=>storage.delete(k)},document:{body:element(),createElement:()=>element(),querySelectorAll:()=>[],getElementById(id){if(!elements.has(id))elements.set(id,element());return elements.get(id);}},btoa:s=>Buffer.from(s,'binary').toString('base64'),atob:s=>Buffer.from(s,'base64').toString('binary')};
+const sandbox={console,structuredClone,URLSearchParams,TextEncoder,TextDecoder,Uint8Array,Uint8ClampedArray,Buffer,Math:Object.create(Math),Date,performance:{now:()=>0},navigator:{maxTouchPoints:0},location:{hash:'',search:'',href:'http://localhost/',protocol:'http:'},requestAnimationFrame(){},setTimeout(){},clearTimeout(){},setInterval(){},clearInterval(){},matchMedia:()=>({matches:false}),addEventListener(){},localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v),removeItem:k=>storage.delete(k)},document:{body:element(),createElement:()=>element(),querySelectorAll:()=>[],getElementById(id){if(!elements.has(id))elements.set(id,element());return elements.get(id);}},btoa:s=>Buffer.from(s,'binary').toString('base64'),atob:s=>Buffer.from(s,'base64').toString('binary')};
 sandbox.window=sandbox;sandbox.document.addEventListener=()=>{};sandbox.document.querySelectorAll=selector=>selector==='#pad button'?padButtons:[];
-source=source.replace(/\}\)\(\);\s*$/, `globalThis.gameTest={CHARS,CUSTOM_CHAR,normalizeCustom,customCharacter,characterOf,newSave,loadSave,saveGame,slotKey,speed,defense,aquaticBonus,loadRoom,checkConnectivity,drawSelect,drawPerson,drawDuel,drawTour,SONGS,roomMusic,tryInteract,meleeMissChance,meleeOutcome,beginDuel,updateDuel,resolveDuel,duelOptions,cardPower,rivalPower,drawMenu,menuClick,updateTour,oppPick,startTour,prepRound,updateItems,step,encodeSave,decodeSave,myState,remoteCharacter,FRIEND_LINES,FRIEND_DECK,FRIENDS_ON_MAP,getDef,SOLID,ROOMS,MOUNTS,shopItems,buyItem,mounted,goTo,friendCast,friendCredits,propSolidSet,K,updateWorld,blocked,npcHit,SLOTS,drawSlots,leagueMapMarks,drawWorldMap,BOAT_ROUTES,QUESTS,questHook,questProg,ensureContract,journalEntries,openQuestJournal,drawQuests,ARMOR,SWORDS,HOUSE,PRIZES,GEAR_SLOTS,dayPhase,DAY_PHASE_TICKS,SPELL_LVLS,spellLvl,petLevel,cardMatchXP,tournamentXP,RESPAWN_MS,killEnemy,hiddenSpot,searchHidden,MON,WORLD,DUNGEONS,startArcade,updateArcade,drawArcade,tennisPoint,requestArcadeExit,cancelArcade,drawWorld,drawHUD,changeRoom,setSelectScroll,selectMaxScroll,revealSelected,selectAt,G,PL,wizardDefaults,setS(value){S=value;},getS(){return S;},setFrame(value){frame=value;}};})();`);
+source=source.replace(/\}\)\(\);\s*$/, `globalThis.gameTest={medalProgress,festivalTasting,festivalBeer,sealReady,closeUrzaBox,DECKS,GUARDIANS,dropLoot,questCoins,levelCoins,itemLevel,usableDrop,POKEMON_GYMS,gymRun,beginPokemonGymMatch,finishPokemonGymMatch,reputationTitle,updateTrainerSight,drawTrainerMarkers,homeOracle,beginAdventure,TEMPLE_IDENTITIES,MAGIC_COMPANIONS,companionInfo,drawCompanion,updatePet,portalUnlocked,switchRealm,startRealmTravel,updateRealmTravel,drawRealmTravel,realmDefinition,realmText,talkTo,localPlayerDeck,addCard,CHARS,CUSTOM_CHAR,normalizeCustom,customCharacter,characterOf,newSave,loadSave,saveGame,slotKey,speed,defense,aquaticBonus,loadRoom,checkConnectivity,drawSelect,drawPerson,drawDuel,drawTour,POKE,pokemonEnemy,enemyName,pokemonRealm,SONGS,roomMusic,tryInteract,meleeMissChance,meleeOutcome,beginDuel,updateDuel,resolveDuel,duelOptions,cardPower,rivalPower,drawMenu,menuClick,updateTour,oppPick,startTour,prepRound,updateItems,step,encodeSave,decodeSave,myState,remoteCharacter,FRIEND_LINES,FRIEND_DECK,FRIENDS_ON_MAP,getDef,SOLID,ROOMS,MOUNTS,shopItems,buyItem,mounted,goTo,friendCast,friendCredits,propSolidSet,K,updateWorld,blocked,npcHit,SLOTS,drawSlots,leagueMapMarks,drawWorldMap,BOAT_ROUTES,QUESTS,questHook,questProg,ensureContract,journalEntries,openQuestJournal,drawQuests,ARMOR,SWORDS,HOUSE,PRIZES,GEAR_SLOTS,dayPhase,DAY_PHASE_TICKS,SPELL_LVLS,spellLvl,petLevel,cardMatchXP,tournamentXP,RESPAWN_MS,killEnemy,hiddenSpot,searchHidden,MON,WORLD,DUNGEONS,startArcade,updateArcade,drawArcade,tennisPoint,requestArcadeExit,cancelArcade,drawWorld,drawHUD,changeRoom,setSelectScroll,selectMaxScroll,revealSelected,selectAt,G,PL,wizardDefaults,setS(value){S=value;},getS(){return S;},setFrame(value){frame=value;}};})();`);
 vm.runInNewContext(source,sandbox,{timeout:5000});
 const g=sandbox.gameTest;
 // Browser gesture suppression keeps held controls and simultaneous movement/attack.
@@ -84,12 +84,12 @@ for(const [id,npcId] of [['establo','caballerizo'],['bovedaMox','marchante']]) {
  while(q.length){const [x,y]=q.shift();for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]) {const nx=x+dx,ny=y+dy,key=nx+','+ny;if(nx<0||ny<0||nx>=15||ny>=10||seen.has(key)||g.SOLID.has(def.map[ny][nx])||solid.has(nx+ny*15))continue;seen.add(key);q.push([nx,ny]);}}
  assert(seen.has('7,8'),'Exit inaccessible '+id);for(const npc of def.npcs)assert(seen.has(npc.x+','+npc.y),'NPC inaccessible '+id);
 }
-g.setS(g.newSave(0));g.getS().coins=200000;g.loadRoom('establo',115,116);
-const horse=g.shopItems('monturas').find(it=>it.id==='caballo');assert(horse);assert.equal(horse.price,100000);g.G.shop={kind:'monturas',sel:0,scroll:0,items:g.shopItems('monturas')};g.buyItem(horse);
+g.setS(g.newSave(0));g.getS().coins=400000;g.loadRoom('establo',115,116);
+const horse=g.shopItems('monturas').find(it=>it.id==='caballo');assert(horse);assert.equal(horse.price,300000);g.G.shop={kind:'monturas',sel:0,scroll:0,items:g.shopItems('monturas')};g.buyItem(horse);
 assert.equal(g.getS().coins,100000);assert(g.getS().mounts.includes('caballo'));assert.equal(g.getS().mount,'caballo');assert.equal(g.mounted(),null);assert(g.loadSave(1).mounts.includes('caballo'));
 g.loadRoom('valpo',163,134);assert.equal(g.mounted().n,'Caballo chileno');
 g.goTo('establo','E');assert.equal(g.G.roomId,'establo');assert.equal(g.getS().mount,'caballo');
-g.loadRoom('bovedaMox',115,116);assert.equal(g.shopItems('lujo').length,80);
+g.loadRoom('bovedaMox',115,116);assert(g.shopItems('lujo').every(it=>(it.req&&it.req.lvl||1)<=g.getS().lvl));
 // Walk with actual player and NPC collision, rather than checking tiles alone.
 for (const y of [68,76,84]) {
  g.setS(g.newSave(0));g.loadRoom('mercado',115,y);g.G.enemies=[];g.PL.atk=0;g.K.left=1;
@@ -101,7 +101,7 @@ assert.equal(g.SLOTS,5);
 for(let slot=1;slot<=5;slot++){const save=g.newSave(slot+11);save.slot=slot;save.coins=slot*12345;g.setS(save);g.saveGame();assert.equal(g.loadSave(slot).coins,slot*12345);}
 g.G.slotSel=4;g.drawSlots();
 assert(!g.ROOMS.valpo.trails['9,1']);assert.equal(g.ROOMS.valpo.doors['4,6'],'establo');assert(g.ROOMS.establo.npcs.some(n=>n.id==='caballerizo'));assert.equal(g.ROOMS.establo.props.filter(p=>p.k==='montura'&&p.compact).length,5);
-assert.equal(Math.min(...g.shopItems('monturas').map(it=>it.price)),100000);
+assert.equal(Math.min(...g.shopItems('monturas').map(it=>it.price)),300000);
 for(const routes of Object.values(g.BOAT_ROUTES))for(const [dest,fee] of routes)if(dest==='pmontt'||dest==='islote')assert.equal(fee,3000);
 g.setS(g.newSave(1));g.loadRoom('pueblo',115,84);
 const rai=g.G.npcs.find(n=>n.ch===12),papa=g.G.npcs.find(n=>n.ch===0);assert(rai&&papa);assert(Math.abs(rai.x-papa.x)<=16);
@@ -180,10 +180,59 @@ for(const room of auditRooms){
  g.drawWorld();g.drawHUD();
 }
 assert.equal(failures.length,0,failures.join('\n'));
+// Pokemon sprites, nearby labels and boss names share the same species identity.
+const originalMonNames=Object.fromEntries(Object.entries(g.MON).map(([key,m])=>[key,m.n]));
+g.setS(g.newSave(0));g.getS().realm='pokemon';
+for(const type of Object.keys(g.MON)){const enemy=g.pokemonEnemy(type);assert.equal(enemy.species,g.POKE[enemy.id].n);assert.equal(g.enemyName(type),enemy.name);assert(enemy.name.startsWith(g.POKE[enemy.id].n+' '));assert(['GIGANTE','FURIOSO','SALVAJE'].includes(enemy.variant));}
+assert.equal(g.enemyName('carno'),'PIKACHU FURIOSO');assert.equal(g.enemyName('siege'),'MEWTWO GIGANTE');
+g.G.preview=true;g.loadRoom('bosque',115,84);g.drawWorld();g.loadRoom('guarida',115,84);g.drawHUD();g.G.preview=false;
+g.setS(g.newSave(0));for(const [type,name]of Object.entries(originalMonNames))assert.equal(g.enemyName(type),name);assert.deepEqual(Object.fromEntries(Object.entries(g.MON).map(([key,m])=>[key,m.n])),originalMonNames);
 const snapshots=new Map(storage);g.G.preview=true;g.setS(g.newSave(0));g.getS().realm='pokemon';g.loadRoom('tienda',115,116);g.drawWorld();g.drawHUD();g.saveGame();assert.deepEqual(storage,snapshots);g.G.preview=false;
+
+// Crossing is reversible, including after restoring a serialized save.
+g.G.preview=true;g.setS(g.newSave(0));const realmOriginal=g.getS();realmOriginal.ligaWins=1;realmOriginal.cards.bolt=3;realmOriginal.leagues.curico=true;realmOriginal.pet=24;realmOriginal.quests.q_mazo={st:'active',base:0};realmOriginal.lvl=52;
+g.loadRoom('santuarioPortal',115,116);assert(g.portalUnlocked());g.drawWorld();g.startRealmTravel();g.G.realmTravel.t=419;g.updateRealmTravel();
+assert.equal(g.getS().realm,'pokemon');assert.equal(g.getS().lvl,52);assert.equal(g.getS().pet,24);assert.equal(g.companionInfo().n,'Shivan Dragon');assert.equal(g.getS().cards.bolt,undefined);
+g.getS().cards.bolt=1;g.getS().leagues.vina=true;g.drawCompanion(10,10,0,false);g.updatePet();g.setS(JSON.parse(JSON.stringify(g.getS())));g.switchRealm('magic');
+assert.equal(g.getS().cards.bolt,3);assert.equal(g.getS().leagues.curico,true);assert.equal(g.getS().leagues.vina,undefined);assert.equal(g.getS().quests.q_mazo.st,'active');assert.equal(g.companionInfo().n,'PIKACHU');
+g.switchRealm('pokemon');assert.equal(g.getS().cards.bolt,1);assert.equal(g.getS().leagues.vina,true);
+for(const type of Object.keys(g.MAGIC_COMPANIONS)){g.getS().magicPet=type;g.loadRoom('bosque',115,84);g.updatePet();g.drawCompanion(5,5,0,false);}
+g.getS().realm='magic';const templeLayouts=new Set(),rosterNames=new Set();
+for(const [id,p]of Object.entries(g.TEMPLE_IDENTITIES)){const base=g.getDef(id),reflected=g.realmDefinition(id,base);assert.deepEqual(reflected.map,base.map);assert.deepEqual(reflected.doors,base.doors);assert(!base.npcs.some(n=>['azul','diegoG'].includes(n.id)));templeLayouts.add(JSON.stringify(p.tables));for(const name of p.players){assert(!rosterNames.has(name));rosterNames.add(name);}g.loadRoom(id,115,116);g.drawWorld();for(const r of p.roster)assert(g.localPlayerDeck(r));g.startTour('goblins',{rounds:4,diff:0,league:'curico'});assert(g.G.tour.opps.every(o=>p.players.includes(o.n)));g.G.state='world';}
+assert.equal(templeLayouts.size,6);assert(!Object.values(g.ROOMS).some(d=>(d.props||[]).some(p=>p.k==='tcgNeon')));
+g.getS().realm='magic';g.G.cardGet=null;g.G.cardQueue=[];g.addCard('bolt');assert.equal(g.G.cardGet,null);assert(g.G.toasts.some(t=>t.loot));
+g.getS().realm='pokemon';assert(!g.realmText('Carnophage y Goblin').includes('Carnophage'));
+g.G.realmTravel={t:210,target:'pokemon'};g.drawRealmTravel();g.G.preview=false;
+
+
+g.G.preview=true;g.setS(g.newSave(0));g.getS().realm='pokemon';g.loadRoom('cartasCurico',115,116);const gym=g.G.def.gym;assert.equal(gym.ids.length,4);assert.equal(gymRunNext(),0);
+function gymRunNext(){return g.gymRun().next;}
+g.finishPokemonGymMatch({key:gym.key,index:3,npc:gym.ids[3]},true);assert.equal(gymRunNext(),0); // Cannot skip the three trainers.
+for(let i=0;i<4;i++){g.finishPokemonGymMatch({key:gym.key,index:i,npc:gym.ids[i]},false);assert.equal(gymRunNext(),i);g.finishPokemonGymMatch({key:gym.key,index:i,npc:gym.ids[i]},true);assert.equal(gymRunNext(),i+1);g.getS().gymRuns=JSON.parse(JSON.stringify(g.getS().gymRuns));}
+assert(g.getS().leagues.curico);assert.equal(g.reputationTitle(),'CAMPEON LOCAL');const gymXP=g.getS().xp;g.finishPokemonGymMatch({key:gym.key,index:3,npc:gym.ids[3]},true);assert.equal(g.getS().xp,gymXP);
+for(const id of Object.keys(g.POKEMON_GYMS)){g.loadRoom(id,115,116);g.drawWorld();g.drawTrainerMarkers();const def=g.G.def;for(const n of g.G.npcs){assert(!['azul','diegoG'].includes(n.id));}assert.equal(def.gym.ids.length,4);assert.equal(g.getDef(id).map.join(),def.map.join());}
+g.loadRoom('hogar',35,52);g.drawWorld();g.homeOracle();assert(g.G.dialog);g.G.dialog=null;assert(g.ROOMS.hogar.props.some(p=>p.k==='homeKitchen'));assert(g.ROOMS.hogar.props.some(p=>p.k==='homeComputer'));g.getS().realm='magic';g.beginAdventure(0);assert.equal(g.G.roomId,'hogar');assert.equal(g.G.waking,120);assert.equal(g.getS().room,'hogar');g.G.preview=false;
+
+
+assert.equal(g.MOUNTS.caballo.price,300000);for(const raw of [20,40,1000,2400]){assert(g.questCoins({coins:raw},1)<5000);assert(g.questCoins({coins:raw},80)>g.questCoins({coins:raw},1));assert(g.questCoins({coins:raw},80)<20000);}
+g.G.preview=true;g.setS(g.newSave(0));g.getS().lvl=1;for(const kind of ['armas','lujo','sur']){for(const it of g.shopItems(kind))assert((it.req&&it.req.lvl||1)<=1);}const lowShop=g.shopItems('armas').length;g.getS().lvl=52;assert(g.shopItems('armas').length>lowShop);g.getS().lvl=1;for(const kind of ['sword','armor']){const late=kind==='sword'?'moxEterno':'avancebody9';const item=g.usableDrop(kind,late);assert(g.itemLevel(kind,item)<=1);}g.G.preview=false;
+
+
+// The box stays open until real mastery; sealing restores a peaceful world.
+g.G.preview=true;g.setS(g.newSave(0));assert(!g.sealReady());g.closeUrzaBox();assert(!g.getS().boxClosed);g.G.dialog=null;for(const d of g.DECKS)for(const card of d.cards)g.getS().cards[card]=1;for(const key of g.GUARDIANS)g.getS().bosses[key]=true;g.getS().leagues={curico:true,vina:true,pmontt:true,urza:true,tempest:true};g.getS().ligaWins=1;assert(g.sealReady());g.closeUrzaBox();assert(g.getS().boxClosed);g.G.dialog=null;g.loadRoom('bosque',115,84);assert.equal(g.G.enemies.length,0);g.switchRealm('pokemon');assert.equal(g.getS().boxClosed,false);g.loadRoom('bosque',115,84);assert(g.G.enemies.length>0);g.switchRealm('magic');assert.equal(g.getS().boxClosed,true);
+// Every gym has accessible trainers, doors and usable furnishings.
+for(const id of Object.keys(g.POKEMON_GYMS)){g.setS(g.newSave(0));g.getS().realm='pokemon';g.loadRoom(id,115,116);const q=[[g.PL.x,g.PL.y]],seen=new Set();for(let i=0;i<q.length;i++){const [x,y]=q[i];for(const [dx,dy]of [[2,0],[-2,0],[0,2],[0,-2]]){const nx=x+dx,ny=y+dy,key=nx+','+ny;if(nx<0||ny<0||nx>230||ny>152||seen.has(key)||g.blocked(nx,ny,10,8)||g.npcHit({x:nx,y:ny,w:10,h:8}))continue;seen.add(key);q.push([nx,ny]);}}for(const n of g.G.npcs)assert(q.some(([x,y])=>Math.hypot(x+5-n.x-5,y+4-n.y-4)<25),'Trainer inaccessible '+id+' '+n.id);}
+g.setS(g.newSave(0));g.loadRoom('bosque',115,84);g.G.items=[];const earlyFoe={type:'siege',x:100,y:90,w:32,h:32};g.dropLoot(earlyFoe);for(const it of g.G.items)if(it.k==='sword'||it.k==='gear')assert(g.itemLevel(it.k==='gear'?'armor':'sword',it.id)<=g.getS().lvl);
+g.loadRoom('oktoberfest',115,116);g.festivalTasting();assert.equal(g.G.dialog.choices.length,4);g.G.dialog.choices[0].fn();g.G.dialog.choices[1].fn();g.G.dialog.choices[2].fn();assert.equal(g.getS().festivalMedals,1);assert(g.getS().festivalNextAt>Date.now());g.G.dialog=null;g.G.preview=false;
+
+g.setS(g.newSave(0));g.getS().leagues={curico:true};g.getS().realmProgress={pokemon:{leagues:{vina:true,pmontt:true},ligaWins:1}};
+assert.equal(g.medalProgress('magic').count,1);assert.equal(g.medalProgress('pokemon').count,2);assert(g.medalProgress('pokemon').national);
+g.G.menu={tab:5,deck:null};g.menuClick({x:180,y:26});assert.equal(g.G.menu.medalRealm,'pokemon');g.drawMenu();g.menuClick({x:30,y:26});assert.equal(g.G.menu.medalRealm,'magic');g.drawMenu();g.G.menu=null;
+for(const id of Object.keys(g.POKEMON_GYMS)){g.loadRoom(id,115,116);assert(!g.G.def.props.some(p=>['juegosMesa','retroShelf'].includes(p.k)));g.drawHUD();}
+g.getS().leagues={vina:true,curico:true,pmontt:true,urza:true,tempest:true};g.getS().bosses={};g.getS().worldTicks=g.DAY_PHASE_TICKS;g.G.forcePhase='day';g.talkTo('ligaOrg');assert(g.G.dialog.pages.flat().join(' ').includes('Necesitas un mazo completo'));assert(g.leagueMapMarks('tolaria').find(l=>l.key==='nacional').available);g.G.forcePhase=null;
 async function main(){
  const encoded=await g.encodeSave(custom), decoded=await g.decodeSave(encoded);
  assert.equal(decoded.customChar.n,'Mi personaje');assert.equal(g.characterOf(decoded).c.eye,'#1122ff');
-console.log('PASS: partidas antiguas y cinco espacios, personajes, misiones y patrullas, equipo avanzado, fases del dia, magia 10, mascotas, experiencia de ligas, Surf, peligros y pausa de tres minutos, buscaobjetos, siete arcades, vista Pokemon sin guardar; acceso a NPC y puertas en '+auditRooms.length+' mapas.');
+console.log('PASS: portal reversible, sello de Urza y paz, seis gimnasios con cuatro rivales, reputacion, economia por nivel, botin utilizable, casa inicial y Oktoberfest; partidas antiguas y cinco espacios, personajes, misiones y patrullas, equipo avanzado, fases del dia, magia 10, mascotas, experiencia de ligas, Surf, peligros y pausa de tres minutos, buscaobjetos, siete arcades, vista Pokemon sin guardar; acceso a NPC y puertas en '+auditRooms.length+' mapas.');
 }
 main().catch(e=>{console.error(e);process.exitCode=1;});
