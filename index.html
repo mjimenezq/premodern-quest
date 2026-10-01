@@ -4729,9 +4729,9 @@ function journalEntries(){ensureContract();const all=Object.keys(QUESTS);return 
 function questDetail(q){const Q=QUESTS[q],st=S.quests[q],who=NPCDEF[Q.giver]?NPCDEF[Q.giver].n:Q.giver;G.menu=null;say([Q.title.toUpperCase()+': '+Q.desc,who+' · '+(GIVER_PLACE[Q.giver]||'TIENDA DE CARTAS')+'. '+(st?(st.st==='done'?'COMPLETADA.':'PROGRESO '+Math.min(Q.n,questProg(q))+'/'+Q.n+'.'):'Habla con este personaje para aceptar.'),'RECOMPENSA: '+rewardText(Q.reward)],null,openQuestJournal);}
 function openQuestJournal(){if(!S||G.state!=='world')return;G.menu={tab:4,sel:1,deck:null,sub:null,questScroll:0};G.dialog=null;SFX.ok();}
 function drawQuests(){
- const list=journalEntries(),m=G.menu;m.questScroll=Math.min(m.questScroll||0,Math.max(0,list.length-4));
+ const list=journalEntries(),m=G.menu;m.questScroll=Math.min(m.questScroll||0,Math.max(0,list.length-3));
  txt('DIARIO DE MISIONES',8,21,'#fcd84a');tiny((m.questScroll+1)+' / '+list.length,232,23,'#fff','right');
- list.slice(m.questScroll,m.questScroll+4).forEach((q,i)=>{const Q=QUESTS[q],st=S.quests[q],p=st?Math.min(Q.n,questProg(q)):0,done=st&&st.st==='done',ready=st&&p>=Q.n,y=35+i*25;
+ list.slice(m.questScroll,m.questScroll+3).forEach((q,i)=>{const Q=QUESTS[q],st=S.quests[q],p=st?Math.min(Q.n,questProg(q)):0,done=st&&st.st==='done',ready=st&&p>=Q.n,y=35+i*33;
  tiny((done?'OK ':st?'ACTIVA ':'NUEVA ')+Q.title,8,y,done?'#809080':ready?'#60e070':'#fcd84a');tiny(st&&!done?p+'/'+Q.n:'',232,y,'#fff','right');
  tiny((NPCDEF[Q.giver]?NPCDEF[Q.giver].n:Q.giver)+' · '+(GIVER_PLACE[Q.giver]||'TIENDA DE CARTAS'),8,y+7,'#9db8a8');
  tiny((ready&&!done?'VUELVE A ENTREGAR: ':Q.desc).slice(0,52),8,y+14,'#fff');tiny(rewardText(Q.reward).slice(0,57),8,y+20,'#90b8e8');});
@@ -6835,7 +6835,7 @@ function menuClick(p){
     if (m.sub) { const i = (m.sub.scroll||0)+Math.floor((p.y - 42) / 10); if (i >= 0 && i < m.sub.list.length) { m.sub.sel = i; pulseKey = 'a'; } else pulseKey = 'b'; }
     else { const i = Math.floor((p.y - 20) / 19); if (i >= 0 && i < 6 && p.x < 160) { m.sel = i; pulseKey = 'a'; } }
   } else if (m.tab === 2) { if (p.y > 144) pulseKey = 'a'; }
-  else if (m.tab === 4) {if(m.sel===1){if(p.y>=140&&p.y<150)m.questScroll=Math.max(0,(m.questScroll||0)+(p.x<120?-1:1));else if(p.y>=34&&p.y<140){const q=journalEntries()[(m.questScroll||0)+Math.floor((p.y-34)/25)];if(q)questDetail(q);}else pulseKey='b';}else m.sel=1;SFX.move();}
+  else if (m.tab === 4) {if(m.sel===1){if(p.y>=140&&p.y<150)m.questScroll=Math.max(0,(m.questScroll||0)+(p.x<120?-1:1));else if(p.y>=34&&p.y<133){const q=journalEntries()[(m.questScroll||0)+Math.floor((p.y-34)/33)];if(q)questDetail(q);}else pulseKey='b';}else m.sel=1;SFX.move();}
 }
 let mouseHeld = false, selectDrag = null;
 function finishSelectDrag(e){
