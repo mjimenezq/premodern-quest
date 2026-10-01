@@ -63,6 +63,25 @@
   #netStatus{margin:0;color:var(--gold);line-height:1.7}
   .invite-banner{width:100%;max-width:560px;box-sizing:border-box;background:#1f5e3a;border:3px solid #50e080;border-radius:10px;padding:10px 14px;font-size:9px;line-height:1.7;color:#e8fff0}
   @media (pointer:coarse){ .pad{display:flex} .keys{display:none} .screen{width:min(100%, calc((100dvh - 250px) * 1.5))} }
+  #characterWizard{width:min(650px,calc(100vw - 36px));max-height:85dvh;box-sizing:border-box;overflow:auto;background:var(--panel);color:var(--ink);border:3px solid var(--gold);border-radius:12px;padding:20px;font-family:system-ui,sans-serif;font-size:16px;line-height:1.5}
+  #characterWizard::backdrop{background:rgba(0,0,0,.85)}
+  #characterWizard h2{font-size:22px;color:var(--gold);margin:0 0 12px}
+  #characterWizard label{display:flex;flex-direction:column;gap:4px;margin:8px 0}
+  #characterWizard input,#characterWizard select,#characterWizard button{font:inherit;color:var(--ink);background:#10161a;border:2px solid var(--line);border-radius:6px;padding:8px;min-height:44px;box-sizing:border-box}
+  #characterWizard input[type=color]{width:100%;padding:3px}
+  #characterWizard input[type=checkbox]{min-height:22px;width:22px}
+  #characterWizard .wizard-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 16px}
+  #characterWizard .wizard-skill{flex-direction:row;align-items:center;gap:10px;background:#10161a;padding:8px;border-radius:6px}
+  #characterWizard .wizard-skill span{flex:1}
+  #characterWizard .wizard-skill small{display:block;color:var(--muted)}
+  #characterWizard .wizard-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+  #characterWizard button{cursor:pointer;border-color:var(--gold)}
+  #characterWizard button:disabled{opacity:.45;cursor:default}
+  #characterWizard canvas{width:100%;max-width:300px;aspect-ratio:3/1;margin:12px auto}
+  #characterWizard [hidden]{display:none!important}
+  #wizardError{color:#ffb4b4}
+  #wizardBudget{color:var(--gold)}
+  #characterWizard :focus-visible{outline:3px solid var(--gold);outline-offset:3px}
 </style>
 </head>
 <body>
@@ -160,6 +179,7 @@ const kb = {}, touch = {};
 const keyMap = {ArrowUp:'up',KeyW:'up',ArrowDown:'down',KeyS:'down',ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',
   KeyZ:'a',Space:'a',KeyJ:'a',KeyX:'b',KeyK:'b',Backspace:'b',Enter:'menu',Escape:'menu',KeyI:'menu',KeyC:'c',KeyL:'c',KeyV:'v',KeyU:'v'};
 addEventListener('keydown', e => {
+  if (document.getElementById('characterWizard')?.open || /^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)) return;
   audioInit();
   if (e.code === 'KeyP' && !e.repeat) { toggleMute(); toast(muted ? 'SONIDO APAGADO (P)' : 'SONIDO ENCENDIDO (P)', '#c8e8d8'); }
   if (e.code === 'KeyM' && !e.repeat) { openMapKey(); e.preventDefault(); }
@@ -484,6 +504,53 @@ const CHARS = [
     c:{ hair:'#6a4020', band:'#f4f4f8', skin:'#f1c9a0', eye:'#3a6a2a', shirt:'#f4f4f8', shirtD:'#c8ccd8', emblem:'#2a9a4a',
         belt:'#f4f4f8', pants:'#f4f4f8', shoe:'#f4f4f8', sleeve:'#f4f4f8' } },
 ];
+// Append only: saved games retain their original character indices.
+function friendCharacter(id, n, tag, style, st, main, flags, colors){
+  return { id, n, tag, style, st, main, ...flags, c:{ hair:'#5a3418', hairD:'#3a2414', hairL:'#9a7048', skin:'#f1c9a0', eye:'#684020', shirt:'#2888b8', shirtD:'#185878', sleeve:'#2888b8', pants:'#304868', shoe:'#f4f4f8', belt:'#3a2414', band:'#fcd84a', hat:'#2888b8', hatD:'#185878', ...colors } };
+}
+CHARS.push(
+  friendCharacter('rai','RAI','EL BEBÉ DE LOS SUPERPODERES','baby',{fue:3,des:5,agi:5,int:7},'int',{baby:true,superBaby:true,builder:true},{eye:'#389cff',hair:'#c89858',shirt:'#70c8f0',shirtD:'#3888b8',sleeve:'#70c8f0',pants:'#f4e8c8',emblem:'#fcd84a'}),
+  friendCharacter('coco','TÍA COCO','JUE, LAS CARTAS LO DICEN','ponytail',{fue:3,des:5,agi:4,int:8},'int',{plaid:true,foresight:true},{hair:'#503020',hairL:'#885030',shirt:'#d83038',shirtD:'#881820',sleeve:'#d83038',eye:'#704828'}),
+  friendCharacter('javier','JAVIER','INGENIERO DE SISTEMAS DE PECES','curly',{fue:4,des:6,agi:4,int:6},'int',{fishExpert:true},{shirt:'#2098a8',shirtD:'#126068',sleeve:'#2098a8',emblem:'#90e8e8'}),
+  friendCharacter('rodolfo','RODOLFO','EL MARATONISTA BRÍGIDO','tennis',{fue:4,des:5,agi:8,int:3},'agi',{marathon:true},{shirt:'#f07828',shirtD:'#a84818',sleeve:'#f07828',pants:'#202838',band:'#f4f4f8',shoe:'#c8ff58'}),
+  friendCharacter('cahe','CAHE','FINANZAS Y AVENTURAS EN TIBIA','spiky',{fue:5,des:4,agi:4,int:7},'int',{finance:true,tibia:true},{shirt:'#388850',shirtD:'#205830',sleeve:'#388850',emblem:'#fcd84a'}),
+  friendCharacter('pablot','PABLOT','EL SOCIO COMERCIAL DE MATÍAS','upspike',{fue:4,des:5,agi:4,int:7},'int',{finance:true,tibia:true},{shirt:'#6048a8',shirtD:'#382868',sleeve:'#6048a8',emblem:'#fcd84a'})
+);
+const CUSTOM_CHAR = CHARS.length;
+CHARS.push(friendCharacter('custom','CREAR MI PERSONAJE', 'CREA TU PROPIO PERSONAJE','spiky',{fue:5,des:5,agi:5,int:5},'fue',{},{}));
+const CUSTOM_STATS = ['fue','des','agi','int'], CUSTOM_STAT_BUDGET = 20, CUSTOM_SKILL_BUDGET = 6;
+const CUSTOM_STYLES = { spiky:'Pelo en punta', curly:'Rulos', upspike:'Pelo levantado', ponytail:'Pelo largo', bun:'Moño', cap:'Jockey', beanie:'Gorro', tennis:'Cintillo', wizard:'Sombrero de mago', baby:'Bebé' };
+const CUSTOM_SKILLS = {
+  marathon:{n:'Maratonista',cost:3,desc:'Corre un 20% más rápido.'},
+  finance:{n:'Finanzas',cost:3,desc:'Recoge un 20% más de monedas del botín.'},
+  tibia:{n:'Veterano de Tibia',cost:3,desc:'+2 de defensa permanente.'},
+  fishExpert:{n:'Sistemas de peces',cost:3,desc:'+3 de daño contra criaturas acuáticas.'},
+  foresight:{n:'Leer el futuro',cost:4,desc:'Ve el plan rival en duelos; +8% de probabilidad en torneos.'},
+  builder:{n:'Construcción',cost:2,desc:'+2 de defensa permanente.'},
+  superBaby:{n:'Supercariño',cost:4,desc:'Recupera medio corazón cada 5 segundos y empieza con Rayo.'},
+  medic:{n:'Medicina',cost:4,desc:'Recupera vida, más rápido fuera de combate.'},
+  music:{n:'Música',cost:3,desc:'Tus golpes pueden hacer bailar a una criatura.'}
+};
+function customSkillCost(skills){ return skills.reduce((sum, id) => sum + CUSTOM_SKILLS[id].cost, 0); }
+function normalizeCustom(raw){
+  if (!raw || typeof raw !== 'object') throw new Error('Falta el personaje creado.');
+  const n = typeof raw.n === 'string' ? raw.n.trim().slice(0,16) : '';
+  if (!n || !CUSTOM_STYLES[raw.style] || !CUSTOM_STATS.includes(raw.main)) throw new Error('Revisa el nombre, pelo y atributo principal.');
+  const st = Object.fromEntries(CUSTOM_STATS.map(k => [k, raw.st && raw.st[k]]));
+  if (CUSTOM_STATS.some(k => !Number.isInteger(st[k]) || st[k] < 2 || st[k] > 8) || Object.values(st).reduce((a,b) => a+b,0) !== CUSTOM_STAT_BUDGET) throw new Error('Reparte exactamente 20 puntos: entre 2 y 8 por atributo.');
+  if (!Array.isArray(raw.skills) || raw.skills.some(id => !Object.hasOwn(CUSTOM_SKILLS,id)) || new Set(raw.skills).size !== raw.skills.length || customSkillCost(raw.skills) > CUSTOM_SKILL_BUDGET) throw new Error('Las habilidades superan los 6 puntos disponibles.');
+  const c = {};
+  for (const key of ['skin','hair','eye','shirt','pants','shoe']) {
+    if (!raw.c || !/^#[0-9a-f]{6}$/i.test(raw.c[key])) throw new Error('Elige colores válidos.');
+    c[key] = raw.c[key];
+  }
+  return { n, style:raw.style, main:raw.main, st, skills:[...raw.skills], c, plaid:!!raw.plaid };
+}
+function customCharacter(raw){
+  const spec = normalizeCustom(raw), flags = Object.fromEntries(spec.skills.map(id => [id,true]));
+  return friendCharacter('custom',spec.n.toUpperCase(),'AVENTURERO PERSONALIZADO',spec.style,spec.st,spec.main,{...flags,baby:spec.style === 'baby',plaid:spec.plaid}, {...spec.c,shirtD:shadeCol(spec.c.shirt,0.65),sleeve:spec.c.shirt,hairL:shadeCol(spec.c.hair,1.3),hairD:shadeCol(spec.c.hair,0.65),hat:spec.c.shirt,hatD:shadeCol(spec.c.shirt,0.65)});
+}
+function characterOf(save){ return save && save.ch === CUSTOM_CHAR && save.customChar ? customCharacter(save.customChar) : CHARS[save ? save.ch : 0]; }
 const NPCDEF = {
   cantinero:{ n:'CANTINERO', style:'bald', c:{ hair:'#3a2418', skin:'#e8b088', shirt:'#f4f1e8', shirtD:'#c8c0b0', pants:'#3a3a48', shoe:'#2a1a10' } },
   coleccionista:{ n:'COLECCIONISTA', style:'wizard', c:{ hat:'#5a2a98', hatD:'#3a1a68', hair:'#e0e0e8', skin:'#f0c8a0', shirt:'#6a3ab0', shirtD:'#4a2a80', pants:'#4a2a80', shoe:'#2a1a40' } },
@@ -899,7 +966,7 @@ const money = n => '$' + String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, 
 const houseBonus = key => { let v = 0; for (const [id, o] of Object.entries(HOUSE)) if (S.house && S.house[id]) v += o.bonus[key] || 0; for (const [id, o] of Object.entries(PRIZES)) if (S.house && S.house[id]) v += o.bonus[key] || 0; return v; };
 const ZONE_TIER = { condell:2, talca:1, lascondes:1, pueblo:1, bosque:1, pradera:1, costa:2, pantano:2, cerro:2, valpo:1, tolaria:1, mercado:1, bosqueProf:3, pantanoProf:3, minas:3, ruinas:3, guarida:3, islote:3, vina:1, pmontt:1, volcan:4, glaciar:4, urborg:4, dunas:2, pampa:4, fabrica:4, quietud:4, bosqueRoca:4, tempest:1 };
 const zoneTier = () => G.def && G.def.dungeonKey ? 3 + (G.def.floor >= 3 ? 1 : 0) : (ZONE_TIER[G.roomId] || 1);
-function defense(){ let d = mounted() ? (mounted().def || 0) : 0; for (const [slot] of GEAR_SLOTS) { const id = S.gear && S.gear[slot]; if (id) d += ARMOR[id].def; } return d; }
+function defense(){ let d = (mounted() ? (mounted().def || 0) : 0) + (CH().builder ? 2 : 0) + (CH().tibia ? 2 : 0); for (const [slot] of GEAR_SLOTS) { const id = S.gear && S.gear[slot]; if (id) d += ARMOR[id].def; } return d; }
 const maxMp = () => 4 + stats().int + (S.house && S.house.biblioteca ? 2 : 0) + houseBonus('mp');
 const shadeCol = (hex, f) => { const n = parseInt(hex.slice(1), 16); const c = [n >> 16, (n >> 8) & 255, n & 255].map(v => Math.max(0, Math.min(255, Math.round(v * f)))); return '#' + c.map(v => v.toString(16).padStart(2, '0')).join(''); };
 function playerLook(){
@@ -1137,6 +1204,12 @@ ROOMS.sobresTempest = { name:'SOBRES DE RATH', theme:'inside', music:'tavern', i
 ROOMS.vina.npcs.push({ id:'ligaVina', x:8, y:4 });
 // Los 12 amigos por Chile: tomando cerveza, apoyando o como rivales de liga (el que juegas no aparece)
 const FRIENDS_ON_MAP = [
+  { ch:12, room:'pueblo', x:5, y:6, role:'family' },
+  { ch:13, room:'pmontt', x:3, y:4, role:'family' },
+  { ch:14, room:'pmontt', x:9, y:5, role:'engineer' },
+  { ch:15, room:'pmontt', x:10, y:5, role:'engineer' },
+  { ch:16, room:'mercado', x:3, y:5, role:'finance' },
+  { ch:17, room:'mercado', x:4, y:5, role:'finance' },
   { ch:0, room:'pueblo', x:4, y:6, role:'cheer' },
   { ch:1, room:'arena', x:10, y:6, role:'rival' },
   { ch:2, room:'bar', x:3, y:4, role:'beer' },
@@ -1152,6 +1225,9 @@ const FRIENDS_ON_MAP = [
 for (const fr of FRIENDS_ON_MAP) ROOMS[fr.room].npcs = (ROOMS[fr.room].npcs || []).concat({ id:'friend', ch:fr.ch, role:fr.role, x:fr.x, y:fr.y });
 const FRIEND_PLACE = { pueblo:'la Villa', arena:'la Arena', bar:'La Ruca', liga:'la Liga Nacional', arcade:'el Arcade', taberna:'la Taberna El Mazo', pmontt:'Puerto Montt', vina:'la playa de Viña', salaTempest:'la Liga Tempest' };
 const ROLE_LINES = {
+  family:['¡Un abrazo! La familia te acompaña en esta aventura.'],
+  engineer:['Javier y Rodolfo: compañeros de Ingeniería de Katy, inseparables desde la U.'],
+  finance:['Con Matías estudiamos Ingeniería Comercial. Después de clases nos íbamos a jugar Tibia.'],
   beer:['¡Salud! Siéntate, que la otra ronda la pagas tú.','Una chelita y después salimos a pegarle a unos monos. Palabra.','¿Tú también vienes a "estudiar el metagame"? Aquí se estudia con cerveza.'],
   cheer:['¡Vamos, tú puedes! Yo te apoyo desde aquí... bien lejos de los monstruos.','Si derrotas a todos los jefes, en la Liga Nacional te voy a gritar más fuerte que en el Estadio Nacional.','Llévate una jarra de cerveza pa\' las mazmorras. Cura más que cualquier poción.'],
   rival:['Nos vemos en la liga. Esta vez no te tengo piedad.','Estuve practicando toda la semana. Tu mazo no me asusta... bueno, un poquito.','Si ganas la liga te invito una chela. Si gano yo, me invitas dos.'],
@@ -1395,11 +1471,11 @@ const G = { state:'intro', introT:0, t:0, sel:0, titleSel:0, roomId:'pueblo', de
   toasts:[], dialog:null, menu:null, cardGet:null, cardQueue:[], arc:null, shots:[], amb:[], eshots:[], aoes:[], chimneys:[], moveTarget:null, lvlFx:0, shop:null, duel:null, tour:null, dead:0, fade:0, zoneT:0, cacheDirty:true, swing:0, bossBar:null };
 const PL = { x:0, y:0, w:10, h:8, dir:0, walk:0, atk:0, atkCd:0, inv:0, kb:0, kx:0, ky:0 };
 const ATK = 14;
-function newSave(ci){
-  const ch = CHARS[ci];
-  return { v:1, ch:ci, lvl:1, xp:0, st:{...ch.st}, hp:6, maxHp:6, coins:1500, econ:2, leagues:{}, cards:{}, swords:['palo'], eq:'palo',
+function newSave(ci, custom){
+  const ch = ci === CUSTOM_CHAR ? customCharacter(custom) : CHARS[ci];
+  return { v:1, ch:ci, ...(ci === CUSTOM_CHAR ? {customChar:normalizeCustom(custom)} : {}), lvl:1, xp:0, st:{...ch.st}, hp:6, maxHp:6, coins:1500, econ:2, leagues:{}, cards:{}, swords:['palo'], eq:'palo',
     chests:{}, bosses:{}, trophies:0, buzz:0, beers:0, room:'pueblo', x:7*TS+3, y:6*TS+6, complete:{}, visited:{}, ligaWins:0, arcadeBest:0, lore:false, quests:{}, kills:{}, killsTotal:0, beerTotal:0,
-    gear:{ shield:null, head:null, body:null, legs:null, feet:null }, armor:[], spells:[], spellSel:0, mp:4, house:{}, found:{}, foundZones:{}, stones:{}, pet:null, dex:{}, keys:{}, relics:{}, spellXp:{}, mounts:[], mount:null, surf:false, talca:{}, sacos:0 };
+    gear:{ shield:null, head:null, body:null, legs:null, feet:null }, armor:[], spells:ch.superBaby ? ['bolt'] : [], spellSel:0, mp:4, house:{}, found:{}, foundZones:{}, stones:{}, pet:null, dex:{}, keys:{}, relics:{}, spellXp:{}, mounts:[], mount:null, surf:false, talca:{}, sacos:0 };
 }
 const SLOTS = 3, slotKey = n => 'pmq_save_' + n;
 function saveGame(){
@@ -1434,7 +1510,8 @@ function loadSave(n){
     if (n === undefined) n = +(localStorage.getItem('pmq_last') || 1) || 1;
     if (n === 1 && !localStorage.getItem(slotKey(1)) && localStorage.getItem('pmq_save')) localStorage.setItem(slotKey(1), localStorage.getItem('pmq_save'));
     const s = JSON.parse(localStorage.getItem(slotKey(n)) || 'null');
-    if (!s || s.v !== 1) return null;
+    if (!s || s.v !== 1 || !CHARS[s.ch]) return null;
+    if (s.ch === CUSTOM_CHAR) s.customChar = normalizeCustom(s.customChar);
     s.slot = n;
     s.quests = s.quests || {}; s.kills = s.kills || {}; s.killsTotal = s.killsTotal || 0; s.beerTotal = s.beerTotal || 0;
     s.gear = s.gear || { shield:null, head:null, body:null, legs:null, feet:null }; s.armor = s.armor || []; s.spells = s.spells || [];
@@ -1446,14 +1523,14 @@ function loadSave(n){
     return s;
   } catch(_) { return null; }
 }
-const CH = () => CHARS[S.ch];
+const CH = () => characterOf(S);
 function stats(){
   const b = SWORDS[S.eq].st, st = {};
   for (const k of ['fue','des','agi','int']) st[k] = S.st[k] + (b[k] || 0);
   for (const [slot] of GEAR_SLOTS) { const id = S.gear && S.gear[slot]; if (id) for (const [k, v] of Object.entries(ARMOR[id].st)) st[k] += v; }
   return st;
 }
-const speed = () => (1.0 + stats().agi * 0.05 + (PL.piscola > 0 ? 0.45 : 0)) * (1 + (mounted() ? mounted().spd : 0));
+const speed = () => (1.0 + stats().agi * 0.05 + (PL.piscola > 0 ? 0.45 : 0)) * (1 + (mounted() ? mounted().spd : 0)) * (CH().marathon ? 1.2 : 1);
 const owned = id => (S.cards[id] || 0) > 0;
 const deckCount = d => DECK[d].cards.filter(owned).length;
 const deckDone = d => deckCount(d) === DECK_SIZE;
@@ -2123,6 +2200,10 @@ function drawLighting(){
 
 /* ============ PEOPLE ============ */
 function drawPerson(x, y, P, dir, f){
+  if (P.baby && !P.babyDrawing) {
+    ctx.save(); ctx.translate(x + 2, y + 4); ctx.scale(0.75,0.75);
+    drawPerson(0,0,{...P,babyDrawing:true},dir,f); ctx.restore(); return;
+  }
   const C = P.c, O = '#1a1020', tall = P.tall ? 2 : 0, side = dir >= 2, flip = dir === 3;
   const eye = C.eye || '#101018';
   const p = (rx, ry, w, h, col) => { ctx.fillStyle = col; ctx.fillRect(flip ? x + 16 - rx - w : x + rx, y + ry - tall, w, h); };
@@ -2152,6 +2233,11 @@ function drawPerson(x, y, P, dir, f){
     p(4, 8, 8, 6, O); p(5, 8, 6, 5, C.shirt); p(5, 11, 6, 1, belt);
     const ao = st ? -1 : 1;
     p(7 + ao, 9, 3, 4, O); p(8 + ao, 9, 1, 3, slv); p(8 + ao, 12, 1, 1, C.skin);
+  }
+  if (P.plaid) {
+    for (let xx = side ? 5 : 4; xx < 12; xx += 3) p(xx,8,1,3,'#f8c0a8');
+    p(side ? 5 : 4,9,side ? 6 : 8,1,'#581020');
+    p(side ? 5 : 4,12,side ? 6 : 8,1,'#581020');
   }
   // head
   p(2, 0, 12, 9, O);
@@ -2198,6 +2284,10 @@ function drawPerson(x, y, P, dir, f){
     if (dir === 0) { p(1, -2, 14, 7, O); p(2, -1, 12, 5, C.hair); p(2, 4, 2, 4, C.hair); p(12, 4, 2, 4, C.hair); dots(); }
     else if (dir === 1) { p(1, -2, 14, 10, O); p(2, -1, 12, 8, C.hair); dots(); }
     else { p(1, -2, 13, 7, O); p(2, -1, 11, 5, C.hair); p(7, 4, 6, 4, C.hair); dots(); }
+  } else if (s === 'baby') {
+    p(6,-1,4,2,C.hair); p(8,-2,2,1,C.hair);
+    if (dir !== 1) { p(4,6,2,1,'#f890a0'); p(10,6,2,1,'#f890a0'); }
+    p(12,12,7,3,'#e84838'); p(13,11,4,1,'#80d8ff'); p(13,15,2,1,O); p(17,15,2,1,O);
   } else if (s === 'bald') {
     if (dir === 1) p(3, 4, 10, 3, C.hair);
     else if (dir === 0) { p(3, 3, 1, 3, C.hair); p(12, 3, 1, 3, C.hair); p(5, 1, 2, 1, '#fff0d8'); p(5, 6, 6, 1, C.hair); p(4, 7, 2, 1, C.hair); p(10, 7, 2, 1, C.hair); }
@@ -2767,8 +2857,8 @@ function loadRoom(id, px, py){
   if (d.keyPos && !(S.keys && S.keys[id])) G.items.push({ k:'key', id, x:d.keyPos[0] * TS + 3, y:d.keyPos[1] * TS + 3, z:0, vz:0, t:20 });
   G.turrets = []; for (let ty = 0; ty < 10; ty++) for (let tx = 0; tx < 15; tx++) if (G.map[ty][tx] === 'j') G.turrets.push({ tx, ty, cd:60 + ((tx * 37 + ty * 53) % 90) });
   G.swarmT = 0;
-  const friendChars = CHARS.map((_, i) => i).filter(i => i !== S.ch);
-  G.npcs = (d.npcs || []).filter(n => !(n.id === 'klaus' && CHARS[S.ch].id === 'klaus') && !(n.id === 'friend' && n.ch === S.ch)).map(n => ({ id:n.id, x:n.x * TS + 3, y:n.y * TS + 8, w:10, h:8, dir:0,
+  const friendChars = CHARS.map((_, i) => i).filter(i => i !== S.ch && i !== CUSTOM_CHAR);
+  G.npcs = (d.npcs || []).filter(n => !(n.id === 'klaus' && CH().id === 'klaus') && !(n.id === 'friend' && n.ch === S.ch)).map(n => ({ id:n.id, x:n.x * TS + 3, y:n.y * TS + 8, w:10, h:8, dir:0,
     ch: n.id === 'friend' ? (n.ch !== undefined ? n.ch : friendChars[n.slot]) : undefined, role:n.role }));
   PL.x = px; PL.y = py; PL.kb = 0; PL.atk = 0;
   unstuckPlayer();
@@ -2847,6 +2937,7 @@ function addXP(n){
   }
 }
 const meleeDamage = (st=stats()) => 1 + Math.floor(st.fue / 3) + Math.floor((S.lvl - 1) / 3);
+const aquaticBonus = e => CH().fishExpert && ['merfolk','dread','kjeldor'].includes(e.type) ? 3 : 0;
 const meleeCritDamage = (st=stats()) => meleeDamage(st) * 2;
 function addCard(id){
   const was = S.cards[id] || 0;
@@ -3136,7 +3227,7 @@ function explodeShot(s){
   s.dead = true;
 }
 function hitWithSpell(e, s, splash){
-  const sp = SPELLS[s.id], lv = s.lv || 1, dmg = sp.dmg + Math.floor(stats().int / 3) + Math.floor((lv - 1) * sp.dmg / 2);
+  const sp = SPELLS[s.id], lv = s.lv || 1, dmg = sp.dmg + aquaticBonus(e) + Math.floor(stats().int / 3) + Math.floor((lv - 1) * sp.dmg / 2);
   if (!s.xpGiven) { s.xpGiven = true; gainSpellXp(s.id, 2); }
   const d = Math.hypot(s.vx, s.vy) || 1, kx = s.vx / d * 1.6, ky = s.vy / d * 1.6;
   floatText(String(dmg), e.x + e.w / 2, e.y - 4, sp.col);
@@ -3347,7 +3438,7 @@ function updateWorld(){
         if (Math.hypot(hx - ex, hy - ey) < e.w / 2 + 4) {
           e.lastSwing = G.swing;
           const crit = Math.random() < Math.min(0.75, st.des * 0.03);
-          const dmg = meleeDamage(st) * (crit ? 2 : 1);
+          const dmg = (meleeDamage(st) + aquaticBonus(e)) * (crit ? 2 : 1);
           SFX.hit();
           floatText(crit ? dmg + '!' : String(dmg), ex, e.y - 4, crit ? '#fcd84a' : '#fff');
           const kd = Math.hypot(ex - cx, ey - cy) || 1, kf = MON[e.type].boss ? 0.6 : 2.6;
@@ -3550,7 +3641,7 @@ function updateItems(){
     }
     if (it.t > 12 && ov(box, { x:it.x, y:it.y, w:10, h:10 })) {
       it.dead = true;
-      if (it.k === 'coin') { S.coins += it.v; SFX.coin(); floatText('+' + money(it.v), it.x, it.y, '#fcd84a'); }
+      if (it.k === 'coin') { const value = Math.round(it.v * (CH().finance ? 1.2 : 1)); S.coins += value; SFX.coin(); floatText('+' + money(value), it.x, it.y, '#fcd84a'); }
       else if (it.k === 'heart') { S.hp = Math.min(S.maxHp, S.hp + 2); SFX.heart(); }
       else if (it.k === 'key') { S.keys = S.keys || {}; S.keys[it.id] = true; SFX.chest(); toast('¡LLAVE DEL PISO! YA PUEDES BAJAR', '#fcd84a'); saveGame(); }
       else if (it.k === 'relic') { S.relics = S.relics || {}; S.relics[it.id] = (S.relics[it.id] || 0) + 1; SFX.chest(); toast('ANTIGUEDAD: ' + RELICS[it.id].n.toUpperCase() + ' (' + money(RELICS[it.id].v) + ')', '#e8c040'); saveGame(); }
@@ -3721,6 +3812,12 @@ function questKill(type){
 }
 
 const FRIEND_LINES = {
+  12:['¡Autito! ¡Brrrum! Después hacemos una casita y leemos Osito Tito.','¡Te quiero mucho! Mi superpoder es darte un abrazo gigante y construir cosas lindas.'],
+  13:['Jue, soy la tía de Rai y la hermana de Katy. ¡Puerto Montt tiene su magia!','Ven, te leo las cartas. Veo un viaje al sur y una victoria si eliges bien tu estrategia.'],
+  14:['Diseño sistemas de peces. El agua, el oxígeno y los flujos tienen que trabajar juntos.','Con Rodolfo somos inseparables desde Ingeniería. Katy conoce todas nuestras historias de la U.'],
+  15:['Terminé una maratón y ya estoy preparando la siguiente. ¡A correr, que queda mapa!','Javier revisa los sistemas de peces y yo reviso la ruta. Somos equipo desde la U con Katy.'],
+  16:['Con Matías y PabloT estudiábamos Ingeniería Comercial. ¡Ahora toca financiar la aventura!','En Tibia aprendí a cuidar el equipo y las lucas. Cada moneda cuenta.'],
+  17:['Cahe, Matías y yo: trabajos de la U de día, Tibia de noche.','Diversifica: un buen mazo, una buena armadura y monedas para el próximo viaje.'],
   0:['Wena. Yo ando buscando un Force of Will hace años. Si te sale uno, avísame, cachai.','¿Vamos a la Torre de Serra? Dicen que la Ángel Ascendida invoca Soul Wardens sin parar.'],
   1:['Oe, si vas a la Cripta de Tourach lleva harta vida. El Negator Ancestral pega como camión.','Yo juego Burn: Bolt, Chain, Fireblast y a la cara. Sin miedo.'],
   4:['¿Trampa? Yo no hago trampa... solo tengo mucha suerte con los dados. Mucha.','Si juegas conmigo, mírame las manos. O no, mejor mírame a los ojos.'],
@@ -4034,7 +4131,7 @@ function talkTo(id, npc, skipQuest){
   if (id === 'premiador') { say(['JUEZA DE PREMIOS: Premios de verdad de la liga: playmats, deck boxes, fundas... se lucen en tu casa y te dan ventajas.'], null, () => openShop('premios', 'PREMIOS DE LA LIGA')); return; }
   if (id === 'friend') {
     const c = npc && npc.ch !== undefined ? npc.ch : 0, role = npc && npc.role;
-    say([CHARS[c].n + ': ' + pick(FRIEND_LINES[c]), ...(role ? [CHARS[c].n + ': ' + pick(ROLE_LINES[role])] : []), CHARS[c].n + ': ' + pick(['Salud por el Premodern. Cuarta Edición a Scourge, como Dios manda.','Si juntamos a los tres, en línea, no hay guardián que aguante.','La otra semana gané con un Goblin Lackey en el turno uno. Nadie me cree.'])]);
+    say([CHARS[c].n + ': ' + pick(FRIEND_LINES[c]), ...(role ? [CHARS[c].n + ': ' + pick(ROLE_LINES[role])] : []), ...(c === 12 ? ['RAI: ¡Mira mi autito! Hagamos una casita para Osito Tito.'] : [CHARS[c].n + ': ' + pick(['Si juntamos a los tres, en línea, no hay guardián que aguante.','La otra semana gané con un Goblin Lackey en el turno uno. Nadie me cree.'])])]);
     return;
   }
   if (id === 'cronista') {
@@ -4209,7 +4306,7 @@ function prepRound(){
   const tactic = tactics[T_.sel].id, counter = BEATS[tactic] === style, exposed = BEATS[style] === tactic;
   T_.tactic = tactic; T_.roll = [1 + rnd(6), 1 + rnd(6)]; T_.counter = counter; T_.exposed = exposed;
   const statBonus = Math.min(0.12, (st.fue + st.des + st.agi) * 0.004);
-  const pw = clamp(0.5 + mu(T_.deck, o.deck) + (st.int - 5) * 0.03 + statBonus + T_.buzz * 0.02 + (owned(LEGEND) ? 0.05 : 0) + houseBonus('tourInt') * 0.02 + (counter ? 0.12 : exposed ? -0.12 : 0) + (T_.roll[0] - T_.roll[1]) * 0.035 - T_.round * 0.04 - T_.cfg.diff, 0.08, 0.92);
+  const pw = clamp(0.5 + (CH().foresight ? 0.08 : 0) + mu(T_.deck, o.deck) + (st.int - 5) * 0.03 + statBonus + T_.buzz * 0.02 + (owned(LEGEND) ? 0.05 : 0) + houseBonus('tourInt') * 0.02 + (counter ? 0.12 : exposed ? -0.12 : 0) + (T_.roll[0] - T_.roll[1]) * 0.035 - T_.round * 0.04 - T_.cfg.diff, 0.08, 0.92);
   T_.pwin = pw; T_.iwin = Math.random() < pw;
   T_.ev = genDuel(T_.deck, o.deck, T_.iwin); T_.ei = 0; T_.lives = [20, 20]; T_.cur = null; T_.phase = 'vs'; T_.t = 0; T_.pops = [];
 }
@@ -4318,6 +4415,7 @@ function drawTour(){
     const oppStyle = DECK_STYLE[o.deck];
     TACTICS.slice(0, 3).forEach((t, i) => { const y = 68 + i * 10, on = T_.sel === i, mark = BEATS[t.id] === oppStyle ? ' +VENTAJA' : BEATS[oppStyle] === t.id ? ' -PELIGRO' : ' NEUTRO'; if (on) R(43, y - 1, 154, 10, '#59406e'); tiny(t.n + mark, 48, y, on ? '#fff' : '#bdb0d0'); });
     tiny('RIVAL: ' + ({agro:'AGRESIVO',ctrl:'CONTROL',combo:'COMBO'})[oppStyle] + '  /  TU MAZO: ' + ({agro:'AGRO',ctrl:'CONTROL',combo:'COMBO'})[DECK_STYLE[T_.deck]], 120, 104, '#d8c8e8', 'center');
+    if (CH().foresight) tiny('VISION DEL FUTURO: +8% EN ESTA RONDA',120,145,'#90e8ff','center');
     tiny('FLECHAS ELIGEN · A CONFIRMA', 120, 151, '#fcd84a', 'center');
   } else if (T_.phase === 'vs') {
     txt('VS', 120, 60, '#fcd84a', 'center', '#7a3a10', 16);
@@ -4772,7 +4870,7 @@ function drawWorld(){
   for (const o of othersHere()) list.push({ y:o.ry + 8, f:() => {
     const x = Math.round(o.rx), y = Math.round(o.ry);
     if (o.atk > 0 && o.dir === 1) drawSwordAt(x, y, o.dir, o.atk, '#d8e0e8');
-    drawPerson(x - 3, y - 8, CHARS[o.ch] || CHARS[0], o.dir, o.walk);
+    drawPerson(x - 3, y - 8, remoteCharacter(o), o.dir, o.walk);
     if (o.atk > 0 && o.dir !== 1) drawSwordAt(x, y, o.dir, o.atk, '#d8e0e8');
     const nm = norm(o.name), w = nm.length * 4 + 3;
     R(x + 5 - w / 2, y - 22, w, 8, 'rgba(0,0,0,.55)'); tiny(nm, x + 5, y - 20, '#60e070', 'center');
@@ -5006,15 +5104,15 @@ function drawSlots(){
     R(8, y, 224, 38, sel ? (del ? '#e83040' : '#fcd84a') : '#2e4a44'); R(10, y + 2, 220, 34, del ? '#3a1018' : '#1c2a2e');
     tiny('PARTIDA ' + (i + 1), 16, y + 5, '#6a8a80');
     if (s) {
-      ctx.save(); ctx.translate(16, y + 12); ctx.scale(1.25, 1.25); drawPerson(0, 0, CHARS[s.ch], 0, sel ? (frame >> 4) & 1 : 0); ctx.restore();
-      txt(CHARS[s.ch].n, 44, y + 6, '#fff', 'left', null);
+      ctx.save(); ctx.translate(16, y + 12); ctx.scale(1.25, 1.25); drawPerson(0, 0, characterOf(s), 0, sel ? (frame >> 4) & 1 : 0); ctx.restore();
+      txt(characterOf(s).n, 44, y + 6, '#fff', 'left', null);
       tiny('NIVEL ' + s.lvl + '   ' + money(s.coins) + '   CARTAS ' + ALL_CARDS.filter(id => (s.cards[id] || 0) > 0).length + '/' + ALL_CARDS.length, 44, y + 18, '#c8d8d0');
       tiny('GUARDIANES ' + GUARDIANS.filter(g => s.bosses[g]).length + '/5   EN: ' + (SHORT[zoneOf(s.room)] || 'VILLA'), 44, y + 26, '#9db8a8');
     } else {
       txt('VACÍA', 44, y + 8, '#6a8a80', 'left', null);
       tiny('CREAR UN PERSONAJE NUEVO', 44, y + 20, sel ? '#fcd84a' : '#9db8a8');
       const tr = trashSave();
-      if (tr && sel) tiny((TOUCH ? 'B' : 'X') + ': RECUPERAR BORRADA (' + CHARS[tr.ch].n + ' NV ' + tr.lvl + ')', 44, y + 28, '#60e070');
+      if (tr && sel) tiny((TOUCH ? 'B' : 'X') + ': RECUPERAR BORRADA (' + characterOf(tr).n + ' NV ' + tr.lvl + ')', 44, y + 28, '#60e070');
     }
   }
   tiny(TOUCH ? 'A: JUGAR O CREAR   B: BORRAR   MENU: VOLVER' : 'Z: JUGAR O CREAR   X: BORRAR   ENTER: VOLVER', 120, 150, '#6a8a80', 'center');
@@ -5024,7 +5122,7 @@ function drawSlots(){
     ctx.fillStyle = 'rgba(0,0,0,.7)'; ctx.fillRect(0, 0, W, H);
     R(20, 38, 200, 84, '#e83040'); R(22, 40, 196, 80, '#2a0e14');
     txt('¿BORRAR PARTIDA?', 120, 46, '#ffb0b8', 'center', null);
-    if (s) tiny(CHARS[s.ch].n + ' NIVEL ' + s.lvl + ' - SE PIERDE TODO SU PROGRESO', 120, 60, '#fff', 'center');
+    if (s) tiny(characterOf(s).n + ' NIVEL ' + s.lvl + ' - SE PIERDE TODO SU PROGRESO', 120, 60, '#fff', 'center');
     ['NO, VOLVER', 'SI, BORRAR'].forEach((o, i) => {
       const yy = 76 + i * 16, on = i === dc.sel;
       R(60, yy - 3, 120, 13, on ? (i ? '#e83040' : '#2e4a44') : '#1a0a10');
@@ -5054,46 +5152,165 @@ function updateSlots(){
   if (pressed('a')) {
     SFX.ok(); G.delSlot = null;
     if (s) { S = s; saveGame(); G.state = 'world'; loadRoom(S.room, S.x, S.y); }
-    else { G.newSlot = n; G.state = 'select'; G.sel = 0; }
+    else { G.newSlot = n; G.state = 'select'; G.sel = 0; G.selectScroll = 0; }
   }
 }
-const SEL_COLS = 6, SEL_ROWS = [24, 68];
+const SEL_COLS = 3, SEL_TOP = 22, SEL_BOTTOM = 103, SEL_ROW_H = 44;
+const selectContentHeight = () => (Math.ceil(CUSTOM_CHAR / SEL_COLS) + 1) * SEL_ROW_H;
+const selectMaxScroll = () => Math.max(0, selectContentHeight() - (SEL_BOTTOM - SEL_TOP));
+function setSelectScroll(value){ G.selectScroll = clamp(value,0,selectMaxScroll()); }
+function revealSelected(){
+  const row = G.sel === CUSTOM_CHAR ? Math.ceil(CUSTOM_CHAR / SEL_COLS) : Math.floor(G.sel / SEL_COLS);
+  const top = row * SEL_ROW_H, bottom = top + SEL_ROW_H;
+  if (!Number.isFinite(G.selectScroll)) G.selectScroll=0;
+  if (top < G.selectScroll) setSelectScroll(top);
+  else if (bottom > G.selectScroll + SEL_BOTTOM - SEL_TOP) setSelectScroll(bottom - (SEL_BOTTOM - SEL_TOP));
+}
+function selectAt(p){
+  if (p.y < SEL_TOP || p.y >= SEL_BOTTOM || p.x < 0 || p.x >= 232) return -1;
+  const row = Math.floor((p.y - SEL_TOP + (G.selectScroll || 0)) / SEL_ROW_H);
+  if (row === Math.ceil(CUSTOM_CHAR / SEL_COLS)) return CUSTOM_CHAR;
+  const i = row * SEL_COLS + Math.floor(p.x / 78);
+  return i >= 0 && i < CUSTOM_CHAR ? i : -1;
+}
 function drawSelect(){
-  R(0, 0, W, H, '#10161a');
-  for (let i = 0; i < 15; i++) R(i * 16, 104, 16, 56, i % 2 ? '#1c2a2e' : '#18242a');
-  txt('ELIGE PERSONAJE', 120, 8, '#fcd84a', 'center', '#7a3a10');
-  CHARS.forEach((c, i) => {
-    const cx = 20 + (i % SEL_COLS) * 40, y0 = SEL_ROWS[Math.floor(i / SEL_COLS)], sel = i === G.sel, bob = sel ? Math.round(Math.abs(Math.sin(frame * 0.12)) * -3) : 0;
-    if (sel) R(cx - 19, y0 - 11, 38, 42, '#1c2a2e');
-    ctx.save(); ctx.translate(cx - 11, y0 + bob); ctx.scale(1.4, 1.4); drawPerson(0, 0, c, 0, sel ? (frame >> 4) & 1 : 0); ctx.restore();
-    if (sel) R(cx - 16, y0 + 30, 32, 1, '#fcd84a');
-    tiny(c.short || c.n, cx, y0 + 24, sel ? '#fcd84a' : '#fff', 'center');
+  if (!Number.isFinite(G.selectScroll)) revealSelected();
+  R(0,0,W,H,'#10161a');
+  for (let i=0;i<15;i++) R(i*16,104,16,56,i%2?'#1c2a2e':'#18242a');
+  txt('ELIGE TU PERSONAJE',120,5,'#fcd84a','center','#7a3a10');
+  tiny('DESLIZA PARA VER A TODOS',120,15,'#9db8a8','center');
+  ctx.save();ctx.beginPath();ctx.rect(0,SEL_TOP,232,SEL_BOTTOM-SEL_TOP);ctx.clip();
+  CHARS.forEach((c,i)=>{
+    const row=i===CUSTOM_CHAR?Math.ceil(CUSTOM_CHAR/SEL_COLS):Math.floor(i/SEL_COLS);
+    const y=SEL_TOP+row*SEL_ROW_H-G.selectScroll, sel=i===G.sel;
+    if(y+SEL_ROW_H<SEL_TOP || y>SEL_BOTTOM)return;
+    if(i===CUSTOM_CHAR){
+      R(5,y+2,222,40,sel?'#38534a':'#203a32');R(6,y+3,220,1,'#fcd84a');
+      drawPerson(13,y+12,c,0,0);
+      tiny('CREAR MI PERSONAJE',124,y+12,'#fcd84a','center');
+      tiny('ROPA, PELO, OJOS Y HABILIDADES',124,y+24,'#d8e8dc','center');
+      return;
+    }
+    const cx=39+(i%SEL_COLS)*78;
+    if(sel)R(cx-36,y+1,72,42,'#30443d');
+    ctx.save();ctx.translate(cx-10,y+5);ctx.scale(1.2,1.2);drawPerson(0,0,c,0,sel?(frame>>4)&1:0);ctx.restore();
+    tiny(c.short||c.n,cx,y+29,sel?'#fcd84a':'#fff','center');
+    if(sel)R(cx-32,y+39,64,1,'#fcd84a');
+  });ctx.restore();
+  const viewport=SEL_BOTTOM-SEL_TOP, thumb=Math.max(12,viewport*viewport/selectContentHeight());
+  R(235,SEL_TOP,3,viewport,'#2a3a3a');R(235,SEL_TOP+(viewport-thumb)*G.selectScroll/(selectMaxScroll()||1),3,thumb,'#fcd84a');
+  const c=CHARS[G.sel];tiny(c.tag,120,108,'#10d9b8','center');
+  [['FUE','fue'],['DES','des'],['AGI','agi'],['INT','int']].forEach(([label,k],i)=>{
+    const x=16+(i%2)*112,y=118+Math.floor(i/2)*12;tiny(label,x,y+1,'#9db8a8');
+    for(let j=0;j<8;j++)R(x+18+j*9,y,8,6,j<c.st[k]?'#fcd84a':'#2a3a3a');
   });
-  const c = CHARS[G.sel];
-  tiny(c.tag, 120, 108, '#10d9b8', 'center');
-  [['FUE','fue'],['DES','des'],['AGI','agi'],['INT','int']].forEach(([l, k], i) => {
-    const x = 16 + (i % 2) * 112, y = 118 + Math.floor(i / 2) * 12;
-    tiny(l, x, y + 1, '#9db8a8');
-    for (let j = 0; j < 8; j++) R(x + 18 + j * 9, y, 8, 6, j < c.st[k] ? '#fcd84a' : '#2a3a3a');
-  });
-  tiny(TOUCH ? '< > ELIGE    A: EMPEZAR' : '< > ELIGE    Z: EMPEZAR', 120, 148, '#6a8a80', 'center');
+  tiny(TOUCH?'DESLIZA O USA FLECHAS · A: ELEGIR':'FLECHAS / RUEDA · Z: ELEGIR',120,148,'#9db8a8','center');
 }
 function updateSelect(){
-  if (pressed('left')) { G.sel = (G.sel + CHARS.length - 1) % CHARS.length; SFX.move(); }
-  if (pressed('right')) { G.sel = (G.sel + 1) % CHARS.length; SFX.move(); }
-  if (pressed('up') || pressed('down')) { G.sel = (G.sel + SEL_COLS) % (SEL_COLS * SEL_ROWS.length); if (G.sel >= CHARS.length) G.sel = G.sel % SEL_COLS; SFX.move(); }
-  if (pressed('b')) { G.state = 'slots'; SFX.back(); }
-  if (pressed('a') || pressed('menu')) {
-    SFX.ok();
-    S = newSave(G.sel); S.slot = G.newSlot || 1; G.state = 'world';
+  let delta=0;
+  if(pressed('left'))delta=-1;if(pressed('right'))delta=1;
+  if(pressed('up'))delta=-SEL_COLS;if(pressed('down'))delta=SEL_COLS;
+  if(delta){G.sel=clamp(G.sel+delta,0,CHARS.length-1);revealSelected();SFX.move();}
+  if(pressed('b')){G.state='slots';SFX.back();}
+  if(pressed('a')||pressed('menu')){SFX.ok();if(G.sel===CUSTOM_CHAR){openCharacterWizard();return;}beginAdventure(G.sel);}
+}
+function beginAdventure(ci, custom){
+    S = newSave(ci, custom); S.slot = G.newSlot || 1; G.state = 'world';
     loadRoom('pueblo', S.x, S.y);
-    say(['Bienvenido a VILLA PREMODERN, ' + CHARS[G.sel].n + '.',
+    say(['Bienvenido a VILLA PREMODERN, ' + CH().n + '.',
       'Por aquí las criaturas salen de las cartas... y cuando las derrotas, sueltan cartas.',
       'Antes de salir de la Villa, ve a la ZONA SAFARI (la casita verde de la izquierda) y atrapa tu primer Pokémon: será tu compañero de aventura.',
       'Junta un mazo completo (12 cartas) y juega el torneo en la ARENA.',
       '¿Sed? En la TABERNA hay cerveza y gente para cambiar cartas.',
       TOUCH ? 'A: atacar. B: hablar. MENÚ: tus mazos, espadas y estado.' : 'Z: atacar. X: hablar. ENTER: tus mazos, espadas y estado.']);
+}
+
+/* ============ CREADOR DE PERSONAJES ============ */
+let wizardStep = 0, wizardDraft = null, wizardReturnState = 'select';
+function wizardDefaults(){
+  return { n:'AVENTURERO', style:'spiky', main:'fue', st:{fue:5,des:5,agi:5,int:5}, skills:[], plaid:false,
+    c:{skin:'#f1c9a0',hair:'#5a3418',eye:'#389cff',shirt:'#2888b8',pants:'#304868',shoe:'#f4f4f8'} };
+}
+function ensureCharacterWizard(){
+  let dialog = document.getElementById('characterWizard'); if (dialog) return dialog;
+  dialog = document.createElement('dialog'); dialog.id = 'characterWizard';
+  dialog.setAttribute('aria-labelledby','wizardTitle');
+  dialog.innerHTML = `<h2 id="wizardTitle">Crea tu personaje</h2>
+    <p id="wizardStep" aria-live="polite"></p>
+    <canvas id="wizardPreview" width="600" height="200" aria-label="Vista del personaje desde cuatro lados"></canvas>
+    <form id="wizardForm">
+      <section data-wizard-step="0"><label>Nombre<input id="wizardName" maxlength="16" required autocomplete="off"></label>
+        <div class="wizard-grid"><label>Pelo y estilo<select id="wizardStyle"></select></label><label>Atributo que mejora al subir de nivel<select id="wizardMain"></select></label></div>
+        <div id="wizardColors" class="wizard-grid"></div><label class="wizard-skill"><input id="wizardPlaid" type="checkbox">Camisa a cuadros</label></section>
+      <section data-wizard-step="1" hidden><p>Reparte 20 puntos. Cada atributo admite entre 2 y 8.</p><p id="wizardBudget" aria-live="polite"></p><div id="wizardStats" class="wizard-grid"></div></section>
+      <section data-wizard-step="2" hidden><p>Elige habilidades hasta un máximo de 6 puntos. Puedes dejar puntos sin usar.</p><p id="wizardSkillBudget" aria-live="polite"></p><div id="wizardSkills"></div></section>
+      <p id="wizardError" role="alert"></p><div class="wizard-actions"><button type="button" id="wizardCancel">Cancelar</button><button type="button" id="wizardBack">Atrás</button><button type="submit" id="wizardNext">Siguiente</button></div>
+    </form>`;
+  document.body.appendChild(dialog);
+  const el = id => document.getElementById(id);
+  for (const [value,label] of Object.entries(CUSTOM_STYLES)) { const option = document.createElement('option'); option.value=value; option.textContent=label; el('wizardStyle').appendChild(option); }
+  for (const k of CUSTOM_STATS) { const option = document.createElement('option'); option.value=k; option.textContent=k.toUpperCase(); el('wizardMain').appendChild(option); }
+  for (const [key,label] of Object.entries({skin:'Piel',hair:'Color de pelo',eye:'Ojos',shirt:'Ropa superior',pants:'Pantalón',shoe:'Zapatos'})) {
+    const node = document.createElement('label'); node.textContent=label; const input=document.createElement('input'); input.type='color'; input.id='wizardColor_'+key; node.appendChild(input); el('wizardColors').appendChild(node);
   }
+  for (const k of CUSTOM_STATS) {
+    const node=document.createElement('label'); node.textContent={fue:'FUE · Daño',des:'DES · Críticos y cartas',agi:'AGI · Movimiento',int:'INT · Magia y torneos'}[k];
+    const input=document.createElement('input'); input.type='number'; input.min=2; input.max=8; input.step=1; input.id='wizardStat_'+k; node.appendChild(input); el('wizardStats').appendChild(node);
+  }
+  for (const [id,skill] of Object.entries(CUSTOM_SKILLS)) {
+    const label=document.createElement('label'); label.className='wizard-skill'; const input=document.createElement('input'); input.type='checkbox'; input.value=id; input.dataset.skill=id;
+    const text=document.createElement('span'); text.textContent=skill.n+' · '+skill.cost+' puntos'; const desc=document.createElement('small'); desc.textContent=skill.desc; text.appendChild(desc); label.append(input,text); el('wizardSkills').appendChild(label);
+  }
+  dialog.addEventListener('input', readWizardDraft);
+  dialog.addEventListener('change', readWizardDraft);
+  dialog.addEventListener('keydown', e => e.stopPropagation());
+  dialog.addEventListener('keyup', e => e.stopPropagation());
+  el('wizardForm').addEventListener('submit', e => { e.preventDefault(); readWizardDraft();
+    try {
+      if (wizardStep === 0 && !wizardDraft.n.trim()) throw new Error('Dale un nombre a tu personaje.');
+      if (wizardStep >= 1) normalizeCustom(wizardDraft);
+      if (wizardStep < 2) { wizardStep++; updateWizardView(); }
+      else { const spec=normalizeCustom(wizardDraft); dialog.close(); beginAdventure(CUSTOM_CHAR,spec); cvs.focus(); }
+    } catch(error) { el('wizardError').textContent=error.message; }
+  });
+  el('wizardBack').addEventListener('click', () => { wizardStep=Math.max(0,wizardStep-1); updateWizardView(); });
+  el('wizardCancel').addEventListener('click', () => dialog.close());
+  dialog.addEventListener('close', () => { if (G.state === 'creator') G.state=wizardReturnState; cvs.focus(); });
+  return dialog;
+}
+function openCharacterWizard(){
+  const dialog=ensureCharacterWizard(); wizardReturnState=G.state; G.state='creator'; wizardStep=0; wizardDraft=wizardDefaults();
+  const el=id=>document.getElementById(id); el('wizardName').value=wizardDraft.n; el('wizardStyle').value=wizardDraft.style; el('wizardMain').value=wizardDraft.main; el('wizardPlaid').checked=false;
+  for (const [k,value] of Object.entries(wizardDraft.c)) el('wizardColor_'+k).value=value;
+  for (const k of CUSTOM_STATS) el('wizardStat_'+k).value=wizardDraft.st[k];
+  dialog.querySelectorAll('[data-skill]').forEach(input => {input.checked=false;input.disabled=false;});
+  for (const k in kb) kb[k]=0; for (const k in touch) touch[k]=0;
+  pulseKey=null; updateWizardView(); dialog.showModal(); el('wizardName').focus();
+}
+function readWizardDraft(){
+  const el=id=>document.getElementById(id); wizardDraft.n=el('wizardName').value; wizardDraft.style=el('wizardStyle').value; wizardDraft.main=el('wizardMain').value; wizardDraft.plaid=el('wizardPlaid').checked;
+  for (const k of Object.keys(wizardDraft.c)) wizardDraft.c[k]=el('wizardColor_'+k).value;
+  for (const k of CUSTOM_STATS) wizardDraft.st[k]=Number(el('wizardStat_'+k).value);
+  wizardDraft.skills=Array.from(el('characterWizard').querySelectorAll('[data-skill]:checked'), input=>input.value);
+  updateWizardView();
+}
+function updateWizardView(){
+  const dialog=document.getElementById('characterWizard'), el=id=>document.getElementById(id);
+  dialog.querySelectorAll('[data-wizard-step]').forEach(section=>section.hidden=Number(section.dataset.wizardStep)!==wizardStep);
+  el('wizardStep').textContent=['1 de 3 · Nombre y apariencia','2 de 3 · Atributos iniciales','3 de 3 · Habilidades'][wizardStep];
+  const total=Object.values(wizardDraft.st).reduce((sum,n)=>sum+n,0), spent=customSkillCost(wizardDraft.skills);
+  el('wizardBudget').textContent='Puntos repartidos: '+total+'/20 · Restantes: '+(20-total);
+  el('wizardSkillBudget').textContent='Puntos usados: '+spent+'/6 · Restantes: '+(6-spent);
+  dialog.querySelectorAll('[data-skill]').forEach(input=>input.disabled=!input.checked && spent+CUSTOM_SKILLS[input.value].cost>CUSTOM_SKILL_BUDGET);
+  el('wizardBack').hidden=wizardStep===0; el('wizardNext').textContent=wizardStep===2?'Crear y empezar':'Siguiente'; el('wizardError').textContent='';
+  let valid=true; try {normalizeCustom(wizardDraft);} catch (_) {valid=false;}
+  el('wizardNext').disabled=wizardStep===0 ? !wizardDraft.n.trim() : !valid;
+  const preview=el('wizardPreview'), oldCtx=ctx;
+  try {
+    ctx=preview.getContext('2d'); ctx.clearRect(0,0,600,200); ctx.save(); ctx.scale(6,6);
+    const raw={...wizardDraft,n:wizardDraft.n.trim() || 'AVENTURERO',st:{fue:5,des:5,agi:5,int:5},skills:[]}; const character=customCharacter(raw);
+    [0,3,1,2].forEach((dir,i)=>drawPerson(5+i*24,12,character,dir,0)); ctx.restore();
+  } finally {ctx=oldCtx;}
 }
 
 /* ============ ARCADE: GOBLIN SMASH ============ */
@@ -5276,7 +5493,7 @@ function drawArcade(){
 const FLOOR_Y = 136;
 function mkFighter(P, x, face, n){ return { P, n, x, hgt:0, vh:0, hp:100, face, st:'idle', st_t:0, cd:0, hitDone:false, blk:false, flash:0 }; }
 function initPelea(A){
-  const pool = CHARS.map((c, i) => i).filter(i => CHARS[i] !== CH());
+  const pool = CHARS.map((c, i) => i).filter(i => i !== S.ch && i !== CUSTOM_CHAR);
   const oi = pool[rnd(pool.length)];
   A.f = [mkFighter(playerLook(), 70, 1, CH().n), mkFighter(CHARS[oi], 170, -1, CHARS[oi].n)];
   A.wins = [0, 0]; A.round = 1; A.phase = 'intro'; A.pt = 0; A.score = 0; A.bolts = []; A.sparks = []; A.rt = 60 * 60; A.lives = 1;
@@ -5706,7 +5923,7 @@ const BEATS = { agro:'combo', ctrl:'agro', combo:'ctrl' };
 const LOSES_TO = { agro:'ctrl', ctrl:'combo', combo:'agro' };
 const DECK_STYLE = { burn:'agro', goblins:'agro', black:'ctrl', life:'ctrl', replenish:'combo', langostino:'combo', terragedon:'agro', landstill:'ctrl', rock:'ctrl', mud:'combo' };
 const DUELIST_DECK = { fan1:'goblins', fan2:'burn', fan3:'black', fan4:'life', klaus:'black', marinero:'langostino', pescador:'replenish', juez:'replenish', coleccionista:'langostino', cantinero:'burn', ligaVina:'terragedon', ligaCurico:'rock', ligaPmontt:'landstill', ligaUrza:'mud', ligaTempest:'landstill' };
-const FRIEND_DECK = ['goblins','burn','replenish','black','langostino','terragedon','rock','landstill','mud','life','goblins','burn'];
+const FRIEND_DECK = ['goblins','burn','replenish','black','langostino','terragedon','rock','landstill','mud','life','goblins','burn','life','replenish','langostino','burn','mud','rock'];
 const isDuelist = n => n.id === 'friend' || DUELIST_DECK[n.id] !== undefined;
 function offerDuel(n){
   const name = n.id === 'friend' ? CHARS[n.ch].n : NPCDEF[n.id].n;
@@ -5728,6 +5945,7 @@ function beginDuel(opp, deck, bet){
 }
 function duelOptions(){ const d = G.duel; return TACTICS.filter(t => t.id !== 'trick' || d.tricks > 0); }
 function oppPick(d){
+  if (d.predicted) { const choice = d.predicted; d.predicted = null; return choice; }
   const r = Math.random();
   if (r < 0.4) return DECK_STYLE[d.opp.deck];
   if (r < 0.7 && d.last) return LOSES_TO[d.last];
@@ -5767,6 +5985,7 @@ function updateDuel(){
   const d = G.duel; d.t++;
   for (const p of d.pops) p.t++;
   if (d.phase === 'choose') {
+    if (CH().foresight && !d.predicted) d.predicted = oppPick(d);
     const opts = duelOptions(), n = opts.length;
     if (pressed('up') || pressed('left')) { d.sel = (d.sel + n - 1) % n; SFX.move(); }
     if (pressed('down') || pressed('right')) { d.sel = (d.sel + 1) % n; SFX.move(); }
@@ -5818,6 +6037,7 @@ function drawDuel(){
       txt(o.n + (o.id === 'trick' ? ' x' + d.tricks : ''), 120, y + 3, on ? '#fff' : '#9a90c0', 'center', null);
       d.rects.push([64, y, 112, 13]);
     });
+    if (d.predicted) tiny('VISION: '+TACTICS.find(t=>t.id===d.predicted).n+' (PUEDE HACER TRAMPA)',120,92,'#90e8ff','center');
     const o = opts[d.sel]; R(4, 104, 232, 22, '#000'); wrap(norm(o.desc), 56).slice(0, 2).forEach((l, i) => tiny(l, 8, 108 + i * 8, '#e8e4ff'));
     tiny('TU MAZO ES ' + ({ agro:'AGRESIVO', ctrl:'DE CONTROL', combo:'DE COMBO' })[DECK_STYLE[d.deck]] + ': ESA TACTICA TE DA +1', 120, 132, '#9a90c0', 'center');
   } else {
@@ -5927,8 +6147,11 @@ function netJoin(){
   });
   peer.on('error', e => { netStatus(netErrorText(e, code)); if (e.type === 'peer-unavailable' || e.type === 'network' || e.type === 'server-error') netLeave(true); });
 }
+function remoteCharacter(o){
+  try { return characterOf(o) || CHARS[0]; } catch (_) { return CHARS[0]; }
+}
 function myState(){
-  return { pid:NET.pid, name:CH().n, ch:S.ch, room:G.roomId, x:Math.round(PL.x), y:Math.round(PL.y), dir:PL.dir, atk:PL.atk, walk:Math.floor(PL.walk) % 2, hp:S.hp, max:S.maxHp };
+  return { pid:NET.pid, name:CH().n, ch:S.ch, customChar:S.customChar || null, room:G.roomId, x:Math.round(PL.x), y:Math.round(PL.y), dir:PL.dir, atk:PL.atk, walk:Math.floor(PL.walk) % 2, hp:S.hp, max:S.maxHp };
 }
 const sendAll = m => { for (const c of NET.conns) if (c.open) c.send(m); };
 function sendTo(pid, m){ if (NET.role === 'host') { const c = NET.conns.find(x => x.pid === pid); if (c && c.open) c.send(m); } }
@@ -6026,6 +6249,7 @@ async function decodeSave(code){
   if (prefix === 'z') { const ds = new DecompressionStream('deflate-raw'), w = ds.writable.getWriter(); w.write(bytes); w.close(); bytes = new Uint8Array(await new Response(ds.readable).arrayBuffer()); }
   const s = JSON.parse(new TextDecoder().decode(bytes));
   if (!s || s.v !== 1 || typeof s.ch !== 'number' || !CHARS[s.ch]) throw new Error('codigo invalido');
+  if (s.ch === CUSTOM_CHAR) s.customChar = normalizeCustom(s.customChar);
   return s;
 }
 const saveMsg = t => { netEl('saveStatus').textContent = t; };
@@ -6033,7 +6257,7 @@ function currentSave(){ if (S) { if (G.state === 'world') { S.x = PL.x; S.y = PL
 async function saveLink(){ const s = currentSave(); if (!s) { saveMsg('No hay partida en este dispositivo todavia.'); return null; } return INVITE_BASE + '?partida=' + await encodeSave(s); }
 netEl('saveSend').addEventListener('click', async () => {
   const url = await saveLink(); if (!url) return;
-  const s = currentSave(), text = 'Mi partida de Magic The Beer Quest (' + CHARS[s.ch].n + ' nivel ' + s.lvl + '). Abre este link en el otro equipo: ' + url;
+  const s = currentSave(), text = 'Mi partida de Magic The Beer Quest (' + characterOf(s).n + ' nivel ' + s.lvl + '). Abre este link en el otro equipo: ' + url;
   try { if (navigator.share) { await navigator.share({ title:'Mi partida de Magic The Beer Quest', text, url }); saveMsg('Listo. Abre ese link en el otro dispositivo.'); return; } } catch(_) { return; }
   window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank', 'noopener');
   saveMsg('Mandate el mensaje a ti mismo (o a tu chat de WhatsApp) y abre el link en el otro equipo.');
@@ -6047,13 +6271,13 @@ function showImport(s){
   netEl('saveImport').hidden = false;
   const cards = ALL_CARDS.filter(id => (s.cards[id] || 0) > 0).length;
   const when = s.savedAt ? ', guardada el ' + new Date(s.savedAt).toLocaleString('es-CL', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' }) : '';
-  netEl('saveImportInfo').textContent = 'Partida recibida: ' + CHARS[s.ch].n + ', nivel ' + s.lvl + ', ' + money(s.coins) + ', ' + cards + ' cartas' + when + '. ¿En que espacio la guardo?';
+  netEl('saveImportInfo').textContent = 'Partida recibida: ' + characterOf(s).n + ', nivel ' + s.lvl + ', ' + money(s.coins) + ', ' + cards + ' cartas' + when + '. ¿En que espacio la guardo?';
   const box = netEl('saveSlots'); box.innerHTML = '';
   for (let n = 1; n <= SLOTS; n++) {
     const ex = loadSave(n), b = document.createElement('button');
-    b.type = 'button'; b.textContent = 'ESPACIO ' + n + ': ' + (ex ? CHARS[ex.ch].n + ' NV ' + ex.lvl : 'VACIO');
+    b.type = 'button'; b.textContent = 'ESPACIO ' + n + ': ' + (ex ? characterOf(ex).n + ' NV ' + ex.lvl : 'VACIO');
     b.addEventListener('click', () => {
-      if (ex && b.dataset.sure !== '1') { b.dataset.sure = '1'; b.textContent = (ex.lvl > s.lvl ? '¡OJO! LA DE AQUI TIENE MAS NIVEL (' + ex.lvl + '). ' : '') + '¿REEMPLAZAR A ' + CHARS[ex.ch].n + '? TOCA DE NUEVO'; b.style.background = '#8a1a1a'; return; }
+      if (ex && b.dataset.sure !== '1') { b.dataset.sure = '1'; b.textContent = (ex.lvl > s.lvl ? '¡OJO! LA DE AQUI TIENE MAS NIVEL (' + ex.lvl + '). ' : '') + '¿REEMPLAZAR A ' + characterOf(ex).n + '? TOCA DE NUEVO'; b.style.background = '#8a1a1a'; return; }
       if (ex) { try { localStorage.setItem('pmq_trash', JSON.stringify(ex)); } catch(_) {} }
       const copy = Object.assign({}, s, { slot:n, imp:Date.now().toString(36) + Math.random().toString(36).slice(2, 7) });
       try { localStorage.setItem(slotKey(n), JSON.stringify(copy)); localStorage.setItem('pmq_last', String(n)); } catch(_) { saveMsg('No se pudo guardar en este navegador.'); return; }
@@ -6142,6 +6366,7 @@ function step(){
       }
     }
     else {
+      if (CH().superBaby && S.hp > 0 && S.hp < S.maxHp && frame % 300 === 0) { S.hp++; floatText('SUPERABRAZO +', PL.x + 5, PL.y - 12, '#f8a8d0'); }
       if (CH().medic && S.hp > 0 && S.hp < S.maxHp && frame % (G.enemies.some(e => !e.dead) ? 180 : 90) === 0) { S.hp++; floatText('+', PL.x + 5, PL.y - 12, '#60e070'); }
       if (PL.piscola > 0) PL.piscola--;
       if (CH().music && frame % 14 === 0) G.parts.push({ k:'note', x:PL.x + 5 + rnd(10) - 5, y:PL.y - 12, vx:(Math.random() - 0.5) * 0.5, vy:-0.55, t:0, c:pick(['#40f0e0','#e83078','#fce040','#a060ff']) });
@@ -6269,7 +6494,7 @@ function pointerClick(p, right){
     if (dc) { (dc.rects || []).forEach((r, i) => { if (inRect(p, r)) { dc.sel = i; pulseKey = 'a'; } }); return; }
     const i = Math.floor((p.y - 20) / 42); if (i >= 0 && i < SLOTS) { if (G.slotSel === i) pulseKey = 'a'; else { G.slotSel = i; SFX.move(); } } return;
   }
-  if (st === 'select') { const col = Math.floor(p.x / 40), row = p.y < 57 ? 0 : p.y < 104 ? 1 : -1, i = row * SEL_COLS + col; if (row >= 0 && col >= 0 && col < SEL_COLS && i < CHARS.length) { if (G.sel === i) pulseKey = 'a'; else { G.sel = i; SFX.move(); } } return; }
+  if (st === 'select') { const i=selectAt(p); if(i>=0){if(G.sel===i)pulseKey='a';else{G.sel=i;SFX.move();}} return; }
   if (st === 'duel') {
     if (G.dialog) { dialogClick(p); return; }
     const d = G.duel; if (d.phase === 'choose') { (d.rects || []).forEach((r, i) => { if (inRect(p, r)) { if (d.sel === i) pulseKey = 'a'; else { d.sel = i; SFX.move(); } } }); } else pulseKey = 'a';
@@ -6315,16 +6540,31 @@ function menuClick(p){
   } else if (m.tab === 2) { if (p.y > 144) pulseKey = 'a'; }
   else if (m.tab === 4) { m.sel = 1 - (m.sel || 0); SFX.move(); }
 }
-let mouseHeld = false;
+let mouseHeld = false, selectDrag = null;
+function finishSelectDrag(e){
+  if(!selectDrag || e.pointerId!==selectDrag.id)return;
+  const gesture=selectDrag;selectDrag=null;
+  if(!gesture.moved && G.state==='select')pointerClick(canvasPos(e),false);
+}
+cvs.addEventListener('wheel',e=>{if(G.state!=='select')return;e.preventDefault();if(!Number.isFinite(G.selectScroll))revealSelected();setSelectScroll(G.selectScroll+e.deltaY*(e.deltaMode===1?12:e.deltaMode===2?81:0.3));},{passive:false});
 cvs.addEventListener('pointerdown', e => {
   audioInit(); cvs.focus();
   const p = canvasPos(e);
   if (location.hash.startsWith('#pokedex') || location.hash === '#monturas' || location.hash === '#bestiario' || location.hash === '#zonas' || location.hash === '#nuevos' || location.hash === '#bestiario2') return;
+  if(G.state==='select' && e.button===0){
+    if(!Number.isFinite(G.selectScroll))revealSelected();
+    selectDrag={id:e.pointerId,startY:p.y,scroll:G.selectScroll,moved:false};
+    try{cvs.setPointerCapture(e.pointerId);}catch(_){} return;
+  }
   mouseHeld = e.button === 0;
   pointerClick(p, e.button === 2);
 });
-cvs.addEventListener('pointermove', e => { if (mouseHeld && G.state === 'world' && G.moveTarget) { const p = canvasPos(e); G.moveTarget.x = p.x; G.moveTarget.y = p.y; G.moveTarget.t = 0; } });
-addEventListener('pointerup', () => { mouseHeld = false; });
+cvs.addEventListener('pointermove', e => {
+  if(selectDrag && e.pointerId===selectDrag.id){const p=canvasPos(e),delta=p.y-selectDrag.startY;if(Math.abs(delta)>4)selectDrag.moved=true;if(selectDrag.moved)setSelectScroll(selectDrag.scroll-delta);return;}
+  if (mouseHeld && G.state === 'world' && G.moveTarget) { const p = canvasPos(e); G.moveTarget.x = p.x; G.moveTarget.y = p.y; G.moveTarget.t = 0; } });
+addEventListener('pointerup',e=>{finishSelectDrag(e);mouseHeld=false;});
+cvs.addEventListener('pointercancel',()=>{selectDrag=null;mouseHeld=false;});
+cvs.addEventListener('lostpointercapture',()=>{selectDrag=null;});
 cvs.addEventListener('contextmenu', e => e.preventDefault());
 addEventListener('pagehide', saveGame);
 const go = () => requestAnimationFrame(loop);
