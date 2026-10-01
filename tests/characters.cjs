@@ -9,7 +9,7 @@ function element(){return { textContent:'',style:{},dataset:{},value:'',hidden:f
 const storage=new Map();
 const sandbox={console,URLSearchParams,TextEncoder,TextDecoder,Uint8Array,Uint8ClampedArray,Buffer,Math:Object.create(Math),Date,performance:{now:()=>0},navigator:{maxTouchPoints:0},location:{hash:'',search:'',href:'http://localhost/',protocol:'http:'},requestAnimationFrame(){},setTimeout(){},clearTimeout(){},setInterval(){},clearInterval(){},matchMedia:()=>({matches:false}),addEventListener(){},localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v),removeItem:k=>storage.delete(k)},document:{body:element(),createElement:()=>element(),querySelectorAll:()=>[],getElementById(id){if(!elements.has(id))elements.set(id,element());return elements.get(id);}},btoa:s=>Buffer.from(s,'binary').toString('base64'),atob:s=>Buffer.from(s,'base64').toString('binary')};
 sandbox.window=sandbox;
-source=source.replace(/\}\)\(\);\s*$/, `globalThis.gameTest={CHARS,CUSTOM_CHAR,normalizeCustom,customCharacter,characterOf,newSave,loadSave,saveGame,slotKey,speed,defense,aquaticBonus,loadRoom,checkConnectivity,drawSelect,drawPerson,drawDuel,drawTour,beginDuel,updateDuel,oppPick,startTour,prepRound,updateItems,step,encodeSave,decodeSave,myState,remoteCharacter,FRIEND_LINES,FRIEND_DECK,FRIENDS_ON_MAP,getDef,SOLID,setSelectScroll,selectMaxScroll,revealSelected,selectAt,G,PL,wizardDefaults,setS(value){S=value;},getS(){return S;},setFrame(value){frame=value;}};})();`);
+source=source.replace(/\}\)\(\);\s*$/, `globalThis.gameTest={CHARS,CUSTOM_CHAR,normalizeCustom,customCharacter,characterOf,newSave,loadSave,saveGame,slotKey,speed,defense,aquaticBonus,loadRoom,checkConnectivity,drawSelect,drawPerson,drawDuel,drawTour,beginDuel,updateDuel,oppPick,startTour,prepRound,updateItems,step,encodeSave,decodeSave,myState,remoteCharacter,FRIEND_LINES,FRIEND_DECK,FRIENDS_ON_MAP,getDef,SOLID,ROOMS,MOUNTS,shopItems,buyItem,mounted,goTo,friendCast,friendCredits,propSolidSet,K,updateWorld,blocked,npcHit,SLOTS,drawSlots,leagueMapMarks,drawWorldMap,BOAT_ROUTES,setSelectScroll,selectMaxScroll,revealSelected,selectAt,G,PL,wizardDefaults,setS(value){S=value;},getS(){return S;},setFrame(value){frame=value;}};})();`);
 vm.runInNewContext(source,sandbox,{timeout:5000});
 const g=sandbox.gameTest;
 assert(g,'Test interface initialized');
@@ -68,6 +68,50 @@ assert(Math.abs(withForesight-g.G.tour.pwin-0.08)<1e-9);
 g.checkConnectivity();const report=elements.get('conn').textContent;assert(report.startsWith('PROBLEMAS: 0'),report);
 assert.equal(g.remoteCharacter({ch:g.CUSTOM_CHAR,customChar:spec}).n,'MI PERSONAJE');
 assert.equal(g.remoteCharacter({ch:g.CUSTOM_CHAR,customChar:{}}).id,'matias');
+assert.equal(g.friendCast().length,18);assert(!g.friendCast().some(c=>c.id==='custom'));assert(g.friendCredits().join(' ').includes('RAI'));assert(g.friendCredits().join(' ').includes('PABLOT'));
+assert.equal(g.ROOMS.valpo.doors['10,7'],'establo');assert.equal(g.ROOMS.mercado.doors['11,7'],'bovedaMox');
+assert(!g.ROOMS.mercado.npcs.some(n=>n.id==='caballerizo'||n.id==='marchante'));
+for(const [id,npcId] of [['establo','caballerizo'],['bovedaMox','marchante']]) {
+ const def=g.getDef(id);assert(def.map.every(row=>row.length===15));assert(def.npcs.some(n=>n.id===npcId));
+ const solid=g.propSolidSet(def),q=[[7,7]],seen=new Set(['7,7']);
+ while(q.length){const [x,y]=q.shift();for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]) {const nx=x+dx,ny=y+dy,key=nx+','+ny;if(nx<0||ny<0||nx>=15||ny>=10||seen.has(key)||g.SOLID.has(def.map[ny][nx])||solid.has(nx+ny*15))continue;seen.add(key);q.push([nx,ny]);}}
+ assert(seen.has('7,8'),'Exit inaccessible '+id);for(const npc of def.npcs)assert(seen.has(npc.x+','+npc.y),'NPC inaccessible '+id);
+}
+g.setS(g.newSave(0));g.getS().coins=200000;g.loadRoom('establo',115,116);
+const horse=g.shopItems('monturas').find(it=>it.id==='caballo');assert(horse);assert.equal(horse.price,100000);g.G.shop={kind:'monturas',sel:0,scroll:0,items:g.shopItems('monturas')};g.buyItem(horse);
+assert.equal(g.getS().coins,100000);assert(g.getS().mounts.includes('caballo'));assert.equal(g.getS().mount,'caballo');assert.equal(g.mounted(),null);assert(g.loadSave(1).mounts.includes('caballo'));
+g.loadRoom('valpo',163,134);assert.equal(g.mounted().n,'Caballo chileno');
+g.goTo('establo','E');assert.equal(g.G.roomId,'establo');assert.equal(g.getS().mount,'caballo');
+g.loadRoom('bovedaMox',115,116);assert.equal(g.shopItems('lujo').length,20);
+// Walk with actual player and NPC collision, rather than checking tiles alone.
+for (const y of [68,76,84]) {
+ g.setS(g.newSave(0));g.loadRoom('mercado',115,y);g.G.enemies=[];g.PL.atk=0;g.K.left=1;
+ for(let i=0;i<400&&g.G.roomId==='mercado';i++)g.updateWorld();
+ assert.equal(g.G.roomId,'pantanoProf','West exit blocked at y='+y);
+ g.K.left=0;
+}
+assert.equal(g.SLOTS,5);
+for(let slot=1;slot<=5;slot++){const save=g.newSave(slot+11);save.slot=slot;save.coins=slot*12345;g.setS(save);g.saveGame();assert.equal(g.loadSave(slot).coins,slot*12345);}
+g.G.slotSel=4;g.drawSlots();
+assert.equal(g.ROOMS.valpo.trails['9,1'].room,'establo');
+assert.equal(Math.min(...g.shopItems('monturas').map(it=>it.price)),100000);
+for(const routes of Object.values(g.BOAT_ROUTES))for(const [dest,fee] of routes)if(dest==='pmontt'||dest==='islote')assert.equal(fee,3000);
+g.setS(g.newSave(1));g.loadRoom('pueblo',115,84);
+const rai=g.G.npcs.find(n=>n.ch===12),papa=g.G.npcs.find(n=>n.ch===0);assert(rai&&papa);assert(Math.abs(rai.x-papa.x)<=16);
+// Pixel-space flood includes NPC bodies and requires dry terrain without Surf.
+function reachablePositions(room,x,y){
+ g.setS(g.newSave(1));g.loadRoom(room,x,y);g.getS().surf=false;
+ const q=[[x,y]],seen=new Set([x+','+y]);
+ for(let i=0;i<q.length;i++){const [px,py]=q[i];for(const [dx,dy] of [[2,0],[-2,0],[0,2],[0,-2]]){const nx=px+dx,ny=py+dy,key=nx+','+ny;
+ if(nx<0||ny<0||nx>230||ny>152||seen.has(key)||g.blocked(nx,ny,10,8)||g.npcHit({x:nx,y:ny,w:10,h:8}))continue;seen.add(key);q.push([nx,ny]);}}
+ return q;
+}
+let positions=reachablePositions('pueblo',115,84);assert(positions.some(([x,y])=>Math.abs(x-35)<3&&Math.abs(y-124)<3),'Safari approach blocked');
+positions=reachablePositions('pmontt',115,86);
+for(const [tx,ty] of [[4,4],[11,4],[3,8]])assert(positions.some(([x,y])=>Math.abs(x-(tx*16+3))<3&&Math.abs(y-(ty*16+4))<3),'Puerto Montt door blocked '+tx);
+assert(g.ROOMS.tienda.npcs.some(n=>n.id==='ligaUrza'));assert(g.ROOMS.cartasSur.npcs.some(n=>n.id==='ligaPmontt'));
+g.getS().leagues={};assert(g.leagueMapMarks('pmontt')[0].available);assert(!g.leagueMapMarks('pmontt')[0].won);g.getS().leagues.pmontt=true;assert(g.leagueMapMarks('pmontt')[0].won);
+assert(!g.leagueMapMarks('tolaria').find(m=>m.key==='nacional').available);g.drawWorldMap();
 async function main(){
  const encoded=await g.encodeSave(custom), decoded=await g.decodeSave(encoded);
  assert.equal(decoded.customChar.n,'Mi personaje');assert.equal(g.characterOf(decoded).c.eye,'#1122ff');

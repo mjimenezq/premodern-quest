@@ -551,6 +551,8 @@ function customCharacter(raw){
   return friendCharacter('custom',spec.n.toUpperCase(),'AVENTURERO PERSONALIZADO',spec.style,spec.st,spec.main,{...flags,baby:spec.style === 'baby',plaid:spec.plaid}, {...spec.c,shirtD:shadeCol(spec.c.shirt,0.65),sleeve:spec.c.shirt,hairL:shadeCol(spec.c.hair,1.3),hairD:shadeCol(spec.c.hair,0.65),hat:spec.c.shirt,hatD:shadeCol(spec.c.shirt,0.65)});
 }
 function characterOf(save){ return save && save.ch === CUSTOM_CHAR && save.customChar ? customCharacter(save.customChar) : CHARS[save ? save.ch : 0]; }
+const friendCast = () => CHARS.filter(c => c.id !== 'custom');
+const friendCredits = () => friendCast().reduce((lines,c) => { const name=c.n; if(!lines.length || (lines[lines.length-1]+' · '+name).length>44)lines.push(name);else lines[lines.length-1]+=' · '+name;return lines; },[]);
 const NPCDEF = {
   cantinero:{ n:'CANTINERO', style:'bald', c:{ hair:'#3a2418', skin:'#e8b088', shirt:'#f4f1e8', shirtD:'#c8c0b0', pants:'#3a3a48', shoe:'#2a1a10' } },
   coleccionista:{ n:'COLECCIONISTA', style:'wizard', c:{ hat:'#5a2a98', hatD:'#3a1a68', hair:'#e0e0e8', skin:'#f0c8a0', shirt:'#6a3ab0', shirtD:'#4a2a80', pants:'#4a2a80', shoe:'#2a1a40' } },
@@ -599,7 +601,7 @@ const NPCDEF = {
   talquino:{ n:'TALQUINO', style:'bald', c:{ hair:'#8a8a90', skin:'#e8b890', shirt:'#2a6a3a', shirtD:'#1a4a28', emblem:'#e8c040', pants:'#4a3a2a', shoe:'#2a1a0c' } },
   cuico:{ n:'VECINO DE LAS CONDES', style:'spiky', shades:true, c:{ hair:'#e8d080', hairD:'#c0a850', skin:'#f4d8c0', shirt:'#e8e0f0', shirtD:'#b8b0c8', emblem:'#3a6ad8', pants:'#c8b890', shoe:'#6a3a1a' } },
   conserje:{ n:'CONSERJE', style:'cap', c:{ hat:'#1a2a4a', hatD:'#0a1a30', hair:'#2a1a10', skin:'#d8a070', shirt:'#2a3a6a', shirtD:'#1a2a4a', emblem:'#e8c040', pants:'#1a1a2a', shoe:'#0a0a10' } },
-  caballerizo:{ n:'CABALLERIZO', style:'cap', c:{ hat:'#8a5a28', hatD:'#5a3a18', hair:'#5a3a20', skin:'#e0a878', shirt:'#c84030', shirtD:'#8a2018', emblem:'#e8c040', pants:'#4a3a2a', shoe:'#2a1a0c', belt:'#2a1a0c' } },
+  caballerizo:{ n:'CABALLERIZO', style:'curly', chupalla:true, c:{ hat:'#8a5a28', hatD:'#5a3a18', hair:'#5a3a20', skin:'#e0a878', shirt:'#c84030', shirtD:'#8a2018', emblem:'#e8c040', pants:'#4a3a2a', shoe:'#2a1a0c', belt:'#2a1a0c' } },
   viejo:{ n:'VIEJO DEL RIO', style:'wizard', c:{ hat:'#1a3a78', hatD:'#0a1a48', hair:'#f0f0f4', skin:'#e8b088', shirt:'#1a3a78', shirtD:'#0a1a48', pants:'#1a3a78', shoe:'#1a1a22' } },
 };
 
@@ -852,11 +854,11 @@ const SPELLS = {
 };
 const SPELL_ORDER = ['bolt','ice','fire','heal'];
 const MOUNTS = {
-  mesa:{ n:'Mesa Pegasus', price:60000, spd:0.3, kind:'horse', body:'#f4f4f8', mane:'#e8c040', wings:true, desc:'Caballo alado blanco. +30% velocidad.' },
+  mesa:{ n:'Mesa Pegasus', price:125000, spd:0.3, kind:'horse', body:'#f4f4f8', mane:'#e8c040', wings:true, desc:'Caballo alado blanco. +30% velocidad.' },
   nightmare:{ n:'Nightmare', price:150000, spd:0.45, kind:'horse', body:'#2a2032', mane:'#f86020', fire:true, desc:'Caballo negro de crin en llamas. +45% velocidad.' },
   charger:{ n:'Pegasus Charger', price:250000, spd:0.55, kind:'horse', body:'#f8ecd0', mane:'#80c0ff', wings:true, desc:'Pegaso de carga. +55% velocidad.' },
   mammoth:{ n:'War Mammoth', price:350000, spd:0.25, def:4, kind:'mammoth', body:'#8a6a50', mane:'#5a4030', desc:'Mamut de guerra. +25% velocidad y +4 DEF.' },
-  caballo:{ n:'Caballo chileno', spd:0.3, kind:'horse', body:'#7a4a24', mane:'#2a1a10', boss:true, desc:'Caballo de campo de Curico.' },
+  caballo:{ n:'Caballo chileno', price:100000, spd:0.3, kind:'horse', body:'#7a4a24', mane:'#2a1a10', desc:'Caballo del establo de Curico. +30% velocidad.' },
   crosis:{ n:'Crosis, the Purger', spd:0.9, def:4, kind:'dragon', body:'#2a3a7a', mane:'#80c0ff', boss:true, desc:'Dragon legendario de Invasion. +90% velocidad y +4 DEF.' },
   darigaaz:{ n:'Darigaaz, the Igniter', spd:1.0, def:6, kind:'dragon', body:'#6a1010', mane:'#60c040', boss:true, desc:'El dragon mas temido de Dominaria. Doble de velocidad y +6 DEF.' },
   shivan:{ n:'Shivan Dragon', spd:0.8, def:2, kind:'dragon', body:'#d83020', mane:'#f8c030', boss:true, desc:'Se gana venciendo al Shivan Dragon. +80% velocidad.' },
@@ -869,7 +871,7 @@ function giveMount(id){
 }
 function toggleMount(){
   if (!S || G.state !== 'world') return;
-  if (!S.mounts || !S.mounts.length) { toast('NO TIENES MONTURA: COMPRALA CON EL CABALLERIZO DEL MERCADO DE MOX', '#c8e8ff'); return; }
+  if (!S.mounts || !S.mounts.length) { toast('NO TIENES MONTURA: VISITA EL ESTABLO DE CURICO', '#c8e8ff'); return; }
   if (S.mount) { S.lastMount = S.mount; S.mount = null; toast('TE BAJASTE DE LA MONTURA', '#c8e8ff'); }
   else { S.mount = S.mounts.includes(S.lastMount) ? S.lastMount : S.mounts[S.mounts.length - 1]; toast('MONTADO EN ' + MOUNTS[S.mount].n.toUpperCase(), '#fcd84a'); }
   SFX.ok(); saveGame();
@@ -1110,29 +1112,34 @@ const ROOMS = {
   tolaria:{ name:'TOLARIA, LA CAPITAL', theme:'town', music:'town',
     map:['TTTTTT===TTTTTT','TRRRR..=..RRRRT','TWWDW..=..WDWWT','T.,...S=S...,.T','==============T','T..RRRRRRRR.o.T','T..RRRRRRRR...T','T..WWWDWWDW.,.T','T.,...===.....T','TTTTTTTTTTTTTTT'],
     roof:(tx, ty) => ty >= 5 ? (tx < 7 ? 'purple' : 'green') : tx < 7 ? 'red' : 'blue',
-    plaques:[['TIENDA',48,19,'#5a3418'],['POSADA',192,19,'#1a2a58'],['LIGA',80,83,'#3a1a58'],['ARCADE',144,83,'#0a3a2a']],
+    plaques:[['CARTAS',48,19,'#5a3418'],['POSADA',192,19,'#1a2a58'],['LIGA',80,83,'#3a1a58'],['ARCADE',144,83,'#0a3a2a']],
     doors:{'3,2':'tienda','11,2':'posada','6,7':'liga','9,7':'arcade'},
-    signs:{'6,3':'OESTE: PANTANO NEGRO. NORTE: ENTRADA A LAS MINAS DE MISHRA.','8,3':'TOLARIA: CAPITAL DEL PREMODERN CHILENO. AQUÍ SE JUEGA LA LIGA NACIONAL.'},
+    signs:{'6,3':'TIENDA DE CARTAS ARRIBA A LA IZQUIERDA: CARTAS Y TORNEOS DE LA LIGA URZA SAGA. OESTE: PANTANO NEGRO. NORTE: MINAS DE MISHRA.','8,3':'TOLARIA: CAPITAL DEL PREMODERN CHILENO. AQUÍ SE JUEGA LA LIGA NACIONAL.'},
     npcs:[{id:'juez',x:12,y:3},{id:'fan1',x:2,y:8},{id:'fan2',x:12,y:8}] },
   valpo:{ name:'CURICÓ', theme:'town', music:'huaso',
-    map:['TTTTTT===TTTTTT','T,.RRRRR.=..,.T','T..RRRRR..RRRRT','T..WWDWW..WWDWT','T.....S........','T..=========..=','T,.....=......T','~~.....=......T','~L~....=......T','~~~TTT.=.TTTTTT'],
-    trails:{'9,1':{ room:'condell', tx:7, ty:8 }},
-    animals:[{ k:'vaca', x:2, y:6, box:[1,6,5,8] },{ k:'vaca', x:4, y:7, box:[1,6,5,8] },{ k:'caballo', x:10, y:6, box:[9,6,13,7] }],
-    props:[{k:'arco',x:9,y:1,solid:false,top:true,txt:'CERRO CONDELL'},{k:'parra',x:9,y:8,solid:false},{k:'parra',x:10,y:8,solid:false},{k:'parra',x:11,y:8,solid:false},{k:'parra',x:12,y:8,solid:false},{k:'parra',x:13,y:8,solid:false},
+    map:['TTTTTT===TTTTTT','T,.RRRRR.=..,.T','T..RRRRR..RRRRT','T..WWDWW..WWDWT','T.....S........','T..=========..=','T,.....=.RRRR.T','~~.....=.WDWW.T','~L~....=......T','~~~TTT.=.TTTTTT'],
+    trails:{'9,1':{ room:'establo', tx:7, ty:7 }},
+    animals:[{ k:'vaca', x:2, y:6, box:[1,6,5,8] },{ k:'vaca', x:4, y:7, box:[1,6,5,8] }],
+    props:[{k:'arco',x:9,y:1,solid:false,top:true,txt:'IR AL ESTABLO'},{k:'parra',x:9,y:8,solid:false},{k:'parra',x:10,y:8,solid:false},{k:'parra',x:11,y:8,solid:false},{k:'parra',x:12,y:8,solid:false},{k:'parra',x:13,y:8,solid:false},
       {k:'cerezo',x:5,y:6},{k:'cerezo',x:13,y:6},{k:'cerezo',x:8,y:7},{k:'barril',x:13,y:7}],
     roof:(tx) => tx >= 9 ? 'green' : 'red',
-    plaques:[['LA RUCA',88,19,'#5a3418'],['CASA',192,35,'#1a4a2a']],
-    doors:{'5,3':'bar','12,3':'casa'},
-    signs:{'6,4':'CURICÓ, TIERRA DE HUASOS, VINOS, TORTAS Y PREMODERN. AQUÍ SE ABRIÓ LA CAJA DE URZA. ARRIBA A LA DERECHA SUBE EL SENDERO AL CERRO CONDELL. NORTE: PRADERA. ESTE: PICHILEMU. SUR: VIÑA.'},
+    plaques:[['LA RUCA',88,19,'#5a3418'],['CASA',192,35,'#1a4a2a'],['ESTABLO',176,87,'#5a3418']],
+    doors:{'5,3':'bar','12,3':'casa','10,7':'establo'},
+    signs:{'6,4':'CURICÓ, TIERRA DE HUASOS, VINOS, TORTAS Y PREMODERN. EL ESTABLO ESTA ABAJO A LA DERECHA: ALLI CONSIGUES TU CABALLO. AQUÍ SE ABRIÓ LA CAJA DE URZA. ARRIBA A LA DERECHA: IR AL ESTABLO, DONDE COMPRAS MONTURAS DESDE $100.000. NORTE: PRADERA. ESTE: PICHILEMU. SUR: VIÑA.'},
     npcs:[{id:'marinero',x:10,y:4},{id:'pescador',x:8,y:4},{id:'barquero',x:2,y:7},{id:'huaso',x:3,y:4},{id:'tortera',x:4,y:6}] },
+  establo:{ name:'ESTABLO DE CURICÓ', theme:'inside', music:'huaso', interior:true, exitTo:{room:'valpo',tx:9,ty:2},
+    map:['kkkkkkkkkkkkkkk','kFFFFFFFFFFFFFk','kFFFFFFFFFFFFFk','kFFFFFFFFFFFFFk','kFFFFFFFFFFFFFk','kFkkkFFFFFkkkFk','kFFFFFFFFFFFFFk','kFFFFFFFFFFFFFk','kkkkkkkEkkkkkkk','kkkkkkkkkkkkkkk'],
+    npcs:[{id:'caballerizo',x:7,y:5}],
+    props:[{k:'montura',id:'caballo',x:3,y:2,solid:false},{k:'montura',id:'mesa',x:7,y:2,solid:false},{k:'montura',id:'nightmare',x:11,y:2,solid:false},{k:'montura',id:'charger',x:3,y:6,solid:false},{k:'montura',id:'mammoth',x:11,y:6,solid:false}] },
   condell:{ name:'CERRO CONDELL', theme:'dirt', music:'field', zone:'valpo', decks:['goblins','burn','black'],
     map:['TTTTTTTTTTTTTTT','Tr...b...S..c.T','T..r.....r....T','Tb....rr....b.T','T...........r.T','T.r..b....b...T','T......r......T','Tb..r.....r..bT','T......=......T','TTTTTTT=TTTTTTT'],
     trails:{'7,9':{ room:'valpo', tx:9, ty:2 }}, chests:{'12,1':'bolsa'},
     signs:{'9,1':'MIRADOR DEL CERRO CONDELL. Desde aqui se ve todo Curico: la plaza, las viñas y la cordillera. Dicen que en la noche suben criaturas a mirar las estrellas.'},
     enemies:[['carno',3,2],['pup',11,2],['ball',6,4],['gob',10,5],['shade',4,6],['carno',11,7],['pup',2,4]] },
-  tienda:{ name:'TIENDA LA GUARIDA DEL MONO', theme:'inside', music:'tavern', interior:true, exitTo:{room:'tolaria',tx:3,ty:3},
+  tienda:{ name:'CARTAS Y TORNEOS: LA GUARIDA DEL MONO', theme:'inside', music:'tavern', interior:true, exitTo:{room:'tolaria',tx:3,ty:3},
     map:['kkkkkkkkkkkkkkk','kBKKKKFKKKKKBBk','kFFFFFFFFFFFFFk','kBFFFFFFFFFFFBk','kFFFFFFFFFFFFFk','kBFFFFFFFFFFFBk','kFFFFFFFFFFFFFk','kBFFFFFFFFFFFBk','kkkkkkkEkkkkkkk','kkkkkkkkkkkkkkk'],
-    npcs:[{id:'tendero',x:6,y:1},{id:'fan3',x:10,y:5}] },
+    npcs:[{id:'tendero',x:6,y:1},{id:'ligaUrza',x:4,y:5},{id:'fan3',x:10,y:5}],
+    props:[{k:'cartel',x:2,y:6,solid:false,label:'TORNEOS',txt:'CARTAS Y TORNEOS. EL TENDERO VENDE CARTAS; EL ARCHIVISTA ORGANIZA LA LIGA URZA SAGA.'}] },
   posada:{ name:'POSADA LA CAZUELA', theme:'inside', music:'tavern', interior:true, exitTo:{room:'tolaria',tx:11,ty:3},
     map:['kkkkkkkkkkkkkkk','kBKKKKFKKKKKBBk','kFFFFFFFFFFFFFk','kFtFFFFFFFFFtFk','kFFFFFFFFFFFFFk','kFtFFFFFFFFFtFk','kFFFFFFFFFFFFFk','kBFFFFFFFFFFFBk','kkkkkkkEkkkkkkk','kkkkkkkkkkkkkkk'],
     npcs:[{id:'posadera',x:6,y:1}] },
@@ -1140,9 +1147,14 @@ const ROOMS = {
     map:['kkkkkkkkkkkkkkk','kPAAAAAAAAAAAPk','kAAAAAAAAAAAAAk','kAAAAKKKKKAAAAk','kAAAAAAAAAAAAAk','kPAAAAAAAAAAAPk','kAAAAAAAAAAAAAk','kAAAAAAAAAAAAAk','kkkkkkkEkkkkkkk','kkkkkkkkkkkkkkk'],
     npcs:[{id:'ligaOrg',x:7,y:2},{id:'fan4',x:3,y:5}] },
   mercado:{ name:'MERCADO DE MOX', theme:'town', music:'town',
-    map:['TTTTTT...TTTTTT','T.,..........,T','T.YYY.....YYY.T','T.yyy..o..yyy.T','..............T','T.............T','T.YYY.....YYY.T','T.yyy.....yyy.T','T,.....S.....,T','TTTTTTTTTTTTTTT'],
-    signs:{'7,8':'MERCADO DE MOX: ARMAS Y ARMADURAS, MAGIA, MONTURAS, HOGAR, PREMIOS DE LA LIGA Y LA BOVEDA DEL MARCHANTE.'},
-    npcs:[{id:'armero',x:3,y:4},{id:'mago',x:11,y:4},{id:'mueblero',x:3,y:8},{id:'premiador',x:11,y:8},{id:'caballerizo',x:7,y:5},{id:'marchante',x:9,y:5}] },
+    map:['TTTTTT...TTTTTT','T.,..........,T','T.YYY.....YYY.T','T.yyy..o..yyy.T','..............T','T.............T','T.YYY.....RRR.T','T.yyy.....WDW.T','T,.....S.....,T','TTTTTTTTTTTTTTT'],
+    doors:{'11,7':'bovedaMox'}, roof:()=> 'purple', plaques:[['BOVEDA',184,87,'#3a1a58']],
+    signs:{'7,8':'MERCADO DE MOX: ARMAS Y ARMADURAS, MAGIA, HOGAR Y PREMIOS. LA BOVEDA DEL MARCHANTE ESTA ABAJO A LA DERECHA: PIEZAS ULTRA RARAS. LOS CABALLOS SE CONSIGUEN EN EL ESTABLO DE CURICO.'},
+    npcs:[{id:'armero',x:3,y:5},{id:'mago',x:11,y:4},{id:'mueblero',x:3,y:8},{id:'premiador',x:13,y:4},] },
+  bovedaMox:{ name:'BÓVEDA DEL MARCHANTE', theme:'inside', music:'town', interior:true, exitTo:{room:'mercado',tx:11,ty:8},
+    map:['kkkkkkkkkkkkkkk','kFFFFFFFFFFFFFk','kFFPFFFPFFFPFFk','kFFFFFFFFFFFFFk','kFFPFFFPFFFPFFk','kFFFFFFFFFFFFFk','kFFFFFFFFFFFFFk','kFFFFFFFFFFFFFk','kkkkkkkEkkkkkkk','kkkkkkkkkkkkkkk'],
+    npcs:[{id:'marchante',x:7,y:5}],
+    props:[{k:'barra',x:5,y:3,w:5,c:'#b89048'},{k:'cartel',x:2,y:6,solid:false,label:'ULTRA RAROS',txt:'PIEZAS ULTRA RARAS: ARMAS, ARMADURAS Y MONTURAS LEGENDARIAS. HABLA CON EL MARCHANTE.'},{k:'neon',x:4,y:1,w:7,solid:false,top:true}] },
   hogar:{ name:'TU CASA', theme:'inside', music:'town', interior:true, exitTo:{room:'pueblo',tx:12,ty:8},
     map:['kkkkkkkkkkkkkkk','k2FF3FF8FF4FF6k','kFFFFFFFFFFFFFk','k1FFFFF7FFFFF5k','kF^^^^FFF^^^^Fk','k9FFF0FFF@FFF%k','kFFFFFFFFFFFFFk','k&FFFFFFFFFFF$k','kkkkkkkEkkkkkkk','kkkkkkkkkkkkkkk'] },
   arcade:{ name:'ARCADE TOLARIA', theme:'inside', music:'town', interior:true, exitTo:{room:'tolaria',tx:9,ty:8},
@@ -1162,12 +1174,16 @@ const ROOMS = {
     signs:{},
     npcs:[{id:'festivalero',x:3,y:4},{id:'turista',x:11,y:7},{id:'barquero',x:6,y:7}] },
   pmontt:{ name:'PUERTO MONTT', theme:'town', music:'field', rain:true,
-    map:['TTTTTTTTTTTTTTT','T,.RRRR..RRRR,T','T..RRRR..RRRR.T','T..WDWW..WWDW.T','T.............T','T..S========..T','~HH~~~~=~~~~HH~','~~~~~~~=~~~~~~~','~~~~~~~=L~~~~~~','~~~~~~~~~~~~~~~'],
-    roof:(tx) => tx < 8 ? 'red' : 'green',
-    plaques:[['ANGELMO',80,19,'#5a3418'],['CURANTO',176,19,'#1a4a2a']],
-    doors:{'4,3':'angelmo','11,3':'curanto'},
-    signs:{'3,5':'PUERTO MONTT. AQUI LLUEVE 13 MESES AL AÑO. EN ANGELMO HAY EQUIPO DEL SUR QUE NO SE VENDE EN NINGUNA OTRA PARTE.'},
-    npcs:[{id:'sureno',x:10,y:4},{id:'barquero',x:7,y:7}] },
+    map:['TTTTTTTTTTTTTTT','T,.RRRR..RRRR,T','T..RRRR..RRRR.T','T..WDWW..WWDW.T','T.............T','T..S========..T','T.RRRR........T','T.WDWW........T','T......=L.....T','~~~~~~~=~~~~~~~'],
+    roof:(tx,ty) => ty >= 6 ? 'blue' : tx < 8 ? 'red' : 'green',
+    plaques:[['ANGELMO',80,19,'#5a3418'],['CURANTO',176,19,'#1a4a2a'],['CARTAS',64,87,'#1a2a58']],
+    doors:{'4,3':'angelmo','11,3':'curanto','3,7':'cartasSur'},
+    signs:{'3,5':'PUERTO MONTT. CARTAS Y TORNEOS ABAJO A LA IZQUIERDA: LIGA DEL SUR. PUEDES RECORRER LA CIUDAD A PIE, SIN SURF. EN ANGELMO HAY EQUIPO DEL SUR.'},
+    npcs:[{id:'sureno',x:10,y:4},{id:'barquero',x:9,y:8}] },
+  cartasSur:{ name:'CARTAS Y TORNEOS DEL SUR', theme:'inside', music:'town', interior:true, exitTo:{room:'pmontt',tx:3,ty:8},
+    map:['kkkkkkkkkkkkkkk','kBKKKKFKKKKKBBk','kFFFFFFFFFFFFFk','kFFFFFFFFFFFFFk','kFtFFFFFFFFFtFk','kFFFFFFFFFFFFFk','kFFFFFFFFFFFFFk','kFFFFFFFFFFFFFk','kkkkkkkEkkkkkkk','kkkkkkkkkkkkkkk'],
+    npcs:[{id:'tendero',x:6,y:1},{id:'ligaPmontt',x:4,y:5}],
+    props:[{k:'cartel',x:10,y:6,solid:false,label:'TORNEOS',txt:'TIENDA DE CARTAS Y SEDE DE LA LIGA DE PUERTO MONTT. HABLA CON EL ORGANIZADOR DEL SUR PARA INSCRIBIRTE.'}] },
   casino:{ name:'CASINO DE VIÑA', theme:'inside', music:'tavern', interior:true, exitTo:{room:'vina',tx:5,ty:4},
     map:['kkkkkkkkkkkkkkk','kZFZFZFZFZFZFZk','kFFFFFFFFFFFFFk','kFFFtFFFFFtFFFk','kFFFFFFFFFFFFFk','kZFZFFFFFFFZFZk','kFFFFFFFFFFFFFk','kFFFFFFFFFFFFFk','kkkkkkkEkkkkkkk','kkkkkkkkkkkkkkk'],
     npcs:[{id:'crupier',x:7,y:4}] },
@@ -1202,23 +1218,23 @@ ROOMS.sobresTempest = { name:'SOBRES DE RATH', theme:'inside', music:'tavern', i
   map:['kkkkkkkkkkkkkkk','kBKKKKFKKKKKBBk','kFFFFFFFFFFFFFk','kBFFFFFFFFFFFBk','kFFFFFFFFFFFFFk','kBFFFFFFFFFFFBk','kFFFFFFFFFFFFFk','kBFFFFFFFFFFFBk','kkkkkkkEkkkkkkk','kkkkkkkkkkkkkkk'],
   npcs:[{id:'vendedora',x:6,y:1},{id:'fan1',x:10,y:5}] };
 ROOMS.vina.npcs.push({ id:'ligaVina', x:8, y:4 });
-// Los 12 amigos por Chile: tomando cerveza, apoyando o como rivales de liga (el que juegas no aparece)
+// Los amigos por Chile: tomando cerveza, apoyando o como rivales de liga (el que juegas no aparece)
 const FRIENDS_ON_MAP = [
-  { ch:12, room:'pueblo', x:5, y:6, role:'family' },
+  { ch:12, room:'pueblo', x:12, y:5, role:'family' },
   { ch:13, room:'pmontt', x:3, y:4, role:'family' },
-  { ch:14, room:'pmontt', x:9, y:5, role:'engineer' },
-  { ch:15, room:'pmontt', x:10, y:5, role:'engineer' },
-  { ch:16, room:'mercado', x:3, y:5, role:'finance' },
-  { ch:17, room:'mercado', x:4, y:5, role:'finance' },
-  { ch:0, room:'pueblo', x:4, y:6, role:'cheer' },
+  { ch:14, room:'pmontt', x:9, y:6, role:'engineer' },
+  { ch:15, room:'pmontt', x:11, y:6, role:'engineer' },
+  { ch:16, room:'mercado', x:6, y:7, role:'finance' },
+  { ch:17, room:'mercado', x:8, y:7, role:'finance' },
+  { ch:0, room:'pueblo', x:11, y:5, role:'cheer' },
   { ch:1, room:'arena', x:10, y:6, role:'rival' },
   { ch:2, room:'bar', x:3, y:4, role:'beer' },
   { ch:3, room:'bar', x:11, y:4, role:'beer' },
   { ch:4, room:'pmontt', x:2, y:4, role:'rival' },
   { ch:5, room:'bar', x:8, y:6, role:'beer' },
   { ch:7, room:'talca', x:5, y:6, role:'beer' },
-  { ch:8, room:'pmontt', x:8, y:4, role:'beer' },
-  { ch:9, room:'pmontt', x:12, y:4, role:'cheer' },
+  { ch:8, room:'pmontt', x:12, y:5, role:'beer' },
+  { ch:9, room:'pmontt', x:13, y:7, role:'cheer' },
   { ch:10, room:'vina', x:2, y:7, role:'beer' },
   { ch:11, room:'salaTempest', x:11, y:6, role:'rival' },
 ];
@@ -1233,13 +1249,11 @@ const ROLE_LINES = {
   rival:['Nos vemos en la liga. Esta vez no te tengo piedad.','Estuve practicando toda la semana. Tu mazo no me asusta... bueno, un poquito.','Si ganas la liga te invito una chela. Si gano yo, me invitas dos.'],
 };
 ROOMS.valpo.npcs.push({ id:'ligaCurico', x:9, y:4 });
-ROOMS.pmontt.npcs.push({ id:'ligaPmontt', x:5, y:4 });
-ROOMS.tolaria.npcs.push({ id:'ligaUrza', x:13, y:6 });
 const SOLID = new Set(['T','b','r','~','w','x','R','W','S','f','P','c','C','k','K','B','t','Q','Z','Y','y','L','J','H','j','^']);
 const BOAT_ONLY = new Set(['islote','pmontt']);
 const DOCKS = { costa:[7,7], valpo:[4,6], islote:[3,5], vina:[7,7], pmontt:[7,5] };
 const BOAT_PRICE = 30;
-const BOAT_ROUTES = { costa:[['islote',8000],['pmontt',12000]], valpo:[['islote',8000]], vina:[['islote',8000],['pmontt',12000]], islote:[['costa',0],['valpo',0],['vina',0]], pmontt:[['vina',0],['costa',0]] };
+const BOAT_ROUTES = { costa:[['islote',3000],['pmontt',3000]], valpo:[['islote',3000]], vina:[['islote',3000],['pmontt',3000]], islote:[['costa',0],['valpo',0],['vina',0]], pmontt:[['vina',0],['costa',0]] };
 const PLACE_NAME = { costa:'PICHILEMU', valpo:'CURICO', islote:'EL ISLOTE', vina:'VIÑA', pmontt:'PUERTO MONTT' };
 function travelBoat(dest){ SFX.door(); tone(160, 120, 0.6, 'triangle', 0.4); const [x, y] = DOCKS[dest]; loadRoom(dest, x * TS + 3, y * TS + 6); G.fade = 50; PL.dir = 0; toast('VIAJE EN BOTE', '#88c8f8'); }
 
@@ -1477,7 +1491,7 @@ function newSave(ci, custom){
     chests:{}, bosses:{}, trophies:0, buzz:0, beers:0, room:'pueblo', x:7*TS+3, y:6*TS+6, complete:{}, visited:{}, ligaWins:0, arcadeBest:0, lore:false, quests:{}, kills:{}, killsTotal:0, beerTotal:0,
     gear:{ shield:null, head:null, body:null, legs:null, feet:null }, armor:[], spells:ch.superBaby ? ['bolt'] : [], spellSel:0, mp:4, house:{}, found:{}, foundZones:{}, stones:{}, pet:null, dex:{}, keys:{}, relics:{}, spellXp:{}, mounts:[], mount:null, surf:false, talca:{}, sacos:0 };
 }
-const SLOTS = 3, slotKey = n => 'pmq_save_' + n;
+const SLOTS = 5, SLOT_TOP = 20, SLOT_ROW_H = 24, slotKey = n => 'pmq_save_' + n;
 function saveGame(){
   if (!S) return;
   try {
@@ -2057,7 +2071,8 @@ function drawProp(p){
     case 'barra': { outl(X, Y + 4, wpx, 12, '#8a5a30'); R(X, Y + 4, wpx, 3, '#c89060'); for (let i = 0; i < wpx; i += 16) R(X + i, Y + 8, 1, 8, '#5a3418'); for (let i = 4; i < wpx; i += 9) { R(X + i, Y, 2, 5, i % 2 ? '#3a9a3a' : '#c8a020'); R(X + i, Y - 1, 2, 1, '#e8e0d0'); } break; }
     case 'fogata': { R(X + 2, Y + 11, 12, 3, '#5a3418'); R(X + 4, Y + 9, 8, 2, '#7a4a24'); const f = (t >> 2) % 3; R(X + 5, Y + 4 + f % 2, 6, 6, '#f86020'); R(X + 6, Y + 2 + f, 4, 6, '#fcb030'); R(X + 7, Y + 5, 2, 4, '#fff0a0'); break; }
     case 'tablas': { const cols = ['#f8d040','#40b8e0','#f05a8a']; for (let i = 0; i < 3; i++) { outl(X + 2 + i * 4, Y + 1, 3, 15, cols[i]); R(X + 3 + i * 4, Y + 2, 1, 13, '#ffffff'); } break; }
-    case 'cartel': { const w2 = p.txt.length * 4 + 6, cx = X + 8; R(cx - 1, Y + 8, 2, 8, '#5a3418'); outl(cx - w2 / 2, Y + 1, w2, 8, '#f0e0b0'); tiny(p.txt, cx, Y + 3, '#5a2a10', 'center'); break; }
+    case 'cartel': { const label = p.label || p.txt, w2 = label.length * 4 + 6, cx = X + 8; R(cx - 1, Y + 8, 2, 8, '#5a3418'); outl(cx - w2 / 2, Y + 1, w2, 8, '#f0e0b0'); tiny(label, cx, Y + 3, '#5a2a10', 'center'); break; }
+    case 'montura': { const m = MOUNTS[p.id]; drawMount(p.id, X, Y, 3, 0, 'back'); drawMount(p.id, X, Y, 3, 0, 'front'); tiny(m.n.toUpperCase(), X + 8, Y + 18, '#fff', 'center'); tiny(money(m.price), X + 8, Y + 25, '#fcd84a', 'center'); break; }
     case 'duna': { const cx = X + wpx / 2, cy = Y + (p.h || 1) * TS / 2 + 4, rx = wpx / 2 + 2, ry = (p.h || 1) * TS / 2 + 2;
       const g = ctx.createRadialGradient(cx - rx * 0.3, cy - ry * 0.5, 2, cx, cy, rx); g.addColorStop(0, '#fff0c8'); g.addColorStop(0.6, '#e8c888'); g.addColorStop(1, '#c8a060');
       ctx.save(); ctx.translate(cx, cy); ctx.scale(1, ry / rx); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, rx, 0, 6.2832); ctx.translate(-cx, -cy); ctx.fill(); ctx.restore();
@@ -3840,7 +3855,7 @@ function shopItems(kind){
   } else if (kind === 'magia') { for (const id of SPELL_ORDER) { const s = SPELLS[id]; L.push({ kind:'spell', id, name:s.n + (S.spells.includes(id) ? ' ' + spellXpLine(id) : ''), price:s.price, info:s.mp + ' MP. ' + s.desc + ' SUBE DE NIVEL CON EL USO (HASTA 5).', owned:S.spells.includes(id) }); } }
   else if (kind === 'sur') { for (const [id, p] of Object.entries(SUR_SHOP)) { const a = ARMOR[id]; L.push({ kind:'armor', id, name:a.n, price:p, info:GEAR_SLOTS.find(g => g[0] === a.slot)[1] + '. +' + a.def + ' DEF ' + (Object.keys(a.st).length ? statLine(a.st) : ''), owned:S.armor.includes(id) }); } }
   else if (kind === 'liga') { for (const [id, c] of Object.entries(CARDS)) if (!(S.cards[id] || 0)) L.push({ kind:'card', id, name:c.n, price:c.legend ? 250000 : 12000, info:(c.legend ? 'CARTA LEGENDARIA. ' : 'CARTA SUELTA. ') + c.cost + ' - ' + c.t + '. ' + c.tx }); }
-  else if (kind === 'monturas') { for (const [id, m] of Object.entries(MOUNTS)) if (!m.boss) L.push({ kind:'mount', id, name:m.n, price:m.price, info:'MONTURA. ' + m.desc, owned:(S.mounts || []).includes(id) }); }
+  else if (kind === 'monturas') { for (const id of ['caballo', ...Object.keys(MOUNTS).filter(id => id !== 'caballo')]) { const m = MOUNTS[id]; if (!m.boss) L.push({ kind:'mount', id, name:m.n, price:m.price, info:'MONTURA. ' + m.desc, owned:(S.mounts || []).includes(id) }); } }
   else if (kind === 'lujo') { for (const it of LUXURY) { const name = it.kind === 'sword' ? SWORDS[it.id].n : it.kind === 'armor' ? ARMOR[it.id].n : it.kind === 'mount' ? MOUNTS[it.id].n : HOUSE[it.id].n;
       const info = (it.kind === 'sword' ? 'ARMA. ' + statLine(SWORDS[it.id].st) : it.kind === 'armor' ? GEAR_SLOTS.find(g => g[0] === ARMOR[it.id].slot)[1] + '. +' + ARMOR[it.id].def + ' DEF ' + statLine(ARMOR[it.id].st) : it.kind === 'mount' ? 'MONTURA. ' + MOUNTS[it.id].desc : HOUSE[it.id].desc) + (reqOk(it.req) ? '' : '  ' + reqText(it.req));
       const owned = it.kind === 'sword' ? S.swords.includes(it.id) : it.kind === 'armor' ? (S.armor || []).includes(it.id) : it.kind === 'mount' ? (S.mounts || []).includes(it.id) : !!S.house[it.id];
@@ -4088,10 +4103,10 @@ function talkTo(id, npc, skipQuest){
   if (id === 'armero') { say(['ARMERO: Acero de Mishra y cuero de Llanowar. Mira lo que tengo.'], null, () => openShop('armas', 'ARMAS Y ARMADURAS')); return; }
   if (id === 'marchante') {
     const have = LUXURY.filter(it => it.kind === 'sword' ? S.swords.includes(it.id) : it.kind === 'armor' ? (S.armor || []).includes(it.id) : it.kind === 'mount' ? (S.mounts || []).includes(it.id) : S.house[it.id]).length;
-    say(['EL MARCHANTE: Aqui no hay ofertas, cabro. Solo piezas unicas de Dominaria para los jugadores de verdad.', 'Tienes ' + have + ' de ' + LUXURY.length + ' piezas de mi coleccion. Algunas piden nivel y trofeos de liga: no le vendo un Mox Eterno a cualquiera.'], null, () => openShop('lujo', 'EL MARCHANTE'));
+    say(['EL MARCHANTE: Bienvenido a mi boveda del Mercado de Mox. Aqui no hay ofertas, cabro. Solo piezas unicas de Dominaria para los jugadores de verdad.', 'Tienes ' + have + ' de ' + LUXURY.length + ' piezas de mi coleccion. Algunas piden nivel y trofeos de liga: no le vendo un Mox Eterno a cualquiera.'], null, () => openShop('lujo', 'EL MARCHANTE'));
     return;
   }
-  if (id === 'huaso') { say(['HUASO: ' + pick(['¡Buenas, patron! Aqui en Curico tenemos el mejor vino, las tortas mas ricas y los caballos mas mansos de Chile.', 'En marzo es la Fiesta de la Vendimia de Curico. Se pisa la uva, se baila cueca y se toma harto vinito.', 'Arriba esta el Cerro Condell. De dia es un paseo lindo, pero ahora andan criaturas. Suba con cuidado, mijo.', 'Las vacas no se pelean con nadie. El problema son los Goblins que les roban la leche.', 'Las cerezas de Curico salen pa\' afuera, hasta China. Aqui se las come uno del arbol.'])]); return; }
+  if (id === 'huaso') { say(['HUASO: ' + pick(['¡Buenas, patron! Aqui en Curico tenemos el mejor vino, las tortas mas ricas y los caballos mas mansos de Chile.', 'En marzo es la Fiesta de la Vendimia de Curico. Se pisa la uva, se baila cueca y se toma harto vinito.', 'Arriba a la derecha esta el acceso al establo. El caballerizo vende monturas desde $100.000, patron.', 'Las vacas no se pelean con nadie. El problema son los Goblins que les roban la leche.', 'Las cerezas de Curico salen pa\' afuera, hasta China. Aqui se las come uno del arbol.'])]); return; }
   if (id === 'tortera') {
     say(['TORTERA: ¡Tortas de Curico, las mas famosas de Chile! Una torta, $4.000.', 'Te deja con la guata llena y la vida entera.'],
       [{ t:'UNA TORTA ($4.000)', fn:() => { if (S.coins < 4000) { say(['TORTERA: Sin lucas no hay torta, mijito.']); return; } S.coins -= 4000; S.hp = S.maxHp; S.mp = maxMp(); SFX.heal(); saveGame(); say(['¡Que torta mas rica! Quedaste con toda la vida y la magia.']); } }, { t:'OTRO DIA', fn:null }]);
@@ -4119,11 +4134,11 @@ function talkTo(id, npc, skipQuest){
   if (id === 'conserje') { say(['CONSERJE: ' + pick(['Buenas. ¿Viene donde don Ivan? Pase no mas, ya la tiene prendida.', 'Si se cura mucho en el carrete, aqui tiene un vaso de agua. Gratis.'])]); return; }
   if (id === 'caballerizo') {
     const own = (S.mounts || []);
-    const ch = [{ t:'COMPRAR MONTURA', fn:() => openShop('monturas', 'MONTURAS DE PREMODERN') }];
+    const ch = [{ t:'COMPRAR MONTURA', fn:() => openShop('monturas', 'ESTABLO DE CURICO') }];
     for (const m of own) ch.push({ t:'MONTAR ' + MOUNTS[m].n.toUpperCase(), fn:() => { S.mount = m; saveGame(); toast('MONTADO EN ' + MOUNTS[m].n.toUpperCase(), '#fcd84a'); } });
     if (S.mount) ch.push({ t:'IR A PIE', fn:() => { S.lastMount = S.mount; S.mount = null; saveGame(); } });
     ch.push({ t:'NADA', fn:null });
-    say(['CABALLERIZO: Monturas sacadas de las mejores cartas de Premodern: Mesa Pegasus, Nightmare, Pegasus Charger y War Mammoth.', 'El Shivan Dragon no se vende: hay que vencerlo. Con R te subes y te bajas.'], ch.slice(0, 6));
+    say(['CABALLERIZO: ¡Bienvenido al establo de Curico, patron! El caballo chileno cuesta $100.000 y te lleva un 30% mas rapido. Tambien tenemos Mesa Pegasus, Nightmare, Pegasus Charger y War Mammoth.', 'El Shivan Dragon no se vende: hay que vencerlo. Con R te subes y te bajas. Adentro del establo andamos a pie; al salir puedes cabalgar.'], ch.slice(0, 6));
     return;
   }
   if (id === 'mago') { say(['MAGA: ¿Quieres aprender magia? Cada libro te enseña un hechizo para siempre.'], null, () => openShop('magia', 'LIBROS DE MAGIA')); return; }
@@ -4131,7 +4146,7 @@ function talkTo(id, npc, skipQuest){
   if (id === 'premiador') { say(['JUEZA DE PREMIOS: Premios de verdad de la liga: playmats, deck boxes, fundas... se lucen en tu casa y te dan ventajas.'], null, () => openShop('premios', 'PREMIOS DE LA LIGA')); return; }
   if (id === 'friend') {
     const c = npc && npc.ch !== undefined ? npc.ch : 0, role = npc && npc.role;
-    say([CHARS[c].n + ': ' + pick(FRIEND_LINES[c]), ...(role ? [CHARS[c].n + ': ' + pick(ROLE_LINES[role])] : []), ...(c === 12 ? ['RAI: ¡Mira mi autito! Hagamos una casita para Osito Tito.'] : [CHARS[c].n + ': ' + pick(['Si juntamos a los tres, en línea, no hay guardián que aguante.','La otra semana gané con un Goblin Lackey en el turno uno. Nadie me cree.'])])]);
+    say([CHARS[c].n + ': ' + pick(FRIEND_LINES[c]), ...(role ? [CHARS[c].n + ': ' + pick(ROLE_LINES[role])] : []), ...(c === 12 ? ['RAI: ¡Estoy con mi papa Matias! Mira mi autito; hagamos una casita para Osito Tito.'] : [CHARS[c].n + ': ' + pick(['Si juntamos a los tres, en línea, no hay guardián que aguante.','La otra semana gané con un Goblin Lackey en el turno uno. Nadie me cree.'])])]);
     return;
   }
   if (id === 'cronista') {
@@ -4485,6 +4500,12 @@ function updateMenu(){
 const THEME_COL = { town:'#d8b060', forest:'#3e8a36', dirt:'#a88050', swamp:'#4a6a40', meadow:'#88c860', sand:'#e8d098', volcano:'#c84a20', ice:'#c8e8ff', bog:'#5a6a3a' };
 const zoneTheme = id => WILD[id] ? WILD[id].theme : ROOMS[id].theme;
 const LEAGUE_MAP = { vina:'vina', curico:'valpo', pmontt:'pmontt', urza:'tolaria', tempest:'tempest', nacional:'tolaria' };
+function leagueMapMarks(id){
+  return Object.entries(LEAGUE_MAP).filter(([,place]) => place === id).map(([key]) => ({key,
+    won:key === 'nacional' ? (S.ligaWins || 0) > 0 : !!(S.leagues && S.leagues[key]),
+    available:key !== 'nacional' || (leaguesDone() === 5 && bossesDone() === ALL_BOSSES.length)
+  }));
+}
 function drawWorldMap(){
   const cw = 44, chh = 20, ox = 10, oy = 20, rows = 6, cur = zoneOf(G.roomId), vis = S.visited || {};
   const center = id => [ox + WORLD[id][0] * cw + cw / 2, oy + WORLD[id][1] * chh + chh / 2];
@@ -4497,19 +4518,19 @@ function drawWorldMap(){
   for (const id in WORLD) {
     const [gx, gy] = WORLD[id], px = ox + gx * cw + 3, py = oy + gy * chh + 3, w = cw - 6, h = chh - 6;
     const near = Object.values(zoneNeighbors(id)).some(n => vis[n]);
-    if (vis[id]) {
+    const marks = leagueMapMarks(id);
+    if (vis[id] || marks.length) {
       R(px, py, w, h, '#1a1020'); R(px + 1, py + 1, w - 2, h - 2, THEME_COL[zoneTheme(id)]);
       tiny(SHORT[id].replace('. ', '.'), px + w / 2, py + h / 2 - 2, '#1a1020', 'center');
       const dk = WILD[id] && WILD[id].dungeon, boss = dk ? DUNGEONS[dk].boss : id === 'guarida' ? 'siege' : id === 'islote' ? 'dread' : null;
       if (boss) { R(px + w - 6, py - 2, 7, 6, '#1a1020'); R(px + w - 5, py - 1, 5, 4, S.bosses[boss] ? '#60e070' : '#e83040'); }
-      const marks = Object.entries(LEAGUE_MAP).filter(([k, place]) => place === id && (k !== 'nacional' || leaguesDone() === 5 && bossesDone() === ALL_BOSSES.length));
-      if (marks.length) { const complete = marks.every(([k]) => k === 'nacional' ? (S.ligaWins || 0) > 0 : S.leagues && S.leagues[k]); R(px + w - 7, py + 1, 6, 7, '#1a1020'); R(px + w - 6, py + 2, 4, 5, complete ? '#40a850' : '#f0c030'); tiny(marks.some(([k]) => k === 'nacional') ? 'N' : 'L', px + w - 4, py + 2, '#1a1020', 'center'); }
+      marks.forEach((mark,i) => { const mx = px + w - 7 - i * 7; R(mx, py - 2, 6, 7, '#1a1020'); R(mx + 1, py - 1, 4, 5, mark.won ? '#40a850' : mark.available ? '#f0c030' : '#809090'); tiny(mark.key === 'nacional' ? 'N' : 'L', mx + 3, py - 1, '#1a1020', 'center'); });
       if (id === cur && (frame >> 4) & 1) { ctx.strokeStyle = '#fcd84a'; ctx.lineWidth = 2; ctx.strokeRect(px - 1, py - 1, w + 2, h + 2); }
     } else if (near) { R(px, py, w, h, '#8a7a5a'); tiny('?', px + w / 2, py + h / 2 - 2, '#e8d8a8', 'center'); }
   }
   const floor = G.def.dungeonKey ? ' - ' + DUNGEONS[G.def.dungeonKey].name + (G.def.bossFloor ? ' (GUARDIAN)' : ' PISO ' + G.def.floor) : '';
   tiny('ESTAS EN: ' + SHORT[cur] + floor, 120, 146, '#fcd84a', 'center');
-  tiny('L: LIGA DISPONIBLE  ROJO/VERDE: JEFE', 120, 153, '#6a8a80', 'center');
+  tiny('L/N: AMARILLO PENDIENTE  VERDE GANADA  GRIS CERRADA', 120, 153, '#6a8a80', 'center');
 }
 function drawQuests(){
   txt('ENCARGOS', 8, 21, '#fcd84a', 'left', '#000');
@@ -5043,15 +5064,16 @@ function drawIntro(){
     return;
   }
   if (t < 610) {
-    // Escena 2: los ocho amigos marchando con jarras
+    // Escena 2: el reparto actual marchando
     G.introSceneT = t - 410; const k = t - 410;
     R(0, 0, W, H, '#306230'); R(0, 96, W, 28, '#8bac0f');
-    for (let i = 0; i < CHARS.length; i++) {
-      const x = -30 + k * 2.1 - i * 27; if (x < -40 || x > W + 10) continue;
-      ctx.save(); ctx.translate(x, 64 - ((k + i * 6) >> 3 & 1)); ctx.scale(2, 2); drawPerson(0, 0, CHARS[i], 3, (k >> 3) & 1); ctx.restore();
-      drawMug(Math.round(x + 18), 50 + (((k + i * 9) >> 4) & 1) * 2, 1, k + i * 7);
+    const cast = friendCast();
+    for (let i = 0; i < cast.length; i++) {
+      const x = -30 + k * Math.max(2.1,(cast.length*27+W)/200) - i * 27; if (x < -40 || x > W + 10) continue;
+      ctx.save(); ctx.translate(x, 64 - ((k + i * 6) >> 3 & 1)); ctx.scale(2, 2); drawPerson(0, 0, cast[i], 3, (k >> 3) & 1); ctx.restore();
+      if (!cast[i].baby) drawMug(Math.round(x + 18), 50 + (((k + i * 9) >> 4) & 1) * 2, 1, k + i * 7);
     }
-    introBars('DOCE AMIGOS. UN MAZO. MUCHA CERVEZA.');
+    introBars(cast.length + ' AMIGOS. UN MAZO. MUCHA CERVEZA.');
     return;
   }
   // Escena 3: Klaus y Tebax brindan, las cartas se abren detras
@@ -5100,19 +5122,17 @@ function drawSlots(){
   R(0, 0, W, H, '#10161a');
   txt('PARTIDAS', 120, 6, '#fcd84a', 'center', '#7a3a10');
   for (let i = 0; i < SLOTS; i++) {
-    const s = loadSave(i + 1), y = 20 + i * 42, sel = i === G.slotSel, del = G.delSlot === i;
-    R(8, y, 224, 38, sel ? (del ? '#e83040' : '#fcd84a') : '#2e4a44'); R(10, y + 2, 220, 34, del ? '#3a1018' : '#1c2a2e');
-    tiny('PARTIDA ' + (i + 1), 16, y + 5, '#6a8a80');
+    const s = loadSave(i + 1), y = SLOT_TOP + i * SLOT_ROW_H, sel = i === G.slotSel, del = G.delSlot === i;
+    R(8, y, 224, 22, sel ? (del ? '#e83040' : '#fcd84a') : '#2e4a44'); R(10, y + 2, 220, 18, del ? '#3a1018' : '#1c2a2e');
+    tiny(String(i + 1), 14, y + 4, '#6a8a80');
     if (s) {
-      ctx.save(); ctx.translate(16, y + 12); ctx.scale(1.25, 1.25); drawPerson(0, 0, characterOf(s), 0, sel ? (frame >> 4) & 1 : 0); ctx.restore();
-      txt(characterOf(s).n, 44, y + 6, '#fff', 'left', null);
-      tiny('NIVEL ' + s.lvl + '   ' + money(s.coins) + '   CARTAS ' + ALL_CARDS.filter(id => (s.cards[id] || 0) > 0).length + '/' + ALL_CARDS.length, 44, y + 18, '#c8d8d0');
-      tiny('GUARDIANES ' + GUARDIANS.filter(g => s.bosses[g]).length + '/5   EN: ' + (SHORT[zoneOf(s.room)] || 'VILLA'), 44, y + 26, '#9db8a8');
+      drawPerson(25, y + 3, characterOf(s), 0, sel ? (frame >> 4) & 1 : 0);
+      tiny(characterOf(s).n + '  NV ' + s.lvl + '  ' + money(s.coins), 44, y + 4, '#fff');
+      tiny('CARTAS ' + ALL_CARDS.filter(id => (s.cards[id] || 0) > 0).length + '/' + ALL_CARDS.length + '  EN: ' + (SHORT[zoneOf(s.room)] || 'VILLA'), 44, y + 13, '#9db8a8');
     } else {
-      txt('VACÍA', 44, y + 8, '#6a8a80', 'left', null);
-      tiny('CREAR UN PERSONAJE NUEVO', 44, y + 20, sel ? '#fcd84a' : '#9db8a8');
+      tiny('PARTIDA VACIA: CREAR PERSONAJE', 44, y + 4, sel ? '#fcd84a' : '#9db8a8');
       const tr = trashSave();
-      if (tr && sel) tiny((TOUCH ? 'B' : 'X') + ': RECUPERAR BORRADA (' + characterOf(tr).n + ' NV ' + tr.lvl + ')', 44, y + 28, '#60e070');
+      if (tr && sel) tiny((TOUCH ? 'B' : 'X') + ': RECUPERAR ' + characterOf(tr).n + ' NV ' + tr.lvl, 44, y + 13, '#60e070');
     }
   }
   tiny(TOUCH ? 'A: JUGAR O CREAR   B: BORRAR   MENU: VOLVER' : 'Z: JUGAR O CREAR   X: BORRAR   ENTER: VOLVER', 120, 150, '#6a8a80', 'center');
@@ -6062,7 +6082,7 @@ function drawDuel(){
 /* ============ FINAL ============ */
 const ENDING = ['¡CAMPEÓN NACIONAL DE PREMODERN!', '', 'Con los cinco guardianes derrotados', 'y la Liga Nacional ganada,', 'la Caja de Urza vuelve a tus manos.', '',
   'Esa noche, en el Bar La Ruca de Curicó,', 'se brindó por el nuevo campeón.', 'Klaus pagó la primera ronda.', '',
-  'La caja quedó abierta.', 'Porque el Premodern chileno', 'nunca se cierra del todo.', '', 'MATÍAS · DAVIS · GUCHO · KLAUS · KATY', 'PEPE · IVÁN · TEBAX · LE RATUI · RUBÉN', 'TOMO · MATI GUERRA', '', 'UN JUEGO DE MATÍAS GAMES PRODUCTION', '', 'GRACIAS POR JUGAR', '¡SALUD!', '', 'MAGIC THE BEER QUEST'];
+  'La caja quedó abierta.', 'Porque el Premodern chileno', 'nunca se cierra del todo.', '', ...friendCredits(), '', 'UN JUEGO DE MATÍAS GAMES PRODUCTION', '', 'GRACIAS POR JUGAR', '¡SALUD!', '', 'MAGIC THE BEER QUEST'];
 function drawEnding(){
   R(0, 0, W, H, '#0e0a24');
   for (let i = 0; i < 40; i++) R(Math.round(hash(i) * 240), Math.round(hash(i + 40) * 160), 1, 1, (frame + i * 5) % 60 < 4 ? '#6a64a8' : '#fff');
@@ -6492,7 +6512,7 @@ function pointerClick(p, right){
   if (st === 'slots') {
     const dc = G.delConfirm;
     if (dc) { (dc.rects || []).forEach((r, i) => { if (inRect(p, r)) { dc.sel = i; pulseKey = 'a'; } }); return; }
-    const i = Math.floor((p.y - 20) / 42); if (i >= 0 && i < SLOTS) { if (G.slotSel === i) pulseKey = 'a'; else { G.slotSel = i; SFX.move(); } } return;
+    const i = Math.floor((p.y - SLOT_TOP) / SLOT_ROW_H); if (i >= 0 && i < SLOTS) { if (G.slotSel === i) pulseKey = 'a'; else { G.slotSel = i; SFX.move(); } } return;
   }
   if (st === 'select') { const i=selectAt(p); if(i>=0){if(G.sel===i)pulseKey='a';else{G.sel=i;SFX.move();}} return; }
   if (st === 'duel') {

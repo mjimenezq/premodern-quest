@@ -209,3 +209,14 @@ Estado: se revisó solo la pantalla de título; la jugabilidad y el online no se
 ## Regreso al enlace original (1 oct 2026)
 Matías pidió volver a desarrollar y publicar en mjimenezq/premodern-quest porque sus amigos ya tienen partidas allí. Se integraron los 6 personajes y el creador con selección desplazable desde la copia Codex, conservando las claves locales pmq_ y las salas pmq-. Enlace principal: https://mjimenezq.github.io/premodern-quest/. El repositorio separado queda disponible como copia anterior; no es el destino habitual de publicación.
 
+
+## Accesos, tiendas y partidas (1 oct 2026)
+- Ahora hay 5 espacios locales; se conservan pmq_save_1..3 y se agregan pmq_save_4 y pmq_save_5. Pantalla compacta de cinco filas, flechas, toque, importación y papelera usan SLOTS.
+- Rai está junto a su papá Matías cerca de la casa, fuera del paso al Safari (12,5 y 11,5). Mox: Cahe y PabloT pasan a la plaza inferior; armero a 3,5. Se verificó caminar al oeste desde tres alturas con colisiones reales.
+- El Marchante atiende en bovedaMox, puerta 11,7 del Mercado. Se mantienen sus 20 objetos y requisitos.
+- Caballerizo es jefe de establo, accesible desde Curicó. El sendero 9,1 antes hacia Condell ahora dice IR AL ESTABLO; la puerta urbana 10,7 también funciona. Salida vuelve al sendero (9,2). Condell se conserva para partidas antiguas, pero ese acceso deja de ir al cerro. Exhibición de cinco monturas: caballo 100.000; Mesa Pegasus 125.000; Nightmare 150.000; Charger 250.000; Mammoth 350.000. Se conservan monturas ya compradas.
+- Puerto Montt amplía suelo seco hasta fila 8, mar sólo al sur. NPCs repartidos para circular sin Surf. Nueva tienda cartasSur (puerta 3,7), vende sobres y organiza ligaPmontt. Liga Urza ahora se juega dentro de tienda en Tolaria, rotulada CARTAS. Ligas y progresos guardados no cambian.
+- Mapa muestra sedes de liga aunque no estén visitadas: L regional, N nacional; amarillo pendiente, verde ganada, gris cerrada. Nacional mantiene requisito de cinco ligas y todos los jefes.
+- Botes a Puerto Montt y al Islote cuestan 3.000; regresos gratuitos se conservan.
+- Intro y créditos obtienen nombres/cantidad desde friendCast() (CHARS sin el creador), actualmente 18, sin números fijos.
+- Verificación: node tests/characters.cjs, guardados 1–5 y compatibilidad, compra de montura, precios, colisiones al oeste, acceso seco a todas las puertas de Puerto Montt y al Safari, estado de marcadores de liga, conectividad general. Revisión visual de establo, Puerto Montt y cinco partidas.
