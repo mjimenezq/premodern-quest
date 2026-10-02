@@ -11,7 +11,7 @@ const storage=new Map();
 const sandbox={console,structuredClone,URLSearchParams,TextEncoder,TextDecoder,Uint8Array,Uint8ClampedArray,Buffer,Math:Object.create(Math),Date,performance:{now:()=>0},navigator:{maxTouchPoints:0},location:{hash:'',search:'',href:'http://localhost/',protocol:'http:'},requestAnimationFrame(){},setTimeout(){},clearTimeout(){},setInterval(){},clearInterval(){},matchMedia:()=>({matches:false}),addEventListener(){},localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v),removeItem:k=>storage.delete(k)},document:{body:element(),createElement:()=>element(),querySelectorAll:()=>[],getElementById(id){if(!elements.has(id))elements.set(id,element());return elements.get(id);}},btoa:s=>Buffer.from(s,'binary').toString('base64'),atob:s=>Buffer.from(s,'base64').toString('binary')};
 sandbox.window=sandbox;sandbox.document.listeners=new Map();sandbox.document.addEventListener=element().addEventListener;sandbox.document.querySelectorAll=selector=>selector==='#pad button'?padButtons:[];
 source=source.replace(/\}\)\(\);\s*$/, `globalThis.gameTest={medalProgress,festivalTasting,festivalBeer,sealReady,closeUrzaBox,DECKS,GUARDIANS,dropLoot,questCoins,levelCoins,itemLevel,usableDrop,POKEMON_GYMS,gymRun,beginPokemonGymMatch,finishPokemonGymMatch,reputationTitle,updateTrainerSight,drawTrainerMarkers,homeOracle,beginAdventure,TEMPLE_IDENTITIES,MAGIC_COMPANIONS,companionInfo,drawCompanion,updatePet,portalUnlocked,switchRealm,startRealmTravel,updateRealmTravel,drawRealmTravel,realmDefinition,realmText,talkTo,localPlayerDeck,addCard,CHARS,CUSTOM_CHAR,normalizeCustom,customCharacter,characterOf,newSave,loadSave,saveGame,slotKey,speed,defense,aquaticBonus,loadRoom,checkConnectivity,drawSelect,drawPerson,drawDuel,drawTour,POKE,pokemonEnemy,enemyName,pokemonRealm,SONGS,roomMusic,tryInteract,meleeMissChance,meleeOutcome,beginDuel,updateDuel,resolveDuel,duelOptions,cardPower,rivalPower,drawMenu,menuClick,updateTour,oppPick,startTour,prepRound,updateItems,step,encodeSave,decodeSave,myState,remoteCharacter,FRIEND_LINES,FRIEND_DECK,FRIENDS_ON_MAP,getDef,SOLID,ROOMS,MOUNTS,shopItems,buyItem,mounted,goTo,friendCast,friendCredits,propSolidSet,K,updateWorld,blocked,npcHit,SLOTS,drawSlots,leagueMapMarks,drawWorldMap,BOAT_ROUTES,QUESTS,questHook,questProg,ensureContract,journalEntries,openQuestJournal,drawQuests,ARMOR,SWORDS,HOUSE,PRIZES,GEAR_SLOTS,dayPhase,DAY_PHASE_TICKS,SPELL_LVLS,spellLvl,petLevel,cardMatchXP,tournamentXP,RESPAWN_MS,killEnemy,hiddenSpot,searchHidden,MON,WORLD,DUNGEONS,startArcade,updateArcade,drawArcade,tennisPoint,requestArcadeExit,cancelArcade,drawWorld,drawHUD,changeRoom,setSelectScroll,selectMaxScroll,revealSelected,selectAt,G,PL,wizardDefaults,setS(value){S=value;},getS(){return S;},setFrame(value){frame=value;}};})();`);
-source=source.replace('gameTest={medalProgress,','gameTest={pokemonDiscovered,portalTalk,pellucoBeer,pellucoDJ,propAction,startOctayRace,updateOctayRace,OCTAY_CHECKPOINTS,medalProgress,');
+source=source.replace('gameTest={medalProgress,','gameTest={OKTOBER_REGION,festivalStops,stampFestival,regionalFestival,endOctayRace,pokemonDiscovered,portalTalk,pellucoBeer,pellucoDJ,propAction,startOctayRace,updateOctayRace,OCTAY_CHECKPOINTS,medalProgress,');
 source=source.replace("function tiny(s, x, y, col='#fff', al='left', raw=false){","function tiny(s, x, y, col='#fff', al='left', raw=false){(globalThis.renderLabels ||= []).push(String(s));");
 vm.runInNewContext(source,sandbox,{timeout:5000});
 const g=sandbox.gameTest;
@@ -263,6 +263,28 @@ g.startRealmTravel();assert(!g.pokemonDiscovered());g.G.realmTravel.t=419;g.upda
 g.G.menu={tab:5,deck:null};sandbox.renderLabels=[];g.drawMenu();assert(sandbox.renderLabels.includes('POKEMON'));
 g.switchRealm('magic');assert(g.pokemonDiscovered());g.setS(JSON.parse(JSON.stringify(g.getS())));assert(g.pokemonDiscovered());delete g.getS().portalDiscovered;assert(g.pokemonDiscovered(),'Existing return travellers retain discovery');
 g.setS(g.newSave(0));g.getS().realm='pokemon';assert(g.pokemonDiscovered(),'Existing players in the other realm retain discovery');g.G.preview=false;
+// Regional passport rewards are unique and separated by realm; stalls remain reachable.
+g.setS(g.newSave(0));g.G.preview=true;g.getS().lvl=100;g.getS().xp=0;
+for(const id of Object.keys(g.OKTOBER_REGION)){
+ const saved=g.getS(),walk=reachablePositions(id,115,84);g.setS(saved);g.loadRoom(id,115,84);
+ assert.equal(g.roomMusic(),'oktober');assert(g.G.def.festival);
+ const p=g.G.def.props.find(p=>p.act==='regionalFest');assert(p&&!p.solid);
+ assert(walk.some(([x,y])=>Math.hypot(x+5-(p.x*16+16),y+4-(p.y*16+8))<27),'Festival inaccessible '+id);
+ g.G.forcePhase='night';g.drawWorld();g.drawHUD();g.G.forcePhase=null;
+ g.stampFestival();const xp=g.getS().xp;g.stampFestival();assert.equal(g.getS().xp,xp);
+}
+assert.equal(g.getS().xp,360);assert.equal(Object.keys(g.festivalStops()).length,3);
+g.setS(JSON.parse(JSON.stringify(g.getS())));assert.equal(Object.keys(g.festivalStops()).length,3);
+g.getS().realm='pokemon';assert.equal(Object.keys(g.festivalStops()).length,0);
+g.loadRoom('pmontt',115,84);g.getS().coins=2999;g.regionalFestival();g.G.dialog.choices[0].fn();assert.equal(g.getS().coins,2999);
+g.getS().coins=3000;g.getS().hp=1;g.regionalFestival();g.G.dialog.choices[0].fn();assert.equal(g.getS().coins,0);assert.equal(g.getS().hp,g.getS().maxHp);assert.equal(g.getS().beerTotal,1);
+for(const d of Object.values(g.ROOMS))assert(!(d.props||[]).some(p=>p.style==='phone'));
+// Cancelling or timing out a marathon restores the selected owned mount.
+g.setS(g.newSave(0));g.G.dead=0;g.loadRoom('puertoOctay',19,68);g.G.enemies=[];g.G.eshots=[];g.G.aoes=[];g.getS().mounts=['mesa'];g.getS().mount='mesa';
+g.startOctayRace();g.G.dialog.choices[0].fn();assert.equal(g.getS().mount,null);assert.equal(g.G.octayRace.mount,'mesa');
+g.G.octayRace.t=20;g.startOctayRace();assert.equal(g.G.octayRace.t,20);
+g.loadRoom('frutillar',115,84);assert(!g.G.octayRace);assert.equal(g.getS().mount,'mesa');
+g.G.octayRace={next:0,t:2700,mount:'mesa'};g.getS().mount=null;g.G.roomId='puertoOctay';g.updateOctayRace();assert(!g.G.octayRace);assert.equal(g.getS().mount,'mesa');g.G.preview=false;
 async function main(){
  const encoded=await g.encodeSave(custom), decoded=await g.decodeSave(encoded);
  assert.equal(decoded.customChar.n,'Mi personaje');assert.equal(g.characterOf(decoded).c.eye,'#1122ff');

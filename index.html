@@ -326,6 +326,7 @@ function makeSong(o){
 }
 // los nombres con 'b' (Bb, Eb, Ab) son acordes; las melodías usan sostenidos (A#4 = Si bemol)
 const SONGS = {
+  oktober:makeSong({bpm:118,chords:['D','A','G','D','Bm','G','A','D'],leadInst:'brass',leadVol:.08,padVol:.035,bass:'walk',bassVol:.18,arpInst:'harp',arpVol:.035,drums:'reel',drumVol:.14,lead:'D5:1 F#5:1 A5:2 F#5:2 D5:2 E5:1 C#5:1 A4:2 C#5:2 E5:2 G5:1 B5:1 D6:2 B5:2 G5:2 F#5:2 E5:2 D5:4 B4:1 D5:1 F#5:2 A5:2 F#5:2 G5:2 B5:2 A5:2 G5:2 E5:1 F#5:1 E5:2 C#5:2 A4:2 F#5:2 E5:2 D5:4'}),
   pelluco:makeSong({bpm:104,chords:['G','D','Em','C','G','D','C','G'],leadInst:'flute',leadVol:.085,padVol:.035,bass:'walk',bassVol:.18,arpInst:'harp',arpVol:.045,drums:'beach',drumVol:.14,lead:'B4:2 D5:2 E5:2 D5:2 A4:2 B4:2 D5:4 G4:2 B4:2 E5:2 G5:2 E5:3 D5:1 C5:2 E5:2 D5:2 B4:2 A4:2 G4:2 F#4:2 A4:2 D5:4 E5:2 D5:2 C5:2 A4:2 B4:2 G4:2 G5:4'}),
   mechones:makeSong({bpm:126,chords:['Am','F','C','G','Am','F','G','G'],leadInst:'lead',leadVol:.075,padVol:.045,bass:'pump',bassVol:.17,arpInst:'harp',arpVol:.05,drums:'house',drumVol:.16,lead:'A4:1 C5:1 E5:2 C5:2 A4:2 F4:2 A4:2 C5:2 E5:2 G4:1 C5:1 E5:2 G5:2 E5:2 D5:2 B4:2 G4:2 B4:2 A4:1 C5:1 E5:2 A5:2 E5:2 F5:2 E5:2 C5:2 A4:2 B4:2 D5:2 G5:2 D5:2 B4:2 A4:2 G4:4'}),
   // Original hopeful medieval RPG theme: "El templo de la esperanza".
@@ -1491,16 +1492,18 @@ WILD.puertoOctay={name:'PUERTO OCTAY · HUMEDAL DEL LLANQUIHUE',theme:'meadow',m
  npcs:[{id:'friend',ch:15,role:'cheer',x:2,y:6}],signs:{'2,4':'PUERTO OCTAY: OESTE, FRUTILLAR. LAS CRIATURAS DE LAS CARTAS HAN INVADIDO EL CIRCUITO DE RODOLFO.'},
  props:[{k:'cartel',x:2,y:4,label:'FRUTILLAR',txt:'AL OESTE: FRUTILLAR. EL SENDERO ES TRANSITABLE A PIE.',solid:false},{k:'marathonTrack',x:0,y:0,solid:false},{k:'marathonStart',x:3,y:5,act:'octayRace',solid:false},{k:'fogata',x:1,y:7,act:'waitPhase',solid:false},...OCTAY_CHECKPOINTS.slice(0,4).map(([x,y],i)=>({k:'marathonFlag',x,y,label:String(i+1),solid:false}))]};
 function startOctayRace(){
+ if(G.octayRace){say(['RODOLFO: Tu vuelta ya comenzo. Sigue la bandera indicada y regresa a la meta.']);return;}
  if(!areaCleared()){say(['RODOLFO: ¡Este es mi circuito del lago! Primero limpiemos el humedal de criaturas; despues corremos tranquilos.']);return;}
  if(Date.now()<(S.octayNextAt||0)){say(['RODOLFO: Recupera el aire. La proxima vuelta premiada abre en unos minutos.']);return;}
- say(['RODOLFO: ¡De las maratones no me pierdo ninguna! Pasa por las banderas 1, 2, 3 y 4, en orden, y vuelve a la meta. Tienes 45 segundos.','Corremos a pie: deja la montura descansando. Primera vuelta completa: 300 EXP; siguientes: 100 EXP. Tu mejor tiempo queda guardado.'],[{t:'¡CORRER!',fn:()=>{S.mount=null;PL.x=3*TS+3;PL.y=5*TS+4;G.moveTarget=null;G.octayRace={next:0,t:0};SFX.ok();}},{t:'DESPUES',fn:null}]);
+ say(['RODOLFO: ¡De las maratones no me pierdo ninguna! Pasa por las banderas 1, 2, 3 y 4, en orden, y vuelve a la meta. Tienes 45 segundos.','Corremos a pie: deja la montura descansando. Primera vuelta completa: 300 EXP; siguientes: 100 EXP. Tu mejor tiempo queda guardado.'],[{t:'¡CORRER!',fn:()=>{const mount=S.mount;S.mount=null;PL.x=3*TS+3;PL.y=5*TS+4;G.moveTarget=null;G.octayRace={next:0,t:0,mount};SFX.ok();}},{t:'DESPUES',fn:null}]);
 }
+function endOctayRace(){const r=G.octayRace;if(r?.mount&&(S.mounts||[]).includes(r.mount))S.mount=r.mount;G.octayRace=null;}
 function updateOctayRace(){
- const r=G.octayRace;if(!r)return;if(G.roomId!=='puertoOctay'){G.octayRace=null;return;}S.mount=null;
- r.t++;if(r.t>45*60){G.octayRace=null;say(['RODOLFO: Se acabo el tiempo. ¡Vuelve a intentarlo!']);return;}
+ const r=G.octayRace;if(!r)return;if(G.roomId!=='puertoOctay'||G.dead){endOctayRace();return;}S.mount=null;
+ r.t++;if(r.t>45*60){endOctayRace();say(['RODOLFO: Se acabo el tiempo. ¡Vuelve a intentarlo!']);return;}
  const [x,y]=OCTAY_CHECKPOINTS[r.next];if(Math.hypot(PL.x+5-(x*TS+8),PL.y+4-(y*TS+8))>12)return;
  r.next++;SFX.ok();if(r.next<OCTAY_CHECKPOINTS.length)return;
- const seconds=(r.t/60).toFixed(2),first=!S.octayBest;S.octayBest=Math.min(S.octayBest||Infinity,r.t);S.octayNextAt=Date.now()+RESPAWN_MS;G.octayRace=null;addXP(first?300:100);saveGame();
+ const seconds=(r.t/60).toFixed(2),first=!S.octayBest;S.octayBest=Math.min(S.octayBest||Infinity,r.t);S.octayNextAt=Date.now()+RESPAWN_MS;endOctayRace();addXP(first?300:100);saveGame();
  say(['RODOLFO: ¡Meta! '+seconds+' segundos. Mejor marca: '+(S.octayBest/60).toFixed(2)+' segundos.','Ganaste '+(first?300:100)+' EXP. ¡La proxima maraton la corremos juntos!']);
 }
 const DUNGEONS = {
@@ -1599,6 +1602,7 @@ function genWild(id){
       else if ((z.theme === 'forest' || z.theme === 'meadow') && r < 0.12) m[y][x] = ',';
     }
   }
+  def.festival=!!z.festival;
   def.map = m.map(r => r.join(''));
   return def;
 }
@@ -2242,6 +2246,7 @@ function gatherLights(dark){
   }
   for (const p of (G.def.props || [])) { const px = p.x * TS + (p.w || 1) * 8, py = p.y * TS + 8;
     if(p.k==='ligaNeon')add(px,py,60,hslRgb((frame*3)%360),1);else if(p.k==='farol'&&(ph==='night'||ph==='dusk'))add(px,py-12,38,'255,210,120',.85);else if (p.k === 'fogata') add(px, py, 40 + Math.sin(frame * 0.2) * 3, '255,140,50', 1); else if (p.k === 'dj') add(px, py, 44, hslRgb((frame * 3) % 360), 0.9); else if (p.k === 'neon') add(px, py + 6, 60, hslRgb((frame * 2) % 360), 0.5); else if (p.k === 'parlante') add(px, py, 18, '120,120,255', 0.4); }
+  if(ph==='night'||ph==='dusk')for(const p of G.def.props||[])if(p.k==='festivalLamp'||p.k==='festivalStand')add(p.x*TS+(p.w||1)*8,p.y*TS-3,p.k==='festivalStand'?30:26,'255,196,110',.75);
   if (G.def.party) for (let i = 0; i < 4; i++) add(W / 2 + Math.cos(frame * 0.03 + i * 1.57) * 70, 70 + Math.sin(frame * 0.04 + i * 1.57) * 30, 30, hslRgb((frame * 3 + i * 90) % 360), 0.8);
   for (const s of G.shots) { const sp = SPELLS[s.id]; if (sp && sp.col) add(s.x, s.y, 26, hexRgb(sp.col), 1); }
   for (const s of (G.eshots || [])) add(s.x, s.y, 16, hexRgb(s.col || '#ff6040'), 0.8);
@@ -2307,11 +2312,15 @@ function drawProp(p){
   const X = p.x * TS, Y = p.y * TS, wpx = (p.w || 1) * TS, t = frame;
   if(p.waiting){outl(X+wpx/2-4,Y+18,8,6,'#e8c080');tiny('TU ASIENTO',X+wpx/2,Y+27,'#a0ffb0','center');}
   switch (p.k) {
+    case 'festivalStand': {const c=p.color||'#77934d';softShadow(X+wpx/2,Y+24,wpx/2,3,.25);R(X+2,Y+3,2,21,'#64462b');R(X+wpx-4,Y+3,2,21,'#64462b');outl(X,Y-7,wpx,12,c);for(let i=2;i<wpx;i+=8)R(X+i,Y-6,4,10,'#f5e7bd');R(X,Y+5,wpx,3,'#503b28');outl(X+1,Y+15,wpx-2,9,'#895333');R(X+2,Y+16,wpx-4,2,'#b58250');for(const dx of [6,19]){R(X+dx,Y+8,5,7,'#b67835');R(X+dx,Y+7,5,2,'#fff1d1');R(X+dx+5,Y+9,2,4,'#f0c98b');}tiny('PROST!',X+wpx/2,Y+19,'#fff0b8','center');break;}
+    case 'festivalBunting': {ctx.strokeStyle='#d8bb85';ctx.lineWidth=.6;ctx.beginPath();ctx.moveTo(X,Y+14);ctx.quadraticCurveTo(X+wpx/2,Y+21,X+wpx,Y+14);ctx.stroke();for(let i=0;i<12;i++){const xx=X+5+i*(wpx-10)/11,yy=Y+14+Math.sin(i/11*Math.PI)*3;ctx.fillStyle=i%3===0?'#f5dfaa':i%3===1?p.color:'#c87745';ctx.beginPath();ctx.moveTo(xx-3,yy);ctx.lineTo(xx+3,yy);ctx.lineTo(xx+Math.sin(frame*.035+i),yy+5);ctx.closePath();ctx.fill();}break;}
+    case 'festivalLamp': {R(X+7,Y-9,2,25,'#5d4b36');R(X+4,Y-8,8,2,'#5d4b36');outl(X+3,Y-6,10,9,'#6d4f31');R(X+4,Y-5,8,7,dayPhase()==='night'||dayPhase()==='dusk'?'#ffdda2':'#d9b878');R(X+7,Y-5,1,7,'#785738');R(X+3,Y+2,10,2,'#6d4f31');break;}
+    case 'lakeReeds': {for(const dx of [0,4,9,15]){R(X+dx,Y+4,1,10,'#667645');R(X+dx-1,Y+2,3,5,'#94734c');}R(X-2,Y+14,21,1,'#b5cd91');break;}
     case 'portalPillar': {outl(X+2,Y-10,12,26,'#343650');R(X+4,Y-8,8,23,'#74748c');R(X+4,Y-8,2,23,'#aaa8bc');R(X,Y-11,16,4,'#d8c896');R(X,Y+13,16,3,'#d8c896');disc(X+8,Y-15,3,'#b0d8ff');break;}
     case 'gymSigil':{disc(X+8,Y+8,10,'#24243e');disc(X+8,Y+8,8,p.color);drawPoke(p.pokeId,X,Y,frame,false);break;}
     case 'homePoster':{outl(X,Y-2,wpx,22,'#584030');R(X+2,Y,wpx-4,17,pokemonRealm()?'#304870':'#302848');ctx.save();ctx.translate(X+wpx/2-8,Y+1);if(pokemonRealm())drawPoke(p.id||24,0,0,frame,false);else{ctx.scale(16/MON[p.mon||'angel'].size,16/MON[p.mon||'angel'].size);drawMon(p.mon||'angel',0,0,0,false,true);}ctx.restore();tiny(pokemonRealm()?'MAESTRO POKEMON':'CAMPEON MAGIC',X+wpx/2,Y+22,'#f0d898','center');break;}
     case 'homeKitchen':{outl(X,Y,wpx,15,'#784c30');R(X+1,Y+1,wpx-2,4,'#e4d8bc');R(X+2,Y+6,13,8,'#444856');disc(X+6,Y+9,2,'#1c2030');disc(X+12,Y+9,2,'#1c2030');R(X+20,Y+7,10,5,'#b0c8d0');R(X+24,Y+3,2,5,'#e8f0f4');tiny('COCINA',X+wpx/2,Y+18,'#d8e0c8','center');break;}
-    case 'retroStreet':{if(p.style==='phone'){outl(X+3,Y,10,18,'#547498');R(X+4,Y+1,8,4,'#e0d8a0');R(X+5,Y+6,6,5,'#24384a');R(X+6,Y+6,2,4,'#101824');tiny('TEL',X+8,Y+2,'#243040','center');}else{outl(X,Y,16,13,'#ead8a8');tiny('TCG',X+8,Y+2,'#584030','center');R(X+2,Y+9,12,1,'#a87850');}break;}
+    case 'retroStreet':{outl(X,Y,16,13,'#ead8a8');tiny('TCG',X+8,Y+2,'#584030','center');R(X+2,Y+9,12,1,'#a87850');break;}
     case 'retroShelf':{outl(X,Y,wpx,16,'#805838');for(let i=0;i<4;i++){R(X+3+i*7,Y+2,5,10,['#9c789c','#7898b0','#b89c58','#78a080'][i]);R(X+4+i*7,Y+3,3,2,'#ece0c8');}tiny('VHS · CASETES',X+wpx/2,Y+18,'#d0c098','center');break;}
     case 'homeComputer':{outl(X,Y+9,32,8,'#7c5030');R(X+3,Y-4,24,16,'#252838');R(X+5,Y-2,20,11,'#163a28');tiny('IA',X+15,Y+1,'#98f0a8','center');R(X+6,Y+7,5+(frame>>4)%8,1,'#70c878');R(X+7,Y+13,18,2,'#c8c8cc');R(X+14,Y+10,3,3,'#565868');break;}
     case 'urzaBox':{outl(X+1,Y+4,14,10,'#887050');R(X+2,Y+5,12,3,'#d0ac68');R(X+7,Y+8,2,4,S.boxClosed?'#80c8a0':'#c888f0');if(!S.boxClosed)disc(X+8,Y+2,3,'rgba(160,128,255,.5)');break;}
@@ -3172,7 +3181,7 @@ function configureTemples(){
 }
 configureTemples();
 NPCDEF.urzaEcho={...NPCDEF.viejo,n:'URZA · ECO DEL ARTIFICE',c:{...NPCDEF.viejo.c,hair:'#e8e0c8',shirt:'#446888',shirtD:'#283858',emblem:'#e8c878'}};NPCDEF.alerceEcho={...NPCDEF.profesor,n:'PROFESOR ALERCE · ECO DEL REFLEJO'};ROOMS.santuarioPortal.npcs.push({id:'urzaEcho',x:12,y:7});
-for(const id of ['pueblo','valpo','vina','talca','pmontt','puertoVaras','frutillar','tolaria','tempest','mercado'])ROOMS[id].props.push({k:'retroStreet',x:1,y:8,solid:false,style:'phone'},{k:'retroStreet',x:13,y:1,solid:false,style:'magazine'});
+for(const id of ['pueblo','valpo','vina','talca','pmontt','puertoVaras','frutillar','tolaria','tempest','mercado'])ROOMS[id].props.push({k:'retroStreet',x:13,y:1,solid:false,style:'magazine'});
 ROOMS.hogar.props=[{k:'retroShelf',x:11,y:6,w:2,solid:false},...(ROOMS.hogar.props||[]),{k:'homeKitchen',x:10,y:2,w:3,act:'homeCook'},{k:'homeComputer',x:5,y:2,w:2,act:'homeAI'},{k:'mesaComida',x:6,y:6,w:3,act:'homeCook'},...[{x:2,id:24,mon:'angel'},{x:6,id:5,mon:'shivan'},{x:10,id:149,mon:'dread'}].map(p=>({k:'homePoster',...p,y:0,w:2,solid:false}))];
 const MAGIC_COMPANIONS={
  angel:{n:'Serra Angel',shape:'w',tier:3,type:'normal'},shivan:{n:'Shivan Dragon',shape:'w',tier:3,type:'fire'},dread:{n:'Phyrexian Dreadnought',shape:'q',tier:3,type:'normal'},masticore:{n:'Masticore',shape:'q',tier:3,type:'normal'},juggernaut:{n:'Juggernaut',shape:'q',tier:3,type:'normal'},birds:{n:'Birds of Paradise',shape:'w',tier:3,type:'grass'},metalworker:{n:'Metalworker',shape:'q',tier:3,type:'normal'},hermit:{n:'Deranged Hermit',shape:'q',tier:3,type:'grass'},monger:{n:'Spiritmonger',shape:'q',tier:3,type:'ghost'}
@@ -3184,6 +3193,28 @@ function chooseMagicPet(page=0){const entries=Object.entries(MAGIC_COMPANIONS);c
 NPCDEF.cerveceraLago={...NPCDEF.vecina,n:'HILDEGARD DEL LAGO',style:'bun',c:{...NPCDEF.vecina.c,hair:'#b87838',shirt:'#508868',shirtD:'#305840',pants:'#304038'}};
 NPCDEF.ottoCata={...NPCDEF.sureno,n:'DON OTTO CATADOR',style:'beanie',c:{...NPCDEF.sureno.c,hat:'#486848',hatD:'#284838',shirt:'#c89858'}};
 NPCDEF.luchoBarril={...NPCDEF.marinero,n:'LUCHO DEL BARRIL',style:'curly',c:{...NPCDEF.marinero.c,shirt:'#986858',hair:'#503028'}};
+const OKTOBER_REGION={
+ pmontt:{host:'GRETA DEL PUERTO',place:'PUERTO MONTT',color:'#507fb0',x:11,y:6,flavor:'ALE ROJA DEL PUERTO',line:'La costanera brinda entre cartas, acordeones y cerveza de color cobre.'},
+ puertoOctay:{host:'OTTO DEL HUMEDAL',place:'PUERTO OCTAY',color:'#77934d',x:12,y:5,flavor:'ALE DE MALTA TOSTADA',line:'Primero dominamos las criaturas del humedal; despues brindamos por la maraton de Rodolfo.'},
+ frutillar:{host:'LENA DEL TEATRO',place:'FRUTILLAR',color:'#b66e64',x:2,y:6,flavor:'ALE AMBAR DEL LAGO',line:'Musica del teatro, mesas junto al lago y malta tostada: ¡bienvenido a nuestra fiesta!'}
+};
+for(const [id,f] of Object.entries(OKTOBER_REGION)){
+ const d=ROOMS[id]||WILD[id];d.festival=true;d.music='oktober';
+ d.props=(d.props||[]).concat({k:'festivalStand',x:f.x,y:f.y,w:2,color:f.color,solid:false,act:'regionalFest',region:id},{k:'festivalBunting',x:3,y:0,w:9,solid:false,top:true,color:f.color},...[1,13].map(x=>({k:'festivalLamp',x,y:id==='pmontt'?7:6,solid:false})),{k:'lakeReeds',x:1,y:8,solid:false});
+ if(d.signs){const key=Object.keys(d.signs)[0];d.signs[key]+=' OKTOBERFEST DEL LAGO: BUSCA EL PUESTO CON BANDERINES PARA CERVEZA, CATA Y PASAPORTE.';}
+}
+function festivalStops(){return S.oktoberStops?.[S.realm||'magic']||{};}
+function stampFestival(id=G.roomId){
+ const f=OKTOBER_REGION[id];if(!f)return;
+ S.oktoberStops=S.oktoberStops||{};const realm=S.realm||'magic',stops=S.oktoberStops[realm]||(S.oktoberStops[realm]={});
+ const first=!stops[id];stops[id]=true;const count=Object.keys(OKTOBER_REGION).filter(k=>stops[k]).length;
+ if(first){addXP(count===3?240:60);saveGame();SFX.ok();}
+ say([f.host+': '+(first?'¡Sello de '+f.place+' en tu pasaporte!':'Tu pasaporte ya tiene nuestro sello.'),...Object.entries(OKTOBER_REGION).map(([k,v])=>(stops[k]?'OK · ':'PENDIENTE · ')+v.place),count===3?'¡RUTA CERVECERA COMPLETA! Cartas, caminos y amistad por todo el lago.':count+'/3 puestos visitados. Busca los otros banderines.']);
+}
+function regionalFestival(id=G.roomId){
+ const f=OKTOBER_REGION[id];if(!f)return;
+ say([f.host+': ¡Oktoberfest del lago! '+f.line,'Nuestra especialidad: '+f.flavor+'. Jarra y pretzel por $3.000.'],[{t:'JARRA Y PRETZEL ($3.000)',fn:()=>{if(S.coins<3000){say([f.host+': Te faltan lucas. El pasaporte y la musica son gratis.']);return;}S.coins-=3000;S.hp=S.maxHp;S.mp=maxMp();S.beerTotal=(S.beerTotal||0)+1;SFX.beer();saveGame();say([f.host+': ¡PROST! '+f.flavor+' y pretzel: vida y magia recuperadas.']);}},{t:'SELLO Y PASAPORTE',fn:()=>stampFestival(id)},{t:'DESAFIO DE CATA',fn:festivalTasting},{t:'EL PATIO DEL FESTIVAL',fn:()=>say(['El patio principal esta en Puerto Varas: entra al cafe y sigue por la puerta lateral. Hildegard, Lucho y Don Otto te esperan entre barriles y cartas.'])},{t:'VOLVER',fn:null}]);
+}
 ROOMS.cafeVaras.map[5]='kFFFFFFFFFFFFDk';ROOMS.cafeVaras.doors={'13,5':'oktoberfest'};ROOMS.cafeVaras.props.push({k:'cartel',x:12,y:5,label:'OKTOBERFEST',txt:'EL PATIO CERVECERO DEL LAGO ESTA AL OTRO LADO.',solid:false});ROOMS.puertoVaras.signs['3,5']+=' OKTOBERFEST DEL LAGO: ENTRA AL CAFE Y SIGUE AL PATIO CERVECERO.';
 ROOMS.oktoberfest={name:'OKTOBERFEST DEL LAGO',zone:'puertoVaras',theme:'inside',music:'tavern',interior:true,party:true,exitTo:{room:'cafeVaras',tx:12,ty:5},map:['kkkkkkkkkkkkkkk',...Array(7).fill('kFFFFFFFFFFFFFk'),'kkkkkkkEkkkkkkk','kkkkkkkkkkkkkkk'],npcs:[{id:'cerveceraLago',x:4,y:1},{id:'ottoCata',x:11,y:5},{id:'luchoBarril',x:3,y:6}],props:[{k:'mostrador',x:2,y:2,w:5,label:'HILDEGARD · CERVEZA',act:'festBeer'},{k:'cartel',x:10,y:0,label:'PROST!',txt:'OKTOBERFEST: BRINDIS, BARRILES Y CARTAS JUNTO AL LAGO.',solid:false},...[2,6,10].map(x=>({k:'barril',x,y:3,solid:false})),{k:'mesaCartas',x:2,y:5,w:3,act:'festCards'},{k:'mesaComida',x:7,y:5,w:3,act:'festBeer'},{k:'fogata',x:13,y:6,solid:false},{k:'retroShelf',x:1,y:7,w:2,solid:false}]};
 
@@ -3312,6 +3343,7 @@ function drawRealmTravel(){
 }
 
 function loadRoom(id, px, py){
+  if(G.octayRace&&id!=='puertoOctay')endOctayRace();
   if(leaguesDone()>=4)S.finder=true;
   let d = getDef(id);
   d=realmDefinition(id,d);
@@ -3546,6 +3578,7 @@ function hostTalk(n){
   return false;
 }
 function propAction(p){
+  if(p.act==='regionalFest'){regionalFestival(p.region);return;}
   if(p.act==='urzaBox'){closeUrzaBox();return;}
   if(p.act==='octayRace'){startOctayRace();return;}
   if(p.act==='pellucoBeer'){pellucoBeer();return;}
@@ -7200,6 +7233,7 @@ function loop(now){
   requestAnimationFrame(loop);
   acc += Math.min(100, now - last); last = now;
   try {
+    if(location.hash.startsWith('#vista=festival')&&!G.tested){G.tested=true;G.preview=true;S=newSave(0);S.lvl=30;S.maxHp=S.hp=200;G.state='world';const zone=new URLSearchParams(location.hash.split('&').slice(1).join('&')).get('zona');if(location.hash.includes('noche'))G.forcePhase='night';loadRoom(Object.hasOwn(OKTOBER_REGION,zone)?zone:'pmontt',115,84);if(location.hash.includes('captura')){G.fade=0;G.zoneT=0;G.freeze=true;}}
     if(location.hash.startsWith('#vista=pelluco')&&!G.tested){G.tested=true;G.preview=true;S=newSave(0);G.state='world';const zone=new URLSearchParams(location.hash.split('&').slice(1).join('&')).get('zona');loadRoom(['uachPelluco','quinchoPelluco'].includes(zone)?zone:'pelluco',115,84);if(location.hash.includes('captura')){G.fade=0;G.zoneT=0;G.freeze=true;}}
     if(location.hash.startsWith('#vista=octay')&&!G.tested){G.tested=true;G.preview=true;S=newSave(0);S.lvl=30;S.maxHp=S.hp=100;G.state='world';loadRoom('puertoOctay',19,68);if(location.hash.includes('captura')){G.fade=0;G.zoneT=0;G.freeze=true;}}
     if(location.hash.startsWith('#vista=casa')&&!G.tested){G.tested=true;G.preview=true;S=newSave(0);if(location.hash.includes('pokemon')){S.realm='pokemon';S.magicPet='angel';}G.state='world';loadRoom('hogar',35,52);G.waking=120;if(location.hash.includes('captura')){G.fade=0;G.freeze=true;}}
