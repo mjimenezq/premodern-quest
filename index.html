@@ -783,6 +783,12 @@ const DECKS = [
 ];
 const DECK_SIZE = 12;
 const DECK = Object.fromEntries(DECKS.map(d => [d.id, d]));
+const POKEMON_DECK_NAMES={burn:'FUEGO',goblins:'ENJAMBRE',black:'SOMBRA',replenish:'RENACER',life:'VITALIDAD',langostino:'GIGANTES',terragedon:'BOSQUE',landstill:'MAREAS',rock:'ROCA',mud:'ACERO'};
+function deckLabel(id){return pokemonRealm()?POKEMON_DECK_NAMES[id]:DECK[id].n;}
+const POKEMON_DECK_SPECIES={burn:['Charmander','Charmeleon','Charizard','Vulpix','Ninetales','Growlithe','Arcanine','Magmar','Ponyta','Rapidash','Flareon','Moltres'],goblins:['Caterpie','Metapod','Butterfree','Weedle','Kakuna','Beedrill','Paras','Parasect','Venonat','Venomoth','Scyther','Pinsir'],black:['Gastly','Haunter','Gengar','Drowzee','Hypno','Zubat','Golbat','Ekans','Arbok','Grimer','Muk','Mewtwo'],replenish:['Eevee','Vaporeon','Jolteon','Flareon','Ditto','Porygon','Abra','Kadabra','Alakazam','Exeggcute','Exeggutor','Mew'],life:['Chansey','Clefairy','Clefable','Jigglypuff','Wigglytuff','Mr. Mime','Snorlax','Kangaskhan','Lickitung','Chansey','Jynx','Lapras'],langostino:['Gyarados','Lapras','Articuno','Seel','Dewgong','Squirtle','Wartortle','Blastoise','Shellder','Cloyster','Tentacool','Tentacruel'],terragedon:['Bulbasaur','Ivysaur','Venusaur','Oddish','Gloom','Vileplume','Bellsprout','Weepinbell','Victreebel','Tangela','Exeggcute','Exeggutor'],landstill:['Psyduck','Golduck','Poliwag','Poliwhirl','Poliwrath','Staryu','Starmie','Horsea','Seadra','Goldeen','Seaking','Slowbro'],rock:['Geodude','Graveler','Golem','Onix','Rhyhorn','Rhydon','Cubone','Marowak','Sandshrew','Sandslash','Diglett','Dugtrio'],mud:['Magnemite','Magneton','Porygon','Voltorb','Electrode','Pikachu','Raichu','Jolteon','Electabuzz','Zapdos','Koffing','Weezing']};
+const POKEMON_CARD_SPECIES={};DECKS.forEach(d=>d.cards.forEach((id,i)=>{POKEMON_CARD_SPECIES[id]??=POKEMON_DECK_SPECIES[d.id][i];}));
+function reflectedCardSpecies(id){const named=POKEMON_CARD_SPECIES[id];return named&&POKE.some(p=>p.n.toLowerCase().replace(/[^a-z]/g,'')===named.toLowerCase().replace(/[^a-z]/g,''))?named:POKE[strHash(String(id))%151].n;}
+function reflectedCardName(id){return reflectedCardSpecies(id)+' · '+(DECKS.find(d=>d.cards.includes(id))?.cards.indexOf(id)+1||'RARA');}
 const ALL_CARDS = Object.keys(CARDS);
 const MU = { burn:{goblins:0,black:.05,replenish:.12,life:-.15,langostino:.05,terragedon:.02,landstill:.08,rock:-.04,mud:.06}, goblins:{black:.05,replenish:.1,life:0,langostino:-.05,terragedon:-.03,landstill:-.08,rock:-.06,mud:.04},
   black:{replenish:.1,life:.05,langostino:0,terragedon:.05,landstill:.06,rock:-.02,mud:.03}, replenish:{life:.1,langostino:-.08,terragedon:.06,landstill:-.05,rock:.02,mud:-.04}, life:{langostino:.05,terragedon:-.08,landstill:-.04,rock:.03,mud:-.02},
@@ -909,6 +915,11 @@ const SPELLS = {
 const SPELL_ORDER = ['bolt','ice','fire','heal'];
 const ADVANCED_SPELLS=[['chispa','Chispa del Maule','bolt',3,3],['granizo','Granizo de Kjeldor','ice',4,3],['llama','Llama de Shiv','fire',5,5],['consuelo','Consuelo de Serra','heal',6,6],['tormenta','Tormenta de mana','bolt',5,6],['invierno','Invierno eterno','ice',6,5],['meteorito','Meteorito del Umbral','fire',7,8],['renacer','Renacer del Conclave','heal',8,10],['fulgor','Fulgor del Multiverso','bolt',7,9],['supernova','Supernova de Urza','fire',10,12]];
 ADVANCED_SPELLS.forEach(([id,n,base,mp,power],i)=>{SPELLS[id]={...SPELLS[base],n,mp,price:300000+i*i*150000,req:{lvl:40+i*5},desc:SPELLS[base].desc+' Magia avanzada.',...(base==='heal'?{heal:power}:{dmg:power})};SPELL_ORDER.push(id);});
+// Only acquired in the reflected world; learned powers remain usable on return.
+const REFLECT_SPELLS=[['truenoReflejo','Trueno de Pikachu','bolt',6,7,70],['auroraReflejo','Aurora de Lapras','ice',7,8,85],['llamaReflejo','Llama de Charizard','fire',9,10,100],['pulsoReflejo','Pulso de Celebi','heal',10,12,115],['novaReflejo','Nova de Mewtwo','fire',12,14,130]];
+REFLECT_SPELLS.forEach(([id,n,base,mp,power,lvl],i)=>{SPELLS[id]={...SPELLS[base],n,mp,realm:'pokemon',price:500000+i*250000,req:{lvl},desc:'Poder rescatado de las cartas del reflejo. '+SPELLS[base].desc,...(base==='heal'?{heal:power}:{dmg:power})};SPELL_ORDER.push(id);});
+const REFLECT_GEAR=[['gorroAura','Gorro de aura','head',5,{int:3},70,'#d0a0ff'],['chalecoEntrenador','Chaleco del entrenador','body',8,{des:3},85,'#e85050'],['grebasEscama','Grebas de Gyarados','legs',7,{fue:3},100,'#5898d8'],['botasVoltio','Botas de Jolteon','feet',5,{agi:3},115,'#f8d850'],['escudoPsi','Escudo de Mewtwo','shield',10,{int:4},130,'#b880e0']];
+REFLECT_GEAR.forEach(([id,n,slot,def,st,lvl,col],i)=>{ARMOR[id]={n,slot,def,st,col,tier:5,realm:'pokemon',lvl,price:450000+i*250000};});
 const MOUNTS = {
   mesa:{ n:'Mesa Pegasus', price:125000, spd:0.12, kind:'horse', body:'#f4f4f8', mane:'#e8c040', wings:true, desc:'Caballo alado blanco. +12% velocidad.' },
   nightmare:{ n:'Nightmare', price:150000, spd:0.16, kind:'horse', body:'#2a2032', mane:'#f86020', fire:true, desc:'Caballo negro de crin en llamas. +16% velocidad.' },
@@ -984,8 +995,8 @@ function drawRider(x, y, P, dir, f){
   drawPerson(x, y - 10, P, dir, 0);
   drawMount(S.mount, x - 3, y, dir, walk, 'front');
 }
-// Existing spell experience retains its level; the curve now continues to 10.
-const SPELL_LVLS = [0,12,35,75,140,240,380,560,780,1050];
+// Preserve the first ten thresholds and continue existing experience to twenty.
+const SPELL_LVLS = [0,12,35,75,140,240,380,560,780,1050,1380,1770,2230,2760,3370,4060,4840,5710,6680,7750];
 const spellLvl = id => { const x = (S && S.spellXp && S.spellXp[id]) || 0; let l = 1; for (let i = 1; i < SPELL_LVLS.length; i++) if (x >= SPELL_LVLS[i]) l = i + 1; return l; };
 const spellMp = id => Math.max(1, SPELLS[id].mp - (spellLvl(id) >= 3 ? 1 : 0) - (spellLvl(id) >= 5 ? 1 : 0) - (spellLvl(id)>=8?1:0) - (spellLvl(id)>=10?1:0));
 function gainSpellXp(id, n){
@@ -1030,8 +1041,9 @@ for(let i=0;i<10;i++){
 const COIN_X = 50; // monedas que sueltan las criaturas y el arcade (30 sept: bajado de 150, daban demasiado)
 function questCoins(reward,level=S.lvl){const raw=reward.coins||0;if(!raw)return 0;const base=raw<=100?raw*70:1200+Math.sqrt(raw)*65;return Math.round(Math.min(6000,base)*(.5+Math.min(100,Math.max(1,level))*.025)/100)*100;}
 function levelCoins(base,level=S.lvl){return Math.max(10,Math.round(base*(.35+Math.min(100,Math.max(1,level))*.018)/10)*10);}
-function itemLevel(kind,id){const luxury=LUXURY.find(it=>it.kind===kind&&it.id===id);if(luxury&&luxury.req)return luxury.req.lvl||1;if(kind==='sword')return Math.max(1,(SWORD_ORDER.indexOf(id)-1)*2);if(kind==='armor')return Math.max(1,((ARMOR[id]||{}).tier-1)*6);return 1;}
-function usableDrop(kind,id){if(id&&itemLevel(kind,id)<=S.lvl)return id;const pool=kind==='sword'?SWORD_ORDER:Object.keys(ARMOR);return pool.filter(key=>itemLevel(kind,key)<=S.lvl).sort((a,b)=>itemLevel(kind,b)-itemLevel(kind,a))[0]||null;}
+function itemLevel(kind,id){const luxury=LUXURY.find(it=>it.kind===kind&&it.id===id);if(luxury&&luxury.req)return luxury.req.lvl||1;if(kind==='sword')return Math.max(1,(SWORD_ORDER.indexOf(id)-1)*2);if(kind==='armor')return ARMOR[id]?.lvl||Math.max(1,((ARMOR[id]||{}).tier-1)*6);return 1;}
+function acquisitionOk(kind,id){const obj=kind==='armor'?ARMOR[id]:kind==='spell'?SPELLS[id]:SWORDS[id];return !obj?.realm||obj.realm===(S.realm||'magic');}
+function usableDrop(kind,id){if(id&&acquisitionOk(kind,id)&&itemLevel(kind,id)<=S.lvl)return id;const pool=kind==='sword'?SWORD_ORDER:Object.keys(ARMOR);return pool.filter(key=>acquisitionOk(kind,key)&&itemLevel(kind,key)<=S.lvl).sort((a,b)=>itemLevel(kind,b)-itemLevel(kind,a))[0]||null;}
 
 const money = n => '$' + String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 const houseBonus = key => { let v = 0; for (const [id, o] of Object.entries(HOUSE)) if (S.house && S.house[id]) v += o.bonus[key] || 0; for (const [id, o] of Object.entries(PRIZES)) if (S.house && S.house[id]) v += o.bonus[key] || 0; return v; };
@@ -1441,6 +1453,14 @@ ROOMS.frutillar={name:'FRUTILLAR · TEATRO DEL LAGO',theme:'town',music:'town',r
 for(const [id,city]of [['cafeVaras','puertoVaras'],['cafeFrutillar','frutillar']])ROOMS[id]={name:'CAFE Y KUCHEN · '+(city==='puertoVaras'?'PUERTO VARAS':'FRUTILLAR'),theme:'inside',music:'tavern',interior:true,zone:city,exitTo:{room:city,tx:4,ty:4},map:['kkkkkkkkkkkkkkk',...Array(7).fill('kFFFFFFFFFFFFFk'),'kkkkkkkEkkkkkkk','kkkkkkkkkkkkkkk'],npcs:[{id:'tortera',x:4,y:2}],props:[{k:'mostrador',x:2,y:3,w:4,label:'CAFE · KUCHEN',act:'southFood'},{k:'mesaComida',x:9,y:4,w:3,act:'southFood'}]};
 for(const [y,tiles]of [[4,'RRRR'],[5,'RRRR'],[6,'WWDW']]){const row=ROOMS.puertoVaras.map[y].split('');for(let i=0;i<4;i++)row[9+i]=tiles[i];ROOMS.puertoVaras.map[y]=row.join('');}
 ROOMS.puertoVaras.doors['11,6']='casaVaras';ROOMS.puertoVaras.props.push({k:'casaAlemana',x:9,y:4,w:4,h:3,label:'CASA ALEMANA',solid:false});
+const SAFARI_REGIONS=[
+ {id:'safariTalca',from:'talca',gate:[2,8],back:[2,7],name:'SAFARI DEL MAULE',theme:'meadow',music:'talca',pool:['Pidgey','Rattata','Oddish','Bellsprout','Ponyta','Tauros'],map:['TTTTTTTTTTTTTTT','T,,,..,,,..,,,T','T,,TT,.,TT,,.,T','T,,,..,,,.,,,,T','T.,,.....,,...T','T,,,.,,,,.,,,,T','T,,..,,,..,,,,T','T,,,,,,.,,,,,,T','TTTTTTTETTTTTTT','TTTTTTTTTTTTTTT']},
+ {id:'safariCondes',from:'lascondes',gate:[11,7],back:[11,8],name:'SAFARI PRECORDILLERA',theme:'meadow',music:'field',pool:['Nidoran H','Nidoran M','Growlithe','Eevee','Scyther','Dratini'],map:['TTTTTTTTTTTTTTT','T,,..,,,..,,.,T','T,,,rr.,rr,,,,T','T,.,rr.,rr,.,,T','T,,,.......,,,T','T,,.rr...rr,,,T','T,,,..,,,..,,,T','T,,,,,,.,,,,,,T','TTTTTTTETTTTTTT','TTTTTTTTTTTTTTT']},
+ {id:'safariVaras',from:'puertoVaras',gate:[2,6],back:[2,7],name:'SAFARI DEL LLANQUIHUE',theme:'forest',music:'field',pool:['Poliwag','Psyduck','Horsea','Tangela','Lapras','Slowpoke'],map:['TTTTTTTTTTTTTTT','T,,.,,,..,,,.,T','T,,~~,...~~,,,T','T,,~~,,,..,,,,T','T,,,..,,,.,,,,T','T,,.,..,,~~,,,T','T,,,..,,,~~,,,T','T,,,,,,.,,,,,,T','TTTTTTTETTTTTTT','TTTTTTTTTTTTTTT']},
+ {id:'safariDunas',from:'dunas',gate:[2,4],back:[2,5],name:'SAFARI DE CONCON',theme:'sand',music:'beach',pool:['Sandshrew','Diglett','Cubone','Krabby','Staryu','Omanyte'],map:['rrrrrrrrrrrrrrr','r,,,ss,,,ss,,,r','r,,rr,,,rr,,.,r','r,,rr,.,rr,,,,r','r,,,.......,,,r','r,,.,ss.,ss,,,r','r,,,..,,,..,,,r','r,,,,,,.,,,,,,r','rrrrrrrErrrrrrr','rrrrrrrrrrrrrrr']},
+];
+for(const s of SAFARI_REGIONS){const parent=ROOMS[s.from],key=s.gate.join(',');const row=parent.map[s.gate[1]].split('');row[s.gate[0]]='=';parent.map[s.gate[1]]=row.join('');parent.trails={...(parent.trails||{}),[key]:{room:s.id,tx:7,ty:7}};parent.props=[...(parent.props||[]),{k:'safariGate',x:s.gate[0],y:s.gate[1],solid:false}];ROOMS[s.id]={name:s.name,theme:s.theme,music:s.music,zone:s.from,safari:true,safariPool:s.pool,exitTo:{room:s.from,tx:s.back[0],ty:s.back[1]},map:s.map,props:[{k:'cartel',x:11,y:7,label:'15 BALLS',txt:'QUINCE SAFARI BALLS. A: LANZAR. SALIR POR EL SENDERO SUR.',solid:false}]};}
+NPCDEF.ashGuide={n:'ASH KETCHUM',style:'cap',c:{...CHARS[0].c,hat:'#e83838',hatD:'#a02028',hair:'#161620',hairD:'#101018',shirt:'#3878c8',shirtD:'#204878',pants:'#4888a8',shoe:'#f0f0e0'}};
 ROOMS.casaVaras={...ROOMS.cafeVaras,name:'CASA DE TRADICION ALEMANA',exitTo:{room:'puertoVaras',tx:11,ty:7},npcs:[{id:'vecina',x:4,y:2}],props:[{k:'fogata',x:11,y:2,solid:false,act:'waitPhase'},{k:'sofa',x:2,y:5,w:3},{k:'cartel',x:7,y:3,label:'HISTORIA DEL LAGO',txt:'MADERA, TECHOS INCLINADOS Y TRADICION ALEMANA EN LA ARQUITECTURA DE PUERTO VARAS.',solid:false}]};
 ROOMS.teatroLago={name:'TEATRO DEL LAGO · FRUTILLAR',theme:'inside',music:'town',interior:true,zone:'frutillar',exitTo:{room:'frutillar',tx:11,ty:8},map:['kkkkkkkkkkkkkkk',...Array(7).fill('kFFFFFFFFFFFFFk'),'kkkkkkkEkkkkkkk','kkkkkkkkkkkkkkk'],npcs:[],props:[{k:'escenarioLago',x:2,y:1,w:11,h:2,solid:false,act:'concert'},{k:'cartel',x:1,y:6,label:'CONCIERTO',txt:'ACERCATE AL ESCENARIO PARA ESCUCHAR EL CONCIERTO DEL LAGO.',solid:false,act:'concert'},...[3,5,9,11].map(x=>({k:'sofa',x,y:4,w:1}))]};
 function eatTalca(kind){const price=kind==='tostado'?2500:3000;if(S.coins<price){say(['DON TOSTADO: Te faltan lucas, compadre.']);return;}S.coins-=price;S.hp=S.maxHp;S.mp=maxMp();S.foodTalca=S.foodTalca||{};const first=!S.foodTalca[kind];if(first){S.foodTalca[kind]=true;S.maxHp+=2;S.hp=S.maxHp;addXP(100);}SFX.heal();saveGame();say([kind==='tostado'?'TEBAX: ¡Mi favorito! Crujiente por fuera, queso derretido por dentro.':'DON TOSTADO: Completo mojado talquino. ¡Servilletas al lado!',first?'Primera degustacion: +1 corazon permanente y 100 EXP.':'Vida y magia recuperadas.']);}
@@ -2322,6 +2342,7 @@ function propSolidSet(d){ const s = new Set(); for (const p of (d.props || [])) 
 const propAt = (tx, ty) => (G.def.props || []).find(p => tx >= p.x && tx < p.x + (p.w || 1) && ty >= p.y && ty < p.y + (p.h || 1));
 function outl(x, y, w, hh, col){ R(x - 1, y - 1, w + 2, hh + 2, '#1a1020'); R(x, y, w, hh, col); }
 function drawProp(p){
+  if(p.k==='safariGate'){const x=p.x*TS,y=p.y*TS;R(x,y,3,15,'#395b30');R(x+13,y,3,15,'#395b30');R(x,y,16,3,'#a4c06a');plaque('SAFARI',x+8,y-6,'#35582c');return;}
   const X = p.x * TS, Y = p.y * TS, wpx = (p.w || 1) * TS, t = frame;
   if(p.waiting){outl(X+wpx/2-4,Y+18,8,6,'#e8c080');tiny('TU ASIENTO',X+wpx/2,Y+27,'#a0ffb0','center');}
   switch (p.k) {
@@ -3116,7 +3137,7 @@ const CCOL = { R:{fr:'#c83a24',bg:'#f0a070'}, B:{fr:'#3a2a48',bg:'#7a6a8a'}, U:{
 const MANA = { R:'#e05030', B:'#2a2030', U:'#3a7ae8', W:'#f8f0d0', G:'#2a9a4a' };
 function drawArt(id, x, y, px){
   const c = CARDS[id];
-  if(pokemonRealm()){const poke=c.mon&&MON[c.mon]?pokemonEnemy(c.mon).id:strHash(String(id))%151;ctx.save();ctx.translate(x,y);ctx.scale(px/16,px/16);drawPoke(poke,0,0,frame,false);ctx.restore();return;}
+  if(pokemonRealm()){const poke=Math.max(0,POKE.findIndex(p=>p.n.toLowerCase().replace(/[^a-z]/g,'')===reflectedCardSpecies(id).toLowerCase().replace(/[^a-z]/g,'')));ctx.save();ctx.translate(x,y);ctx.scale(px/16,px/16);drawPoke(poke,0,0,frame,false);ctx.restore();return;}
   if (c.mon) {
     const sz = MON[c.mon].size, s = px / sz;
     ctx.save(); ctx.translate(x, y); ctx.scale(s, s); drawMon(c.mon, 0, 0, 0, false); ctx.restore();
@@ -3243,8 +3264,9 @@ let REALM_WORDS=null,REALM_PATTERN=null,REALM_LOOKUP=null;
 function realmText(value){
  const text=String(value);if(!pokemonRealm()||text.startsWith('COMPAÑERO:')||(G.dialog&&G.dialog.magicCompanions))return text;
  if(!REALM_WORDS){const words=new Map([['Magic the Gathering','Pokemon TCG'],['Premodern','Pokemon'],['PREMODERN','POKEMON'],['Magic','Pokemon'],['MAGIC','POKEMON'],['Caja de Urza','sello de la Entidad'],['Urza','Alerce'],['MOX','CRISTAL'],['goblins','Pokemon salvajes'],['Phyrexian','Sombrio']]);
+  for(const [id,name]of Object.entries(POKEMON_DECK_NAMES))words.set(DECK[id].n,name);
   for(const [id,m]of Object.entries(MON))words.set(m.n,pokemonEnemy(id).name);
-  for(const [id,c]of Object.entries(CARDS))if(c.n)words.set(c.n,c.mon&&MON[c.mon]?pokemonEnemy(c.mon).species+' · '+(c.type||'Carta'):POKE[strHash(String(id))%151].n+' · '+(c.type||'Carta'));
+  for(const [id,c]of Object.entries(CARDS))if(c.n)words.set(c.n,reflectedCardName(id));
   REALM_WORDS=[...words].sort((a,b)=>b[0].length-a[0].length);REALM_LOOKUP=new Map(REALM_WORDS.map(([a,b])=>[a.toLowerCase(),b]));REALM_PATTERN=new RegExp(REALM_WORDS.map(([a])=>a.replace(/[.*+?^${}()|[\]\\]/g,'\\  REALM_WORDS=[...words].sort((a,b)=>b[0].length-a[0].length);}')).join('|'),'gi');}
  return text.replace(REALM_PATTERN,match=>REALM_LOOKUP.get(match.toLowerCase()));
 }
@@ -3359,6 +3381,7 @@ function drawRealmTravel(){
 }
 
 function loadRoom(id, px, py){
+  G.ashGuide=null;
   if(!pokemonRealm()&&S.lvl>100){S.beyondMagic={lvl:S.lvl,xp:S.xp};S.lvl=100;S.xp=0;}
   if(G.octayRace&&id!=='puertoOctay')endOctayRace();
   if(leaguesDone()>=4)S.finder=true;
@@ -3408,6 +3431,7 @@ function loadRoom(id, px, py){
   if (d.mult >= 1.8 && !d.dungeonKey && !d.interior) toast('ZONA PELIGROSA: CRIATURAS MUY FUERTES', '#ff8060');
   playMusic(boss ? 'boss' : roomMusic());
   S.room = id; S.x = px; S.y = py; saveGame();
+  if(id==='pueblo'&&S.ashIntroPending&&!S.ashIntroDone&&!G.preview)offerAshGuide();
 }
 function spawnEnemy(type, x, y){
   const m = MON[type], s = m.size, hp = Math.max(1, Math.round(m.hp * (m.boss ? DIFF_BOSS_HP : DIFF_HP * lvlScale())));
@@ -3539,7 +3563,7 @@ function dropLoot(e){
   if (Math.random() < 0.03) drop('relic', pickRelic());
   if (Math.random() < 0.18) drop('mana');
   if (Math.random() < 0.05 + S.lvl * 0.003) {
-    const pool = Object.keys(ARMOR).filter(a => ARMOR[a].tier <= Math.min(3, tier) && ARMOR[a].tier >= Math.min(3, tier) - 1);
+    const pool = Object.keys(ARMOR).filter(a => acquisitionOk('armor',a)&&itemLevel('armor',a)<=S.lvl&&(ARMOR[a].realm==='pokemon'||(ARMOR[a].tier <= Math.min(3, tier) && ARMOR[a].tier >= Math.min(3, tier) - 1)));
     const fresh = pool.filter(a => !S.armor.includes(a)); drop('gear', pick(fresh.length ? fresh : pool));
   }
   if (Math.random() < 0.03) { const opts = ['hierro','goblin','sombra','urza','mar'].filter(s => !S.swords.includes(s)); if (opts.length) drop('sword', pick(opts)); }
@@ -3672,6 +3696,22 @@ function tryInteract(){
 }
 
 function findTile(def, ch){ for (let y = 0; y < 10; y++) { const x = def.map[y].indexOf(ch); if (x >= 0) return [x, y]; } return [7, 5]; }
+function ashGuidePath(){
+ const start=[Math.floor((PL.x+5)/TS),Math.floor((PL.y+4)/TS)],goal='2,8',q=[start],seen=new Set([start.join(',')]),prev=new Map();
+ for(let i=0;i<q.length;i++){const [x,y]=q[i],key=x+','+y;if(key===goal){const path=[];let at=key;while(at){const [tx,ty]=at.split(',').map(Number);path.unshift({x:tx*TS+3,y:ty*TS+4});at=prev.get(at);}return path;}
+  for(const [dx,dy]of [[-1,0],[0,-1],[1,0],[0,1]]){const nx=x+dx,ny=y+dy,k=nx+','+ny,b={x:nx*TS+3,y:ny*TS+4,w:10,h:8};if(nx<1||nx>13||ny<1||ny>8||seen.has(k)||blocked(b.x,b.y,b.w,b.h)||npcHit(b)||T(nx,ny)==='D'||G.def.trails?.[k])continue;seen.add(k);prev.set(k,key);q.push([nx,ny]);}}
+ return null;
+}
+function guidePosition(path,distance){const i=Math.min(path.length-2,Math.floor(distance/TS)),f=Math.min(1,(distance-i*TS)/TS);return{x:path[i].x+(path[i+1].x-path[i].x)*f,y:path[i].y+(path[i+1].y-path[i].y)*f};}
+function offerAshGuide(){
+ if(G.ashGuide||G.roomId!=='pueblo')return;const path=ashGuidePath();if(!path||path.length<2)return;
+ const start=guidePosition(path,24);G.ashGuide={...start,path,t:0,progress:0,dir:2,walking:false};G.moveTarget=null;
+ say(['ASH: ¡Hola! Soy Ash Ketchum, de Pueblo Paleta. ¿Tu tambien sales hoy de aventura?','Antes de ir tras las medallas, busca un compañero. El Safari queda por aqui. Ven, te acompaño.'],null,()=>{if(G.ashGuide)G.ashGuide.walking=true;});
+}
+function finishAshGuide(){const a=G.ashGuide;if(!a)return;const end=a.path[a.path.length-1];PL.x=end.x;PL.y=end.y;PL.dir=1;a.x=19;a.y=132;a.walking=false;a.done=true;S.ashIntroDone=true;S.ashIntroPending=false;saveGame();
+ say(['ASH: ¡Llegamos! Acercate con calma y lanza una Safari Ball. El primer compañero nunca se olvida.','No necesitas ganarlo todo hoy. Explora, conoce a la gente... y cuida a quien camine contigo. Nos vemos en el camino.'],[{t:'ENTRAR AL SAFARI',fn:()=>loadRoom('safari',115,116)},{t:'EXPLORAR LA VILLA',fn:()=>{G.ashGuide=null;}}]);
+}
+function updateAshGuide(){const a=G.ashGuide;if(!a||!a.walking)return;a.t++;a.progress=Math.min((a.path.length-1)*TS,a.progress+.7);const before={x:a.x,y:a.y},lead=guidePosition(a.path,Math.min((a.path.length-1)*TS,a.progress+24)),hero=guidePosition(a.path,a.progress);a.x=lead.x;a.y=lead.y;a.dir=Math.abs(a.x-before.x)>.05?(a.x<before.x?2:3):(a.y<before.y?1:0);PL.dir=Math.abs(hero.x-PL.x)>.05?(hero.x<PL.x?2:3):(hero.y<PL.y?1:0);PL.x=hero.x;PL.y=hero.y;PL.walk+=.12;if(pressed('menu')||a.progress>=(a.path.length-1)*TS)finishAshGuide();}
 function goTo(id, ch){ const d = getDef(id), [x, y] = findTile(d, ch); SFX.door(); loadRoom(id, x * TS + 3, y * TS + 4); }
 function useStairs(c){
   const d = G.def;
@@ -3887,7 +3927,8 @@ function drawAmbient(){
 function spawnWildPoke(){
   const cand = []; for (let y = 1; y <= 7; y++) for (let x = 1; x <= 13; x++) if (G.map[y][x] === ',' && Math.hypot(x * TS - PL.x, y * TS - PL.y) > 40) cand.push([x, y]);
   if (!cand.length) return; const [x, y] = cand[rnd(cand.length)];
-  G.wild.push({ id:pickWildPoke(), x:x * TS + 3, y:y * TS + 3, vx:0, vy:0, t:rnd(60), st:30 + rnd(60), flip:false });
+  const pool=G.def.safariPool?.map(name=>POKE.find(p=>p.n.toLowerCase()===name.toLowerCase())?.i).filter(id=>id!==undefined);
+  G.wild.push({ id:pool?.length?pick(pool):pickWildPoke(), x:x * TS + 3, y:y * TS + 3, vx:0, vy:0, t:rnd(60), st:30 + rnd(60), flip:false });
 }
 function throwBall(){
   if ((S.safariBalls || 0) <= 0) { toast('SIN SAFARI BALLS: SAL Y VUELVE A ENTRAR (TE DAN 15)', '#ff9080'); SFX.back(); return; }
@@ -4049,7 +4090,7 @@ function updateWorld(){
   if (!PL.lock && (here === 'M' || here === 'U' || here === 'V' || here === 'O')) { if (useStairs(here)) return; }
   if (here === 'D' && G.def.doors && G.def.doors[ctx_ + ',' + cty]) { SFX.door(); loadRoom(G.def.doors[ctx_ + ',' + cty], 7 * TS + 3, 7 * TS + 4); p.dir = 1; return; }
   if (G.def.trails && G.def.trails[ctx_ + ',' + cty]) { const tr = G.def.trails[ctx_ + ',' + cty]; SFX.door(); loadRoom(tr.room, tr.tx * TS + 3, tr.ty * TS + 4); return; }
-  if (here === 'E' && G.def.exitTo) { SFX.door(); const e = G.def.exitTo; loadRoom(e.room, e.tx * TS + 3, e.ty * TS + 6); p.dir = 0; return; }
+  if (here === 'E' && G.def.exitTo) { SFX.door(); const from=G.roomId,e = G.def.exitTo; loadRoom(e.room, e.tx * TS + 3, e.ty * TS + 6); p.dir = 0;if(from==='hogar'&&S.ashIntroPending&&!S.ashIntroDone)offerAshGuide();return; }
   if (p.x < -3) { if (!changeRoom('w')) p.x = -3; } else if (p.x + p.w > W + 3) { if (!changeRoom('e')) p.x = W + 3 - p.w; }
   if (p.y < -3) { if (!changeRoom('n')) p.y = -3; } else if (p.y + p.h > H + 3) { if (!changeRoom('s')) p.y = H + 3 - p.h; }
   if (G.roomId !== S.room) return;
@@ -4275,10 +4316,10 @@ function drawDialog(){
   page.forEach((l, i) => { const s = l.slice(0, Math.max(0, left)); left -= l.length + 1; txt(s, 10, 120 + i * 11, '#2a2030', 'left', null); });
   if (d.ch >= page.join('\n').length && !d.showChoices && (frame >> 4) & 1) { R(224, 147, 5, 3, '#2a2030'); R(225, 150, 3, 1, '#2a2030'); }
   if (d.showChoices) {
-    const w = Math.max(...d.choices.map(c => c.t.length)) * 8 + 20, h = d.choices.length * 12 + 8, x = 236 - w, y = 112 - h;
-    d.cbox = { x, y, w, h };
+    const decks=d.choices.some(c=>c.deckId), row=decks?10:12, w = Math.min(232,Math.max(...d.choices.map(c => c.t.length)) * (decks?4:8) + (decks?38:20)), h = d.choices.length * row + 8, x = 236 - w, y = Math.max(4,112 - h);
+    d.cbox = { x, y, w, h, row };
     R(x, y, w, h, '#1a1020'); R(x + 1, y + 1, w - 2, h - 2, '#fffaf0');
-    d.choices.forEach((c, i) => { txt(c.t, x + 14, y + 5 + i * 12, '#2a2030', 'left', null); if (i === d.sel) { R(x + 5, y + 6 + i * 12, 2, 6, '#d83020'); R(x + 7, y + 7 + i * 12, 2, 4, '#d83020'); R(x + 9, y + 8 + i * 12, 1, 2, '#d83020'); } });
+    d.choices.forEach((c, i) => { const cy=y+5+i*row;if(decks){if(!c.deckId&&c.fn)R(x+12,cy,w-16,9,'#ead59c');if(c.deckId)drawDeckIcon(c.deckId,x+14,cy);tiny(c.t,x+(c.deckId?28:14),cy+2,'#2a2030');}else txt(c.t, x + 14, cy, '#2a2030', 'left', null); if (i === d.sel) { R(x + 5, cy+1, 2, 6, '#d83020'); R(x + 7, cy+2, 2, 4, '#d83020'); R(x + 9, cy+3, 1, 2, '#d83020'); } });
   }
 }
 
@@ -4447,7 +4488,7 @@ function shopItems(kind){
   if (kind === 'armas') {
     for (const [id, p] of Object.entries(SWORD_PRICE)) L.push({ kind:'sword', id, name:SWORDS[id].n, price:p, info:'ARMA. ' + statLine(SWORDS[id].st), owned:S.swords.includes(id) });
     for (const [id, a] of Object.entries(ARMOR)) if (a.price) L.push({ kind:'armor', id, name:a.n, price:a.price, info:GEAR_SLOTS.find(g => g[0] === a.slot)[1] + '. +' + a.def + ' DEF ' + (Object.keys(a.st).length ? statLine(a.st) : ''), owned:S.armor.includes(id) });
-  } else if (kind === 'magia') { for (const id of SPELL_ORDER) { const s = SPELLS[id]; L.push({ kind:'spell', id, name:s.n + (S.spells.includes(id) ? ' ' + spellXpLine(id) : ''), price:s.price, info:s.mp + ' MP. ' + s.desc + ' SUBE DE NIVEL CON EL USO (HASTA 10).', owned:S.spells.includes(id),req:s.req }); } }
+  } else if (kind === 'magia') { for (const id of SPELL_ORDER) { const s = SPELLS[id]; L.push({ kind:'spell', id, name:s.n + (S.spells.includes(id) ? ' ' + spellXpLine(id) : ''), price:s.price, info:s.mp + ' MP. ' + s.desc + ' SUBE DE NIVEL CON EL USO (HASTA 20).', owned:S.spells.includes(id),req:s.req }); } }
   else if (kind === 'sur') { for (const [id, p] of Object.entries(SUR_SHOP)) { const a = ARMOR[id]; L.push({ kind:'armor', id, name:a.n, price:p, info:GEAR_SLOTS.find(g => g[0] === a.slot)[1] + '. +' + a.def + ' DEF ' + (Object.keys(a.st).length ? statLine(a.st) : ''), owned:S.armor.includes(id) }); } }
   else if (kind === 'liga') { for (const [id, c] of Object.entries(CARDS)) if (!(S.cards[id] || 0)) L.push({ kind:'card', id, name:c.n, price:c.legend ? 250000 : 12000, info:(c.legend ? 'CARTA LEGENDARIA. ' : 'CARTA SUELTA. ') + c.cost + ' - ' + c.t + '. ' + c.tx }); }
   else if (kind === 'monturas') { for (const id of ['caballo', ...Object.keys(MOUNTS).filter(id => id !== 'caballo')]) { const m = MOUNTS[id]; if (!m.boss) L.push({ kind:'mount', id, name:m.n, price:m.price, info:'MONTURA. ' + m.desc, req:m.req, owned:(S.mounts || []).includes(id) }); } }
@@ -4458,10 +4499,11 @@ function shopItems(kind){
   else if (kind === 'hogar') { for (const [id, h] of Object.entries(HOUSE)) if (!h.lux) L.push({ kind:'house', id, name:h.n, price:h.price, info:h.desc,req:h.req, owned:!!S.house[id] }); }
   else { for (const [id, h] of Object.entries(PRIZES)) L.push({ kind:'house', id, name:h.n, price:h.price, info:h.desc, owned:!!S.house[id] }); }
   for(const it of L)if(it.kind==='sword'||it.kind==='armor')it.req={...(it.req||{}),lvl:itemLevel(it.kind,it.id)};
-  return L.filter(it=>reqOk(it.req));
+  return L.filter(it=>reqOk(it.req)&&acquisitionOk(it.kind,it.id));
 }
 function openShop(kind, title){ G.shop = { kind, title, sel:0, scroll:0, items:shopItems(kind), msg:null, msgT:0 }; SFX.ok(); }
 function buyItem(it){
+  if(!acquisitionOk(it.kind,it.id))return;
   if((it.kind==='sword'||it.kind==='armor')&&itemLevel(it.kind,it.id)>S.lvl){if(G.shop){G.shop.msg='DISPONIBLE EN NIVEL '+itemLevel(it.kind,it.id);G.shop.msgT=80;}return;}
   const sh = G.shop;
   if (it.owned) { sh.msg = 'YA LO TIENES'; sh.msgT = 60; SFX.back(); return; }
@@ -4522,11 +4564,17 @@ function houseInteract(c){
   say(owned ? [o.n + ': ' + o.desc] : ['Aqui podria ir: ' + o.n + ' (' + money(o.price) + '). ' + o.desc, 'Buscalo en el Mercado de Mox, al sur de Tolaria.']);
 }
 
+function drawDeckIcon(id,x,y){
+ const d=DECK[id],art={burn:['0001000','0011000','0011010','0111110','0111110','0011100','0001000'],goblins:['1000001','1111111','0111110','0101010','0111110','0011100','0001000'],black:['0011100','0111110','0101010','0111110','0011100','0010100','0011100'],replenish:['0001000','0101010','0011100','1111111','0011100','0101010','0001000'],life:['0000000','0110110','1111111','1111111','0111110','0011100','0001000'],langostino:['0010100','1010101','0111110','0011100','0101010','0101010','1000001'],terragedon:['0001000','0011100','0111110','1111111','0011100','0001000','0001000'],landstill:['0000000','0110011','1001100','0000000','1100110','0011001','0000000'],rock:['0011000','0111100','1111110','1111111','0111110','0011100','0000000'],mud:['0011100','0111110','1101011','1111111','0111110','0011100','0010100']};
+ R(x,y,10,9,'#2a2030');(art[id]||art.replenish).forEach((row,j)=>[...row].forEach((v,i)=>{if(v==='1')R(x+1+i,y+1+j,1,1,d.col);}));
+}
 function deckChoices(list, fn, page){
   page = page || 0;
-  const per = 6, ch = list.slice(page * per, page * per + per).map(d => ({ t:d.n, fn:() => fn(d) }));
-  if (list.length > (page + 1) * per) ch.push({ t:'MAS MAZOS', fn:() => say(['¿Con que mazo?'], deckChoices(list, fn, page + 1)) });
-  ch.push({ t:'MEJOR NO', fn:null });
+  const per = 6, total=Math.ceil(list.length/per), show=p=>say(['ELIGE TU MAZO · HOJA '+(p+1)+'/'+total],deckChoices(list,fn,p));
+  const ch = list.slice(page * per, page * per + per).map(d => ({ t:deckLabel(d.id), deckId:d.id, fn:() => fn(d) }));
+  if(page>0)ch.push({t:'< ANTERIOR · '+page+'/'+total,fn:()=>show(page-1)});
+  if (list.length > (page + 1) * per) ch.push({ t:'SIGUIENTE · '+(page+2)+'/'+total+' >', fn:() => show(page+1) });
+  ch.push({ t:'VOLVER', fn:null });
   return ch;
 }
 function sellPacks(who, hello){
@@ -5023,10 +5071,12 @@ function updateTour(){
       else { T_.phase = 'end'; T_.t = 0; finishTour(); }
     }
   } else if (T_.phase === 'end') {
+    if(pressed('b')){say(T_.reward.lines);return;}
     if (T_.t > 40 && pressed('a')) {
       G.state = 'world'; loadRoom(T_.room || 'arena', T_.px !== undefined ? T_.px : 7 * TS + 3, T_.py !== undefined ? T_.py : 5 * TS + 4); PL.dir = 1;
       const r = T_.reward;
-      say(r.lines, null, () => { if (r.card) addCard(r.card); if (r.sword) addSword(r.sword); if (r.ending) { G.state = 'ending'; G.t = 0; playMusic('town'); } });
+      if(r.ending){if(r.card)addCard(r.card);if(r.sword)addSword(r.sword);G.state='ending';G.t=0;playMusic('tcg');}
+      else say(r.lines, null, () => { if (r.card) addCard(r.card); if (r.sword) addSword(r.sword); });
       G.tour = null;
     }
   }
@@ -5039,11 +5089,11 @@ function finishTour(){
   const coins = levelCoins(w * (T_.cfg.perWin || 2000) + (champ ? (T_.cfg.champ || 5000) : 0));
   const earnedXP=tournamentXP(T_.cfg,w,T_.round+1);S.coins += coins; addXP(earnedXP);
   const lines = [champ ? (liga ? '¡CAMPEÓN NACIONAL DE PREMODERN! Ganaste las ' + N + ' rondas de la Liga.' : T_.cfg.league ? '¡CAMPEÓN DE LA ' + T_.cfg.name + '! Ganaste las ' + N + ' rondas.' : '¡CAMPEÓN DEL TORNEO PREMODERN! Ganaste las ' + N + ' rondas.') : 'Ganaste ' + w + ' de ' + (T_.round + 1) + ' partidas.', 'Premio: ' + money(coins) + '.'];
-  const reward = { lines };
+  const reward = { lines,coins,xp:earnedXP };
   lines.push('EXPERIENCIA DE CARTAS: +'+earnedXP+' EXP. Tu dominio de la baraja fortalece al heroe.');
   if (champ && T_.cfg.league) { S.leagues = S.leagues || {}; const first = !S.leagues[T_.cfg.league]; S.leagues[T_.cfg.league] = true; lines.push(first ? 'Ligas regionales ganadas: ' + leaguesDone() + '/5.' + (leaguesDone() === 5 ? ' ¡Ya cumples una parte de lo que pide la Liga Nacional!' : '') : 'Ya eras campeón de esta liga: te llevas el premio igual.'); }
   if(leaguesDone()>=4&&!S.finder){S.finder=true;lines.push('¡CONSEGUISTE EL BUSCAOBJETOS! Limpia las zonas y sigue la señal dorada para encontrar tesoros ocultos.');}
-  if (champ && liga) { S.ligaWins = (S.ligaWins || 0) + 1; if (S.ligaWins === 1) reward.ending = true; }
+  if (champ && liga) { S.ligaWins = (S.ligaWins || 0) + 1; reward.ending = true; }
   if (champ) lines.push('El trofeo quedó en la vitrina de tu casa, en la Villa.');
   if (champ) {
     S.trophies++;
@@ -5054,6 +5104,7 @@ function finishTour(){
 }
 function drawTour(){
   const T_ = G.tour, o = T_.opps[T_.round];
+  if(T_.phase==='end'){drawChampionSummary(T_);return;}
   R(0, 0, W, H, '#1a1430');
   if (T_.cfg.league || T_.cfg.liga) {
     const colors = ['#fcd84a','#40d8e8','#f070a0','#60d870'];
@@ -5072,11 +5123,11 @@ function drawTour(){
   // player
   ctx.save(); ctx.translate(18, 30); ctx.scale(2, 2); drawPerson(0, 0, playerLook(), 0, 0); ctx.restore();
   txt(CH().n, 34, 70, '#fff', 'center', '#000');
-  tiny(DECK[T_.deck].n, 34, 81, DECK[T_.deck].col, 'center');
+  tiny(deckLabel(T_.deck), 34, 81, DECK[T_.deck].col, 'center');
   // opponent
   ctx.save(); ctx.translate(190, 30); ctx.scale(2, 2); drawPerson(0, 0, o.look, 0, 0); ctx.restore();
   tiny(o.n.slice(0,16),206,70,'#fff','center');
-  tiny(DECK[o.deck].n, 206, 81, DECK[o.deck].col, 'center');
+  tiny(deckLabel(o.deck), 206, 81, DECK[o.deck].col, 'center');
   const lifeBox = (x, v) => { R(x - 20, 90, 40, 20, '#000'); R(x - 19, 91, 38, 18, v <= 5 ? '#6a1a1a' : '#2a2248'); txt(String(Math.max(0, v)), x, 94, '#fff', 'center', '#000', 16); };
   lifeBox(34, T_.lives[0]); lifeBox(206, T_.lives[1]);
   for (const p of T_.pops) txt(p.s, p.side === 0 ? 34 : 206, 50 - p.t * 0.5, p.col, 'center', '#000', 16);
@@ -5115,6 +5166,22 @@ function drawTour(){
 }
 
 /* ============ MENU ============ */
+function drawChampionSummary(t){
+ const won=t.wins===t.cfg.rounds,r=t.reward;
+ R(0,0,W,H,'#1a1430');R(7,5,226,151,'#71603b');R(8,6,224,149,'#211937');R(11,9,218,143,'#1a1430');
+ for(const [x,y,col]of [[27,32,'#fcd84a'],[207,46,'#88d8ff'],[41,68,'#eb8bb5'],[190,23,'#fcd84a']])R(x,y,1,1,col);
+ tiny(t.cfg.name||'TORNEO PREMODERN',120,14,'#c6b6df','center');
+ txt(won?'¡CAMPEON!':'FIN DEL TORNEO',120,25,won?'#fcd84a':'#d8c8e8','center','#815226',won?16:8);
+ // Trophy: pixel art with room for the title and rewards.
+ R(112,46,16,15,'#fcd84a');R(114,48,3,10,'#fff0a0');R(116,61,8,3,'#c89030');R(119,64,3,5,'#fcd84a');R(113,69,15,3,'#fcd84a');
+ R(106,48,6,3,'#fcd84a');R(106,51,3,7,'#fcd84a');R(109,57,5,3,'#fcd84a');R(128,48,6,3,'#fcd84a');R(131,51,3,7,'#fcd84a');R(126,57,6,3,'#fcd84a');
+ tiny(CH().n,120,78,'#fff','center');tiny(t.wins+' VICTORIAS · '+(won?'TORNEO COMPLETADO':'SIGUE ENTRENANDO'),120,86,'#94dab5','center');
+ for(const x of [40,124]){R(x,95,76,22,'#554368');R(x+1,96,74,20,'#100e21');}
+ tiny('PREMIO',78,99,'#b9aecb','center');tiny(money(r.coins),78,109,'#fcd84a','center');tiny('EXPERIENCIA',162,99,'#b9aecb','center');tiny('+'+r.xp+' EXP',162,109,'#8fe4ef','center');
+ tiny(won?(t.cfg.liga?'CORONA NACIONAL OBTENIDA':t.cfg.league?'MEDALLA DE LIGA':'TROFEO PARA TU CASA'):'CADA INTENTO TE DA PRACTICA',120,123,'#f8e7a1','center');
+ if(t.cfg.league)tiny(leaguesDone()+' DE 5 LIGAS REGIONALES',120,131,'#b8afc7','center');
+ R(77,139,86,9,'#fcd84a');tiny('A: CONTINUAR',120,142,'#24172c','center');tiny('X: VER OTROS PREMIOS',120,151,'#c6b6df','center');
+}
 function updateMenu(){
   const m = G.menu;
   if (m.deck !== null) {
@@ -5186,12 +5253,13 @@ function drawWorldMap(){
       const dk = WILD[id] && WILD[id].dungeon, boss = dk ? DUNGEONS[dk].boss : id === 'guarida' ? 'siege' : id === 'islote' ? 'dread' : null;
       if (boss) { R(px + w - 6, py - 2, 7, 6, '#1a1020'); R(px + w - 5, py - 1, 5, 4, S.bosses[boss] ? '#60e070' : '#e83040'); }
       marks.forEach((mark,i) => { const mx = px + w - 7 - i * 7; R(mx, py - 2, 6, 7, '#1a1020'); R(mx + 1, py - 1, 4, 5, mark.won ? '#40a850' : mark.available ? '#f0c030' : '#809090'); tiny(mark.key === 'nacional' ? 'N' : 'L', mx + 3, py - 1, '#1a1020', 'center'); });
+      if(vis[id]&&(id==='pueblo'||SAFARI_REGIONS.some(s=>s.from===id))){R(px-2,py-2,6,7,'#1a1020');R(px-1,py-1,4,5,'#8aca60');tiny('S',px+1,py-1,'#1a1020','center');}
       if (id === cur && (frame >> 4) & 1) { ctx.strokeStyle = '#fcd84a'; ctx.lineWidth = 2; ctx.strokeRect(px - 1, py - 1, w + 2, h + 2); }
     } else if (near) { R(px, py, w, h, '#8a7a5a'); tiny('?', px + w / 2, py + h / 2 - 2, '#e8d8a8', 'center'); }
   }
   const floor = G.def.dungeonKey ? ' - ' + DUNGEONS[G.def.dungeonKey].name + (G.def.bossFloor ? ' (GUARDIAN)' : ' PISO ' + G.def.floor) : '';
   tiny((G.preview?'VISTA PREVIA · ':'ESTAS EN: ') + SHORT[cur] + floor, 120, 146, '#fcd84a', 'center');
-  tiny('L/N: AMARILLO PENDIENTE  VERDE GANADA  GRIS CERRADA', 120, 153, '#6a8a80', 'center');
+  tiny('S: SAFARI · L/N: LIGA · AMARILLA: PENDIENTE', 120, 153, '#6a8a80', 'center');
 }
 function journalEntries(){ensureContract();const all=Object.keys(QUESTS);return [...all.filter(q=>S.quests[q]&&S.quests[q].st==='active'),...all.filter(q=>!S.quests[q]&&!questsOf(QUESTS[q].giver).some(o=>S.quests[o]&&S.quests[o].st==='active')&&questsOf(QUESTS[q].giver).find(o=>!S.quests[o])===q),...all.filter(q=>S.quests[q]&&S.quests[q].st==='done')];}
 function questDetail(q){const Q=QUESTS[q],st=S.quests[q],who=NPCDEF[Q.giver]?NPCDEF[Q.giver].n:Q.giver;G.menu=null;say([Q.title.toUpperCase()+': '+Q.desc,who+' · '+(GIVER_PLACE[Q.giver]||'TIENDA DE CARTAS')+'. '+(st?(st.st==='done'?'COMPLETADA.':'PROGRESO '+Math.min(Q.n,questProg(q))+'/'+Q.n+'.'):'Habla con este personaje para aceptar.'),'RECOMPENSA: '+rewardText(Q.reward)],null,openQuestJournal);}
@@ -5268,7 +5336,7 @@ function drawMenu(){
         const y = 20 + i * 12, sel = i === m.sel, cnt = deckCount(d.id), full = cnt === DECK_SIZE;
         if (sel) R(4, y - 2, 232, 11, '#1c2a2e');
         R(10, y - 1, 8, 8, '#000'); R(11, y, 6, 6, d.col);
-        tiny(d.n, 24, y + 1, sel ? '#fff' : '#c8d8d0');
+        tiny(deckLabel(d.id), 24, y + 1, sel ? '#fff' : '#c8d8d0');
         R(128, y + 1, 72, 4, '#2a3a3a'); R(128, y + 1, cnt * 6, 4, full ? '#fcd84a' : d.col);
         tiny(cnt + '/' + DECK_SIZE, 206, y + 1, full ? '#fcd84a' : '#9db8a8');
       });
@@ -5276,7 +5344,7 @@ function drawMenu(){
       tiny('IZQ/DER: PESTANAS', 120, 151, '#6a8a80', 'center');
     } else {
       const d = DECKS[m.deck], view = deckView(d);
-      txt(d.n, 8, 21, d.col, 'left', '#000');
+      txt(deckLabel(d.id), 8, 21, d.col, 'left', '#000');
       tiny(deckCount(d.id) + '/' + DECK_SIZE + (deckDone(d.id) ? ' COMPLETO: YA PUEDES JUGAR' : ' + 1 LEGENDARIA'), 8, 31, deckDone(d.id) ? '#fcd84a' : '#9db8a8');
       view.forEach((id, i) => {
         const [x, y] = deckCellPos(i), sel = i === m.cs;
@@ -5544,6 +5612,7 @@ function drawWorld(){
   for (const b of (G.balls || [])) list.push({ y:b.y + 4, f:() => { disc(b.x, b.y - 4, 3, '#1a1020'); R(Math.round(b.x) - 2, Math.round(b.y) - 6, 5, 2, '#58b048'); R(Math.round(b.x) - 2, Math.round(b.y) - 4, 5, 2, '#f4f4f8'); R(Math.round(b.x), Math.round(b.y) - 5, 1, 1, '#1a1020'); } });
   if(G.waking>0){list.push({y:1002,f:()=>{ctx.save();ctx.translate(24,49);ctx.rotate(-Math.PI/2);drawPerson(-8,-8,CH(),0,0);ctx.restore();tiny('Z',29,32,'#d8e8ff');}});}
   for (const n of G.npcs) list.push({ y:n.y + n.h, f:() => drawPerson(n.x - 3, n.y - 8, n.id === 'friend' ? Object.assign({}, CHARS[n.ch], n.role === 'beer' && !CHARS[n.ch].piscola ? { mug:true } : {}) : (NPCDEF[n.id] || NPCDEF.vecina), n.dir, (n.role === 'cheer' && (frame >> 4) & 1) ? 1 : 0) });
+  if(G.ashGuide)list.push({y:G.ashGuide.y+8,f:()=>{const a=G.ashGuide;drawPerson(a.x-3,a.y-8,NPCDEF.ashGuide,a.dir,Math.floor(a.t/10)%2);tiny('ASH',a.x+5,a.y-16,'#fcd84a','center');}});
   for (const n of G.npcs) { const mk = questMarker(n.id); if (mk) list.push({ y:1001, f:() => {
     const bx = n.x + 1, by = n.y - 26 + Math.round(Math.sin(frame * 0.12) * 1.5);
     R(bx, by, 8, 10, '#1a1020'); R(bx + 1, by + 1, 6, 8, mk === '?' ? '#60e070' : '#fcd84a');
@@ -5623,7 +5692,7 @@ function drawHUD(){
   const ph=dayPhase();R(106,2,66,10,'rgba(10,18,30,.7)');if(ph==='night'){disc(112,7,3,'#d8e8ff');disc(114,5,3,'#1a2838');}else disc(112,7,3,ph==='dusk'?'#f89850':'#ffe080');tiny(DAY_LABELS[ph],142,5,'#fff','center');
   if(companionInfo()){R(172,138,66,9,'rgba(10,18,30,.65)');tiny(companionInfo().n.slice(0,8)+' NV '+petLevel(),205,141,'#b0f0a0','center',true);}
   if(G.def.gym){const run=gymRun();R(30,118,180,9,'rgba(12,18,36,.85)');tiny(G.def.gym.spec.type+' · RETADORES '+Math.min(run.next,4)+'/4 · '+reputationTitle(),120,120,'#f0dca0','center');}
-  if(G.preview){R(64,148,112,10,'#143858');tiny('VISTA PREVIA · NO SE GUARDA',120,151,'#fff','center');}
+  if(G.preview&&!G.def.safari){R(64,148,112,10,'#143858');tiny('VISTA PREVIA · NO SE GUARDA',120,151,'#fff','center');}
   // Si el jugador camina por debajo del panel, el panel se vuelve casi transparente (no tapa entradas ni escaleras)
   const under = (x0, x1, y1) => PL.x + 10 > x0 && PL.x < x1 && PL.y - 8 < y1;
   const aL = under(0, 72, 38) ? 0.25 : 0.9, aR = under(168, W, 26) ? 0.25 : 0.9;
@@ -5643,7 +5712,7 @@ function drawHUD(){
   const mm = maxMp(); R(5, hy + 9, 59, 4, '#1a1020'); R(5, hy + 9, Math.round(59 * Math.min(1, (S.mp || 0) / mm)), 4, '#3a8ae8'); R(5, hy + 9, Math.round(59 * Math.min(1, (S.mp || 0) / mm)), 1, '#a8d8ff');
   if (S.spells && S.spells.length) { const sid = S.spells[(S.spellSel || 0) % S.spells.length], nm = SPELLS[sid].n + ' NV' + spellLvl(sid); R(3, hy + 16, nm.length * 4 + 14, 8, 'rgba(0,0,0,.4)'); R(5, hy + 17, 5, 5, '#88e0ff'); tiny(nm, 12, hy + 17, '#c8f0ff'); }
   ctx.globalAlpha = 1;
-  if (G.def && G.def.safari) { const sb = 'SAFARI BALLS ' + (S.safariBalls || 0) + '   POKEDEX ' + Object.keys(S.dex || {}).length + '/151'; R(120 - sb.length * 2 - 4, 150, sb.length * 4 + 8, 9, 'rgba(0,0,0,.55)'); tiny(sb, 120, 152, '#c8f0a0', 'center'); }
+  if (G.def && G.def.safari) { const sb = (G.preview?'VISTA PREVIA · BALLS ':'SAFARI BALLS ') + (S.safariBalls || 0) + '   DEX ' + Object.keys(S.dex || {}).length + '/151'; R(120 - sb.length * 2 - 4, 150, sb.length * 4 + 8, 9, 'rgba(0,0,0,.55)'); tiny(sb, 120, 152, '#c8f0a0', 'center'); }
   if (G.lvlFx > 0) {
     G.lvlFx--; const a = Math.min(1, G.lvlFx / 30);
     ctx.globalAlpha = a; txt('¡NIVEL ' + S.lvl + '!', 120, 60 - Math.round((90 - G.lvlFx) * 0.2), '#fcd84a', 'center', '#7a3a10', 16); ctx.globalAlpha = 1;
@@ -5931,6 +6000,7 @@ function updateSelect(){
 }
 function beginAdventure(ci, custom){
     S = newSave(ci, custom); S.slot = G.newSlot || 1; G.state = 'world';
+    S.ashIntroPending=true;
     loadRoom('hogar',S.x,S.y);G.waking=120;saveGame();
 }
 
@@ -6824,8 +6894,8 @@ function drawDuel(){
   tiny('RIVAL NV '+d.opp.level+' · APUESTA ' + money(d.bet), 120, 13, '#c8c0e8', 'center');
   ctx.save(); ctx.translate(14, 28); ctx.scale(2, 2); drawPerson(0, 0, playerLook(), 3, 0); ctx.restore();
   ctx.save(); ctx.translate(194, 28); ctx.scale(2, 2); drawPerson(0, 0, d.opp.look, 2, 0); ctx.restore();
-  tiny(CH().n, 30, 64, '#fff', 'center'); tiny(DECK[d.deck].n, 30, 71, DECK[d.deck].col, 'center');
-  tiny(d.opp.name, 210, 64, '#fff', 'center'); tiny(DECK[d.opp.deck].n, 210, 71, DECK[d.opp.deck].col, 'center');
+  tiny(CH().n, 30, 64, '#fff', 'center'); tiny(deckLabel(d.deck), 30, 71, DECK[d.deck].col, 'center');
+  tiny(d.opp.name, 210, 64, '#fff', 'center'); tiny(deckLabel(d.opp.deck), 210, 71, DECK[d.opp.deck].col, 'center');
   const lifeBox = (x, v) => { R(x - 17, 78, 34, 16, '#000'); R(x - 16, 79, 32, 14, v <= 5 ? '#6a1a1a' : '#2a2248'); txt(String(Math.max(0, v)), x, 82, '#fff', 'center', '#000'); };
   lifeBox(30, d.pl); lifeBox(210, d.op);
   for (const p of d.pops) if (p.t > 0 && p.t < 70) txt(p.s, p.side === 0 ? 30 : 210, 50 - p.t * 0.3, p.col, 'center', '#000');
@@ -6863,13 +6933,14 @@ function drawDuel(){
 
 /* ============ FINAL ============ */
 const ENDING=['LA CAJA DE URZA ESTA SELLADA','', 'Dominaste todos los mazos.', 'Cada criatura regreso a su carta.', 'La maldicion abandono las ciudades.', 'El mundo vuelve a estar en paz.','', 'En Xcso Club y la Oktoberfest del lago', 'se brindo por el heroe de las cartas.','',...friendCredits(),'','UN JUEGO DE MATIAS GAMES PRODUCTION','¡SALUD!','MAGIC THE BEER QUEST'];
-const CHAMPION_ENDING=['¡CAMPEON NACIONAL!','', 'Tu nombre vive en todas las tiendas.', 'El umbral entre mundos desperto.','', 'Pero la Caja de Urza sigue abierta.', 'Domina todos los mazos y regresa', 'al santuario para sellar la maldicion.','', 'Tu sueño de salvar el mundo continua.','¡SALUD!'];
+const CHAMPION_ENDING=['¡CAMPEON ABSOLUTO!','', 'Cinco medallas. Una corona nacional.', 'Tu nombre vive en todas las tiendas.','', 'PARECIA EL FINAL DE TU AVENTURA...','', 'Una luz rompe el cielo de Tolaria.', 'El Santuario del Umbral desperto.', 'Una puerta majestuosa te espera.','', 'Al continuar llegaras al santuario.', 'Acercate al portal y habla con X.', 'Tu sueño de salvar el mundo continua.','¡SALUD!'];
 function drawEnding(){
   R(0, 0, W, H, '#0e0a24');
   for (let i = 0; i < 40; i++) R(Math.round(hash(i) * 240), Math.round(hash(i + 40) * 160), 1, 1, (frame + i * 5) % 60 < 4 ? '#6a64a8' : '#fff');
-  const off = 160 - G.t * 0.35;
+  const off = S.boxClosed?160-G.t*.35:40-G.t*.18;
   const credits=S.boxClosed?ENDING:CHAMPION_ENDING;credits.forEach((l, i) => { const y = Math.round(off + i * 14); if (y > -10 && y < 160) (i === 0 || i === credits.length - 1 ? txt(l, 120, y, '#fcd84a', 'center', '#7a3a10') : tiny(l, 120, y + 2, '#e8e4ff', 'center')); });
-  if (G.t > 200 && (frame >> 4) & 1) tiny('A PARA SEGUIR JUGANDO', 120, 150, '#9a90d0', 'center');
+  if(!S.boxClosed){R(0,0,W,28,'#0e0a24');txt('¡CAMPEON ABSOLUTO!',120,10,'#fcd84a','center','#7a3a10');}
+  if (G.t > (S.boxClosed?200:500) && (frame >> 4) & 1) tiny(S.boxClosed?'A PARA SEGUIR JUGANDO':'A: CONTINUAR AL SANTUARIO', 120, 150, '#9a90d0', 'center');
 }
 
 /* ============ ONLINE (co-op en vivo, PeerJS) ============ */
@@ -7150,16 +7221,17 @@ function step(){
   else if (G.state === 'select') updateSelect();
   else if (G.state === 'slots') updateSlots();
   else if (G.state === 'realmTravel') updateRealmTravel();
-  else if (G.state === 'tour') updateTour();
+  else if (G.state === 'tour') {if(G.dialog)updateDialog();else updateTour();}
   else if (G.state === 'arcade') updateArcade();
   else if (G.state === 'duel') { if (G.dialog) updateDialog(); else updateDuel(); }
-  else if (G.state === 'ending') { if (G.t > 200 && pressed('a')) { G.state = 'world'; playMusic(roomMusic()); } }
+  else if (G.state === 'ending') { if (G.t > (S.boxClosed?200:500) && pressed('a')) { G.state = 'world';if(!S.boxClosed&&!pokemonRealm()&&S.ligaWins>0)loadRoom('santuarioPortal',115,116);playMusic(roomMusic()); } }
   else if (G.state === 'world') {
     if (G.fade > 0) G.fade--;
-    if(G.waking>0){G.waking--;if(G.waking===0)say(['¡Un nuevo dia! Soy '+CH().n+' y mi gran sueño es ser campeon de las cartas Magic.','Mi cocina, mi comedor y la computadora con IA estan listos. En la pared, los campeones que me inspiran.','Un hechizo rompio el sello de la Caja de Urza. Las criaturas salieron de las cartas, perdieron su voluntad y se volvieron hostiles contra las personas.','Solo quien domine todos los mazos puede comprender el hechizo inverso: devolver las criaturas a sus cartas y cerrar la caja para recuperar la paz.','Las cinco ligas y sus guardianes guardan ese conocimiento. Mi poder como heroe nacera de mi dominio de las cartas.','Primero visitare el Safari para encontrar un compañero. ¡Hoy empieza mi aventura!']);}
+    if(G.waking>0){G.waking--;if(G.waking===0)say(['La luz de la mañana se cuela por la ventana. Afuera, alguien golpea la puerta.','Sobre tu escritorio descansa la baraja que armaste durante tantas noches. Soñabas con llevarla a la Liga Nacional. Hoy, por fin, ibas a salir.','Pero algo cambio en la Villa. Dicen que la Caja de Urza se abrio... y que las criaturas ya no obedecen a sus cartas.','Guardas tu mazo y respiras hondo. Si las cartas las trajeron a este mundo, quizas tambien puedan devolverlas. Tu aventura comienza al otro lado de esa puerta.']);}
     else if (G.warp) updateWarp();
     else if (G.cardGet) { G.cardGet.t++; if (G.cardGet.t > 30 && (pressed('a') || pressed('b'))) { const done = G.cardGet.done; G.cardGet = G.cardQueue.shift() || null; if (G.cardGet) SFX.card(); else SFX.ok(); if (done) toast('¡MAZO ' + done + ' COMPLETO!', '#fcd84a'); } }
     else if (G.dialog) updateDialog();
+    else if (G.ashGuide) updateAshGuide();
     else if (G.shop) updateShop();
     else if (G.menu) updateMenu();
     else if (G.dead) {
@@ -7238,7 +7310,7 @@ function render(){
   else if (G.state === 'select') drawSelect();
   else if (G.state === 'slots') drawSlots();
   else if (G.state === 'realmTravel') drawRealmTravel();
-  else if (G.state === 'tour') drawTour();
+  else if (G.state === 'tour') {drawTour();if(G.dialog)drawDialog();}
   else if (G.state === 'arcade') {drawArcade();if(G.arc&&!G.arc.exitConfirm){R(197,0,43,9,'#182030');tiny('MENU:SALIR',219,2,'#fff','center');}}
   else if (G.state === 'duel') { drawDuel(); if (G.dialog) drawDialog(); }
   else if (G.state === 'ending') drawEnding();
@@ -7266,6 +7338,10 @@ function loop(now){
     if(location.hash.startsWith('#vista=octay')&&!G.tested){G.tested=true;G.preview=true;S=newSave(0);S.lvl=30;S.maxHp=S.hp=100;G.state='world';loadRoom('puertoOctay',19,68);if(location.hash.includes('captura')){G.fade=0;G.zoneT=0;G.freeze=true;}}
     if(location.hash.startsWith('#vista=casa')&&!G.tested){G.tested=true;G.preview=true;S=newSave(0);if(location.hash.includes('pokemon')){S.realm='pokemon';S.magicPet='angel';}G.state='world';loadRoom('hogar',35,52);G.waking=120;if(location.hash.includes('captura')){G.fade=0;G.freeze=true;}}
     if(location.hash.startsWith('#vista=portal')&&!G.tested){G.tested=true;G.preview=true;S=newSave(0);S.lvl=80;S.ligaWins=1;S.magicPet='shivan';G.state='world';loadRoom('santuarioPortal',115,116);if(location.hash.includes('viaje')){startRealmTravel();if(location.hash.includes('captura')){G.realmTravel.t=210;G.freeze=true;}}}
+    if(location.hash.startsWith('#vista=safari')&&!G.tested){G.tested=true;G.preview=true;S=newSave(0);G.state='world';const id=new URLSearchParams(location.hash.split('&').slice(1).join('&')).get('zona')||'safariTalca';loadRoom(SAFARI_REGIONS.some(s=>s.id===id)?id:'safariTalca',115,116);}
+    if(location.hash.startsWith('#vista=ash')&&!G.tested){G.tested=true;G.preview=true;S=newSave(0);G.state='world';loadRoom('pueblo',195,134);offerAshGuide();G.dialog=null;if(G.ashGuide){G.ashGuide.walking=true;G.ashGuide.progress=64;updateAshGuide();}if(location.hash.includes('captura')){G.fade=0;G.zoneT=0;G.freeze=true;}}
+    if(location.hash.startsWith('#vista=mazos')&&!G.tested){G.tested=true;G.preview=true;S=newSave(0);if(location.hash.includes('pokemon'))S.realm='pokemon';G.state='world';loadRoom('tienda',115,116);const page=location.hash.includes('hoja=2')?1:0;say(['MAZOS · HOJA '+(page+1)+'/2 · VISTA PREVIA'],deckChoices(DECKS,d=>say([d.n,...d.cards.map(id=>CARDS[id].n)]),page));G.dialog.ch=999;G.dialog.showChoices=true;}
+    if(location.hash.startsWith('#vista=campeon')&&!G.tested){G.tested=true;G.preview=true;S=newSave(0);S.lvl=50;G.state='world';loadRoom('cartasCurico',115,116);startTour('burn',{rounds:4,league:'curico',name:'LIGA DE CURICO',champ:25000,perWin:4000});G.tour.wins=4;G.tour.phase='end';finishTour();G.tour.t=50;}
     if(location.hash.startsWith('#vista=liga')&&!G.tested){G.tested=true;G.preview=true;S=newSave(0);G.state='world';const id=new URLSearchParams(location.hash.split('&').slice(1).join('&')).get('zona')||'cartasCurico';if(ROOMS[id]&&ROOMS[id].cardTemple)loadRoom(id,115,116);else loadRoom('cartasCurico',115,116);}
     if(location.hash.startsWith('#vista=pokemon') && !G.tested){G.tested=true;G.preview=true;S=newSave(0);S.realm='pokemon';S.lvl=80;S.maxHp=S.hp=200;S.coins=1000000;S.surf=true;S.pet=24;S.magicPet='shivan';S.visited=Object.fromEntries(Object.keys(WORLD).map(id=>[id,true]));G.state='world';const zone=new URLSearchParams(location.hash.split('&').slice(1).join('&')).get('zona');const room=zone&&(Object.hasOwn(ROOMS,zone)||Object.hasOwn(WILD,zone))?zone:'tienda';loadRoom(room,115,room==='tienda'?116:84);toast('UN ENTE LOS SACO DE LAS CARTAS: AHORA SON SALVAJES','#ffb070');}
     if (location.hash === '#test-arcade' && !G.tested) { G.tested = true; S = newSave(0); S.coins = 50; G.state = 'world'; loadRoom('arcade', 7 * TS + 3, 7 * TS + 4); }
@@ -7300,6 +7376,7 @@ function loop(now){
 const canvasPos = e => { const r = cvs.getBoundingClientRect(); return { x:(e.clientX - r.left) / r.width * W, y:(e.clientY - r.top) / r.height * H }; };
 const inRect = (p, [x, y, w, h]) => p.x >= x && p.x < x + w && p.y >= y && p.y < y + h;
 function pointerClick(p, right){
+  if(!right&&G.state==='tour'&&G.tour.phase==='end'&&!G.dialog&&p.y>=149){pulseKey='b';return;}
   if(G.state==='arcade'&&G.arc){if(G.arc.exitConfirm){if(p.y>=80&&p.y<=116){G.arc.exitConfirm.sel=p.y<100?0:1;pulseKey='a';}return;}if(p.x>=197&&p.y<10){requestArcadeExit();return;}}
   if (right) { if (G.state === 'world' && !G.dialog && !G.menu && !G.shop && !G.cardGet && S) castSpell(p.x, p.y); else pulseKey = 'b'; return; }
   const st = G.state;
@@ -7340,7 +7417,7 @@ function pointerClick(p, right){
 function dialogClick(p){
   const d = G.dialog;
   if (d.showChoices && d.cbox) {
-    const i = Math.floor((p.y - d.cbox.y - 4) / 12);
+    const i = Math.floor((p.y - d.cbox.y - 4) / (d.cbox.row||12));
     if (p.x >= d.cbox.x && i >= 0 && i < d.choices.length) { d.sel = i; pulseKey = 'a'; }
     return;
   }

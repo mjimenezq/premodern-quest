@@ -1,0 +1,172 @@
+[
+  {
+    "name": "FUEGO",
+    "cards": [
+      "Charmander · 1",
+      "Charmeleon · 2",
+      "Charizard · 3",
+      "Vulpix · 4",
+      "Ninetales · 5",
+      "Growlithe · 6",
+      "Arcanine · 7",
+      "Magmar · 8",
+      "Ponyta · 9",
+      "Rapidash · 10",
+      "Flareon · 11",
+      "Moltres · 12"
+    ]
+  },
+  {
+    "name": "ENJAMBRE",
+    "cards": [
+      "Caterpie · 1",
+      "Metapod · 2",
+      "Butterfree · 3",
+      "Weedle · 4",
+      "Kakuna · 5",
+      "Beedrill · 6",
+      "Paras · 7",
+      "Parasect · 8",
+      "Venonat · 9",
+      "Venomoth · 10",
+      "Scyther · 11",
+      "Pinsir · 12"
+    ]
+  },
+  {
+    "name": "SOMBRA",
+    "cards": [
+      "Gastly · 1",
+      "Haunter · 2",
+      "Gengar · 3",
+      "Drowzee · 4",
+      "Hypno · 5",
+      "Zubat · 6",
+      "Golbat · 7",
+      "Ekans · 8",
+      "Arbok · 9",
+      "Grimer · 10",
+      "Muk · 11",
+      "Mewtwo · 12"
+    ]
+  },
+  {
+    "name": "RENACER",
+    "cards": [
+      "Eevee · 1",
+      "Vaporeon · 2",
+      "Jolteon · 3",
+      "Flareon · 4",
+      "Ditto · 5",
+      "Porygon · 6",
+      "Abra · 7",
+      "Kadabra · 8",
+      "Alakazam · 9",
+      "Exeggcute · 10",
+      "Exeggutor · 11",
+      "Mew · 12"
+    ]
+  },
+  {
+    "name": "VITALIDAD",
+    "cards": [
+      "Chansey · 1",
+      "Clefairy · 2",
+      "Clefable · 3",
+      "Jigglypuff · 4",
+      "Wigglytuff · 5",
+      "Mr. Mime · 6",
+      "Snorlax · 7",
+      "Kangaskhan · 8",
+      "Lickitung · 9",
+      "Chansey · 10",
+      "Jynx · 11",
+      "Lapras · 12"
+    ]
+  },
+  {
+    "name": "GIGANTES",
+    "cards": [
+      "Gyarados · 1",
+      "Lapras · 2",
+      "Articuno · 3",
+      "Seel · 4",
+      "Dewgong · 5",
+      "Abra · 7",
+      "Wartortle · 7",
+      "Blastoise · 8",
+      "Shellder · 9",
+      "Cloyster · 10",
+      "Tentacool · 11",
+      "Tentacruel · 12"
+    ]
+  },
+  {
+    "name": "BOSQUE",
+    "cards": [
+      "Bulbasaur · 1",
+      "Ivysaur · 2",
+      "Venusaur · 3",
+      "Oddish · 4",
+      "Gloom · 5",
+      "Vileplume · 6",
+      "Bellsprout · 7",
+      "Weepinbell · 8",
+      "Victreebel · 9",
+      "Tangela · 10",
+      "Clefable · 3",
+      "Rapidash · 10"
+    ]
+  },
+  {
+    "name": "MAREAS",
+    "cards": [
+      "Psyduck · 1",
+      "Golduck · 2",
+      "Poliwag · 3",
+      "Poliwhirl · 4",
+      "Poliwrath · 5",
+      "Staryu · 6",
+      "Starmie · 7",
+      "Horsea · 8",
+      "Dewgong · 5",
+      "Kangaskhan · 8",
+      "Clefable · 3",
+      "Abra · 7"
+    ]
+  },
+  {
+    "name": "ROCA",
+    "cards": [
+      "Geodude · 1",
+      "Graveler · 2",
+      "Golem · 3",
+      "Onix · 4",
+      "Rhyhorn · 5",
+      "Rhydon · 6",
+      "Cubone · 7",
+      "Marowak · 8",
+      "Victreebel · 9",
+      "Gengar · 3",
+      "Mewtwo · 12",
+      "Haunter · 2"
+    ]
+  },
+  {
+    "name": "ACERO",
+    "cards": [
+      "Magnemite · 1",
+      "Magneton · 2",
+      "Porygon · 3",
+      "Voltorb · 4",
+      "Electrode · 5",
+      "Pikachu · 6",
+      "Raichu · 7",
+      "Jolteon · 8",
+      "Electabuzz · 9",
+      "Zapdos · 10",
+      "Koffing · 11",
+      "Golduck · 2"
+    ]
+  }
+]
