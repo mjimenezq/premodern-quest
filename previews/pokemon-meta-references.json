@@ -1,0 +1,1906 @@
+{
+  "decks": [
+    {
+      "id": "pk_dragapult",
+      "n": "DRAGAPULT",
+      "style": "ctrl",
+      "col": "#77cab6",
+      "strategy": "Reparte daño entre el activo y la banca. Drakloak prepara la evolucion; Phantom Dive castiga bancos fragiles.",
+      "signature": "PHANTOM DIVE: 200 al activo y 6 contadores repartidos en banca.",
+      "star": "Dragapult ex",
+      "source": "https://my.limitlesstcg.com/shared/6a4e0f4d9170a933a6a4c295",
+      "reference": "Straight Dragapult (OmniPoke) July 08, 2026",
+      "realm": "pokemon",
+      "cards": [
+        "pkc_asc_160",
+        "pkc_asc_158",
+        "pkc_asc_159",
+        "pkc_asc_99",
+        "pkc_por_62",
+        "pkc_asc_142",
+        "pkc_asc_192",
+        "pkc_asc_183",
+        "pkc_pre_105",
+        "pkc_asc_184",
+        "pkc_por_81",
+        "pkc_mee_2"
+      ],
+      "list": [
+        {
+          "n": "Dreepy",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/ASC/158"
+        },
+        {
+          "n": "Drakloak",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/ASC/159"
+        },
+        {
+          "n": "Dragapult ex",
+          "q": 3,
+          "url": "https://limitlesstcg.com/cards/ASC/160"
+        },
+        {
+          "n": "Munkidori",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/ASC/99"
+        },
+        {
+          "n": "Meowth ex",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/POR/62"
+        },
+        {
+          "n": "Fezandipiti ex",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/ASC/142"
+        },
+        {
+          "n": "Budew",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/ASC/16"
+        },
+        {
+          "n": "Moltres",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/PFL/14"
+        },
+        {
+          "n": "Lillie's Determination",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/ASC/192"
+        },
+        {
+          "n": "Boss's Orders",
+          "q": 3,
+          "url": "https://limitlesstcg.com/cards/ASC/183"
+        },
+        {
+          "n": "Crispin",
+          "q": 3,
+          "url": "https://limitlesstcg.com/cards/PRE/105"
+        },
+        {
+          "n": "Buddy-Buddy Poffin",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/ASC/184"
+        },
+        {
+          "n": "Poké Pad",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/POR/81"
+        },
+        {
+          "n": "Ultra Ball",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/ASC/213"
+        },
+        {
+          "n": "Crushing Hammer",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/POR/71"
+        },
+        {
+          "n": "Night Stretcher",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/ASC/196"
+        },
+        {
+          "n": "Unfair Stamp",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/TWM/165"
+        },
+        {
+          "n": "Special Red Card",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/CRI/82"
+        },
+        {
+          "n": "Risky Ruins",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/MEG/127"
+        },
+        {
+          "n": "Team Rocket's Watchtower",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/ASC/210"
+        },
+        {
+          "n": "Fire Energy",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/MEE/2"
+        },
+        {
+          "n": "Psychic Energy",
+          "q": 3,
+          "url": "https://limitlesstcg.com/cards/MEE/5"
+        },
+        {
+          "n": "Darkness Energy",
+          "q": 3,
+          "url": "https://limitlesstcg.com/cards/MEE/7"
+        }
+      ]
+    },
+    {
+      "id": "pk_bolt",
+      "n": "RAGING BOLT",
+      "style": "agro",
+      "col": "#e4c058",
+      "strategy": "Ogerpon acelera energia y Bolt la descarta para grandes golpes. Presiona rapido antes de que un mazo de evolucion se prepare.",
+      "signature": "BELLOWING THUNDER: 70 por cada energia basica descartada.",
+      "star": "Raging Bolt ex",
+      "source": "https://my.limitlesstcg.com/shared/6a4b954f9170a933a6a4af5e",
+      "reference": "Raging Bolt (NAIC) July 13, 2026",
+      "realm": "pokemon",
+      "cards": [
+        "pkc_tef_123",
+        "pkc_meg_104",
+        "pkc_por_62",
+        "pkc_twm_25",
+        "pkc_ssp_76",
+        "pkc_asc_76",
+        "pkc_pre_105",
+        "pkc_asc_183",
+        "pkc_ssp_170",
+        "pkc_asc_192",
+        "pkc_pre_104",
+        "pkc_mee_1"
+      ],
+      "list": [
+        {
+          "n": "Mega Kangaskhan ex",
+          "q": 3,
+          "url": "https://limitlesstcg.com/cards/MEG/104"
+        },
+        {
+          "n": "Meowth ex",
+          "q": 3,
+          "url": "https://limitlesstcg.com/cards/POR/62"
+        },
+        {
+          "n": "Teal Mask Ogerpon ex",
+          "q": 3,
+          "url": "https://limitlesstcg.com/cards/TWM/25"
+        },
+        {
+          "n": "Latias ex",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/SSP/76"
+        },
+        {
+          "n": "Raging Bolt ex",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/TEF/123"
+        },
+        {
+          "n": "Lillie's Clefairy ex",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/ASC/76"
+        },
+        {
+          "n": "Fezandipiti ex",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/ASC/142"
+        },
+        {
+          "n": "Wellspring Mask Ogerpon ex",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/PRE/27"
+        },
+        {
+          "n": "Iron Leaves ex",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/TEF/25"
+        },
+        {
+          "n": "Passimian",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/SSP/111"
+        },
+        {
+          "n": "Chien-Pao",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/SSP/56"
+        },
+        {
+          "n": "Crispin",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/PRE/105"
+        },
+        {
+          "n": "Boss's Orders",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/ASC/183"
+        },
+        {
+          "n": "Cyrano",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/SSP/170"
+        },
+        {
+          "n": "Lillie's Determination",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/ASC/192"
+        },
+        {
+          "n": "Ciphermaniac's Codebreaking",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/PRE/104"
+        },
+        {
+          "n": "Ultra Ball",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/ASC/213"
+        },
+        {
+          "n": "Energy Switch",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/MEG/115"
+        },
+        {
+          "n": "Night Stretcher",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/ASC/196"
+        },
+        {
+          "n": "Glass Trumpet",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/ASC/189"
+        },
+        {
+          "n": "Unfair Stamp",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/TWM/165"
+        },
+        {
+          "n": "Area Zero Underdepths",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/PRE/94"
+        },
+        {
+          "n": "Grass Energy",
+          "q": 7,
+          "url": "https://limitlesstcg.com/cards/MEE/1"
+        },
+        {
+          "n": "Lightning Energy",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/MEE/4"
+        },
+        {
+          "n": "Fighting Energy",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/MEE/6"
+        },
+        {
+          "n": "Psychic Energy",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/MEE/5"
+        },
+        {
+          "n": "Water Energy",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/MEE/3"
+        }
+      ]
+    },
+    {
+      "id": "pk_terabox",
+      "n": "TERA BOX",
+      "style": "combo",
+      "col": "#b9abef",
+      "strategy": "Noctowl busca entrenadores con un Tera en juego. Terapagos y varios atacantes permiten escoger una respuesta para cada rival.",
+      "signature": "UNIFIED BEATDOWN: 30 por cada Pokemon en tu banca.",
+      "star": "Terapagos ex",
+      "source": "https://limitlesstcg.com/decks/list/29729",
+      "reference": "Tera Box by Marijn van Duivenboden – Limitless",
+      "realm": "pokemon",
+      "cards": [
+        "pkc_scr_128",
+        "pkc_scr_114",
+        "pkc_scr_115",
+        "pkc_meg_104",
+        "pkc_scr_118",
+        "pkc_twm_25",
+        "pkc_scr_133",
+        "pkc_meg_114",
+        "pkc_ssp_170",
+        "pkc_meg_119",
+        "pkc_meg_131",
+        "pkc_mee_9"
+      ],
+      "list": [
+        {
+          "n": "Hoothoot",
+          "q": 3,
+          "url": "https://limitlesstcg.com/cards/SCR/114"
+        },
+        {
+          "n": "Noctowl",
+          "q": 3,
+          "url": "https://limitlesstcg.com/cards/SCR/115"
+        },
+        {
+          "n": "Mega Kangaskhan ex",
+          "q": 3,
+          "url": "https://limitlesstcg.com/cards/MEG/104"
+        },
+        {
+          "n": "Fan Rotom",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/SCR/118"
+        },
+        {
+          "n": "Teal Mask Ogerpon ex",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/TWM/25"
+        },
+        {
+          "n": "Wellspring Mask Ogerpon ex",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/TWM/64"
+        },
+        {
+          "n": "Koraidon ex",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/ASC/121"
+        },
+        {
+          "n": "Terapagos ex",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/SCR/128"
+        },
+        {
+          "n": "Latias ex",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/SSP/76"
+        },
+        {
+          "n": "Iron Leaves ex",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/TEF/25"
+        },
+        {
+          "n": "Fezandipiti ex",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/ASC/142"
+        },
+        {
+          "n": "Lillie's Clefairy ex",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/JTG/56"
+        },
+        {
+          "n": "Meowth ex",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/POR/62"
+        },
+        {
+          "n": "Chien-Pao",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/SSP/56"
+        },
+        {
+          "n": "Crispin",
+          "q": 3,
+          "url": "https://limitlesstcg.com/cards/SCR/133"
+        },
+        {
+          "n": "Boss's Orders",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/MEG/114"
+        },
+        {
+          "n": "Cyrano",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/SSP/170"
+        },
+        {
+          "n": "Lillie's Determination",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/MEG/119"
+        },
+        {
+          "n": "Ultra Ball",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/MEG/131"
+        },
+        {
+          "n": "Poké Pad",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/POR/81"
+        },
+        {
+          "n": "Energy Switch",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/MEG/115"
+        },
+        {
+          "n": "Night Stretcher",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/ASC/196"
+        },
+        {
+          "n": "Switch",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/MEG/130"
+        },
+        {
+          "n": "Glass Trumpet",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/SCR/135"
+        },
+        {
+          "n": "Tera Orb",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/SSP/189"
+        },
+        {
+          "n": "Sparkling Crystal",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/SCR/142"
+        },
+        {
+          "n": "Area Zero Underdepths",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/SCR/131"
+        },
+        {
+          "n": "Grass Energy",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/MEE/9"
+        },
+        {
+          "n": "Water Energy",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/MEE/11"
+        },
+        {
+          "n": "Psychic Energy",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/MEE/13"
+        },
+        {
+          "n": "Lightning Energy",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/MEE/12"
+        },
+        {
+          "n": "Fighting Energy",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/MEE/14"
+        }
+      ]
+    },
+    {
+      "id": "pk_gardevoir",
+      "n": "GARDEVOIR",
+      "style": "ctrl",
+      "col": "#90cfaf",
+      "strategy": "Abrazo Psiquico recupera energia con daño propio. Munkidori redistribuye contadores y sus atacantes cambian el intercambio de premios.",
+      "signature": "PSYCHIC EMBRACE: une energia del descarte y coloca 2 contadores.",
+      "star": "Gardevoir ex",
+      "source": "https://limitlesstcg.com/decks/list/24008",
+      "reference": "Gardevoir by Joey Gaffney – Limitless",
+      "realm": "pokemon",
+      "cards": [
+        "pkc_svi_86",
+        "pkc_meg_58",
+        "pkc_meg_59",
+        "pkc_twm_95",
+        "pkc_asc_142",
+        "pkc_wht_44",
+        "pkc_pal_185",
+        "pkc_meg_119",
+        "pkc_jtg_155",
+        "pkc_par_171",
+        "pkc_obf_186",
+        "pkc_mee_13"
+      ],
+      "list": [
+        {
+          "n": "Ralts",
+          "q": 3,
+          "url": "https://limitlesstcg.com/cards/MEG/58"
+        },
+        {
+          "n": "Kirlia",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/MEG/59"
+        },
+        {
+          "n": "Gardevoir ex",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/SVI/86"
+        },
+        {
+          "n": "Munkidori",
+          "q": 3,
+          "url": "https://limitlesstcg.com/cards/TWM/95"
+        },
+        {
+          "n": "Fezandipiti ex",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/ASC/142"
+        },
+        {
+          "n": "Frillish",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/WHT/44"
+        },
+        {
+          "n": "Lillie's Clefairy ex",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/JTG/56"
+        },
+        {
+          "n": "Mew ex",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/MEW/151"
+        },
+        {
+          "n": "Scream Tail",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/PAR/86"
+        },
+        {
+          "n": "Drifloon",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/SVI/89"
+        },
+        {
+          "n": "Iono",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/PAL/185"
+        },
+        {
+          "n": "Lillie's Determination",
+          "q": 3,
+          "url": "https://limitlesstcg.com/cards/MEG/119"
+        },
+        {
+          "n": "Professor's Research",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/JTG/155"
+        },
+        {
+          "n": "Professor Turo's Scenario",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/PAR/171"
+        },
+        {
+          "n": "Arven",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/OBF/186"
+        },
+        {
+          "n": "Ultra Ball",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/MEG/131"
+        },
+        {
+          "n": "Earthen Vessel",
+          "q": 3,
+          "url": "https://limitlesstcg.com/cards/PAR/163"
+        },
+        {
+          "n": "Nest Ball",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/SVI/181"
+        },
+        {
+          "n": "Night Stretcher",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/ASC/196"
+        },
+        {
+          "n": "Rare Candy",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/MEG/125"
+        },
+        {
+          "n": "Secret Box",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/TWM/163"
+        },
+        {
+          "n": "Super Rod",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/PAL/188"
+        },
+        {
+          "n": "Counter Catcher",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/PAR/160"
+        },
+        {
+          "n": "Technical Machine: Evolution",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/PAR/178"
+        },
+        {
+          "n": "Bravery Charm",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/PAL/173"
+        },
+        {
+          "n": "Luxurious Cape",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/PAR/166"
+        },
+        {
+          "n": "Artazon",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/PAL/171"
+        },
+        {
+          "n": "Mystery Garden",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/MEG/122"
+        },
+        {
+          "n": "Psychic Energy",
+          "q": 8,
+          "url": "https://limitlesstcg.com/cards/MEE/13"
+        },
+        {
+          "n": "Darkness Energy",
+          "q": 3,
+          "url": "https://limitlesstcg.com/cards/MEE/15"
+        }
+      ]
+    },
+    {
+      "id": "pk_excadrill",
+      "n": "MEGA EXCADRILL",
+      "style": "combo",
+      "col": "#b7bcca",
+      "strategy": "Metang acelera energia Metal. Excadrill desgasta la baraja rival o acumula cinco energias para un golpe de 330.",
+      "signature": "MAXIMUM DRILLING: 200; con 2 energias extra hace 330.",
+      "star": "Mega Excadrill ex",
+      "source": "https://my.limitlesstcg.com/shared/6a4b74919170a933a6a4aeaf",
+      "reference": "Mega Excadrill Metang Secret Box (OmniPoke) August 04, 2026",
+      "realm": "pokemon",
+      "cards": [
+        "pkc_pbl_65",
+        "pkc_cri_59",
+        "pkc_tef_114",
+        "pkc_cri_61",
+        "pkc_pbl_46",
+        "pkc_blk_67",
+        "pkc_asc_192",
+        "pkc_asc_207",
+        "pkc_asc_183",
+        "pkc_pre_113",
+        "pkc_asc_184",
+        "pkc_mee_8"
+      ],
+      "list": [
+        {
+          "n": "Beldum",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/CRI/59"
+        },
+        {
+          "n": "Metang",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/TEF/114"
+        },
+        {
+          "n": "Metagross",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/CRI/61"
+        },
+        {
+          "n": "Drilbur",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/PBL/46"
+        },
+        {
+          "n": "Mega Excadrill ex",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/PBL/65"
+        },
+        {
+          "n": "Genesect ex",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/BLK/67"
+        },
+        {
+          "n": "Fezandipiti ex",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/ASC/142"
+        },
+        {
+          "n": "Lillie's Determination",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/ASC/192"
+        },
+        {
+          "n": "Team Rocket's Petrel",
+          "q": 3,
+          "url": "https://limitlesstcg.com/cards/ASC/207"
+        },
+        {
+          "n": "Boss's Orders",
+          "q": 3,
+          "url": "https://limitlesstcg.com/cards/ASC/183"
+        },
+        {
+          "n": "Kieran",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/PRE/113"
+        },
+        {
+          "n": "Buddy-Buddy Poffin",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/ASC/184"
+        },
+        {
+          "n": "Jumbo Ice Cream",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/PFL/91"
+        },
+        {
+          "n": "Pokégear 3.0",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/BLK/84"
+        },
+        {
+          "n": "Ultra Ball",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/ASC/213"
+        },
+        {
+          "n": "Energy Recycler",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/DRI/164"
+        },
+        {
+          "n": "Secret Box",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/TWM/163"
+        },
+        {
+          "n": "Night Stretcher",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/ASC/196"
+        },
+        {
+          "n": "Special Red Card",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/CRI/82"
+        },
+        {
+          "n": "Air Balloon",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/ASC/181"
+        },
+        {
+          "n": "Brave Bangle",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/WHT/80"
+        },
+        {
+          "n": "Team Rocket's Factory",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/ASC/203"
+        },
+        {
+          "n": "Community Center",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/TWM/146"
+        },
+        {
+          "n": "Metal Energy",
+          "q": 15,
+          "url": "https://limitlesstcg.com/cards/MEE/8"
+        }
+      ]
+    },
+    {
+      "id": "pk_lucario",
+      "n": "MEGA LUCARIO",
+      "style": "agro",
+      "col": "#79ace0",
+      "strategy": "Aura Jab recarga hasta tres energias Lucha en banca. Mega Brave pega 270 pero exige cambiar el plan en el turno siguiente.",
+      "signature": "AURA JAB: 130 y hasta 3 energias Lucha del descarte a banca.",
+      "star": "Mega Lucario ex",
+      "source": "https://my.limitlesstcg.com/shared/6a4b95689170a933a6a4af60",
+      "reference": "Mega Lucario Dudunsparce (NAIC) July 13, 2026",
+      "realm": "pokemon",
+      "cards": [
+        "pkc_meg_77",
+        "pkc_pre_50",
+        "pkc_jtg_120",
+        "pkc_pre_80",
+        "pkc_jtg_121",
+        "pkc_meg_75",
+        "pkc_asc_192",
+        "pkc_asc_183",
+        "pkc_wht_84",
+        "pkc_por_81",
+        "pkc_asc_187",
+        "pkc_mee_6"
+      ],
+      "list": [
+        {
+          "n": "Riolu",
+          "q": 3,
+          "url": "https://limitlesstcg.com/cards/PRE/50"
+        },
+        {
+          "n": "Riolu",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/MEG/76"
+        },
+        {
+          "n": "Mega Lucario ex",
+          "q": 3,
+          "url": "https://limitlesstcg.com/cards/MEG/77"
+        },
+        {
+          "n": "Dunsparce",
+          "q": 3,
+          "url": "https://limitlesstcg.com/cards/JTG/120"
+        },
+        {
+          "n": "Dudunsparce",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/PRE/80"
+        },
+        {
+          "n": "Dudunsparce ex",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/JTG/121"
+        },
+        {
+          "n": "Solrock",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/MEG/75"
+        },
+        {
+          "n": "Lunatone",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/MEG/74"
+        },
+        {
+          "n": "Lillie's Determination",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/ASC/192"
+        },
+        {
+          "n": "Boss's Orders",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/ASC/183"
+        },
+        {
+          "n": "Hilda",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/WHT/84"
+        },
+        {
+          "n": "Poké Pad",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/POR/81"
+        },
+        {
+          "n": "Fighting Gong",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/ASC/187"
+        },
+        {
+          "n": "Premium Power Pro",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/ASC/199"
+        },
+        {
+          "n": "Ultra Ball",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/ASC/213"
+        },
+        {
+          "n": "Buddy-Buddy Poffin",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/ASC/184"
+        },
+        {
+          "n": "Special Red Card",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/CRI/82"
+        },
+        {
+          "n": "Gravity Mountain",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/SSP/177"
+        },
+        {
+          "n": "Jamming Tower",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/TWM/153"
+        },
+        {
+          "n": "Fighting Energy",
+          "q": 8,
+          "url": "https://limitlesstcg.com/cards/MEE/6"
+        },
+        {
+          "n": "Rocky Fighting Energy",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/POR/87"
+        },
+        {
+          "n": "Legacy Energy",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/TWM/167"
+        }
+      ]
+    },
+    {
+      "id": "pk_starmie",
+      "n": "MEGA STARMIE",
+      "style": "agro",
+      "col": "#b9a0e8",
+      "strategy": "Dudunsparce roba cartas. Starmie presiona activo y banca con una energia; Nebula Beam atraviesa efectos defensivos.",
+      "signature": "JETTING BLOW: 120 al activo y 50 a uno de la banca.",
+      "star": "Mega Starmie ex",
+      "source": "https://my.limitlesstcg.com/shared/6a4b704c9170a933a6a4ae96",
+      "reference": "Mega Starmie Dark Bell (OmniPoke) July 18, 2026",
+      "realm": "pokemon",
+      "cards": [
+        "pkc_por_21",
+        "pkc_por_20",
+        "pkc_jtg_120",
+        "pkc_pre_80",
+        "pkc_jtg_121",
+        "pkc_asc_171",
+        "pkc_wht_84",
+        "pkc_meg_132",
+        "pkc_asc_192",
+        "pkc_asc_183",
+        "pkc_asc_184",
+        "pkc_cri_84"
+      ],
+      "list": [
+        {
+          "n": "Staryu",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/POR/20"
+        },
+        {
+          "n": "Mega Starmie ex",
+          "q": 3,
+          "url": "https://limitlesstcg.com/cards/POR/21"
+        },
+        {
+          "n": "Dunsparce",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/JTG/120"
+        },
+        {
+          "n": "Dudunsparce",
+          "q": 3,
+          "url": "https://limitlesstcg.com/cards/PRE/80"
+        },
+        {
+          "n": "Dudunsparce ex",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/JTG/121"
+        },
+        {
+          "n": "Fan Rotom",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/ASC/171"
+        },
+        {
+          "n": "Psyduck",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/ASC/39"
+        },
+        {
+          "n": "Shaymin",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/DRI/10"
+        },
+        {
+          "n": "Hilda",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/WHT/84"
+        },
+        {
+          "n": "Wally's Compassion",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/MEG/132"
+        },
+        {
+          "n": "Lillie's Determination",
+          "q": 3,
+          "url": "https://limitlesstcg.com/cards/ASC/192"
+        },
+        {
+          "n": "Boss's Orders",
+          "q": 3,
+          "url": "https://limitlesstcg.com/cards/ASC/183"
+        },
+        {
+          "n": "Buddy-Buddy Poffin",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/ASC/184"
+        },
+        {
+          "n": "Poké Pad",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/POR/81"
+        },
+        {
+          "n": "Dark Bell",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/PBL/75"
+        },
+        {
+          "n": "Ultra Ball",
+          "q": 3,
+          "url": "https://limitlesstcg.com/cards/ASC/213"
+        },
+        {
+          "n": "Pokégear 3.0",
+          "q": 3,
+          "url": "https://limitlesstcg.com/cards/BLK/84"
+        },
+        {
+          "n": "Battle Cage",
+          "q": 3,
+          "url": "https://limitlesstcg.com/cards/PFL/85"
+        },
+        {
+          "n": "Bubbly Water Energy",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/CRI/84"
+        },
+        {
+          "n": "Ignition Energy",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/WHT/86"
+        },
+        {
+          "n": "Legacy Energy",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/TWM/167"
+        }
+      ]
+    },
+    {
+      "id": "pk_greninja",
+      "n": "MEGA GRENINJA",
+      "style": "ctrl",
+      "col": "#708ae0",
+      "strategy": "Mortal Shuriken coloca contadores al descartar agua; Ninja Spinner recupera energia. Esta lista combina Greninja con Dragapult.",
+      "signature": "MORTAL SHURIKEN: descarta agua y coloca 6 contadores.",
+      "star": "Mega Greninja ex",
+      "source": "https://my.limitlesstcg.com/shared/6a4b7e969170a933a6a4aef1",
+      "reference": "Mega Greninja Dragapult (JCS) July 06, 2026",
+      "realm": "pokemon",
+      "cards": [
+        "pkc_cri_22",
+        "pkc_cri_20",
+        "pkc_cri_21",
+        "pkc_twm_106",
+        "pkc_twm_128",
+        "pkc_twm_129",
+        "pkc_meg_119",
+        "pkc_pfl_87",
+        "pkc_scr_133",
+        "pkc_meg_114",
+        "pkc_ssp_187",
+        "pkc_mee_3"
+      ],
+      "list": [
+        {
+          "n": "Froakie",
+          "q": 3,
+          "url": "https://limitlesstcg.com/cards/CRI/20"
+        },
+        {
+          "n": "Froakie",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/TWM/56"
+        },
+        {
+          "n": "Frogadier",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/CRI/21"
+        },
+        {
+          "n": "Mega Greninja ex",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/CRI/22"
+        },
+        {
+          "n": "Greninja ex",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/TWM/106"
+        },
+        {
+          "n": "Dreepy",
+          "q": 3,
+          "url": "https://limitlesstcg.com/cards/TWM/128"
+        },
+        {
+          "n": "Drakloak",
+          "q": 3,
+          "url": "https://limitlesstcg.com/cards/TWM/129"
+        },
+        {
+          "n": "Dragapult ex",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/TWM/130"
+        },
+        {
+          "n": "Fezandipiti ex",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/ASC/142"
+        },
+        {
+          "n": "Meowth ex",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/POR/62"
+        },
+        {
+          "n": "Tatsugiri",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/TWM/131"
+        },
+        {
+          "n": "Shaymin",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/DRI/10"
+        },
+        {
+          "n": "Lillie's Determination",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/MEG/119"
+        },
+        {
+          "n": "Dawn",
+          "q": 3,
+          "url": "https://limitlesstcg.com/cards/PFL/87"
+        },
+        {
+          "n": "Crispin",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/SCR/133"
+        },
+        {
+          "n": "Boss's Orders",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/MEG/114"
+        },
+        {
+          "n": "Surfer",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/SSP/187"
+        },
+        {
+          "n": "Buddy-Buddy Poffin",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/TEF/144"
+        },
+        {
+          "n": "Poké Pad",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/POR/81"
+        },
+        {
+          "n": "Rare Candy",
+          "q": 3,
+          "url": "https://limitlesstcg.com/cards/MEG/125"
+        },
+        {
+          "n": "Special Red Card",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/CRI/82"
+        },
+        {
+          "n": "Ultra Ball",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/MEG/131"
+        },
+        {
+          "n": "Energy Retrieval",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/SVI/171"
+        },
+        {
+          "n": "Sparkling Crystal",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/SCR/142"
+        },
+        {
+          "n": "Air Balloon",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/ASC/181"
+        },
+        {
+          "n": "Lumiose City",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/POR/77"
+        },
+        {
+          "n": "Water Energy",
+          "q": 5,
+          "url": "https://limitlesstcg.com/cards/MEE/3"
+        },
+        {
+          "n": "Psychic Energy",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/MEE/5"
+        },
+        {
+          "n": "Fire Energy",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/MEE/2"
+        }
+      ]
+    },
+    {
+      "id": "pk_mewtwo",
+      "n": "ROCKET MEWTWO",
+      "style": "combo",
+      "col": "#ce8bc8",
+      "strategy": "Mewtwo necesita cuatro Pokemon Rocket en juego. Spidops y Articuno apoyan su preparacion; descarta energia de banca para rematar.",
+      "signature": "ERASURE BALL: 160, hasta 280 al descartar energia de banca.",
+      "star": "Team Rocket's Mewtwo ex",
+      "source": "https://my.limitlesstcg.com/shared/6a4b7bd99170a933a6a4aedf",
+      "reference": "Team Rocket's Mewtwo (OmniPoke) July 13, 2026",
+      "realm": "pokemon",
+      "cards": [
+        "pkc_asc_79",
+        "pkc_asc_18",
+        "pkc_asc_19",
+        "pkc_asc_97",
+        "pkc_dri_51",
+        "pkc_asc_162",
+        "pkc_asc_202",
+        "pkc_asc_192",
+        "pkc_asc_204",
+        "pkc_asc_208",
+        "pkc_asc_201",
+        "pkc_mee_1"
+      ],
+      "list": [
+        {
+          "n": "Team Rocket's Tarountula",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/ASC/18"
+        },
+        {
+          "n": "Team Rocket's Spidops",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/ASC/19"
+        },
+        {
+          "n": "Team Rocket's Mewtwo ex",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/ASC/79"
+        },
+        {
+          "n": "Team Rocket's Mimikyu",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/ASC/97"
+        },
+        {
+          "n": "Team Rocket's Articuno",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/DRI/51"
+        },
+        {
+          "n": "Team Rocket's Kangaskhan ex",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/ASC/162"
+        },
+        {
+          "n": "Lillie's Clefairy ex",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/ASC/76"
+        },
+        {
+          "n": "Team Rocket's Ariana",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/ASC/202"
+        },
+        {
+          "n": "Lillie's Determination",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/ASC/192"
+        },
+        {
+          "n": "Team Rocket's Giovanni",
+          "q": 3,
+          "url": "https://limitlesstcg.com/cards/ASC/204"
+        },
+        {
+          "n": "Team Rocket's Proton",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/ASC/208"
+        },
+        {
+          "n": "Team Rocket's Archer",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/ASC/201"
+        },
+        {
+          "n": "Team Rocket's Petrel",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/ASC/207"
+        },
+        {
+          "n": "Team Rocket's Transceiver",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/ASC/209"
+        },
+        {
+          "n": "Ultra Ball",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/ASC/213"
+        },
+        {
+          "n": "Night Stretcher",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/ASC/196"
+        },
+        {
+          "n": "Bug Catching Set",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/PRE/102"
+        },
+        {
+          "n": "Energy Switch",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/MEG/115"
+        },
+        {
+          "n": "Maximum Belt",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/PRE/117"
+        },
+        {
+          "n": "Team Rocket's Factory",
+          "q": 3,
+          "url": "https://limitlesstcg.com/cards/ASC/203"
+        },
+        {
+          "n": "Grass Energy",
+          "q": 6,
+          "url": "https://limitlesstcg.com/cards/MEE/1"
+        },
+        {
+          "n": "Team Rocket's Energy",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/ASC/217"
+        },
+        {
+          "n": "Psychic Energy",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/MEE/5"
+        }
+      ]
+    },
+    {
+      "id": "pk_absol",
+      "n": "MEGA ABSOL",
+      "style": "ctrl",
+      "col": "#bdb5d5",
+      "strategy": "Munkidori ajusta contadores. Absol puede eliminar un activo con exactamente seis, o golpear y descartar una carta de la mano rival.",
+      "signature": "TERMINAL PERIOD: KO si el activo rival tiene 6 contadores.",
+      "star": "Mega Absol ex",
+      "source": "https://limitlesstcg.com/decks/list/29661",
+      "reference": "Mega Absol Box by Jan-Patrick Strohmeier – Limitless",
+      "realm": "pokemon",
+      "cards": [
+        "pkc_meg_86",
+        "pkc_meg_104",
+        "pkc_twm_95",
+        "pkc_meg_88",
+        "pkc_sfa_39",
+        "pkc_asc_142",
+        "pkc_meg_114",
+        "pkc_pre_112",
+        "pkc_meg_119",
+        "pkc_dri_176",
+        "pkc_meg_115",
+        "pkc_mee_15"
+      ],
+      "list": [
+        {
+          "n": "Mega Kangaskhan ex",
+          "q": 3,
+          "url": "https://limitlesstcg.com/cards/MEG/104"
+        },
+        {
+          "n": "Munkidori",
+          "q": 3,
+          "url": "https://limitlesstcg.com/cards/TWM/95"
+        },
+        {
+          "n": "Mega Absol ex",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/MEG/86"
+        },
+        {
+          "n": "Yveltal",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/MEG/88"
+        },
+        {
+          "n": "Pecharunt ex",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/SFA/39"
+        },
+        {
+          "n": "Fezandipiti ex",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/ASC/142"
+        },
+        {
+          "n": "Bloodmoon Ursaluna ex",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/TWM/141"
+        },
+        {
+          "n": "Latias ex",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/SSP/76"
+        },
+        {
+          "n": "Boss's Orders",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/MEG/114"
+        },
+        {
+          "n": "Janine's Secret Art",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/PRE/112"
+        },
+        {
+          "n": "Lillie's Determination",
+          "q": 3,
+          "url": "https://limitlesstcg.com/cards/MEG/119"
+        },
+        {
+          "n": "Team Rocket's Petrel",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/DRI/176"
+        },
+        {
+          "n": "Energy Switch",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/MEG/115"
+        },
+        {
+          "n": "Ultra Ball",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/MEG/131"
+        },
+        {
+          "n": "Pokégear 3.0",
+          "q": 4,
+          "url": "https://limitlesstcg.com/cards/SVI/186"
+        },
+        {
+          "n": "Mega Signal",
+          "q": 3,
+          "url": "https://limitlesstcg.com/cards/MEG/121"
+        },
+        {
+          "n": "Night Stretcher",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/ASC/196"
+        },
+        {
+          "n": "Poké Pad",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/POR/81"
+        },
+        {
+          "n": "Special Red Card",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/CRI/82"
+        },
+        {
+          "n": "Hero's Cape",
+          "q": 1,
+          "url": "https://limitlesstcg.com/cards/TEF/152"
+        },
+        {
+          "n": "Lumiose City",
+          "q": 3,
+          "url": "https://limitlesstcg.com/cards/POR/77"
+        },
+        {
+          "n": "Darkness Energy",
+          "q": 8,
+          "url": "https://limitlesstcg.com/cards/MEE/15"
+        },
+        {
+          "n": "Mist Energy",
+          "q": 2,
+          "url": "https://limitlesstcg.com/cards/TEF/161"
+        }
+      ]
+    }
+  ],
+  "matchups": [
+    {
+      "key": "pk_dragapult:pk_excadrill",
+      "a": "pk_dragapult",
+      "b": "pk_excadrill",
+      "n": 256,
+      "rate": 0.436,
+      "source": "https://play.limitlesstcg.com/decks/dragapult-ex/matchups?format=standard&rotation=2026&set=30C",
+      "season": "2026 · 30C",
+      "bonus": -1
+    },
+    {
+      "key": "pk_dragapult:pk_greninja",
+      "a": "pk_dragapult",
+      "b": "pk_greninja",
+      "n": 94,
+      "rate": 0.6236559139784946,
+      "source": "https://play.limitlesstcg.com/decks/dragapult-ex/matchups?format=standard&rotation=2026&set=30C",
+      "season": "2026 · 30C",
+      "bonus": 1
+    },
+    {
+      "key": "pk_dragapult:pk_lucario",
+      "a": "pk_dragapult",
+      "b": "pk_lucario",
+      "n": 85,
+      "rate": 0.5,
+      "source": "https://play.limitlesstcg.com/decks/dragapult-ex/matchups?format=standard&rotation=2026&set=30C",
+      "season": "2026 · 30C",
+      "bonus": 0
+    },
+    {
+      "key": "pk_dragapult:pk_mewtwo",
+      "a": "pk_dragapult",
+      "b": "pk_mewtwo",
+      "n": 63,
+      "rate": 0.5483870967741935,
+      "source": "https://play.limitlesstcg.com/decks/dragapult-ex/matchups?format=standard&rotation=2026&set=30C",
+      "season": "2026 · 30C",
+      "bonus": 0
+    },
+    {
+      "key": "pk_dragapult:pk_starmie",
+      "a": "pk_dragapult",
+      "b": "pk_starmie",
+      "n": 37,
+      "rate": 0.6756756756756757,
+      "source": "https://play.limitlesstcg.com/decks/dragapult-ex/matchups?format=standard&rotation=2026&set=30C",
+      "season": "2026 · 30C",
+      "bonus": 1
+    },
+    {
+      "key": "pk_bolt:pk_dragapult",
+      "a": "pk_dragapult",
+      "b": "pk_bolt",
+      "n": 30,
+      "rate": 0.4482758620689655,
+      "source": "https://play.limitlesstcg.com/decks/dragapult-ex/matchups?format=standard&rotation=2026&set=30C",
+      "season": "2026 · 30C",
+      "bonus": 0
+    },
+    {
+      "key": "pk_absol:pk_dragapult",
+      "a": "pk_dragapult",
+      "b": "pk_absol",
+      "n": 10,
+      "rate": 0.7,
+      "source": "https://play.limitlesstcg.com/decks/dragapult-ex/matchups?format=standard&rotation=2026&set=30C",
+      "season": "2026 · 30C",
+      "bonus": 0
+    },
+    {
+      "key": "pk_dragapult:pk_terabox",
+      "a": "pk_dragapult",
+      "b": "pk_terabox",
+      "n": 8,
+      "rate": 0.7142857142857143,
+      "source": "https://play.limitlesstcg.com/decks/dragapult-ex/matchups?format=standard&rotation=2026&set=30C",
+      "season": "2026 · 30C",
+      "bonus": 0
+    },
+    {
+      "key": "pk_excadrill:pk_greninja",
+      "a": "pk_greninja",
+      "b": "pk_excadrill",
+      "n": 30,
+      "rate": 0.4,
+      "source": "https://play.limitlesstcg.com/decks/mega-greninja-ex/matchups?format=standard&rotation=2026&set=30C",
+      "season": "2026 · 30C",
+      "bonus": -1
+    },
+    {
+      "key": "pk_greninja:pk_lucario",
+      "a": "pk_greninja",
+      "b": "pk_lucario",
+      "n": 9,
+      "rate": 0.75,
+      "source": "https://play.limitlesstcg.com/decks/mega-greninja-ex/matchups?format=standard&rotation=2026&set=30C",
+      "season": "2026 · 30C",
+      "bonus": 0
+    },
+    {
+      "key": "pk_greninja:pk_starmie",
+      "a": "pk_greninja",
+      "b": "pk_starmie",
+      "n": 9,
+      "rate": 0.2222222222222222,
+      "source": "https://play.limitlesstcg.com/decks/mega-greninja-ex/matchups?format=standard&rotation=2026&set=30C",
+      "season": "2026 · 30C",
+      "bonus": 0
+    },
+    {
+      "key": "pk_greninja:pk_mewtwo",
+      "a": "pk_greninja",
+      "b": "pk_mewtwo",
+      "n": 7,
+      "rate": 0.42857142857142855,
+      "source": "https://play.limitlesstcg.com/decks/mega-greninja-ex/matchups?format=standard&rotation=2026&set=30C",
+      "season": "2026 · 30C",
+      "bonus": 0
+    },
+    {
+      "key": "pk_bolt:pk_greninja",
+      "a": "pk_greninja",
+      "b": "pk_bolt",
+      "n": 7,
+      "rate": 0.16666666666666666,
+      "source": "https://play.limitlesstcg.com/decks/mega-greninja-ex/matchups?format=standard&rotation=2026&set=30C",
+      "season": "2026 · 30C",
+      "bonus": 0
+    },
+    {
+      "key": "pk_excadrill:pk_lucario",
+      "a": "pk_lucario",
+      "b": "pk_excadrill",
+      "n": 47,
+      "rate": 0.6382978723404256,
+      "source": "https://play.limitlesstcg.com/decks/mega-lucario-ex/matchups?format=standard&rotation=2026&set=30C",
+      "season": "2026 · 30C",
+      "bonus": 1
+    },
+    {
+      "key": "pk_lucario:pk_mewtwo",
+      "a": "pk_lucario",
+      "b": "pk_mewtwo",
+      "n": 11,
+      "rate": 0.36363636363636365,
+      "source": "https://play.limitlesstcg.com/decks/mega-lucario-ex/matchups?format=standard&rotation=2026&set=30C",
+      "season": "2026 · 30C",
+      "bonus": 0
+    },
+    {
+      "key": "pk_bolt:pk_lucario",
+      "a": "pk_lucario",
+      "b": "pk_bolt",
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "source": "https://play.limitlesstcg.com/decks/mega-lucario-ex/matchups?format=standard&rotation=2026&set=30C",
+      "season": "2026 · 30C",
+      "bonus": 0
+    },
+    {
+      "key": "pk_absol:pk_lucario",
+      "a": "pk_lucario",
+      "b": "pk_absol",
+      "n": 2,
+      "rate": 1,
+      "source": "https://play.limitlesstcg.com/decks/mega-lucario-ex/matchups?format=standard&rotation=2026&set=30C",
+      "season": "2026 · 30C",
+      "bonus": 0
+    },
+    {
+      "key": "pk_lucario:pk_terabox",
+      "a": "pk_lucario",
+      "b": "pk_terabox",
+      "n": 2,
+      "rate": 0.5,
+      "source": "https://play.limitlesstcg.com/decks/mega-lucario-ex/matchups?format=standard&rotation=2026&set=30C",
+      "season": "2026 · 30C",
+      "bonus": 0
+    },
+    {
+      "key": "pk_lucario:pk_starmie",
+      "a": "pk_lucario",
+      "b": "pk_starmie",
+      "n": 2,
+      "rate": 0.5,
+      "source": "https://play.limitlesstcg.com/decks/mega-lucario-ex/matchups?format=standard&rotation=2026&set=30C",
+      "season": "2026 · 30C",
+      "bonus": 0
+    },
+    {
+      "key": "pk_excadrill:pk_starmie",
+      "a": "pk_starmie",
+      "b": "pk_excadrill",
+      "n": 16,
+      "rate": 0.4375,
+      "source": "https://play.limitlesstcg.com/decks/mega-starmie-ex/matchups?format=standard&rotation=2026&set=30C",
+      "season": "2026 · 30C",
+      "bonus": 0
+    },
+    {
+      "key": "pk_bolt:pk_starmie",
+      "a": "pk_starmie",
+      "b": "pk_bolt",
+      "n": 4,
+      "rate": 0.5,
+      "source": "https://play.limitlesstcg.com/decks/mega-starmie-ex/matchups?format=standard&rotation=2026&set=30C",
+      "season": "2026 · 30C",
+      "bonus": 0
+    },
+    {
+      "key": "pk_mewtwo:pk_starmie",
+      "a": "pk_starmie",
+      "b": "pk_mewtwo",
+      "n": 3,
+      "rate": 1,
+      "source": "https://play.limitlesstcg.com/decks/mega-starmie-ex/matchups?format=standard&rotation=2026&set=30C",
+      "season": "2026 · 30C",
+      "bonus": 0
+    },
+    {
+      "key": "pk_absol:pk_starmie",
+      "a": "pk_starmie",
+      "b": "pk_absol",
+      "n": 3,
+      "rate": 0.3333333333333333,
+      "source": "https://play.limitlesstcg.com/decks/mega-starmie-ex/matchups?format=standard&rotation=2026&set=30C",
+      "season": "2026 · 30C",
+      "bonus": 0
+    },
+    {
+      "key": "pk_excadrill:pk_mewtwo",
+      "a": "pk_excadrill",
+      "b": "pk_mewtwo",
+      "n": 17,
+      "rate": 0.5882352941176471,
+      "source": "https://play.limitlesstcg.com/decks/mega-excadrill-ex/matchups?format=standard&rotation=2026&set=30C",
+      "season": "2026 · 30C",
+      "bonus": 0
+    },
+    {
+      "key": "pk_bolt:pk_excadrill",
+      "a": "pk_excadrill",
+      "b": "pk_bolt",
+      "n": 13,
+      "rate": 0.38461538461538464,
+      "source": "https://play.limitlesstcg.com/decks/mega-excadrill-ex/matchups?format=standard&rotation=2026&set=30C",
+      "season": "2026 · 30C",
+      "bonus": 0
+    },
+    {
+      "key": "pk_absol:pk_excadrill",
+      "a": "pk_excadrill",
+      "b": "pk_absol",
+      "n": 4,
+      "rate": 0.5,
+      "source": "https://play.limitlesstcg.com/decks/mega-excadrill-ex/matchups?format=standard&rotation=2026&set=30C",
+      "season": "2026 · 30C",
+      "bonus": 0
+    },
+    {
+      "key": "pk_excadrill:pk_terabox",
+      "a": "pk_excadrill",
+      "b": "pk_terabox",
+      "n": 2,
+      "rate": 0.5,
+      "source": "https://play.limitlesstcg.com/decks/mega-excadrill-ex/matchups?format=standard&rotation=2026&set=30C",
+      "season": "2026 · 30C",
+      "bonus": 0
+    },
+    {
+      "key": "pk_absol:pk_bolt",
+      "a": "pk_bolt",
+      "b": "pk_absol",
+      "n": 188,
+      "rate": 0.6703910614525139,
+      "source": "https://play.limitlesstcg.com/decks/raging-bolt-ogerpon/matchups?format=standard&rotation=2025&set=ASC",
+      "season": "2025 · ASC",
+      "bonus": 1
+    },
+    {
+      "key": "pk_bolt:pk_gardevoir",
+      "a": "pk_bolt",
+      "b": "pk_gardevoir",
+      "n": 112,
+      "rate": 0.4230769230769231,
+      "source": "https://play.limitlesstcg.com/decks/raging-bolt-ogerpon/matchups?format=standard&rotation=2025&set=ASC",
+      "season": "2025 · ASC",
+      "bonus": -1
+    },
+    {
+      "key": "pk_bolt:pk_terabox",
+      "a": "pk_bolt",
+      "b": "pk_terabox",
+      "n": 68,
+      "rate": 0.42424242424242425,
+      "source": "https://play.limitlesstcg.com/decks/raging-bolt-ogerpon/matchups?format=standard&rotation=2025&set=ASC",
+      "season": "2025 · ASC",
+      "bonus": -1
+    },
+    {
+      "key": "pk_bolt:pk_mewtwo",
+      "a": "pk_bolt",
+      "b": "pk_mewtwo",
+      "n": 47,
+      "rate": 0.6808510638297872,
+      "source": "https://play.limitlesstcg.com/decks/raging-bolt-ogerpon/matchups?format=standard&rotation=2025&set=ASC",
+      "season": "2025 · ASC",
+      "bonus": 1
+    },
+    {
+      "key": "pk_mewtwo:pk_terabox",
+      "a": "pk_terabox",
+      "b": "pk_mewtwo",
+      "n": 1,
+      "rate": 1,
+      "source": "https://play.limitlesstcg.com/decks/tera-box/matchups?format=standard&rotation=2026&set=30C",
+      "season": "2026 · 30C",
+      "bonus": 0
+    },
+    {
+      "key": "pk_absol:pk_gardevoir",
+      "a": "pk_absol",
+      "b": "pk_gardevoir",
+      "n": 152,
+      "rate": 0.5374149659863946,
+      "source": "https://play.limitlesstcg.com/decks/mega-absol-box/matchups?format=standard&rotation=2025&set=ASC",
+      "season": "2025 · ASC",
+      "bonus": 0
+    },
+    {
+      "key": "pk_absol:pk_mewtwo",
+      "a": "pk_absol",
+      "b": "pk_mewtwo",
+      "n": 82,
+      "rate": 0.5308641975308642,
+      "source": "https://play.limitlesstcg.com/decks/mega-absol-box/matchups?format=standard&rotation=2025&set=ASC",
+      "season": "2025 · ASC",
+      "bonus": 0
+    },
+    {
+      "key": "pk_absol:pk_terabox",
+      "a": "pk_absol",
+      "b": "pk_terabox",
+      "n": 77,
+      "rate": 0.5454545454545454,
+      "source": "https://play.limitlesstcg.com/decks/mega-absol-box/matchups?format=standard&rotation=2025&set=ASC",
+      "season": "2025 · ASC",
+      "bonus": 0
+    }
+  ]
+}
