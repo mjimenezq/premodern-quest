@@ -2266,7 +2266,6 @@ function plaque(s, cx, y, col){
 const FXC = document.createElement('canvas'); FXC.width = 240 * HIRES; FXC.height = 160 * HIRES; const FX = FXC.getContext('2d');
 // Hora del día según el reloj del jugador (Chile): noche 20-6, atardecer 18-20, amanecer 6-8
 const DAY_PHASES=['dawn','day','dusk','night'],DAY_LABELS={dawn:'MAÑANA',day:'MEDIODIA',dusk:'TARDE',night:'NOCHE'},DAY_PHASE_TICKS=60*120;
-const LEAGUE_PHASE={urza:'dawn',vina:'day',curico:'dusk',pmontt:'night',tempest:'night',nacional:'day'};
 function dayPhase(){if(G.forcePhase)return G.forcePhase;return DAY_PHASES[Math.floor(((S && S.worldTicks) || 0)/DAY_PHASE_TICKS)%4];}
 function dayTransition(phase){G.cacheDirty=true;toast('AHORA ES '+DAY_LABELS[phase],'#fcd84a');if(phase==='dawn'){[0,.17,.34,.5].forEach((delay,i)=>{tone(i===3?1250:950,i===3?500:1500,i===3?.65:.14,'sawtooth',.16,delay);tone(i===3?2500:1900,1000,.18,'triangle',.1,delay);});}else if(phase==='night')seq([330,220,330],.2,'sine',.12);else seq([659,784],.13,'sine',.15);}
 function tickDay(){const before=dayPhase();S.worldTicks=(((S.worldTicks || 0)+1)%(DAY_PHASE_TICKS*4));if(dayPhase()!==before)dayTransition(dayPhase());}
@@ -3295,7 +3294,7 @@ ROOMS.oktoberfest={name:'OKTOBERFEST DEL LAGO',zone:'puertoVaras',theme:'inside'
 function festivalBeer(){say(['HILDEGARD: ¡Bienvenido a la Oktoberfest del lago! Una jarra y un pretzel por $3.000. Nuestra IA intento inventar una IPA: resulto un Instantaneo Pale Ale.'],[{t:'JARRA Y PRETZEL',fn:()=>{if(S.coins<3000){say(['Te faltan monedas para el menu. Puedes disfrutar de la fiesta y conversar igual.']);return;}S.coins-=3000;S.hp=S.maxHp;S.mp=maxMp();S.beerTotal=(S.beerTotal||0)+1;SFX.beer();saveGame();say(['¡PROST! El brindis recupera vida y magia. Don Otto te espera para el desafio de cata; Lucho para jugar cartas.']);}},{t:'DESAFIO DE CATA',fn:festivalTasting},{t:'VOLVER',fn:null}]);}
 function festivalTasting(){if((S.festivalNextAt||0)>Date.now()){say(['DON OTTO: Tu diploma de catador sigue fresco. Conversa, juega cartas y vuelve en unos minutos para otro desafio.']);return;}const rounds=[{q:'El jardinero trae el ingrediente que da amargor y aroma. ¿Cual eliges?',a:['LUPULO','ARROZ CON LECHE','UN MOX DIAMOND','CABLE DE MODEM'],correct:0},{q:'La receta empieza con cereal preparado. ¿Que saco abres?',a:['AZUCAR DEL ARCADE','MALTA','FUNDAS DE CARTAS','DISQUETES'],correct:1},{q:'El ultimo ingrediente hace fermentar la mezcla. ¿A quien llamas?',a:['AL JUEZ','A LA IA','LEVADURA','A UN GOBLIN'],correct:2}];let i=0,score=0;const ask=()=>{const r=rounds[i];say(['DON OTTO: '+r.q],r.a.map((t,j)=>({t,fn:()=>{if(j===r.correct)score++;if(++i<rounds.length){ask();return;}S.festivalNextAt=Date.now()+180000;const xp=score===3?200:50;addXP(xp);S.festivalMedals=(S.festivalMedals||0)+(score===3?1:0);saveGame();say([score===3?'¡CATADOR DEL LAGO! Acertaste las tres. Tu diploma dice: este heroe domina cartas y barriles.':'DON OTTO: '+score+'/3. Buena practica: el paladar tambien aprende.', '+'+xp+' EXP. ¡Prost!']);}})));};ask();}
 
-function homeOracle(){const next=Object.keys(LEAGUES).find(k=>!S.leagues[k]);say(['ORACULO IA: ¡Buenos dias, '+CH().n+'! Tu sueño de ser campeon sigue vivo. Hoy eres '+reputationTitle()+'.'],[{t:'MI PROXIMO RETO',fn:()=>say([next?'Tu siguiente liga pendiente es '+LEAGUES[next].place+'. Revisa LIGAS en el menu para ver su horario.':'Ya ganaste las cinco ligas. Busca al campeon nacional en Tolaria.',pokemonRealm()?'Visita cuatro mesas: tres retadores y el lider. Los signos ! muestran el siguiente rival.':'Completa una baraja y practica antes de inscribirte.'])},{t:'CONSEJO DE CARTAS',fn:()=>say(['Presion vence al combo; combo supera al control; control frena la presion. Observar permite leer al rival.','Ganar cartas y ligas te da mucha experiencia. La estrategia importa incluso a nivel alto.'])},{t:'MI GRAN SUEÑO',fn:()=>say(['Quiero armar la mejor baraja, dominar a las criaturas liberadas y salvar ambos mundos.','Mis trofeos, mis cartas y las personas que conozco contaran esta aventura.'])},{t:'VOLVER',fn:null}]);}
+function homeOracle(){const next=Object.keys(LEAGUES).find(k=>!S.leagues[k]);say(['ORACULO IA: ¡Buenos dias, '+CH().n+'! Tu sueño de ser campeon sigue vivo. Hoy eres '+reputationTitle()+'.'],[{t:'MI PROXIMO RETO',fn:()=>say([next?'Tu siguiente liga pendiente es '+LEAGUES[next].place+'. Revisa LIGAS en el menu para ver tu avance. Puedes jugar a cualquier hora.':'Ya ganaste las cinco ligas. Busca al campeon nacional en Tolaria.',pokemonRealm()?'Visita cuatro mesas: tres retadores y el lider. Los signos ! muestran el siguiente rival.':'Completa una baraja y practica antes de inscribirte.'])},{t:'CONSEJO DE CARTAS',fn:()=>say(['Presion vence al combo; combo supera al control; control frena la presion. Observar permite leer al rival.','Ganar cartas y ligas te da mucha experiencia. La estrategia importa incluso a nivel alto.'])},{t:'MI GRAN SUEÑO',fn:()=>say(['Quiero armar la mejor baraja, dominar a las criaturas liberadas y salvar ambos mundos.','Mis trofeos, mis cartas y las personas que conozco contaran esta aventura.'])},{t:'VOLVER',fn:null}]);}
 
 let REALM_WORDS=null,REALM_PATTERN=null,REALM_LOOKUP=null;
 function realmText(value){
@@ -3336,7 +3335,6 @@ function pokemonGymTalk(id,npc){
  const i=gym.ids.indexOf(id),run=gymRun(),name=NPCDEF[id].n;
  if(run.won){say([name+': '+CH().n+', '+reputationTitle()+'. Ganaste nuestra medalla. El gimnasio recuerda tu victoria.'],[{t:'REPETIR RECORRIDO',fn:()=>{S.gymRuns[gym.key]={next:0,won:false};saveGame();say(['Comienza otra vez por '+NPCDEF[gym.ids[0]].n+'.']);}},{t:'VOLVER',fn:null}]);return true;}
  if(i!==run.next){say([name+': '+(i<run.next?'Ya me venciste. ¡Sigue adelante!':i===3?gym.spec.boast:'Primero vence a los retadores anteriores.'),'Siguiente rival: '+NPCDEF[gym.ids[run.next]].n+'. Tres retadores y despues el lider. Tu avance se guarda entre partidas.']);return true;}
- const phase=LEAGUE_PHASE[gym.key];if(dayPhase()!==phase){say([name+': Los retos abren '+DAY_LABELS[phase]+'. Ahora es '+DAY_LABELS[dayPhase()]+'. Puedes comprar cartas y explorar mientras esperas.']);return true;}
  if(gym.key==='nacional'&&leaguesDone()<5){say(['FERNANDO: Conquista las cinco medallas regionales. Entonces aceptare tu desafio.']);return true;}
  const deck=DECK[POKEMON_GYM_DECKS[gym.key][i]];say([name+': '+(i===3?gym.spec.boast:'¡Te vi entrar! Mi '+deck.n+' protege esta mesa.'),deck.n+': '+deck.strategy],[{t:'DESAFIAR CON CARTAS',fn:()=>beginPokemonGymMatch(i)},{t:'PREPARARME',fn:null}]);return true;
 }
@@ -4731,7 +4729,6 @@ function openTravel(){
 }
 const LEAGUE_BY_NPC = Object.fromEntries(Object.entries(LEAGUES).map(([k, L]) => [L.npc, k]));
 function leagueTalk(key){
-  if(dayPhase()!==LEAGUE_PHASE[key]){say(['HORARIO DE LIGA: '+DAY_LABELS[LEAGUE_PHASE[key]]+'. AHORA ES '+DAY_LABELS[dayPhase()]+'.','La tienda sigue abierta. Puedes comprar cartas, jugar duelos o descansar junto a una fogata hasta que abra.']);return;}
   const L = LEAGUES[key], who = NPCDEF[L.npc].n, done = activeDecks().filter(d => deckDone(d.id)), won = S.leagues && S.leagues[key];
   const intro = who + ': ' + (won ? 'Ya eres campeón de la ' + L.n + '. Puedes volver a jugarla cuando quieras, el premio se paga igual.'
     : '¡Bienvenido a la ' + L.n + '! ' + L.rounds + ' rondas contra lo mejor de ' + L.place + '. Inscripción: ' + money(L.fee) + '. Ganarla cuenta para la Liga Nacional.');
@@ -4767,7 +4764,6 @@ function talkTo(id, npc, skipQuest){
   if(id==='completero'){if(!skipQuest&&questHook(id,npc))return;say(['DON TOSTADO: Completos mojados y tostados, como le gustan al Tebax. Comer restaura vida y magia. La primera degustacion de cada receta da un corazon.'],[{t:'TOSTADO ($2.500)',fn:()=>eatTalca('tostado')},{t:'MOJADO ($3.000)',fn:()=>eatTalca('mojado')},{t:'SALIR',fn:null}]);return;}
   if(id==='curadoraTalca'){if(!skipQuest&&questHook(id,npc))return;museumPuzzle();return;}
 
-  if(id==='ligaOrg' && dayPhase()!==LEAGUE_PHASE.nacional){say(['LA LIGA NACIONAL ABRE AL MEDIODIA. AHORA ES '+DAY_LABELS[dayPhase()]+'.']);return;}
   if(G.def.pokemon && id==='azul'){say(['AZUL: ¡Bienvenido al templo Pokemon TCG! Cartas Pokemon en el mostrador, mesas de juego y Fernando Cifuentes de visita.'],[{t:'CARTAS POKEMON',fn:()=>openShop('pokemon','POKEMON TCG')},{t:'VOLVER',fn:null}]);return;}
   if(G.def.pokemon && (POKEMON_TEMPLE_PLAYERS.includes(id))){if(id==='fernando'){say(['FERNANDO CIFUENTES: Un ente oscuro saco a los Pokemon de las cartas y los dejo en estado salvaje.','Los enemigos son Pokemon furiosos y gigantes. No eligieron atacar: debemos enfrentar al ente y liberarlos.']);return;}say([NPCDEF[id].n+': ¡Estamos preparando nuestras barajas Pokemon! '+(id==='fernando'?'Soy el campeon mundial Masters 2024.':'Las mesas son el centro de nuestra aventura.')]);return;}
   if(!skipQuest&&!G.def.pokemon&&['azul','diegoG',...TEMPLE_PLAYERS].includes(id)&&questHook(id,npc))return;
@@ -5272,7 +5268,7 @@ const LEAGUE_MAP = { vina:'vina', curico:'valpo', pmontt:'pmontt', urza:'tolaria
 function leagueMapMarks(id){
   return Object.entries(LEAGUE_MAP).filter(([,place]) => place === id).map(([key]) => ({key,
     won:key === 'nacional' ? (S.ligaWins || 0) > 0 : !!(S.leagues && S.leagues[key]),
-    available:dayPhase()===LEAGUE_PHASE[key] && (key !== 'nacional' || (leaguesDone() === 5))
+    available:key !== 'nacional' || leaguesDone() === 5
   }));
 }
 function drawWorldMap(){
@@ -5359,7 +5355,7 @@ function drawLeagueProgress(){
   tiny(won?'GANADA':'PENDIENTE',233,y+2,won?'#90f0a0':'#85909c','right',true);
  });
  drawMedal(16,126,p.national,'#fff0a0');tiny('GRAN LIGA NACIONAL · TOLARIA',29,120,'#fcd84a','left',true);
- tiny(p.national?'MEDALLA NACIONAL GANADA':p.count===5?'ACCESO ABIERTO · '+DAY_LABELS[LEAGUE_PHASE.nacional]:discovered?'REUNE LAS 5 MEDALLAS DE ESTE MUNDO':'REUNE LAS 5 MEDALLAS REGIONALES',29,129,p.national?'#90f0a0':'#c8d8d0','left',true);
+ tiny(p.national?'MEDALLA NACIONAL GANADA':p.count===5?'ACCESO ABIERTO · A CUALQUIER HORA':discovered?'REUNE LAS 5 MEDALLAS DE ESTE MUNDO':'REUNE LAS 5 MEDALLAS REGIONALES',29,129,p.national?'#90f0a0':'#c8d8d0','left',true);
  tiny(p.count+'/5 REGIONALES'+(discovered?' · COLECCIONES SEPARADAS':''),120,141,'#9db8a8','center',true);
  tiny(discovered?'TOCA MAGIC / POKEMON · ARRIBA/ABAJO: CAMBIAR':'B: VOLVER A TU AVENTURA',120,152,'#9db8a8','center',true);
 }
