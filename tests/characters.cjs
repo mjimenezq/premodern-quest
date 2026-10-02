@@ -285,6 +285,20 @@ g.startOctayRace();g.G.dialog.choices[0].fn();assert.equal(g.getS().mount,null);
 g.G.octayRace.t=20;g.startOctayRace();assert.equal(g.G.octayRace.t,20);
 g.loadRoom('frutillar',115,84);assert(!g.G.octayRace);assert.equal(g.getS().mount,'mesa');
 g.G.octayRace={next:0,t:2700,mount:'mesa'};g.getS().mount=null;g.G.roomId='puertoOctay';g.updateOctayRace();assert(!g.G.octayRace);assert.equal(g.getS().mount,'mesa');g.G.preview=false;
+// Local temple opponents must have playable decks in every round, from strategy to replay.
+for(const room of Object.keys(g.TEMPLE_IDENTITIES)){
+ g.setS(g.newSave(0));g.G.preview=true;g.loadRoom(room,115,116);
+ g.startTour('life',{rounds:4,diff:0,league:'curico'});
+ for(let round=0;round<4;round++){
+  const t=g.G.tour;t.round=round;t.phase='strategy';t.stage=0;t.strategyScore=0;t.decisions=[];
+  assert(g.DECKS.some(d=>d.id===t.opps[round].deck),'Missing rival deck in '+room+' round '+round);
+  g.drawTour();for(let choice=0;choice<3;choice++){t.sel=choice;g.prepRound();g.drawTour();}
+  assert(t.ev.length>0);t.phase='duel';for(const event of t.ev){t.cur=event;t.lives=event.lives;g.drawTour();}
+  t.phase='res';g.drawTour();
+ }
+ g.G.state='world';g.G.tour=null;
+}
+g.G.preview=false;
 async function main(){
  const encoded=await g.encodeSave(custom), decoded=await g.decodeSave(encoded);
  assert.equal(decoded.customChar.n,'Mi personaje');assert.equal(g.characterOf(decoded).c.eye,'#1122ff');

@@ -4932,7 +4932,7 @@ function startTour(deck, cfg){
   const localRoster=G.def.roster;const roster=localRoster?localRoster.map(id=>NPCDEF[id].n):cfg.liga||cfg.league?TEMPLE_PLAYERS.filter(id=>!cfg.liga||id!=='galindo').map(id=>NPCDEF[id].n):OPP_NAMES;
   const names = [...roster].sort(() => Math.random() - 0.5).slice(0, cfg.rounds-(cfg.liga?1:0));
   if(cfg.liga)names.push(pokemonRealm()?NPCDEF.fernando.n:NPCDEF.galindo.n);
-  G.tour = { deck, cfg, room:G.roomId, px:PL.x, py:PL.y, round:0, wins:0, phase:'strategy', stage:0, decisions:[], strategyScore:0, sel:0, tactic:null, t:0, buzz:S.buzz, opps:names.map(n => {const id=[...(G.def.roster||[]),...TEMPLE_PLAYERS,'fernando'].find(id=>NPCDEF[id].n===n);return {n,deck:id?DUELIST_DECK[id]:pick(DECKS).id,look:id?NPCDEF[id]:randomLook(n)};}), ev:[], ei:0, lives:[20, 20], cur:null, pops:[] };
+  G.tour = { deck, cfg, room:G.roomId, px:PL.x, py:PL.y, round:0, wins:0, phase:'strategy', stage:0, decisions:[], strategyScore:0, sel:0, tactic:null, t:0, buzz:S.buzz, opps:names.map(n => {const id=[...(G.def.roster||[]),...TEMPLE_PLAYERS,'fernando'].find(id=>NPCDEF[id].n===n);return {n,deck:id?(localPlayerDeck(id)||DUELIST_DECK[id]||'landstill'):pick(DECKS).id,look:id?NPCDEF[id]:randomLook(n)};}), ev:[], ei:0, lives:[20, 20], cur:null, pops:[] };
   S.buzz = 0; S.beers = 0;
   prepareCardQuestion(G.tour);G.state = 'tour'; playMusic('fanfare'); SFX.ok();
 }

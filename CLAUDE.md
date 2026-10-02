@@ -284,3 +284,8 @@ Matías pidió volver a desarrollar y publicar en mjimenezq/premodern-quest porq
 - Bug corregido: maraton conserva montura seleccionada y la restaura al acabar, cancelar, morir o salir de Octay. Salir cancela inmediatamente; hablar de nuevo durante carrera no reinicia cronometro.
 - Pruebas: node tests/characters.cjs aprobado; acceso a NPC/puertas en 116 mapas, puestos alcanzables sin Surf, render nocturno, sellos sin premios duplicados, persistencia/separacion por mundo, compra sin fondos y con curacion, ausencia de telefonos, cancelacion/timeout y restauracion de montura. Revisión visual real de Montt, Octay y Frutillar de noche.
 - Nueva vista publica segura sin guardar: #vista=festival&zona=pmontt (o puertoOctay/frutillar), &noche opcional; &captura congela la imagen. No revela el otro mundo.
+
+## Correccion de liga Curico (1 oct 2026)
+- Error reportado en ronda 1: Cannot read properties of undefined (reading n). startTour buscaba mazos de los nuevos localPlayer_* solo en DUELIST_DECK antiguo; drawTour intentaba leer DECK[undefined].n.
+- startTour ahora usa localPlayerDeck igual que offerDuel, despues DUELIST_DECK para rivales anteriores y landstill como respaldo de NPC reconocido. Respeta estilos y personalidades de cada templo, sin tocar guardados ni reglas de premios.
+- Regresion reproducida antes del arreglo. Prueba nueva valida mazo existente, render inicial, tres decisiones, VS, cada carta de replay y resultado en cuatro rondas de los seis templos. Suite completa aprobada (116 mapas), ronda Curico nivel 52 verificada en navegador.
