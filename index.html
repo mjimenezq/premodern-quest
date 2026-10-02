@@ -910,14 +910,14 @@ const SPELL_ORDER = ['bolt','ice','fire','heal'];
 const ADVANCED_SPELLS=[['chispa','Chispa del Maule','bolt',3,3],['granizo','Granizo de Kjeldor','ice',4,3],['llama','Llama de Shiv','fire',5,5],['consuelo','Consuelo de Serra','heal',6,6],['tormenta','Tormenta de mana','bolt',5,6],['invierno','Invierno eterno','ice',6,5],['meteorito','Meteorito del Umbral','fire',7,8],['renacer','Renacer del Conclave','heal',8,10],['fulgor','Fulgor del Multiverso','bolt',7,9],['supernova','Supernova de Urza','fire',10,12]];
 ADVANCED_SPELLS.forEach(([id,n,base,mp,power],i)=>{SPELLS[id]={...SPELLS[base],n,mp,price:300000+i*i*150000,req:{lvl:40+i*5},desc:SPELLS[base].desc+' Magia avanzada.',...(base==='heal'?{heal:power}:{dmg:power})};SPELL_ORDER.push(id);});
 const MOUNTS = {
-  mesa:{ n:'Mesa Pegasus', price:125000, spd:0.3, kind:'horse', body:'#f4f4f8', mane:'#e8c040', wings:true, desc:'Caballo alado blanco. +30% velocidad.' },
-  nightmare:{ n:'Nightmare', price:150000, spd:0.45, kind:'horse', body:'#2a2032', mane:'#f86020', fire:true, desc:'Caballo negro de crin en llamas. +45% velocidad.' },
-  charger:{ n:'Pegasus Charger', price:250000, spd:0.55, kind:'horse', body:'#f8ecd0', mane:'#80c0ff', wings:true, desc:'Pegaso de carga. +55% velocidad.' },
-  mammoth:{ n:'War Mammoth', price:350000, spd:0.25, def:4, kind:'mammoth', body:'#8a6a50', mane:'#5a4030', desc:'Mamut de guerra. +25% velocidad y +4 DEF.' },
-  caballo:{ n:'Caballo chileno', price:300000, spd:0.3, kind:'horse', body:'#7a4a24', mane:'#2a1a10', desc:'Caballo del establo de Curico. +30% velocidad.' },
-  crosis:{ n:'Crosis, the Purger', spd:0.9, def:4, kind:'dragon', body:'#2a3a7a', mane:'#80c0ff', boss:true, desc:'Dragon legendario de Invasion. +90% velocidad y +4 DEF.' },
-  darigaaz:{ n:'Darigaaz, the Igniter', spd:1.0, def:6, kind:'dragon', body:'#6a1010', mane:'#60c040', boss:true, desc:'El dragon mas temido de Dominaria. Doble de velocidad y +6 DEF.' },
-  shivan:{ n:'Shivan Dragon', spd:0.8, def:2, kind:'dragon', body:'#d83020', mane:'#f8c030', boss:true, desc:'Se gana venciendo al Shivan Dragon. +80% velocidad.' },
+  mesa:{ n:'Mesa Pegasus', price:125000, spd:0.12, kind:'horse', body:'#f4f4f8', mane:'#e8c040', wings:true, desc:'Caballo alado blanco. +12% velocidad.' },
+  nightmare:{ n:'Nightmare', price:150000, spd:0.16, kind:'horse', body:'#2a2032', mane:'#f86020', fire:true, desc:'Caballo negro de crin en llamas. +16% velocidad.' },
+  charger:{ n:'Pegasus Charger', price:250000, spd:0.20, kind:'horse', body:'#f8ecd0', mane:'#80c0ff', wings:true, desc:'Pegaso de carga. +20% velocidad.' },
+  mammoth:{ n:'War Mammoth', price:350000, spd:0.24, def:4, kind:'mammoth', body:'#8a6a50', mane:'#5a4030', desc:'Mamut de guerra. +24% velocidad y +4 DEF.' },
+  caballo:{ n:'Burro de Curico', price:300000, spd:0.08, kind:'horse', donkey:true, body:'#99918a', mane:'#494544', desc:'Burro manso del establo. +8% velocidad: ideal para empezar.' },
+  crosis:{ n:'Crosis, the Purger', spd:0.32, def:4, kind:'dragon', body:'#2a3a7a', mane:'#80c0ff', boss:true, desc:'Dragon legendario de Invasion. +32% velocidad y +4 DEF.' },
+  darigaaz:{ n:'Darigaaz, the Igniter', spd:0.36, def:6, kind:'dragon', body:'#6a1010', mane:'#60c040', boss:true, desc:'El dragon mas temido de Dominaria. +36% velocidad y +6 DEF.' },
+  shivan:{ n:'Shivan Dragon', spd:0.28, def:2, kind:'dragon', body:'#d83020', mane:'#f8c030', boss:true, desc:'Se gana venciendo al Shivan Dragon. +28% velocidad.' },
 };
 for(const id of ['mesa','nightmare','charger','mammoth'])MOUNTS[id].price=Math.max(300000,MOUNTS[id].price*3);
 const mounted = () => S && S.mount && MOUNTS[S.mount] && G.def && !G.def.interior ? MOUNTS[S.mount] : null;
@@ -940,6 +940,7 @@ function drawMount(id, x, y, dir, f, layer){
   const o = (rx, ry, w, hh, col) => { p(rx - 1, ry - 1, w + 2, hh + 2, O); p(rx, ry, w, hh, col); p(rx, ry + hh - 1, w, 1, shadeCol(col, 0.72)); p(rx, ry, w, 1, shadeCol(col, 1.15)); };
   const B = M.body, Mn = M.fire && (frame >> 2) & 1 ? '#fce040' : M.mane, flap = (frame >> 3) & 1, l1 = f ? 1 : 0, l2 = f ? 0 : 1;
   if (layer === 'back') { ctx.fillStyle = 'rgba(0,0,0,.25)'; ctx.fillRect(x + 3, y + 13, 16, 3); }
+  if(M.donkey&&((side&&layer==='front')||(!side&&layer===(dir===1?'back':'front')))){o(side?17:7,side?-8:0,2,6,B);o(side?20:13,side?-7:0,2,5,B);}
   if (M.kind === 'horse') {
     if (side) {
       if (layer === 'front') { o(15, 0, 4, 7, B); o(17, -3, 6, 4, B); p(20, -2, 1, 1, O); p(22, -1, 1, 1, shadeCol(B, 0.6)); o(14, -2, 2, 7, Mn); p(16, -4, 1, 2, O); return; }
@@ -1642,6 +1643,21 @@ function genDungeon(dk, f){
   def.map = m.map(r => r.map(c => c === '#' ? 'Q' : c).join(''));
   return def;
 }
+function widenStairLandings(def){
+  const m=def.map.map(row=>row.split('')),stairs=[];
+  for(let y=1;y<9;y++)for(let x=1;x<14;x++)if('UV'.includes(m[y][x]))stairs.push([x,y]);
+  for(const [sx,sy]of stairs)for(let y=Math.max(1,sy-1);y<=Math.min(8,sy+1);y++)for(let x=Math.max(1,sx-1);x<=Math.min(13,sx+1);x++)if(!'UVOcC'.includes(m[y][x]))m[y][x]='.';
+  // Keep spawn indices stable: old three-minute clear timers still refer to the same enemy.
+  const away=(x,y)=>stairs.every(([sx,sy])=>Math.max(Math.abs(x-sx),Math.abs(y-sy))>2);
+  const candidates=[];for(let y=1;y<9;y++)for(let x=1;x<14;x++)if(m[y][x]==='.'&&away(x,y))candidates.push([x,y]);
+  def.enemies=(def.enemies||[]).map(([type,x,y])=>{
+    if(away(x,y))return [type,x,y];
+    const size=Math.ceil(MON[type].size/TS),safe=candidates.filter(([a,b])=>a+size<=14&&b+size<=9&&Array.from({length:size},(_,dy)=>Array.from({length:size},(_,dx)=>m[b+dy][a+dx]==='.'&&away(a+dx,b+dy)).every(Boolean)).every(Boolean));
+    const dest=safe.sort((a,b)=>Math.abs(a[0]-x)+Math.abs(a[1]-y)-Math.abs(b[0]-x)-Math.abs(b[1]-y))[0];
+    return dest?[type,...dest]:[type,x,y];
+  });
+  def.map=m.map(row=>row.join(''));return def;
+}
 const DEF_CACHE = {};
 // Abre camino hacia todo lo importante (salidas, puertas, cofres, NPC, escaleras, entrada de mazmorra, bote).
 // Parte desde una salida (o el bote, o la escalera de subida) y, si algo no se alcanza, rompe la menor cantidad de muros.
@@ -1693,7 +1709,7 @@ function connectMap(def){
   return def;
 }
 function getDef(id){
-  if (id.startsWith('D:')) { const [, dk, f] = id.split(':'); return connectMap(genDungeon(dk, +f)); }
+  if (id.startsWith('D:')) { const [, dk, f] = id.split(':'); return connectMap(widenStairLandings(genDungeon(dk, +f))); }
   if (DEF_CACHE[id]) return DEF_CACHE[id];
   let def;
   if (WILD[id]) def = genWild(id);
@@ -1784,7 +1800,7 @@ function stats(){
   for (const [slot] of GEAR_SLOTS) { const id = S.gear && S.gear[slot]; if (id) for (const [k, v] of Object.entries(ARMOR[id].st)) st[k] += v; }
   return st;
 }
-const speed = () => (1.0 + stats().agi * 0.05 + (PL.piscola > 0 ? 0.45 : 0)) * (1 + (mounted() ? mounted().spd : 0)) * (CH().marathon ? 1.2 : 1);
+const speed = () => (1.0 + Math.min(.8,stats().agi * .035) + (PL.piscola > 0 ? 0.25 : 0)) * (1 + (mounted() ? mounted().spd : 0)) * (CH().marathon ? 1.2 : 1);
 const owned = id => (S.cards[id] || 0) > 0;
 const deckCount = d => DECK[d].cards.filter(owned).length;
 const deckDone = d => deckCount(d) === DECK_SIZE;
@@ -3146,6 +3162,8 @@ const TEMPLE_IDENTITIES={
  salaTempest:{name:'FORJA DEL TRUENO',host:'BRUNILDA COBRE',judge:'MAESTRO AMARO',color:'#f09858',motif:'fogata',line:'¡Que ardan las dudas! Soy Brunilda, grabadora de metal. Aqui forjamos cartas bajo tormentas: una jugada lenta puede costarte la ronda.',challenge:'FORJA: presion agresiva; protege tu preparacion de combo.',styles:['agro','agro','combo','agro','ctrl','agro'],players:['SAUL HERRERO','GRETA CENTELLA','MATEO CARBON','OLIVIA DEL YUNQUE','FELIX COBRE','NORA TORMENTA'],tables:[[2,3],[10,3],[6,6]],shop:[6,2]},
  liga:{name:'SALON DEL ECLIPSE',host:'DOÑA ISADORA',judge:'MAESE BALTASAR',color:'#e8d898',motif:'torre',line:'Soy Isadora, guardiana de los campeones. Cada ciudad te enseño una forma de jugar; el Eclipse exige dominarlas todas. Tras la victoria, el umbral despertara.',challenge:'ECLIPSE: todos los estilos; Galindo custodia la ultima ronda.',styles:['agro','ctrl','combo','ctrl','agro','combo'],players:['ANTONIA DEL ALBA','GASPAR PLATERO','FLORA DEL ECLIPSE','JULIAN DE LOS ANDES','ESTELA NOCTURNA','MARTIN DEL SOL'],tables:[[2,4],[6,3],[10,6]],shop:[2,6]}
 };
+// Keep a broad aisle above the entrance, especially in Tempest.
+TEMPLE_IDENTITIES.salaTempest.tables[2]=[2,6];
 function configureTemples(){
  for(const [room,p]of Object.entries(TEMPLE_IDENTITIES)){
   const d=ROOMS[room],org=d.npcs.find(n=>n.id.startsWith('liga'));
@@ -3318,12 +3336,13 @@ function drawRealmPortal(cx,cy){
 function portalUnlocked(){return pokemonRealm()||G.preview||S.ligaWins>0;}
 function pokemonDiscovered(){return !!(S&&(S.portalDiscovered||pokemonRealm()||Object.hasOwn(S.realmProgress||{},'pokemon')));}
 function portalTalk(){if(!portalUnlocked()){say(['EL UMBRAL DUERME. Conquista las cinco ligas, derrota a los guardianes y gana la Liga Nacional. Solo el campeon puede cruzar.']);return;}say(pokemonDiscovered()?['El umbral responde a tus cartas. Al otro lado estan las mismas ciudades, transformadas por una entidad que libero Pokemon salvajes.','Tu compañero sera una criatura antigua de Magic. Tu avance en este mundo te espera al regresar.']:['El umbral responde a tus cartas. Las estrellas ocultan un mundo que nadie de estas ciudades ha visto.','Solo al cruzar descubriras que hay al otro lado. Tu avance en este mundo te espera al regresar.'],[{t:'SELLAR LA CAJA',fn:closeUrzaBox},{t:pokemonRealm()?'REGRESAR A MAGIC':'CRUZAR EL UMBRAL',fn:startRealmTravel},...(pokemonDiscovered()?[{t:'ELEGIR COMPAÑERO MAGIC',fn:chooseMagicPet}]:[]),{t:'TODAVIA NO',fn:null}]);}
-const REALM_PROGRESS=['cards','complete','bosses','leagues','quests','kills','killsTotal','ligaWins','trophies','finder','hiddenFound','tableResults','chests','keys','found','foundZones','killedAt','leagueVisits','gymRuns','boxClosed','storyHeard'];
+const REALM_PROGRESS=['cards','complete','bosses','leagues','quests','kills','killsTotal','ligaWins','trophies','finder','hiddenFound','tableResults','chests','keys','found','foundZones','killedAt','leagueVisits','gymRuns','leagueRetries','duelRetries','boxClosed','storyHeard'];
 function switchRealm(target){
  const source=S.realm||'magic';S.realmProgress=S.realmProgress||{};
  S.realmProgress[source]=Object.fromEntries(REALM_PROGRESS.map(k=>[k,structuredClone(S[k]??(k==='killsTotal'||k==='ligaWins'||k==='trophies'?0:k==='finder'||k==='boxClosed'?false:{}))]));
  const next=S.realmProgress[target]||newSave(S.ch,S.customChar);for(const k of REALM_PROGRESS)S[k]=structuredClone(next[k]??(k==='killsTotal'||k==='ligaWins'||k==='trophies'?0:k==='finder'||k==='boxClosed'?false:{}));
- S.realm=target;if(target==='pokemon'){S.portalDiscovered=true;S.magicPet=S.magicPet||'shivan';}saveGame();
+ if(source==='pokemon'&&S.lvl>=100)S.beyondMagic={lvl:S.lvl,xp:S.xp};
+ S.realm=target;if(target==='pokemon'){S.portalDiscovered=true;S.magicPet=S.magicPet||'shivan';if(S.beyondMagic&&S.beyondMagic.lvl>=S.lvl){S.lvl=S.beyondMagic.lvl;S.xp=S.beyondMagic.xp;}}else if(S.lvl>=100){if(S.lvl>100)S.beyondMagic={lvl:S.lvl,xp:S.xp};S.lvl=100;S.xp=0;}saveGame();
 }
 function sealReady(){return DECKS.every(d=>deckDone(d.id))&&guardiansDone()>=5&&leaguesDone()>=5&&(S.ligaWins||0)>0;}
 function closeUrzaBox(){if(pokemonRealm()){say(['Este es el reflejo de la maldicion. Primero regresa al mundo de Magic para sellar la Caja de Urza.']);return;}if(S.boxClosed){say(['La Caja de Urza esta sellada. Las criaturas regresaron a sus cartas y las ciudades recuperaron la paz.']);return;}if(!sealReady()){say(['El hechizo de cierre exige entender cada forma de magia. Domina los '+DECKS.length+' mazos, vence a los cinco guardianes y conquista las cinco ligas y la Nacional.','Mazos completos: '+DECKS.filter(d=>deckDone(d.id)).length+'/'+DECKS.length+'. El dominio de las cartas puede devolver las criaturas a su origen.']);return;}S.boxClosed=true;G.enemies=[];G.eshots=[];G.aoes=[];saveGame();say(['Tu baraja responde al sello. Cada criatura se transforma en luz y regresa a su carta. La Caja de Urza se cierra.','Las ciudades vuelven a respirar. Tu sueño de ser campeon salvo al mundo. ¡Ahora podemos brindar en paz!'],null,()=>{G.state='ending';G.t=0;playMusic('tcg');});}
@@ -3340,6 +3359,7 @@ function drawRealmTravel(){
 }
 
 function loadRoom(id, px, py){
+  if(!pokemonRealm()&&S.lvl>100){S.beyondMagic={lvl:S.lvl,xp:S.xp};S.lvl=100;S.xp=0;}
   if(G.octayRace&&id!=='puertoOctay')endOctayRace();
   if(leaguesDone()>=4)S.finder=true;
   let d = getDef(id);
@@ -3436,11 +3456,12 @@ const DIRV = [[0,1],[0,-1],[-1,0],[1,0]];
 function toast(s, col='#fff'){ G.toasts.push({ s, t:0, col }); if (G.toasts.length > 3) G.toasts.shift(); }
 function floatText(s, x, y, col='#fff'){ G.floats=G.floats.filter(f=>Math.hypot(f.x-x,f.y-y)>10||f.t>12);G.floats.push({ s, x, y, t:0, col });if(G.floats.length>6)G.floats.shift(); }
 
-const MAX_LVL = 200; // nivel máximo (1 oct): la mitad Premodern llega cerca del 100, el mundo Pokémon lleva al 200
+const MAX_LVL = 200;
+const levelCap=()=>pokemonRealm()?MAX_LVL:100;
 function addXP(n){
-  if (S.lvl >= MAX_LVL) { S.xp = 0; return; }
+  const cap=levelCap();if (S.lvl >= cap) { S.xp = 0; return; }
   S.xp += n;
-  while (S.lvl < MAX_LVL && S.xp >= xpNeed()) {
+  while (S.lvl < cap && S.xp >= xpNeed()) {
     S.xp -= xpNeed(); S.lvl++;
     const main = CH().main, others = ['fue','des','agi','int'].filter(k => k !== main);
     S.st[main]++; S.st[pick(others)]++;
@@ -3448,7 +3469,7 @@ function addXP(n){
     S.hp = S.maxHp; S.mp = maxMp(); G.lvlFx = 90;
     for (let i = 0; i < 16; i++) G.parts.push({ k:'heal', x:PL.x + 5 + Math.cos(i * 0.4) * 10, y:PL.y + 2 + Math.sin(i * 0.4) * 6, vx:0, vy:-0.8, t:0 });
     SFX.lvl(); toast('NIVEL ' + S.lvl + ': +1 ' + main.toUpperCase() + ', VIDA Y MAGIA AL MAXIMO', '#fcd84a');
-    if (S.lvl >= MAX_LVL) { S.xp = 0; SFX.win(); say(['¡NIVEL 200! Llegaste al nivel maximo.',pokemonDiscovered()?'Ya no hay criatura en Dominaria ni en el mundo Pokemon que te asuste. Eres leyenda.':'Ya no hay criatura en Dominaria que te asuste. Eres leyenda.']); break; }
+    if (S.lvl >= cap) { S.xp = 0; SFX.win();say(['¡NIVEL '+cap+'! Llegaste al nivel maximo de este mundo.','Tu dominio de las cartas te convierte en leyenda.']); break; }
   }
 }
 const meleeDamage = (st=stats()) => 1 + Math.floor(st.fue / 3) + Math.floor((S.lvl - 1) / 3);
@@ -4753,7 +4774,7 @@ function talkTo(id, npc, skipQuest){
     for (const m of own) ch.push({ t:'MONTAR ' + MOUNTS[m].n.toUpperCase(), fn:() => { S.mount = m; saveGame(); toast('MONTADO EN ' + MOUNTS[m].n.toUpperCase(), '#fcd84a'); } });
     if (S.mount) ch.push({ t:'IR A PIE', fn:() => { S.lastMount = S.mount; S.mount = null; saveGame(); } });
     ch.push({ t:'NADA', fn:null });
-    say(['CABALLERIZO: ¡Bienvenido al establo de Curico, patron! El caballo chileno cuesta $300.000 y te lleva un 30% mas rapido. Tambien tenemos Mesa Pegasus, Nightmare, Pegasus Charger y War Mammoth.', 'El Shivan Dragon no se vende: hay que vencerlo. Con R te subes y te bajas. Aqui mismo junto al rio puedes ver los caballos y probar tu montura.'], ch.slice(0, 6));
+    say(['CABALLERIZO: ¡Bienvenido al establo de Curico, patron! El burro cuesta $300.000: es manso y te lleva un 8% mas rapido. Despues vienen Mesa Pegasus, Nightmare, Pegasus Charger y War Mammoth, cada uno un poco mas veloz.', 'Los dragones se ganan venciendo a sus guardianes. Son la ultima mejora: rapidos, pero controlables. Con R te subes y te bajas.'], ch.slice(0, 6));
     return;
   }
   if (id === 'mago') { say(['MAGA: ¿Quieres aprender magia? Cada libro te enseña un hechizo para siempre.'], null, () => openShop('magia', 'LIBROS DE MAGIA')); return; }
@@ -4931,36 +4952,42 @@ function startTour(deck, cfg){
   if(cfg.liga)names.push(pokemonRealm()?NPCDEF.fernando.n:NPCDEF.galindo.n);
   G.tour = { deck, cfg, room:G.roomId, px:PL.x, py:PL.y, round:0, wins:0, phase:'strategy', stage:0, decisions:[], strategyScore:0, sel:0, tactic:null, t:0, buzz:S.buzz, opps:names.map(n => {const id=[...(G.def.roster||[]),...TEMPLE_PLAYERS,'fernando'].find(id=>NPCDEF[id].n===n);return {n,deck:id?(localPlayerDeck(id)||DUELIST_DECK[id]||'landstill'):pick(DECKS).id,look:id?NPCDEF[id]:randomLook(n)};}), ev:[], ei:0, lives:[20, 20], cur:null, pops:[] };
   S.buzz = 0; S.beers = 0;
+  G.tour.retryKey=cfg.league||(cfg.liga?'nacional':null);G.tour.retryBonus=Math.min(3,(S.leagueRetries||{})[G.tour.retryKey]||0);
   prepareCardQuestion(G.tour);G.state = 'tour'; playMusic('fanfare'); SFX.ok();
 }
-function prepareCardQuestion(t){const style=DECK_STYLE[t.opps[t.round].deck];t.intent=t.hint||((Math.random()<.65)?style:pick(['agro','ctrl','combo']));t.hint=null;t.question={agro:'¿COMO FRENAS SU ATAQUE?',ctrl:'¿COMO ROMPES SUS RESPUESTAS?',combo:'¿COMO DETIENES SU COMBO?'}[t.intent];}
+function prepareCardQuestion(t){const style=DECK_STYLE[t.opps[t.round].deck];t.intent=style;t.hint=null;t.question={agro:'¿COMO FRENAS SU ATAQUE?',ctrl:'¿COMO ROMPES SUS RESPUESTAS?',combo:'¿COMO DETIENES SU COMBO?'}[t.intent];}
 const CARD_ANSWERS=['PRESIONAR CON CRIATURAS','RESERVAR RESPUESTA','PREPARAR MI COMBO','OBSERVAR Y ADAPTAR'];
 function prepRound(){
   const t=G.tour,o=t.opps[t.round],tactic=TACTICS[t.sel].id,style=DECK_STYLE[o.deck];
   const rival=t.intent||style;
   const counter=BEATS[tactic]===rival,exposed=BEATS[rival]===tactic;
   t.tactic=tactic;t.counter=counter;t.exposed=exposed;
-  t.strategyScore=(t.strategyScore||0)+(counter?.16:exposed?-.16:0)+(DECK_STYLE[t.deck]===tactic?.025:0);
+  t.strategyScore=(t.strategyScore||0)+(counter?2:exposed?0:1);
   t.decisions=t.decisions||[];t.decisions.push({tactic,rival,counter,exposed});
   if(tactic==='adapt')t.hint=style;
-  t.feedback=tactic==='adapt'?'LEISTE EL RIVAL: '+TACTICS.find(v=>v.id===style).n:counter?'BUENA RESPUESTA: GANAS VENTAJA':exposed?'EL RIVAL TE CONTRARRESTA':'JUGADA EQUILIBRADA';
+  t.feedback=counter?'BUENA RESPUESTA: +2 PUNTOS':exposed?'TE CONTRARRESTAN: +0 PUNTOS':tactic==='adapt'?'OBSERVAS SU MAZO: +1 PUNTO':'JUGADA EQUILIBRADA: +1 PUNTO';
   t.stage=(t.stage||0)+1;t.sel=0;
   if(t.stage<3){prepareCardQuestion(t);SFX.move();return;}
-  t.roll=[1+rnd(6),1+rnd(6)];o.level=Math.max(S.lvl,1+t.round*3);
-  const pw=clamp(.5+t.strategyScore+clamp(mu(t.deck,o.deck),-.1,.1)+(cardPower()-rivalPower(o.level,o.n===NPCDEF.galindo.n?4:0))*.04+(CH().foresight?.04:0)+Math.min(.04,t.buzz*.01)+(t.roll[0]-t.roll[1])*.012-t.round*.015-(t.cfg.diff||0),.1,.85);
-  t.pwin=pw;t.iwin=Math.random()<pw;t.ev=genDuel(t.deck,o.deck,t.iwin);t.ei=0;t.lives=[20,20];t.cur=null;t.phase='vs';t.t=0;t.pops=[];
+  t.roll=[1+rnd(6),1+rnd(6)];t.first=t.roll[0]>=t.roll[1]?0:1;
+  t.levelBonus=Math.floor(Math.min(levelCap(),S.lvl)/10);t.target=(t.cfg.liga?7:t.cfg.league==='tempest'?6:t.cfg.league?5:3)+Math.floor(t.round/3);
+  t.deckBonus=BEATS[DECK_STYLE[t.deck]]===style?1:0;
+  t.score=t.strategyScore+t.levelBonus+t.deckBonus+(t.retryBonus||0)+(CH().foresight?.5:0);
+  t.iwin=t.score>=t.target;t.ev=genDuel(t.deck,o.deck,t.iwin,t.first);t.ei=0;t.lives=[20,20];t.cur=null;t.phase='vs';t.t=0;t.pops=[];
 }
-function genDuel(myDeck, oppDeck, iWin){
-  const L = [20, 20], ev = [], winner = iWin ? 0 : 1; let turn = rnd(2), guard = 0;
+function isCounterCard(id){return !!CARDS[id]&&/contrarresta/i.test(CARDS[id].tx);}
+function genDuel(myDeck, oppDeck, iWin,first=rnd(2)){
+  const L = [20, 20], ev = [], winner = iWin ? 0 : 1; let turn = first, guard = 0;
   while (L[0] > 0 && L[1] > 0 && guard++ < 60) {
-    const deck = turn === 0 ? myDeck : oppDeck, card = pick(DECK[deck].cards), isW = turn === winner, opp = 1 - turn;
+    const deck = turn === 0 ? myDeck : oppDeck, isW = turn === winner, opp = 1 - turn;let card=pick(DECK[deck].cards);
     let dmg = isW ? 3 + rnd(4) : 1 + rnd(4), heal = 0;
     if (deck === 'life' && Math.random() < 0.4) { heal = 2 + rnd(4); dmg = 0; }
     else if ((deck === 'replenish' || deck === 'langostino' || deck === 'landstill') && Math.random() < 0.25) dmg = 0;
+    if(isCounterCard(card)){dmg=0;heal=card==='absorb'?3:0;}
     if (!isW) dmg = Math.min(dmg, L[opp] - 1);
-    if (guard > 40 && isW) dmg = L[opp];
+    if (guard > 40 && isW) {dmg=L[opp];heal=0;if(isCounterCard(card))card=DECK[deck].cards.find(id=>!isCounterCard(id));}
     L[opp] -= dmg; L[turn] += heal;
-    ev.push({ who:turn, card, dmg, heal, lives:[L[0], L[1]] });
+    const effect=(isCounterCard(card)&&!dmg?'COUNTER · ':'')+(heal?(turn===0?'RECUPERAS ':'RIVAL RECUPERA ')+heal+' VIDAS':dmg?(opp===0?'PIERDES ':'RIVAL PIERDE ')+dmg+' VIDAS':isCounterCard(card)?'HECHIZO ANULADO':DECK_STYLE[deck]==='combo'?'PREPARA SU COMBO':'PREPARA LA SIGUIENTE JUGADA');
+    ev.push({ who:turn, card, dmg, heal,effect, lives:[L[0], L[1]] });
     turn = opp;
   }
   return ev;
@@ -4975,16 +5002,16 @@ function updateTour(){
     if (pressed('down') || pressed('right')) { T_.sel = (T_.sel + 1) % n; SFX.move(); }
     if (pressed('a')) { prepRound(); SFX.ok(); }
   }
-  else if (T_.phase === 'vs') { if (T_.t > 100 || (T_.t > 20 && pressed('a'))) { T_.phase = 'duel'; T_.t = 0; } }
+  else if (T_.phase === 'vs') { if (T_.t > 180 || (T_.t > 20 && pressed('a'))) { T_.phase = 'duel'; T_.t = 0; } }
   else if (T_.phase === 'duel') {
-    const step = K.a ? 10 : 42;
+    const step = K.a ? 12 : 72;
     if (T_.t >= step) {
       T_.t = 0;
       if (T_.ei < T_.ev.length) {
         const e = T_.ev[T_.ei++]; T_.cur = e; T_.lives = e.lives;
         if (e.dmg) { T_.pops.push({ s:'-' + e.dmg, side:1 - e.who, col:'#ff6040', t:0 }); SFX.hit(); }
         if (e.heal) { T_.pops.push({ s:'+' + e.heal, side:e.who, col:'#60e070', t:0 }); SFX.heal(); }
-        if (!e.dmg && !e.heal) { T_.pops.push({ s:'¡NO!', side:e.who, col:'#88c8f8', t:0 }); SFX.move(); }
+        if (!e.dmg && !e.heal) { T_.pops.push({ s:e.effect.startsWith('COUNTER')?'COUNTER':'PREPARA', side:e.who, col:'#88c8f8', t:0 }); SFX.move(); }
       } else {
         T_.phase = 'res'; T_.t = 0;
         if (T_.iwin) { T_.wins++; SFX.win(); } else SFX.lose();
@@ -5006,6 +5033,7 @@ function updateTour(){
 }
 function finishTour(){
   const T_ = G.tour, w = T_.wins, N = T_.cfg.rounds, champ = w === N, liga = T_.cfg.liga;
+  if(T_.retryKey){S.leagueRetries=S.leagueRetries||{};S.leagueRetries[T_.retryKey]=champ?0:Math.min(3,(S.leagueRetries[T_.retryKey]||0)+1);}
   if(G.def.cardTemple)for(let i=0;i<=T_.round;i++)recordTempleMatch(T_.opps[i].n,i<w);
   const big = liga || !!T_.cfg.league;
   const coins = levelCoins(w * (T_.cfg.perWin || 2000) + (champ ? (T_.cfg.champ || 5000) : 0));
@@ -5047,7 +5075,7 @@ function drawTour(){
   tiny(DECK[T_.deck].n, 34, 81, DECK[T_.deck].col, 'center');
   // opponent
   ctx.save(); ctx.translate(190, 30); ctx.scale(2, 2); drawPerson(0, 0, o.look, 0, 0); ctx.restore();
-  txt(o.n.length > 9 ? o.n.slice(0, 9) : o.n, 206, 70, '#fff', 'center', '#000');
+  tiny(o.n.slice(0,16),206,70,'#fff','center');
   tiny(DECK[o.deck].n, 206, 81, DECK[o.deck].col, 'center');
   const lifeBox = (x, v) => { R(x - 20, 90, 40, 20, '#000'); R(x - 19, 91, 38, 18, v <= 5 ? '#6a1a1a' : '#2a2248'); txt(String(Math.max(0, v)), x, 94, '#fff', 'center', '#000', 16); };
   lifeBox(34, T_.lives[0]); lifeBox(206, T_.lives[1]);
@@ -5055,21 +5083,22 @@ function drawTour(){
   if (T_.phase === 'strategy') {
     R(34, 47, 172, 60, '#080610'); R(36, 49, 168, 56, '#302044');
     tiny(T_.question||'¿QUE JUGADA ELIGES?',120,39,'#90e8ff','center');
-    tiny(['1/3 APERTURA','2/3 RESPUESTA','3/3 CIERRE'][T_.stage||0]+' · RIVAL NV '+Math.max(S.lvl,1+T_.round*3),120,51,'#fcd84a','center');
+    tiny(['1/3 APERTURA','2/3 RESPUESTA','3/3 CIERRE'][T_.stage||0]+' · TU NIVEL '+S.lvl,120,51,'#fcd84a','center');
     const oppStyle = T_.intent||DECK_STYLE[o.deck];
-    TACTICS.slice(0, 4).forEach((t, i) => { const y = 61 + i * 10, on = T_.sel === i, mark = BEATS[t.id] === oppStyle ? ' +VENTAJA' : BEATS[oppStyle] === t.id ? ' -PELIGRO' : ' NEUTRO'; if (on) R(43, y - 1, 154, 10, '#59406e'); tiny(CARD_ANSWERS[i],48,y,on?'#fff':'#bdb0d0'); });
+    TACTICS.slice(0, 4).forEach((t, i) => { const y = 61 + i * 10, on = T_.sel === i,points=BEATS[t.id]===oppStyle?2:BEATS[oppStyle]===t.id?0:1;if (on) R(43, y - 1, 154, 10, '#59406e'); tiny(CARD_ANSWERS[i],48,y,on?'#fff':'#bdb0d0');tiny('+'+points,190,y,points===2?'#80e890':points===0?'#ff9080':'#e8d890','right'); });
     tiny(T_.hint?'LECTURA: '+TACTICS.find(v=>v.id===T_.hint).n:'SU JUGADA: '+TACTICS.find(v=>v.id===oppStyle).n,120,102,'#d8c8e8','center');
-    tiny(T_.feedback||'AGRO > COMBO > CONTROL > AGRO',120,145,'#90e8ff','center');
+    tiny(T_.feedback||'NIVEL +'+Math.floor(S.lvl/10)+' · PRACTICA +'+(T_.retryBonus||0),120,145,'#90e8ff','center');
 
     tiny('FLECHAS ELIGEN · A CONFIRMA', 120, 151, '#fcd84a', 'center');
   } else if (T_.phase === 'vs') {
     txt('VS', 120, 60, '#fcd84a', 'center', '#7a3a10', 16);
-    tiny('DADOS ' + T_.roll[0] + ' VS ' + T_.roll[1] + (T_.counter ? ' · BUEN MATCHUP' : T_.exposed ? ' · CUIDADO' : ''), 120, 90, T_.counter ? '#80e890' : T_.exposed ? '#ff9080' : '#c8c0e8', 'center');
-    tiny('POSIBILIDAD: ' + Math.round(T_.pwin * 100) + '%  · A: EMPEZAR', 120, 98, '#c8c0e8', 'center');
-    if (T_.buzz) tiny('+' + T_.buzz + ' INT POR LA CERVEZA', 120, 104, '#fcd84a', 'center');
+    tiny('DADOS '+T_.roll[0]+' / '+T_.roll[1]+' · '+(T_.first===0?'COMIENZAS TU':'COMIENZA EL RIVAL'),120,83,'#fcd84a','center');
+    tiny('JUGADAS '+T_.strategyScore+' + NIVEL '+T_.levelBonus+' + MAZO '+T_.deckBonus,120,94,'#c8c0e8','center');
+    tiny('PRACTICA +'+(T_.retryBonus||0)+' · TOTAL '+T_.score+' / META '+T_.target,120,103,'#90e8ff','center');
+    tiny('A: VER PARTIDA · DADO: SOLO EL ORDEN',120,151,'#c8c0e8','center');
   } else if (T_.cur) {
     drawCardBig(T_.cur.card, 74, 18);
-    tiny(T_.cur.who === 0 ? 'TU JUGADA' : 'JUGADA RIVAL', 120, 150, '#c8c0e8', 'center');
+    R(4,144,232,14,'#080610');tiny(T_.cur.who===0?'TU CARTA':'CARTA DEL RIVAL',120,146,'#c8c0e8','center');tiny(T_.cur.effect,120,153,T_.cur.dmg?'#ffb080':'#90e8ff','center');
   }
   if (T_.phase === 'duel') tiny(TOUCH ? 'MANTÉN A PARA ACELERAR' : 'MANTÉN Z PARA ACELERAR', 120, 12 + 4, '#8a80b0', 'center');
   if (T_.phase === 'res') {
@@ -5294,7 +5323,7 @@ function drawMenu(){
     txt(CH().n, 36, 80, '#fff', 'center', '#000');
     tiny(CH().tag, 36, 91, '#9db8a8', 'center');
     txt('NIVEL ' + S.lvl, 76, 22, '#fcd84a', 'left', null);
-    R(76, 33, 100, 4, '#2a3a3a'); R(76, 33, Math.round(100 * (S.lvl >= MAX_LVL ? 1 : S.xp / xpNeed())), 4, '#60c8e8');
+    R(76, 33, 100, 4, '#2a3a3a'); R(76, 33, Math.round(100 * (S.lvl >= levelCap() ? 1 : S.xp / xpNeed())), 4, '#60c8e8');
     tiny('EXP ' + S.xp + '/' + xpNeed(), 180, 32, '#9db8a8');
     const st = stats(), b = SWORDS[S.eq].st;
     [['FUE','fue','DANO'],['DES','des','CRITICOS Y CARTAS'],['AGI','agi','VELOCIDAD'],['INT','int','TORNEOS']].forEach(([l, k, h], i) => {
@@ -5609,8 +5638,8 @@ function drawHUD(){
   }
   const hy = 13;
   R(3, hy, 64, 15, 'rgba(0,0,0,.4)');
-  tiny('NV ' + S.lvl + (S.lvl >= MAX_LVL ? ' MAX' : ''), 5, hy + 2, '#fcd84a');
-  R(26, hy + 3, 38, 3, '#1a1020'); R(26, hy + 3, Math.round(38 * (S.lvl >= MAX_LVL ? 1 : S.xp / xpNeed())), 3, '#fcd84a');
+  tiny('NV ' + S.lvl + (S.lvl >= levelCap() ? ' MAX' : ''), 5, hy + 2, '#fcd84a');
+  R(26, hy + 3, 38, 3, '#1a1020'); R(26, hy + 3, Math.round(38 * (S.lvl >= levelCap() ? 1 : S.xp / xpNeed())), 3, '#fcd84a');
   const mm = maxMp(); R(5, hy + 9, 59, 4, '#1a1020'); R(5, hy + 9, Math.round(59 * Math.min(1, (S.mp || 0) / mm)), 4, '#3a8ae8'); R(5, hy + 9, Math.round(59 * Math.min(1, (S.mp || 0) / mm)), 1, '#a8d8ff');
   if (S.spells && S.spells.length) { const sid = S.spells[(S.spellSel || 0) % S.spells.length], nm = SPELLS[sid].n + ' NV' + spellLvl(sid); R(3, hy + 16, nm.length * 4 + 14, 8, 'rgba(0,0,0,.4)'); R(5, hy + 17, 5, 5, '#88e0ff'); tiny(nm, 12, hy + 17, '#c8f0ff'); }
   ctx.globalAlpha = 1;
@@ -6706,20 +6735,17 @@ function setupDuel(n){
   say(['¿Con que mazo juegas?'], deckChoices(done, d => pickBet({ id:d.id })));
 }
 function beginDuel(opp, deck, bet){
-  opp={...opp,level:Math.max(S.lvl,opp.bonus>=4?15:1)};
+  opp={...opp,level:opp.level||(pokemonRealm()?(opp.gym?.key==='nacional'?130:80+(opp.bonus||0)*8):20+(opp.bonus||0)*4)};
   G.duel = { opp, deck:deck.id, borrowed:!!deck.borrowed, bet, pl:20, op:20, phase:'choose', sel:0, t:0, dice:[1, 1], card:null, pops:[], tricks:CH().cheat ? 2 : 0, turn:1, last:null, lines:[] };
+  G.duel.retryKey=opp.gym?opp.gym.key+':'+opp.gym.index:opp.name;G.duel.retryBonus=Math.min(3,(S.duelRetries||{})[G.duel.retryKey]||0);
   G.state = 'duel'; playMusic('fanfare'); SFX.ok();
 }
 function duelOptions(){ const d=G.duel;return TACTICS.slice(0,3).concat(TACTICS.find(t=>t.id===(d.tricks>0?'trick':'adapt'))); }
-function cardPower(){const st=stats();return Math.min(3,Math.log2(1+Math.max(0,st.int-5)+houseBonus('tourInt'))*.35+Math.sqrt(Math.max(0,S.lvl-1))*.12+(owned(LEGEND)?.25:0));}
-function rivalPower(level,expert=0){return Math.min(3,Math.sqrt(Math.max(0,level-1))*.22+Math.min(1.2,expert*.3));}
+function cardPower(){const st=stats();return Math.min(24,1+S.lvl/10+Math.log2(1+Math.max(0,st.int-5)+houseBonus('tourInt'))*.1+(owned(LEGEND)?.25:0));}
+function rivalPower(level,expert=0){return 1+level/20+expert*.25;}
 function oppPick(d){
   if (d.predicted) { const choice = d.predicted; d.predicted = null; return choice; }
-  const r = Math.random();
-  if (r < Math.min(.4,.15+d.opp.level*.004) && d.last && LOSES_TO[d.last]) return LOSES_TO[d.last];
-  if (r < 0.65) return DECK_STYLE[d.opp.deck];
-  if (r < 0.7 && LOSES_TO[d.last]) return LOSES_TO[d.last];
-  return pick(['agro','ctrl','combo']);
+  return DECK_STYLE[d.opp.deck];
 }
 function resolveDuel(d){
   const st = stats();
@@ -6733,11 +6759,12 @@ function resolveDuel(d){
   const myDeck = DECK_STYLE[d.deck] === myT ? 1 : 0, opDeck = DECK_STYLE[d.opp.deck] === d.opT ? 1 : 0;
   const power=cardPower(), enemyPower=rivalPower(d.opp.level,d.opp.bonus), pen=d.borrowed?-1:0;
   const matchup=clamp(Math.round(mu(d.deck,d.opp.deck)*5),-1,1);
-  const my=r1*.5+myAdv+myDeck+power+pen+matchup,op=r2*.5+opAdv+opDeck+enemyPower;
+  const my=myAdv+myDeck+power+pen+matchup+(d.retryBonus||0),op=opAdv+opDeck+enemyPower;
   d.dice=[r1,r2];d.tot=[my,op];
-  d.lines=['TU: tactica +'+myAdv+' / dominio '+power.toFixed(1)+' = '+my.toFixed(1),'RIVAL NV '+d.opp.level+': tactica +'+opAdv+' / dominio '+enemyPower.toFixed(1)+' = '+op.toFixed(1)];
+  d.first=r1>=r2?0:1;d.lines=['DADOS '+r1+'/'+r2+' · '+(d.first===0?'COMIENZAS TU':'COMIENZA EL RIVAL'),'NIVEL/TU DOMINIO '+power.toFixed(1)+' · TACTICA +'+myAdv+' · PRACTICA +'+(d.retryBonus||0)];
   if(myT==='adapt'){d.predicted=oppPick(d);d.lines[0]='OBSERVAS: proxima jugada '+TACTICS.find(t=>t.id===d.predicted).n;}
   const diff = my - op;
+  const before=[d.pl,d.op];
   d.pops = [];
   if (caught) { d.pl -= 3; d.pops.push({ s:'-3', side:0, col:'#e8c040', t:0 }); }
   if (diff > 0) {
@@ -6750,6 +6777,8 @@ function resolveDuel(d){
     d.pl -= dmg; if (d.opT === 'ctrl') d.op += 1;
     d.card = pick(DECK[d.opp.deck].cards); d.who = 1; d.pops.push({ s:'-' + dmg, side:0, col:'#ff6040', t:0 });
   } else { d.pl -= 1; d.op -= 1; d.card = null; d.pops.push({ s:'-1', side:0, col:'#ff6040', t:0 }, { s:'-1', side:1, col:'#ff6040', t:0 }); }
+  d.effect=diff>0?'RIVAL PIERDE '+(before[1]-d.op)+' VIDAS':diff<0?'PIERDES '+(before[0]-d.pl)+' VIDAS':'AMBOS PIERDEN 1 VIDA';
+  if(isCounterCard(d.card))d.effect='COUNTER · '+d.effect;
 }
 function updateDuel(){
   const d = G.duel; d.t++;
@@ -6772,6 +6801,7 @@ function updateDuel(){
     if (d.t > 40 && pressed('a')) {
       G.state = 'world'; playMusic(roomMusic());
       const earnedXP=cardMatchXP(d.won,d.turn);addXP(earnedXP);recordTempleMatch(d.opp.name,d.won);
+      S.duelRetries=S.duelRetries||{};S.duelRetries[d.retryKey]=d.won?0:Math.min(3,(S.duelRetries[d.retryKey]||0)+1);
       if(d.opp.gym){finishPokemonGymMatch(d.opp.gym,d.won);}
       else if (d.won) { S.coins += d.bet * 2; say([d.opp.name + ': ¡Buena partida! Me ganaste.', 'Ganaste ' + money(d.bet * 2) + ' y '+earnedXP+' EXP de cartas.']); }
       else say([d.opp.name + ': ¡Gane! La suerte estuvo de mi lado.', 'Perdiste la apuesta de ' + money(d.bet) + '. Aprendiste: +'+earnedXP+' EXP de cartas.']);
@@ -6820,6 +6850,7 @@ function drawDuel(){
       if (d.caught) tiny('¡TE PILLARON HACIENDO TRAMPA!', 120, 66, '#e8c040', 'center');
       if (d.card) { const c = CARDS[d.card]; R(84, 70, 72, 24, '#000'); R(85, 71, 70, 22, CCOL[c.c].fr); drawArt(d.card, 87, 73, 16); tiny(c.n.slice(0, 13), 106, 76, c.c === 'W' ? '#1a1020' : '#fff'); tiny(d.who ? 'RIVAL' : 'TU JUGADA', 106, 84, c.c === 'W' ? '#6a5a3a' : '#e8e4ff'); }
       R(4, 104, 232, 22, '#000'); d.lines.forEach((l, i) => tiny(l.slice(0, 58), 8, 108 + i * 8, i ? '#f0a0a0' : '#e8e4ff'));
+      tiny(d.effect||'',120,144,'#ffb080','center');
       if (d.t > 30 && (frame >> 4) & 1) tiny('A PARA SEGUIR', 120, 132, '#c8c0e8', 'center');
     }
   }
@@ -7241,6 +7272,7 @@ function loop(now){
     if (location.hash.startsWith('#elegir') && !G.tested) { G.tested = true; G.state = 'select'; G.sel = +location.hash.slice(8) || 0; }
     if (location.hash.startsWith('#intro=') && !G.tested) { G.tested = true; const n = +location.hash.slice(7); for (let i = 0; i < n; i++) step(); G.freeze = true; }
     if (location.hash.startsWith('#probar=') && !G.tested) { G.tested = true; S = newSave(0); S.lvl = 20; S.maxHp = S.hp = 99; G.state = 'world'; const [id, extra] = decodeURIComponent(location.hash.slice(8)).split('&'); if (extra === 'trofeos') { S.trophies = 2; S.ligaWins = 1; S.leagues = { vina:true, curico:true, pmontt:true, urza:true }; } if (extra === 'mascota') { S.pet = 24; S.dex = { 24:true, 3:true, 131:true }; } if (extra === 'reliquias') S.relics = { moai:1, alpha:1, moneda:3 }; if (extra && extra.startsWith('montura')) { const m = extra.slice(7) || 'mesa'; S.mounts = [m]; S.mount = m; } if (extra === 'pokes') { G.pokeTest = true; } if (extra === 'pelea' || extra === 'kart') { G.arcTest = extra; } if (extra === 'noche') G.forcePhase = 'night'; if (extra === 'lujo') G.lujoTest = true; if (extra === 'surf') S.surf = true; if (extra === 'pong' || extra === 'taca' || extra === 'pool') G.freeTest = extra; if (extra === 'atardecer') G.forcePhase = 'dusk'; if (extra === 'dia') G.forcePhase = 'day'; loadRoom(id, 7 * TS + 3, (id.startsWith('D:') ? 7 : 5) * TS + 4);
+      if(extra==='escalera'&&id.startsWith('D:')){G.preview=true;goTo(id,'U');G.fade=0;G.zoneT=0;G.freeze=true;}
       if (extra === 'viajar' || extra === 'volar') { S.stones = { home:true, tolaria:true }; if (extra === 'volar') for (const d of DECKS.slice(0, 6)) for (const c of d.cards) S.cards[c] = 1; openTravel(); G.dialog.ch = 999; G.dialog.showChoices = true; }
       if (extra === 'atascado') { loadRoom('bosqueRoca', W - PL.w - 2, 7 * TS + 4); }
       if (extra === 'mox') addCard(LEGEND);

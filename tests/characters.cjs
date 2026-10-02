@@ -11,7 +11,7 @@ const storage=new Map();
 const sandbox={console,structuredClone,URLSearchParams,TextEncoder,TextDecoder,Uint8Array,Uint8ClampedArray,Buffer,Math:Object.create(Math),Date,performance:{now:()=>0},navigator:{maxTouchPoints:0},location:{hash:'',search:'',href:'http://localhost/',protocol:'http:'},requestAnimationFrame(){},setTimeout(){},clearTimeout(){},setInterval(){},clearInterval(){},matchMedia:()=>({matches:false}),addEventListener(){},localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v),removeItem:k=>storage.delete(k)},document:{body:element(),createElement:()=>element(),querySelectorAll:()=>[],getElementById(id){if(!elements.has(id))elements.set(id,element());return elements.get(id);}},btoa:s=>Buffer.from(s,'binary').toString('base64'),atob:s=>Buffer.from(s,'base64').toString('binary')};
 sandbox.window=sandbox;sandbox.document.listeners=new Map();sandbox.document.addEventListener=element().addEventListener;sandbox.document.querySelectorAll=selector=>selector==='#pad button'?padButtons:[];
 source=source.replace(/\}\)\(\);\s*$/, `globalThis.gameTest={medalProgress,festivalTasting,festivalBeer,sealReady,closeUrzaBox,DECKS,GUARDIANS,dropLoot,questCoins,levelCoins,itemLevel,usableDrop,POKEMON_GYMS,gymRun,beginPokemonGymMatch,finishPokemonGymMatch,reputationTitle,updateTrainerSight,drawTrainerMarkers,homeOracle,beginAdventure,TEMPLE_IDENTITIES,MAGIC_COMPANIONS,companionInfo,drawCompanion,updatePet,portalUnlocked,switchRealm,startRealmTravel,updateRealmTravel,drawRealmTravel,realmDefinition,realmText,talkTo,localPlayerDeck,addCard,CHARS,CUSTOM_CHAR,normalizeCustom,customCharacter,characterOf,newSave,loadSave,saveGame,slotKey,speed,defense,aquaticBonus,loadRoom,checkConnectivity,drawSelect,drawPerson,drawDuel,drawTour,POKE,pokemonEnemy,enemyName,pokemonRealm,SONGS,roomMusic,tryInteract,meleeMissChance,meleeOutcome,beginDuel,updateDuel,resolveDuel,duelOptions,cardPower,rivalPower,drawMenu,menuClick,updateTour,oppPick,startTour,prepRound,updateItems,step,encodeSave,decodeSave,myState,remoteCharacter,FRIEND_LINES,FRIEND_DECK,FRIENDS_ON_MAP,getDef,SOLID,ROOMS,MOUNTS,shopItems,buyItem,mounted,goTo,friendCast,friendCredits,propSolidSet,K,updateWorld,blocked,npcHit,SLOTS,drawSlots,leagueMapMarks,drawWorldMap,BOAT_ROUTES,QUESTS,questHook,questProg,ensureContract,journalEntries,openQuestJournal,drawQuests,ARMOR,SWORDS,HOUSE,PRIZES,GEAR_SLOTS,dayPhase,DAY_PHASE_TICKS,SPELL_LVLS,spellLvl,petLevel,cardMatchXP,tournamentXP,RESPAWN_MS,killEnemy,hiddenSpot,searchHidden,MON,WORLD,DUNGEONS,startArcade,updateArcade,drawArcade,tennisPoint,requestArcadeExit,cancelArcade,drawWorld,drawHUD,changeRoom,setSelectScroll,selectMaxScroll,revealSelected,selectAt,G,PL,wizardDefaults,setS(value){S=value;},getS(){return S;},setFrame(value){frame=value;}};})();`);
-source=source.replace('gameTest={medalProgress,','gameTest={OKTOBER_REGION,festivalStops,stampFestival,regionalFestival,endOctayRace,pokemonDiscovered,portalTalk,pellucoBeer,pellucoDJ,propAction,startOctayRace,updateOctayRace,OCTAY_CHECKPOINTS,medalProgress,');
+source=source.replace('gameTest={medalProgress,','gameTest={addXP,levelCap,LEAGUES,finishTour,genDuel,OKTOBER_REGION,festivalStops,stampFestival,regionalFestival,endOctayRace,pokemonDiscovered,portalTalk,pellucoBeer,pellucoDJ,propAction,startOctayRace,updateOctayRace,OCTAY_CHECKPOINTS,medalProgress,');
 source=source.replace("function tiny(s, x, y, col='#fff', al='left', raw=false){","function tiny(s, x, y, col='#fff', al='left', raw=false){(globalThis.renderLabels ||= []).push(String(s));");
 vm.runInNewContext(source,sandbox,{timeout:5000});
 const g=sandbox.gameTest;
@@ -78,9 +78,9 @@ g.loadRoom('pueblo',115,100);g.G.items=[{k:'coin',v:100,x:g.PL.x,y:g.PL.y,z:0,vz
 g.setS(g.newSave(12));assert(g.getS().spells.includes('bolt'));assert.equal(g.defense(),2);
 g.loadRoom('pueblo',115,100);g.G.state='world';g.G.dialog=null;g.G.enemies=[];g.getS().hp=2;g.setFrame(299);g.step();assert.equal(g.getS().hp,3);
 g.setS(g.newSave(13));g.beginDuel({name:'Javier',look:g.CHARS[14],deck:'langostino',bonus:0,cheats:false},{id:'life'},1000);g.updateDuel();const predicted=g.G.duel.predicted;assert(predicted);g.drawDuel();assert.equal(g.oppPick(g.G.duel),predicted);
-g.startTour('life');g.G.tour.opps[0].deck='life';g.G.tour.intent='ctrl';g.G.tour.sel=0;sandbox.Math.random=()=>0.5;g.G.tour.sel=1;g.prepRound();g.G.tour.sel=1;g.prepRound();g.G.tour.sel=1;g.prepRound();const withForesight=g.G.tour.pwin;
+g.startTour('life');g.G.tour.opps[0].deck='life';g.G.tour.intent='ctrl';g.G.tour.sel=0;sandbox.Math.random=()=>0.5;g.G.tour.sel=1;g.prepRound();g.G.tour.sel=1;g.prepRound();g.G.tour.sel=1;g.prepRound();const withForesight=g.G.tour.score;
 g.setS(g.newSave(0));g.getS().st={fue:3,des:5,agi:4,int:8};g.startTour('life');g.G.tour.opps[0].deck='life';g.G.tour.intent='ctrl';g.G.tour.sel=0;g.G.tour.sel=1;g.prepRound();g.G.tour.sel=1;g.prepRound();g.G.tour.sel=1;g.prepRound();
-assert(Math.abs(withForesight-g.G.tour.pwin-0.04)<1e-9);
+assert.equal(withForesight-g.G.tour.score,.5);
 // Connectivity includes all appended NPCs, and every dungeon floor.
 g.checkConnectivity();const report=elements.get('conn').textContent;assert(report.startsWith('PROBLEMAS: 0'),report);
 assert.equal(g.remoteCharacter({ch:g.CUSTOM_CHAR,customChar:spec}).n,'MI PERSONAJE');
@@ -97,7 +97,7 @@ for(const [id,npcId] of [['establo','caballerizo'],['bovedaMox','marchante']]) {
 g.setS(g.newSave(0));g.getS().coins=400000;g.loadRoom('establo',115,116);
 const horse=g.shopItems('monturas').find(it=>it.id==='caballo');assert(horse);assert.equal(horse.price,300000);g.G.shop={kind:'monturas',sel:0,scroll:0,items:g.shopItems('monturas')};g.buyItem(horse);
 assert.equal(g.getS().coins,100000);assert(g.getS().mounts.includes('caballo'));assert.equal(g.getS().mount,'caballo');assert.equal(g.mounted(),null);assert(g.loadSave(1).mounts.includes('caballo'));
-g.loadRoom('valpo',163,134);assert.equal(g.mounted().n,'Caballo chileno');
+g.loadRoom('valpo',163,134);assert.equal(g.mounted().n,'Burro de Curico');
 g.goTo('establo','E');assert.equal(g.G.roomId,'establo');assert.equal(g.getS().mount,'caballo');
 g.loadRoom('bovedaMox',115,116);assert(g.shopItems('lujo').every(it=>(it.req&&it.req.lvl||1)<=g.getS().lvl));
 // Walk with actual player and NPC collision, rather than checking tiles alone.
@@ -174,10 +174,10 @@ for(const [id,d]of Object.entries(g.ROOMS))for(const pos of Object.keys(d.doors|
 g.setS(g.newSave(0));g.G.menu={tab:5,sel:0,deck:null};g.drawMenu();g.menuClick({x:220,y:7});assert.equal(g.G.menu.tab,5);g.G.menu=null;
 // Deterministic choices dominate stats even at level 52 with all prizes.
 sandbox.Math.random=()=>.5;g.getS().lvl=52;g.getS().st={fue:150,des:150,agi:150,int:150};
-function roundChance(choice){g.startTour('life');g.G.tour.opps[0].deck='life';g.G.tour.intent='ctrl';for(let i=0;i<3;i++){g.G.tour.sel=choice;g.prepRound();if(i<2)assert.equal(g.G.tour.phase,'strategy');}assert.equal(g.G.tour.decisions.length,3);g.drawTour();return g.G.tour.pwin;}
-const weak=roundChance(0),strong=roundChance(2),observe=roundChance(3);assert(strong>weak+.45);assert(strong<.9);assert(observe>weak&&observe<strong);
-g.beginDuel({name:'Rival',look:g.CHARS[1],deck:'life',bonus:0},{id:'life'},1000);assert.equal(g.G.duel.opp.level,52);assert.equal(g.duelOptions().length,4);
-g.G.duel.myT='agro';g.resolveDuel(g.G.duel);assert(g.G.duel.pl<20,'Bad choice must lose life at high level');
+function roundScore(choice){g.startTour('life');g.G.tour.opps[0].deck='life';g.G.tour.intent='ctrl';for(let i=0;i<3;i++){g.G.tour.sel=choice;g.prepRound();if(i<2)assert.equal(g.G.tour.phase,'strategy');}assert.equal(g.G.tour.decisions.length,3);g.drawTour();return g.G.tour.score;}
+const weak=roundScore(0),strong=roundScore(2),observe=roundScore(3);assert.equal(strong-weak,6);assert.equal(observe-weak,3);
+g.beginDuel({name:'Rival',look:g.CHARS[1],deck:'life',bonus:0},{id:'life'},1000);assert.equal(g.G.duel.opp.level,20);assert.equal(g.duelOptions().length,4);
+g.G.duel.myT='agro';g.resolveDuel(g.G.duel);assert(g.G.duel.effect);assert(g.cardPower()>g.rivalPower(20),'Level grants a persistent advantage');
 g.beginDuel({name:'Rival',look:g.CHARS[1],deck:'life',bonus:0},{id:'life'},1000);g.G.duel.myT='adapt';g.resolveDuel(g.G.duel);assert(g.G.duel.predicted);g.drawDuel();
 // Map collision audit includes NPC bodies, props and every interactable room.
 const failures=[];
@@ -264,7 +264,7 @@ g.G.menu={tab:5,deck:null};sandbox.renderLabels=[];g.drawMenu();assert(sandbox.r
 g.switchRealm('magic');assert(g.pokemonDiscovered());g.setS(JSON.parse(JSON.stringify(g.getS())));assert(g.pokemonDiscovered());delete g.getS().portalDiscovered;assert(g.pokemonDiscovered(),'Existing return travellers retain discovery');
 g.setS(g.newSave(0));g.getS().realm='pokemon';assert(g.pokemonDiscovered(),'Existing players in the other realm retain discovery');g.G.preview=false;
 // Regional passport rewards are unique and separated by realm; stalls remain reachable.
-g.setS(g.newSave(0));g.G.preview=true;g.getS().lvl=100;g.getS().xp=0;
+g.setS(g.newSave(0));g.G.preview=true;g.getS().lvl=80;g.getS().xp=0;
 for(const id of Object.keys(g.OKTOBER_REGION)){
  const saved=g.getS(),walk=reachablePositions(id,115,84);g.setS(saved);g.loadRoom(id,115,84);
  assert.equal(g.roomMusic(),'oktober');assert(g.G.def.festival);
@@ -285,6 +285,19 @@ g.startOctayRace();g.G.dialog.choices[0].fn();assert.equal(g.getS().mount,null);
 g.G.octayRace.t=20;g.startOctayRace();assert.equal(g.G.octayRace.t,20);
 g.loadRoom('frutillar',115,84);assert(!g.G.octayRace);assert.equal(g.getS().mount,'mesa');
 g.G.octayRace={next:0,t:2700,mount:'mesa'};g.getS().mount=null;g.G.roomId='puertoOctay';g.updateOctayRace();assert(!g.G.octayRace);assert.equal(g.getS().mount,'mesa');g.G.preview=false;
+// Every dungeon staircase has room to turn and leave in each interior direction.
+for(const realm of ['magic','pokemon'])for(const [dk,d]of Object.entries(g.DUNGEONS))for(let f=1;f<=d.floors+1;f++){
+ g.setS(g.newSave(0));g.getS().realm=realm;g.G.preview=true;
+ const room='D:'+dk+':'+f,def=g.getDef(room);
+ for(let y=1;y<9;y++)for(let x=1;x<14;x++)if('UV'.includes(def.map[y][x])){
+  g.goTo(room,def.map[y][x]);g.G.enemies=[];g.G.eshots=[];g.G.aoes=[];
+  for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++)if(x+dx>0&&x+dx<14&&y+dy>0&&y+dy<9){
+   assert(!g.blocked((x+dx)*16+3,(y+dy)*16+4,10,8),room+' narrow stairs '+x+','+y+' direction '+dx+','+dy);
+   assert(!'lnqij'.includes(g.G.map[y+dy][x+dx]),room+' hazardous stair landing');
+  }
+  const position=[g.PL.x,g.PL.y];g.G.dialog=null;g.G.dead=0;g.updateWorld();assert.equal(g.G.roomId,room);assert.deepEqual([g.PL.x,g.PL.y],position);
+ }
+}
 // Local temple opponents must have playable decks in every round, from strategy to replay.
 for(const room of Object.keys(g.TEMPLE_IDENTITIES)){
  g.setS(g.newSave(0));g.G.preview=true;g.loadRoom(room,115,116);
@@ -299,6 +312,28 @@ for(const room of Object.keys(g.TEMPLE_IDENTITIES)){
  g.G.state='world';g.G.tour=null;
 }
 g.G.preview=false;
+// Tempest's entrance must lead into the room, not just within speaking distance of its NPCs.
+const tempestWalk=reachablePositions('salaTempest',115,116);assert(tempestWalk.some(([x,y])=>Math.abs(x-115)<8&&y<70),'Tempest entrance trapped');
+// Regional leagues at level 50 are decided by visible points, regardless of extreme dice rolls.
+for(const [key,cfg]of Object.entries(g.LEAGUES))for(const first of [0,1]){
+ g.setS(g.newSave(0));g.G.preview=true;g.getS().lvl=50;g.loadRoom('salaTempest',115,116);g.startTour('life',{...cfg,league:key});
+ for(let r=0;r<cfg.rounds;r++){
+  const t=g.G.tour;t.round=r;t.opps[r].deck='landstill';t.intent='ctrl';t.stage=0;t.strategyScore=0;
+  t.sel=1;g.prepRound();t.sel=1;g.prepRound();let dice=0;sandbox.Math.random=()=>dice++%2===(first===0?0:1)?.95:.05;t.sel=1;g.prepRound();
+  assert(t.iwin,key+' should be easy at level 50');assert.equal(t.first,first);assert.equal(t.ev[0].who,first);assert(t.ev.every(e=>e.effect));assert(t.ev.at(-1).lives[1]<=0);
+ }
+}
+g.setS(g.newSave(0));g.G.preview=true;g.getS().lvl=10;g.loadRoom('salaTempest',115,116);
+for(let attempt=0;attempt<2;attempt++){g.startTour('life',{...g.LEAGUES.tempest,league:'tempest'});g.G.tour.wins=0;g.finishTour();}
+g.startTour('life',{...g.LEAGUES.tempest,league:'tempest'});assert.equal(g.G.tour.retryBonus,2);g.G.tour.wins=5;g.G.tour.round=4;g.finishTour();assert.equal(g.getS().leagueRetries.tempest,0);
+// Counters, healing and damage are narrated; the die cannot change a chosen strategy's result.
+sandbox.Math.random=()=>.7;const counterReplay=g.genDuel('life','landstill',true,1);assert(counterReplay.some(e=>e.effect.includes('COUNTER')));assert(counterReplay.some(e=>e.effect.includes('VIDAS')));
+g.setS(g.newSave(0));g.G.preview=true;g.loadRoom('pueblo',115,84);g.getS().lvl=99;g.addXP(5000);assert.equal(g.getS().lvl,100);assert.equal(g.levelCap(),100);g.addXP(5000);assert.equal(g.getS().lvl,100);
+g.getS().lvl=106;g.getS().xp=123;const oldStats=JSON.stringify(g.getS().st);g.loadRoom('pueblo',115,84);assert.equal(g.getS().lvl,100);assert.equal(g.getS().beyondMagic.lvl,106);assert.equal(JSON.stringify(g.getS().st),oldStats);
+g.switchRealm('pokemon');assert.equal(g.getS().lvl,106);assert.equal(g.getS().xp,123);assert.equal(g.levelCap(),200);g.getS().lvl=199;g.addXP(5000);assert.equal(g.getS().lvl,200);g.getS().xp=0;g.switchRealm('magic');assert.equal(g.getS().lvl,100);g.switchRealm('pokemon');assert.equal(g.getS().lvl,200);
+g.setS(g.newSave(0));g.G.preview=true;g.getS().st.agi=300;g.loadRoom('valpo',115,84);const onFoot=g.speed();assert(onFoot<=1.8);let previous=onFoot;
+for(const id of ['caballo','mesa','nightmare','charger','mammoth','shivan','crosis','darigaaz']){g.getS().mount=id;assert(g.speed()>previous);assert(g.speed()<=onFoot*1.36+.001);previous=g.speed();}
+assert(g.MOUNTS.caballo.donkey);g.G.preview=false;
 async function main(){
  const encoded=await g.encodeSave(custom), decoded=await g.decodeSave(encoded);
  assert.equal(decoded.customChar.n,'Mi personaje');assert.equal(g.characterOf(decoded).c.eye,'#1122ff');
