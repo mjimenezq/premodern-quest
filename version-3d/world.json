@@ -1,0 +1,602 @@
+{
+  "rooms": {
+    "valpo": {
+      "name": "CURICÓ",
+      "map": [
+        "TTTTTT===TTTTTT",
+        "TRRRRR...=..,.T",
+        "TRRRRR....RRRRT",
+        "TWWDWW....WWDWT",
+        "T.....S........",
+        "T.RRRR.=====..=",
+        "T,WWDW.=.RRRR.T",
+        "JJ.....=.WDWW.T",
+        "~L~....=......T",
+        "~~~TTT.=.TTTTTT"
+      ],
+      "doors": {
+        "12,3": "casa",
+        "10,7": "cartasCurico",
+        "3,3": "bar",
+        "4,6": "establo"
+      },
+      "plaques": [
+        [
+          "XCSO CLUB",
+          56,
+          19,
+          "#401858"
+        ],
+        [
+          "CASA",
+          192,
+          35,
+          "#1a4a2a"
+        ],
+        [
+          "TIENDA TCG",
+          176,
+          87,
+          "#1a2a58"
+        ],
+        [
+          "LIGA",
+          176,
+          99,
+          "#805020"
+        ],
+        [
+          "ESTABLO",
+          72,
+          68,
+          "#5a3418"
+        ]
+      ],
+      "props": [
+        {
+          "k": "parra",
+          "x": 9,
+          "y": 8,
+          "solid": false
+        },
+        {
+          "k": "parra",
+          "x": 10,
+          "y": 8,
+          "solid": false
+        },
+        {
+          "k": "parra",
+          "x": 11,
+          "y": 8,
+          "solid": false
+        },
+        {
+          "k": "parra",
+          "x": 12,
+          "y": 8,
+          "solid": false
+        },
+        {
+          "k": "parra",
+          "x": 13,
+          "y": 8,
+          "solid": false
+        },
+        {
+          "k": "cerezo",
+          "x": 13,
+          "y": 6
+        },
+        {
+          "k": "cerezo",
+          "x": 8,
+          "y": 7
+        },
+        {
+          "k": "barril",
+          "x": 13,
+          "y": 7
+        },
+        {
+          "k": "pesca",
+          "x": 0,
+          "y": 7,
+          "solid": false,
+          "top": true
+        },
+        {
+          "k": "farol",
+          "x": 1,
+          "y": 4,
+          "solid": false,
+          "top": false
+        },
+        {
+          "k": "farol",
+          "x": 13,
+          "y": 5,
+          "solid": false,
+          "top": false
+        },
+        {
+          "k": "fogata",
+          "x": 8,
+          "y": 8,
+          "solid": false,
+          "act": "waitPhase"
+        },
+        {
+          "k": "realmCrest",
+          "x": 13,
+          "y": 4,
+          "solid": false
+        },
+        {
+          "k": "retroStreet",
+          "x": 13,
+          "y": 1,
+          "solid": false,
+          "style": "magazine"
+        }
+      ],
+      "npcs": [
+        {
+          "id": "marinero",
+          "x": 163,
+          "y": 72,
+          "w": 10,
+          "h": 8,
+          "dir": 0,
+          "look": {
+            "n": "MARINERO",
+            "style": "beanie",
+            "c": {
+              "hat": "#1a3a78",
+              "hatD": "#0a1a48",
+              "hair": "#d8d8e0",
+              "skin": "#c8946a",
+              "shirt": "#f4f1e8",
+              "shirtD": "#3a6ad0",
+              "pants": "#1a3a78",
+              "shoe": "#1a1a22"
+            }
+          }
+        },
+        {
+          "id": "pescador",
+          "x": 3,
+          "y": 120,
+          "w": 10,
+          "h": 8,
+          "dir": 0,
+          "look": {
+            "n": "PESCADOR",
+            "style": "cap",
+            "c": {
+              "hat": "#e8a028",
+              "hatD": "#a86818",
+              "hair": "#5a3a1c",
+              "skin": "#b87a4b",
+              "shirt": "#e8a028",
+              "shirtD": "#a86818",
+              "pants": "#3a3a48",
+              "shoe": "#1a1a22"
+            }
+          }
+        },
+        {
+          "id": "huaso",
+          "x": 195,
+          "y": 136,
+          "w": 10,
+          "h": 8,
+          "dir": 0,
+          "look": {
+            "n": "HUASO",
+            "style": "cap",
+            "chupalla": true,
+            "c": {
+              "hat": "#e8c870",
+              "hatD": "#c8a850",
+              "hair": "#2a1a10",
+              "skin": "#d8a070",
+              "shirt": "#c83030",
+              "shirtD": "#8a1818",
+              "emblem": "#f0e0a0",
+              "pants": "#2a2a38",
+              "shoe": "#3a2010",
+              "belt": "#3a2010"
+            }
+          }
+        },
+        {
+          "id": "barquero",
+          "x": 35,
+          "y": 136,
+          "w": 10,
+          "h": 8,
+          "dir": 0,
+          "look": {
+            "n": "BARQUERO",
+            "style": "beanie",
+            "c": {
+              "hat": "#1a3a78",
+              "hatD": "#0a1a48",
+              "hair": "#d8d8e0",
+              "skin": "#b87a4b",
+              "shirt": "#e8e0c8",
+              "shirtD": "#a8a088",
+              "pants": "#1a3a78",
+              "shoe": "#2a1a0c"
+            }
+          }
+        },
+        {
+          "id": "tortera",
+          "x": 195,
+          "y": 88,
+          "w": 10,
+          "h": 8,
+          "dir": 0,
+          "look": {
+            "n": "TORTERA",
+            "style": "bun",
+            "c": {
+              "hair": "#3a2418",
+              "skin": "#e8b890",
+              "shirt": "#f8f0e8",
+              "shirtD": "#d8c8b8",
+              "emblem": "#e86078",
+              "pants": "#4a6ab0",
+              "shoe": "#3a2418"
+            }
+          }
+        }
+      ]
+    },
+    "cartasCurico": {
+      "name": "SANTUARIO DE LA VENDIMIA",
+      "map": [
+        "kkkkkkkkkkkkkkk",
+        "kFFFFFFFFFFFFFk",
+        "kFFFFFFFFFFFFFk",
+        "kFFFFFFFFFFFFFk",
+        "kFFFFFFFFFFFFFk",
+        "kFFFFFFFFFFFFFk",
+        "kFFFFFFFFFFFFFk",
+        "kFFFFFFFFFFFFFk",
+        "kkkkkkkEkkkkkkk",
+        "kkkkkkkkkkkkkkk"
+      ],
+      "props": [
+        {
+          "k": "mostrador",
+          "x": 2,
+          "y": 2,
+          "w": 3,
+          "label": "ELVIRA",
+          "act": "localShop"
+        },
+        {
+          "k": "standings",
+          "x": 7,
+          "y": 0,
+          "w": 2,
+          "h": 1,
+          "solid": false,
+          "top": true,
+          "act": "standings"
+        },
+        {
+          "k": "mesaCartas",
+          "x": 2,
+          "y": 4,
+          "w": 3,
+          "act": "playCards",
+          "waiting": false,
+          "opponent": "localPlayer_cartasCurico_0"
+        },
+        {
+          "k": "mesaCartas",
+          "x": 9,
+          "y": 3,
+          "w": 3,
+          "act": "playCards",
+          "waiting": true,
+          "opponent": "localPlayer_cartasCurico_2"
+        },
+        {
+          "k": "mesaCartas",
+          "x": 9,
+          "y": 6,
+          "w": 3,
+          "act": "playCards",
+          "waiting": false,
+          "opponent": "localPlayer_cartasCurico_4"
+        },
+        {
+          "k": "ligaNeon",
+          "x": 6,
+          "y": 6,
+          "solid": false,
+          "top": true
+        },
+        {
+          "k": "leagueRelic",
+          "x": 1,
+          "y": 1,
+          "w": 2,
+          "solid": false,
+          "identity": "cartasCurico"
+        },
+        {
+          "k": "parra",
+          "x": 13,
+          "y": 6,
+          "solid": false
+        },
+        {
+          "k": "realmCrest",
+          "x": 3,
+          "y": 0,
+          "solid": false,
+          "color": "#c89648"
+        },
+        {
+          "k": "realmCrest",
+          "x": 9,
+          "y": 0,
+          "solid": false,
+          "color": "#c89648"
+        }
+      ],
+      "npcs": [
+        {
+          "id": "localShop_cartasCurico",
+          "x": 51,
+          "y": 24,
+          "w": 10,
+          "h": 8,
+          "dir": 0,
+          "look": {
+            "n": "ELVIRA PARRA",
+            "style": "bun",
+            "c": {
+              "hair": "#906840",
+              "skin": "#e8b088",
+              "shirt": "#c89648",
+              "shirtD": "#384450",
+              "pants": "#48a860",
+              "shoe": "#5a3018",
+              "hat": "#c89648",
+              "hatD": "#302028"
+            }
+          }
+        },
+        {
+          "id": "localJudge_cartasCurico",
+          "x": 195,
+          "y": 120,
+          "w": 10,
+          "h": 8,
+          "dir": 0,
+          "look": {
+            "n": "DON LAUTARO",
+            "style": "beanie",
+            "c": {
+              "hair": "#dcaa68",
+              "skin": "#e8b088",
+              "shirt": "#c89648",
+              "shirtD": "#384450",
+              "pants": "#48a860",
+              "shoe": "#5a3018",
+              "hat": "#c89648",
+              "hatD": "#302028"
+            }
+          }
+        },
+        {
+          "id": "ligaCurico",
+          "x": 99,
+          "y": 120,
+          "w": 10,
+          "h": 8,
+          "dir": 0,
+          "look": {
+            "n": "DON LAUTARO",
+            "style": "bun",
+            "c": {
+              "hair": "#5a3a1c",
+              "skin": "#e8a878",
+              "shirt": "#48a860",
+              "shirtD": "#2a7840",
+              "pants": "#3a3a48",
+              "shoe": "#1a1a22"
+            }
+          }
+        },
+        {
+          "id": "localPlayer_cartasCurico_0",
+          "x": 35,
+          "y": 56,
+          "w": 10,
+          "h": 8,
+          "dir": 0,
+          "look": {
+            "n": "NICO EL TEMPORERO",
+            "style": "curly",
+            "c": {
+              "hair": "#643818",
+              "skin": "#f1c9a0",
+              "shirt": "#c89648",
+              "shirtD": "#384450",
+              "pants": "#48a860",
+              "shoe": "#5a3018",
+              "hat": "#c89648",
+              "hatD": "#302028"
+            }
+          }
+        },
+        {
+          "id": "localPlayer_cartasCurico_1",
+          "x": 67,
+          "y": 88,
+          "w": 10,
+          "h": 8,
+          "dir": 1,
+          "look": {
+            "n": "ROSA DE LOS QUEÑES",
+            "style": "beanie",
+            "c": {
+              "hair": "#dcaa68",
+              "skin": "#e8b088",
+              "shirt": "#c89648",
+              "shirtD": "#384450",
+              "pants": "#48a860",
+              "shoe": "#5a3018",
+              "hat": "#c89648",
+              "hatD": "#302028"
+            }
+          }
+        },
+        {
+          "id": "localPlayer_cartasCurico_2",
+          "x": 147,
+          "y": 40,
+          "w": 10,
+          "h": 8,
+          "dir": 0,
+          "look": {
+            "n": "BETO DEL RIO",
+            "style": "spiky",
+            "c": {
+              "hair": "#30202c",
+              "skin": "#f1c9a0",
+              "shirt": "#c89648",
+              "shirtD": "#384450",
+              "pants": "#48a860",
+              "shoe": "#5a3018",
+              "hat": "#c89648",
+              "hatD": "#302028"
+            }
+          }
+        },
+        {
+          "id": "localPlayer_cartasCurico_4",
+          "x": 147,
+          "y": 88,
+          "w": 10,
+          "h": 8,
+          "dir": 0,
+          "look": {
+            "n": "PEDRO ARRIERO",
+            "style": "cap",
+            "c": {
+              "hair": "#c8c8d8",
+              "skin": "#f1c9a0",
+              "shirt": "#c89648",
+              "shirtD": "#384450",
+              "pants": "#48a860",
+              "shoe": "#5a3018",
+              "hat": "#c89648",
+              "hatD": "#302028"
+            }
+          }
+        },
+        {
+          "id": "localPlayer_cartasCurico_5",
+          "x": 179,
+          "y": 120,
+          "w": 10,
+          "h": 8,
+          "dir": 1,
+          "look": {
+            "n": "LUZ DE RAUCO",
+            "style": "curly",
+            "c": {
+              "hair": "#643818",
+              "skin": "#e8b088",
+              "shirt": "#c89648",
+              "shirtD": "#384450",
+              "pants": "#48a860",
+              "shoe": "#5a3018",
+              "hat": "#c89648",
+              "hatD": "#302028"
+            }
+          }
+        }
+      ],
+      "blocked": [
+        "2,2",
+        "3,2",
+        "4,2",
+        "2,4",
+        "3,4",
+        "4,4",
+        "9,3",
+        "10,3",
+        "11,3",
+        "9,6",
+        "10,6",
+        "11,6"
+      ]
+    }
+  },
+  "hero": {
+    "id": "matias",
+    "n": "MATÍAS",
+    "tag": "EL PROTAGONISTA",
+    "style": "cap",
+    "st": {
+      "fue": 5,
+      "des": 5,
+      "agi": 5,
+      "int": 5
+    },
+    "main": "fue",
+    "c": {
+      "hat": "#c8281c",
+      "hatD": "#7a1410",
+      "mark": "#f4e8c0",
+      "feather": "#f4f1e8",
+      "hair": "#9a4422",
+      "skin": "#f1b98a",
+      "shirt": "#1a8a78",
+      "shirtD": "#0e5a4e",
+      "cape": "#8a1a14",
+      "capeD": "#5a0e0a",
+      "belt": "#4a2a14",
+      "pants": "#5a3a24",
+      "shoe": "#3a2414",
+      "sleeve": "#1a8a78"
+    }
+  },
+  "solid": [
+    "T",
+    "b",
+    "r",
+    "~",
+    "w",
+    "x",
+    "R",
+    "W",
+    "f",
+    "P",
+    "c",
+    "C",
+    "k",
+    "K",
+    "B",
+    "t",
+    "Q",
+    "Z",
+    "Y",
+    "y",
+    "L",
+    "J",
+    "H",
+    "j",
+    "^"
+  ]
+}
