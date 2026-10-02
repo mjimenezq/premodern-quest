@@ -3288,13 +3288,14 @@ function drawRealmPortal(cx,cy){
  tiny('UMBRAL DE LOS DOS MUNDOS',cx,cy-55,'#e8d8ff','center');tiny(pokemonRealm()?'REGRESAR A MAGIC':'UN UNIVERSO TE ESPERA',cx,cy+58,'#b8d8ff','center');ctx.restore();
 }
 function portalUnlocked(){return pokemonRealm()||G.preview||S.ligaWins>0;}
-function portalTalk(){if(!portalUnlocked()){say(['EL UMBRAL DUERME. Conquista las cinco ligas, derrota a los guardianes y gana la Liga Nacional. Solo el campeon puede cruzar.']);return;}say(['El umbral responde a tus cartas. Al otro lado estan las mismas ciudades, transformadas por una entidad que libero Pokemon salvajes.','Tu compañero sera una criatura antigua de Magic. Tu avance en este mundo te espera al regresar.'],[{t:'SELLAR LA CAJA',fn:closeUrzaBox},{t:pokemonRealm()?'REGRESAR A MAGIC':'CRUZAR EL UMBRAL',fn:startRealmTravel},{t:'ELEGIR COMPAÑERO MAGIC',fn:chooseMagicPet},{t:'TODAVIA NO',fn:null}]);}
+function pokemonDiscovered(){return !!(S&&(S.portalDiscovered||pokemonRealm()||Object.hasOwn(S.realmProgress||{},'pokemon')));}
+function portalTalk(){if(!portalUnlocked()){say(['EL UMBRAL DUERME. Conquista las cinco ligas, derrota a los guardianes y gana la Liga Nacional. Solo el campeon puede cruzar.']);return;}say(pokemonDiscovered()?['El umbral responde a tus cartas. Al otro lado estan las mismas ciudades, transformadas por una entidad que libero Pokemon salvajes.','Tu compañero sera una criatura antigua de Magic. Tu avance en este mundo te espera al regresar.']:['El umbral responde a tus cartas. Las estrellas ocultan un mundo que nadie de estas ciudades ha visto.','Solo al cruzar descubriras que hay al otro lado. Tu avance en este mundo te espera al regresar.'],[{t:'SELLAR LA CAJA',fn:closeUrzaBox},{t:pokemonRealm()?'REGRESAR A MAGIC':'CRUZAR EL UMBRAL',fn:startRealmTravel},...(pokemonDiscovered()?[{t:'ELEGIR COMPAÑERO MAGIC',fn:chooseMagicPet}]:[]),{t:'TODAVIA NO',fn:null}]);}
 const REALM_PROGRESS=['cards','complete','bosses','leagues','quests','kills','killsTotal','ligaWins','trophies','finder','hiddenFound','tableResults','chests','keys','found','foundZones','killedAt','leagueVisits','gymRuns','boxClosed','storyHeard'];
 function switchRealm(target){
  const source=S.realm||'magic';S.realmProgress=S.realmProgress||{};
  S.realmProgress[source]=Object.fromEntries(REALM_PROGRESS.map(k=>[k,structuredClone(S[k]??(k==='killsTotal'||k==='ligaWins'||k==='trophies'?0:k==='finder'||k==='boxClosed'?false:{}))]));
  const next=S.realmProgress[target]||newSave(S.ch,S.customChar);for(const k of REALM_PROGRESS)S[k]=structuredClone(next[k]??(k==='killsTotal'||k==='ligaWins'||k==='trophies'?0:k==='finder'||k==='boxClosed'?false:{}));
- S.realm=target;if(target==='pokemon')S.magicPet=S.magicPet||'shivan';saveGame();
+ S.realm=target;if(target==='pokemon'){S.portalDiscovered=true;S.magicPet=S.magicPet||'shivan';}saveGame();
 }
 function sealReady(){return DECKS.every(d=>deckDone(d.id))&&guardiansDone()>=5&&leaguesDone()>=5&&(S.ligaWins||0)>0;}
 function closeUrzaBox(){if(pokemonRealm()){say(['Este es el reflejo de la maldicion. Primero regresa al mundo de Magic para sellar la Caja de Urza.']);return;}if(S.boxClosed){say(['La Caja de Urza esta sellada. Las criaturas regresaron a sus cartas y las ciudades recuperaron la paz.']);return;}if(!sealReady()){say(['El hechizo de cierre exige entender cada forma de magia. Domina los '+DECKS.length+' mazos, vence a los cinco guardianes y conquista las cinco ligas y la Nacional.','Mazos completos: '+DECKS.filter(d=>deckDone(d.id)).length+'/'+DECKS.length+'. El dominio de las cartas puede devolver las criaturas a su origen.']);return;}S.boxClosed=true;G.enemies=[];G.eshots=[];G.aoes=[];saveGame();say(['Tu baraja responde al sello. Cada criatura se transforma en luz y regresa a su carta. La Caja de Urza se cierra.','Las ciudades vuelven a respirar. Tu sueño de ser campeon salvo al mundo. ¡Ahora podemos brindar en paz!'],null,()=>{G.state='ending';G.t=0;playMusic('tcg');});}
@@ -3306,7 +3307,7 @@ function drawRealmTravel(){
  for(let g=0;g<3;g++){const gx=30+g*88+Math.sin(t*.006+g)*10,gy=35+(g%2)*65;ctx.save();ctx.translate(gx,gy);ctx.rotate(-.6+g*.5+t*.003);ctx.scale(1,.35);for(let i=0;i<70;i++){const a=i*.38+t*.005,r=i*.42;disc(Math.cos(a)*r,Math.sin(a)*r,i%8?1:2,['#8c70b8','#88c8dc','#e0b8df'][g]);}disc(0,0,4,'#fff0d8');ctx.restore();}
  for(let i=0;i<150;i++){const a=i*2.399,depth=((i*43+t*2.4)%310)/310,r=4+depth*170,x=cx+Math.cos(a)*r,y=cy+Math.sin(a)*r*.7;ctx.strokeStyle=i%3?'rgba(190,220,255,.7)':'rgba(208,168,255,.8)';ctx.lineWidth=i%9? .6:1.4;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(cx+Math.cos(a)*(r+depth*28),cy+Math.sin(a)*(r+depth*28)*.7);ctx.stroke();}
  const hx=cx-8,hy=cy+8;for(let i=0;i<5;i++)disc(hx-8-i*4,hy+18+i*3,4-i*.6,'rgba(136,200,255,'+(.4-i*.06)+')');ctx.save();ctx.translate(hx,hy);ctx.rotate(-.35);drawPerson(0,0,CH(),3,(t>>3)%2);ctx.restore();
- tiny('ENTRE LAS GALAXIAS',120,12,'#e0d8ff','center');tiny(G.realmTravel.target==='pokemon'?'EL REFLEJO POKEMON TE LLAMA':'LA LUZ DE MAGIC TE GUIA',120,140,'#a8d8ff','center');
+ tiny('ENTRE LAS GALAXIAS',120,12,'#e0d8ff','center');tiny(G.realmTravel.target==='pokemon'?(pokemonDiscovered()?'EL REFLEJO POKEMON TE LLAMA':'UN MUNDO DESCONOCIDO TE ESPERA'):'LA LUZ DE MAGIC TE GUIA',120,140,'#a8d8ff','center');
  const fade=t<45?1-t/45:t>380?(t-380)/40:0;if(fade>0){ctx.fillStyle='rgba(224,232,255,'+fade+')';ctx.fillRect(0,0,W,H);}
 }
 
@@ -3418,7 +3419,7 @@ function addXP(n){
     S.hp = S.maxHp; S.mp = maxMp(); G.lvlFx = 90;
     for (let i = 0; i < 16; i++) G.parts.push({ k:'heal', x:PL.x + 5 + Math.cos(i * 0.4) * 10, y:PL.y + 2 + Math.sin(i * 0.4) * 6, vx:0, vy:-0.8, t:0 });
     SFX.lvl(); toast('NIVEL ' + S.lvl + ': +1 ' + main.toUpperCase() + ', VIDA Y MAGIA AL MAXIMO', '#fcd84a');
-    if (S.lvl >= MAX_LVL) { S.xp = 0; SFX.win(); say(['¡NIVEL 200! Llegaste al nivel maximo.', 'Ya no hay criatura en Dominaria ni en el mundo Pokemon que te asuste. Eres leyenda.']); break; }
+    if (S.lvl >= MAX_LVL) { S.xp = 0; SFX.win(); say(['¡NIVEL 200! Llegaste al nivel maximo.',pokemonDiscovered()?'Ya no hay criatura en Dominaria ni en el mundo Pokemon que te asuste. Eres leyenda.':'Ya no hay criatura en Dominaria que te asuste. Eres leyenda.']); break; }
   }
 }
 const meleeDamage = (st=stats()) => 1 + Math.floor(st.fue / 3) + Math.floor((S.lvl - 1) / 3);
@@ -5084,7 +5085,7 @@ function updateMenu(){
   if (pressed('menu') || pressed('b')) { G.menu = null; SFX.back(); saveGame(); return; }
   if (pressed('left')) { m.tab = (m.tab + 5) % 6; m.sel = 0; SFX.move(); }
   if (pressed('right')) { m.tab = (m.tab + 1) % 6; m.sel = 0; SFX.move(); }
-  if(m.tab===5){if(pressed('up')||pressed('down')||pressed('a')){m.medalRealm=(m.medalRealm||S.realm||'magic')==='magic'?'pokemon':'magic';SFX.move();}return;}
+  if(m.tab===5){if(!pokemonDiscovered()){m.medalRealm='magic';return;}if(pressed('up')||pressed('down')||pressed('a')){m.medalRealm=(m.medalRealm||S.realm||'magic')==='magic'?'pokemon':'magic';SFX.move();}return;}
   const n = m.tab === 0 ? DECKS.length : m.tab === 1 ? 6 : m.tab === 4 ? 2 : 0;
   if(m.tab===4&&m.sel===1){if(pressed('up'))m.questScroll=Math.max(0,(m.questScroll||0)-1);if(pressed('down'))m.questScroll=(m.questScroll||0)+1;if(pressed('a')){const q=journalEntries()[m.questScroll||0];if(q)questDetail(q);return;}return;}
   if (n) { if (pressed('up')) { m.sel = (m.sel + n - 1) % n; SFX.move(); } if (pressed('down')) { m.sel = (m.sel + 1) % n; SFX.move(); } }
@@ -5130,7 +5131,7 @@ function drawWorldMap(){
     } else if (near) { R(px, py, w, h, '#8a7a5a'); tiny('?', px + w / 2, py + h / 2 - 2, '#e8d8a8', 'center'); }
   }
   const floor = G.def.dungeonKey ? ' - ' + DUNGEONS[G.def.dungeonKey].name + (G.def.bossFloor ? ' (GUARDIAN)' : ' PISO ' + G.def.floor) : '';
-  tiny((G.preview?'VISTA POKEMON · ':'ESTAS EN: ') + SHORT[cur] + floor, 120, 146, '#fcd84a', 'center');
+  tiny((G.preview?'VISTA PREVIA · ':'ESTAS EN: ') + SHORT[cur] + floor, 120, 146, '#fcd84a', 'center');
   tiny('L/N: AMARILLO PENDIENTE  VERDE GANADA  GRIS CERRADA', 120, 153, '#6a8a80', 'center');
 }
 function journalEntries(){ensureContract();const all=Object.keys(QUESTS);return [...all.filter(q=>S.quests[q]&&S.quests[q].st==='active'),...all.filter(q=>!S.quests[q]&&!questsOf(QUESTS[q].giver).some(o=>S.quests[o]&&S.quests[o].st==='active')&&questsOf(QUESTS[q].giver).find(o=>!S.quests[o])===q),...all.filter(q=>S.quests[q]&&S.quests[q].st==='done')];}
@@ -5179,8 +5180,9 @@ function drawMedal(x,y,won,color){
  if(won)R(x-1,y,2,3,'#fff0b0');
 }
 function drawLeagueProgress(){
- const realm=G.menu.medalRealm||S.realm||'magic',p=medalProgress(realm),poke=realm==='pokemon';
- for(const [i,r] of ['magic','pokemon'].entries()){R(12+i*112,20,104,13,realm===r?'#34554e':'#202c38');tiny(r.toUpperCase(),64+i*112,24,realm===r?'#ffe090':'#9db8a8','center',true);}
+ const discovered=pokemonDiscovered(),realm=discovered?(G.menu.medalRealm||S.realm||'magic'):'magic',p=medalProgress(realm),poke=realm==='pokemon';
+ if(discovered)for(const [i,r] of ['magic','pokemon'].entries()){R(12+i*112,20,104,13,realm===r?'#34554e':'#202c38');tiny(r.toUpperCase(),64+i*112,24,realm===r?'#ffe090':'#9db8a8','center',true);}
+ else{R(12,20,216,13,'#34554e');tiny('MEDALLAS DE MAGIC',120,24,'#ffe090','center',true);}
  const badges={vina:['MAREAS','#68b8ed'],curico:['VENDIMIA','#78c878'],pmontt:['LLUVIA','#a0dce8'],urza:['CINCO LUNAS','#d898e8'],tempest:['TRUENO','#f09858']};
  Object.entries(LEAGUES).forEach(([key,l],i)=>{const y=41+i*16,won=!!(p.data.leagues&&p.data.leagues[key]),gym=Object.values(POKEMON_GYMS).find(g=>g.key===key);
   drawMedal(16,y+4,won,poke?gym.color:badges[key][1]);
@@ -5189,9 +5191,9 @@ function drawLeagueProgress(){
   tiny(won?'GANADA':'PENDIENTE',233,y+2,won?'#90f0a0':'#85909c','right',true);
  });
  drawMedal(16,126,p.national,'#fff0a0');tiny('GRAN LIGA NACIONAL · TOLARIA',29,120,'#fcd84a','left',true);
- tiny(p.national?'MEDALLA NACIONAL GANADA':p.count===5?'ACCESO ABIERTO · '+DAY_LABELS[LEAGUE_PHASE.nacional]:'REUNE LAS 5 MEDALLAS DE ESTE MUNDO',29,129,p.national?'#90f0a0':'#c8d8d0','left',true);
- tiny(p.count+'/5 REGIONALES · COLECCIONES SEPARADAS',120,141,'#9db8a8','center',true);
- tiny('TOCA MAGIC / POKEMON · ARRIBA/ABAJO: CAMBIAR',120,152,'#9db8a8','center',true);
+ tiny(p.national?'MEDALLA NACIONAL GANADA':p.count===5?'ACCESO ABIERTO · '+DAY_LABELS[LEAGUE_PHASE.nacional]:discovered?'REUNE LAS 5 MEDALLAS DE ESTE MUNDO':'REUNE LAS 5 MEDALLAS REGIONALES',29,129,p.national?'#90f0a0':'#c8d8d0','left',true);
+ tiny(p.count+'/5 REGIONALES'+(discovered?' · COLECCIONES SEPARADAS':''),120,141,'#9db8a8','center',true);
+ tiny(discovered?'TOCA MAGIC / POKEMON · ARRIBA/ABAJO: CAMBIAR':'B: VOLVER A TU AVENTURA',120,152,'#9db8a8','center',true);
 }
 function drawMenu(){
   const m = G.menu;
@@ -7284,7 +7286,7 @@ function dialogClick(p){
 function menuClick(p){
   const m = G.menu;
   if (p.y < 16) { const t = Math.floor(p.x / 40); if (t >= 0 && t < 6) { m.tab = t; m.sel = 0; m.deck = null; m.sub = null; SFX.move(); } return; }
-  if(m.tab===5){if(p.y>=20&&p.y<=34){m.medalRealm=p.x<120?'magic':'pokemon';SFX.move();}else if(p.y>=145)pulseKey='a';return;}
+  if(m.tab===5){if(!pokemonDiscovered()){m.medalRealm='magic';return;}if(p.y>=20&&p.y<=34){m.medalRealm=p.x<120?'magic':'pokemon';SFX.move();}else if(p.y>=145)pulseKey='a';return;}
   if (m.tab === 0) {
     if (m.deck === null) { const i = Math.floor((p.y - 18) / 12); if (i >= 0 && i < DECKS.length) { m.sel = i; pulseKey = 'a'; } }
     else { for (let i = 0; i <= DECK_SIZE; i++) { const [x, y] = deckCellPos(i); if (inRect(p, [x, y, 24, 34])) { m.cs = i; SFX.move(); return; } } if (p.y > 144) pulseKey = 'b'; }
