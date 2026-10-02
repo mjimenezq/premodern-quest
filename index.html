@@ -1249,10 +1249,10 @@ const ROOMS = {
     doors:{'5,3':'casino','12,3':'hotel'},
     signs:{},
     npcs:[{id:'festivalero',x:3,y:4},{id:'turista',x:11,y:7},{id:'barquero',x:6,y:7}] },
-  pmontt:{ name:'PUERTO MONTT', theme:'town', music:'field', rain:true,
+  pmontt:{ name:'PUERTO MONTT', theme:'town', music:'field', rain:true,compactPlaques:true,
     map:['TTTTTTTTTTTTTTT','T,.RRRR..RRRR,T','T..RRRR..RRRR.T','T..WDWW..WWDW.T','T.............T','T..S========..T','T.RRRR........T','T.WDWW........T','T......=L.....T','~~~~~~~=~~~~~~~'],
     roof:(tx,ty) => ty >= 6 ? 'blue' : tx < 8 ? 'red' : 'green',
-    plaques:[['ANGELMO',80,19,'#5a3418'],['CURANTO',176,19,'#1a4a2a'],['CARTAS',64,87,'#1a2a58']],
+    plaques:[['ANGELMO',80,35,'#5a3418'],['CURANTO',176,35,'#1a4a2a'],['CARTAS',64,100,'#1a2a58']],
     doors:{'4,3':'angelmo','11,3':'curanto','3,7':'cartasSur'},
     signs:{'3,5':'PUERTO MONTT. CARTAS Y TORNEOS ABAJO A LA IZQUIERDA: LIGA DEL SUR. PUEDES RECORRER LA CIUDAD A PIE, SIN SURF. EN ANGELMO HAY EQUIPO DEL SUR.'},
     npcs:[{id:'sureno',x:10,y:4},{id:'barquero',x:9,y:8}] },
@@ -2191,7 +2191,6 @@ function buildCache(){
     if (r && !TALL.has(r) && r !== '~' && r !== 'w' && r !== 'T' && c !== 'K') ctx.fillRect((tx + 1) * TS, ty * TS + 4, 3, 12);
   }
   if (G.roomId === 'pueblo') { plaque('TABERNA', 4 * TS + 8, 2 * TS + 3, '#5a3418'); plaque('ARENA', 10 * TS + 8, 2 * TS + 3, '#1a2a58'); }
-  if (G.def.plaques) for (const [s, cx, y, col] of G.def.plaques) plaque(s, cx, y, col);
   if (G.roomId === 'arcade') {
     R(0, 0, W, 16, '#1a0a2e');
     for (let i = 0; i < 15; i++) R(i * 16 + 7, 1, 2, 2, ['#ff40c0','#40f0ff','#fce040'][i % 3]);
@@ -2209,7 +2208,8 @@ function buildCache(){
   }
   ctx = save; G.cacheDirty = false;
 }
-function plaque(s, cx, y, col){
+function plaque(s, cx, y, col,compact=false){
+  if(compact){const w=s.length*4+6;R(cx-w/2-1,y-1,w+2,9,'#1a1020');R(cx-w/2,y,w,7,col);R(cx-w/2,y,w,1,'rgba(255,255,255,.25)');tiny(s,cx,y+2,'#fce8b0','center');return;}
   ctx.font = '8px "Press Start 2P", monospace';
   const w = s.length * 8 + 6;
   R(cx - w / 2 - 1, y - 1, w + 2, 12, '#1a1020'); R(cx - w / 2, y, w, 10, col); R(cx - w / 2, y, w, 1, 'rgba(255,255,255,.25)');
@@ -5470,6 +5470,8 @@ function drawWorld(){
       if (below && below !== 'Q' && h2(tx, ty) < 0.22) { const f = (frame >> 2) % 3; R(tx * TS + 6, ty * TS + 3 - f % 2, 4, 3 + f % 2, '#f88820'); R(tx * TS + 7, ty * TS + 4 - f % 2, 2, 2, '#fce060'); }
     }
   }
+  // Building signs belong above animated water, not in the terrain cache.
+  for(const [s,cx,y,col] of G.def.plaques||[])plaque(s,cx,y,col,!!G.def.compactPlaques);
   grassBlades();
   nightWindows();
   drawProps(false);
