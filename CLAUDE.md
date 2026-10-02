@@ -289,3 +289,7 @@ Matías pidió volver a desarrollar y publicar en mjimenezq/premodern-quest porq
 - Error reportado en ronda 1: Cannot read properties of undefined (reading n). startTour buscaba mazos de los nuevos localPlayer_* solo en DUELIST_DECK antiguo; drawTour intentaba leer DECK[undefined].n.
 - startTour ahora usa localPlayerDeck igual que offerDuel, despues DUELIST_DECK para rivales anteriores y landstill como respaldo de NPC reconocido. Respeta estilos y personalidades de cada templo, sin tocar guardados ni reglas de premios.
 - Regresion reproducida antes del arreglo. Prueba nueva valida mazo existente, render inicial, tres decisiones, VS, cada carta de replay y resultado en cuatro rondas de los seis templos. Suite completa aprobada (116 mapas), ronda Curico nivel 52 verificada en navegador.
+
+## Letreros compactos globales (1 oct 2026)
+- Usuario aprobo tamano de edificios de Puerto Montt. plaque ahora siempre usa tiny de 4 px y placa de 7 px de alto, en todas las ciudades, interiores con titulo de placa y ambos mundos. Centro limitado a bordes del canvas para que nombres largos no se corten. No modifica textos de interfaz, mapas, colisiones ni partidas.
+- Suite existente aprobada (116 mapas); revision visual real de Curico y Vina reflejada.

@@ -2212,12 +2212,9 @@ function buildCache(){
   }
   ctx = save; G.cacheDirty = false;
 }
-function plaque(s, cx, y, col,compact=false){
-  if(compact){const w=s.length*4+6;R(cx-w/2-1,y-1,w+2,9,'#1a1020');R(cx-w/2,y,w,7,col);R(cx-w/2,y,w,1,'rgba(255,255,255,.25)');tiny(s,cx,y+2,'#fce8b0','center');return;}
-  ctx.font = '8px "Press Start 2P", monospace';
-  const w = s.length * 8 + 6;
-  R(cx - w / 2 - 1, y - 1, w + 2, 12, '#1a1020'); R(cx - w / 2, y, w, 10, col); R(cx - w / 2, y, w, 1, 'rgba(255,255,255,.25)');
-  txt(s, cx, y + 1, '#fce8b0', 'center', null);
+function plaque(s, cx, y, col){
+  const w=s.length*4+6;cx=clamp(cx,w/2+1,W-w/2-1);
+  R(cx-w/2-1,y-1,w+2,9,'#1a1020');R(cx-w/2,y,w,7,col);R(cx-w/2,y,w,1,'rgba(255,255,255,.25)');tiny(s,cx,y+2,'#fce8b0','center');
 }
 // luz ambiente (se dibuja cada cuadro sobre el mundo, antes de la interfaz)
 /* ============ LUCES Y AMBIENTE EN ALTA RESOLUCIÓN ============ */
@@ -5506,7 +5503,7 @@ function drawWorld(){
     }
   }
   // Building signs belong above animated water, not in the terrain cache.
-  for(const [s,cx,y,col] of G.def.plaques||[])plaque(s,cx,y,col,!!G.def.compactPlaques);
+  for(const [s,cx,y,col] of G.def.plaques||[])plaque(s,cx,y,col);
   grassBlades();
   nightWindows();
   drawProps(false);
