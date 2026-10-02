@@ -127,6 +127,7 @@
     <button id="btnTitle" type="button">⌂ Menú principal</button>
     <button id="btnJournal" type="button">📖 Misiones (J)</button>
     <button id="btnTravel" type="button">✈ Viajar (T)</button>
+    <button id="btnPotions" type="button">🧪 Pociones (H)</button>
   </div>
   <section class="online" id="net" aria-label="Jugar en linea">
     <div class="on-head"><span class="dot" id="netDot"></span><strong>JUGAR CON AMIGOS</strong><span class="on-sub">hasta 3, cada uno desde su casa</span></div>
@@ -192,6 +193,7 @@ addEventListener('keydown', e => {
   if (e.code === 'KeyM' && !e.repeat) { openMapKey(); e.preventDefault(); }
   if (e.code === 'KeyT' && !e.repeat) { openTravel(); e.preventDefault(); }
   if (e.code === 'KeyR' && !e.repeat) { toggleMount(); e.preventDefault(); }
+  if (e.code === 'KeyH' && !e.repeat) { openPotions(); e.preventDefault(); }
   const k = keyMap[e.code]; if (k) { kb[k] = 1; e.preventDefault(); }
 });
 addEventListener('keyup', e => { const k = keyMap[e.code]; if (k) { kb[k] = 0; e.preventDefault(); } });
@@ -940,7 +942,8 @@ const MOUNTS = {
   shivan:{ n:'Shivan Dragon', spd:0.28, def:2, kind:'dragon', body:'#d83020', mane:'#f8c030', boss:true, desc:'Se gana venciendo al Shivan Dragon. +28% velocidad.' },
 };
 for(const id of ['mesa','nightmare','charger','mammoth'])MOUNTS[id].price=Math.max(300000,MOUNTS[id].price*3);
-const mounted = () => S && S.mount && MOUNTS[S.mount] && G.def && !G.def.interior ? MOUNTS[S.mount] : null;
+const mounted = () => S && S.mount && MOUNTS[S.mount] && G.def && (!G.def.interior || G.roomId==='establo') ? MOUNTS[S.mount] : null;
+function reflectedMount(id){const pid=({caballo:127,mesa:77,nightmare:76,charger:141,mammoth:142,crosis:129,darigaaz:148,shivan:149})[id]??77;return {id:pid,name:POKE[pid].n+(MOUNTS[id]?.boss?' GIGANTE':'')};}
 function giveMount(id){
   S.mounts = S.mounts || []; if (S.mounts.includes(id)) return;
   S.mounts.push(id); S.mount = id; SFX.win();
@@ -955,6 +958,10 @@ function toggleMount(){
 }
 // Dibujo de la montura (22 de ancho). layer 'back' va detrás del jinete, 'front' delante
 function drawMount(id, x, y, dir, f, layer){
+  if(pokemonRealm()){
+    if(layer==='back'){const mount=reflectedMount(id);ctx.save();ctx.translate(x+(mount.id===149?8:-2),y-12);ctx.scale(1.5,1.5);drawPoke(mount.id,0,0,frame,dir===2);ctx.restore();}
+    return;
+  }
   const M = MOUNTS[id], side = dir >= 2, flip = dir === 2, O = '#1a1020';
   const p = (rx, ry, w, hh, col) => { ctx.fillStyle = col; ctx.fillRect(flip ? x + 22 - rx - w : x + rx, y + ry, w, hh); };
   const o = (rx, ry, w, hh, col) => { p(rx - 1, ry - 1, w + 2, hh + 2, O); p(rx, ry, w, hh, col); p(rx, ry + hh - 1, w, 1, shadeCol(col, 0.72)); p(rx, ry, w, 1, shadeCol(col, 1.15)); };
@@ -998,8 +1005,9 @@ function drawRider(x, y, P, dir, f){
   const tc = T(Math.floor((PL.x + 5) / TS), Math.floor((PL.y + 4) / TS));
   if (tc === '~' && S && S.surf) { drawSurfBoard(x - 1, y); drawPerson(x, y - 3, P, dir, 0); return; }
   const M = mounted();
-  if (!M || G.warp) { drawPerson(x, y-(PL.dance>0?(frame>>3&1)*2:0), P, dir, f); return; }
-  const walk = Math.floor(PL.walk) % 2;
+  const phase=(PL.walk||0)*Math.PI,moving=!!PL.moving,bob=moving?Math.round(Math.abs(Math.sin(phase))*(M?2:1)):0;
+  if (!M || G.warp) { drawPerson(x+(moving&&dir<2?Math.round(Math.sin(phase)*.7):0), y-bob-(PL.dance>0?(frame>>3&1)*2:0), P, dir, moving?f:0); return; }
+  y-=bob;const walk = moving?Math.floor(PL.walk) % 2:0;
   drawMount(S.mount, x - 3, y, dir, walk, 'back');
   drawPerson(x, y - 10, P, dir, 0);
   drawMount(S.mount, x - 3, y, dir, walk, 'front');
@@ -1366,7 +1374,7 @@ function makeCardTemple(name,exitTo,leagueNpc,pokemon=false){
   map:['kkkkkkkkkkkkkkk','kFFFFFFFFFFFFFk','kFFFFFFFFFFFFFk','kFFFFFFFFFFFFFk','kFFFFFFFFFFFFFk','kFFFFFFFFFFFFFk','kFFFFFFFFFFFFFk','kFFFFFFFFFFFFFk','kkkkkkkEkkkkkkk','kkkkkkkkkkkkkkk'],
   npcs:[{id:'azul',x:4,y:1},{id:'diegoG',x:9,y:7},{id:leagueNpc,x:6,y:7},
     ...(pokemon?POKEMON_TEMPLE_PLAYERS:TEMPLE_PLAYERS).map((id,i)=>({id,x:i===4?12:[3,7,11][i%3],y:i===4?7:i<3?3:5,dir:i<3?0:1}))],
-  props:[{k:'mostrador',x:2,y:2,w:4},{k:'standings',x:7,y:1,w:2,h:2,act:'standings',solid:false,top:true},
+  props:[{k:'mostrador',x:2,y:2,w:4},{k:'standings',x:7,y:0,w:2,h:1,act:'standings',solid:false,top:true},
     {k:'juegosMesa',x:10,y:1,w:3,act:'boardShop'},...[[2,4],[6,4],[10,4]].map(([x,y])=>({k:'mesaCartas',x,y,w:3,act:'playCards',...(x===6?{waiting:true,opponent:pokemon?'ashT':'galindo'}:{})}))]};
 }
 ROOMS.tienda=makeCardTemple('LA GUARIDA DEL MONO · PREMODERN',ROOMS.tienda.exitTo,'ligaUrza');
@@ -1773,7 +1781,7 @@ const PL = { x:0, y:0, w:10, h:8, dir:0, walk:0, atk:0, atkCd:0, inv:0, kb:0, kx
 const ATK = 14;
 function newSave(ci, custom){
   const ch = ci === CUSTOM_CHAR ? customCharacter(custom) : CHARS[ci];
-  return { v:1, ch:ci, ...(ci === CUSTOM_CHAR ? {customChar:normalizeCustom(custom)} : {}), lvl:1, xp:0, st:{...ch.st}, hp:6, maxHp:6, coins:1500, econ:2, leagues:{}, cards:{}, swords:['palo'], eq:'palo',
+  return { v:1, ch:ci, ...(ci === CUSTOM_CHAR ? {customChar:normalizeCustom(custom)} : {}), lvl:1, xp:0, st:{...ch.st}, hp:6, maxHp:6, coins:1500, bankCoins:0, potions:{}, econ:2, leagues:{}, cards:{}, swords:['palo'], eq:'palo',
     chests:{}, bosses:{}, trophies:0, buzz:0, beers:0, room:'hogar', x:2*TS+3, y:3*TS+4, complete:{}, visited:{}, ligaWins:0, arcadeBest:0, lore:false, quests:{}, kills:{}, killsTotal:0, beerTotal:0,
     gear:{ shield:null, head:null, body:null, legs:null, feet:null }, armor:[], spells:ch.superBaby ? ['bolt'] : [], spellSel:0, mp:4, house:{}, found:{}, foundZones:{}, stones:{}, pet:null, dex:{}, keys:{}, relics:{}, spellXp:{}, mounts:[], mount:null, surf:false, talca:{}, sacos:0 };
 }
@@ -1820,6 +1828,7 @@ function loadSave(n){
     if (!s.econ) { s.coins = Math.round((s.coins || 0) * COIN_X); s.econ = 2; }
     s.leagues = s.leagues || {}; s.stones = s.stones || {}; s.dex = s.dex || {}; s.keys = s.keys || {}; s.relics = s.relics || {}; s.spellXp = s.spellXp || {}; s.mounts = s.mounts || []; if (s.mount === undefined) s.mount = null; if (s.pet === undefined) s.pet = null;
     for(const id of Object.keys(s.spellXp)){const xp=Number(s.spellXp[id]);s.spellXp[id]=Number.isFinite(xp)?Math.max(0,xp):0;}
+    s.bankCoins=Math.max(0,Math.floor(Number(s.bankCoins)||0));s.potions=s.potions||{};
     s.visited = s.visited || {}; s.ligaWins = s.ligaWins || 0; s.arcadeBest = s.arcadeBest || 0; s.complete = s.complete || {};
     if (!ROOMS[s.room] && !WILD[s.room] && !String(s.room).startsWith('D:')) { s.room = 'pueblo'; s.x = 7 * TS + 3; s.y = 6 * TS + 6; }
     return s;
@@ -2385,7 +2394,8 @@ function drawProp(p){
     case 'mesaCartas': {const poke=G.def.pokemon;outl(X,Y+2,wpx,12,poke?'#285888':'#704820');R(X+2,Y+3,wpx-4,9,poke?'#78b8d8':'#246840');for(const dx of [8,wpx-15]){outl(X+dx,Y+4,6,7,poke?'#f8f4e8':'#202038');R(X+dx+1,Y+5,4,3,poke?'#e85050':'#b88a40');}if(poke){disc(X+wpx/2,Y+8,4,'#f8f8f8');R(X+wpx/2-4,Y+4,8,4,'#e83040');R(X+wpx/2-4,Y+8,8,1,'#182030');}break;}
     case 'mostrador': {outl(X,Y+3,wpx,13,G.def.pokemon?'#286898':'#784828');R(X,Y+3,wpx,3,'#d4b080');for(let i=4;i<wpx;i+=10){outl(X+i,Y+5,6,8,'#182030');R(X+i+1,Y+6,4,3,G.def.pokemon?'#f05050':'#c0a050');}tiny(p.label || 'AZUL · CARTAS',X+wpx/2,Y+17,'#fcd84a','center');break;}
     case 'juegosMesa': {outl(X,Y,wpx,24,'#4a2a18');for(let i=0;i<6;i++){const bx=X+3+(i%3)*14,by=Y+2+Math.floor(i/3)*11;outl(bx,by,11,9,['#e09028','#38a0c8','#b03870'][i%3]);tiny(['CAT','RIS','DOM'][i%3],bx+5,by+3,'#fff','center');}tiny('JUEGOS DE MESA',X+wpx/2,Y+26,'#fcd84a','center');break;}
-    case 'standings': {const rows=templeStandings();outl(X-7,Y-1,44,27,'#f4ead0');tiny('STANDINGS',X+15,Y+1,'#5a3018','center');rows.slice(0,3).forEach((r,i)=>tiny((i+1)+' '+norm(r.name).split(' ')[0].slice(0,6)+' '+r.points,X-4,Y+8+i*6,'#302018'));break;}
+    case 'standings': {const rows=templeStandings();outl(X-4,Y+1,42,14,'#f4ead0');ctx.save();ctx.translate(X-2,Y+2);ctx.scale(.6,.6);tiny('STANDINGS',30,0,'#5a3018','center');rows.slice(0,3).forEach((r,i)=>tiny((i+1)+' '+norm(r.name).split(' ')[0].slice(0,6)+' '+r.points,0,6+i*5,'#302018'));ctx.restore();break;}
+    case 'gymThrone': {const col=p.color;R(X+2,Y+15,44,22,'#30253e');R(X+4,Y+17,40,18,col);outl(X+14,Y+8,20,20,'#4b3157');R(X+16,Y+10,16,14,col);R(X+11,Y+22,5,9,'#e4c579');R(X+32,Y+22,5,9,'#e4c579');R(X+8,Y+33,32,3,'#e4c579');R(X+6,Y,36,7,'#181321');tiny('LIDER',X+24,Y+1,'#fce4a2','center');disc(X+4,Y+11,3,col);disc(X+44,Y+11,3,col);break;}
     case 'reposera': { const c = p.c || '#e83040'; R(X + 2, Y + 13, 1, 3, '#8a8a90'); R(X + 13, Y + 13, 1, 3, '#8a8a90'); outl(X + 1, Y + 8, 14, 5, c); for (let i = 0; i < 14; i += 4) R(X + 1 + i, Y + 8, 2, 5, '#ffffff'); outl(X + 11, Y + 2, 4, 7, c); R(X + 12, Y + 3, 2, 5, '#ffffff'); break; }
     case 'quitasol': { const c = p.c || '#e83040', cx = X + 8, cy = Y - 2; R(cx - 1, cy, 2, 18, '#e8e0d0'); softShadow(cx + 4, Y + 15, 12, 3, 0.35);
       for (let i = 0; i < 6; i++) { ctx.fillStyle = i % 2 ? '#ffffff' : c; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy + 6, 13, Math.PI + i * Math.PI / 6, Math.PI + (i + 1) * Math.PI / 6); ctx.fill(); }
@@ -3146,7 +3156,16 @@ function drawMon(type, x, y, t, flip, forceMagic=false){
 /* ============ CARDS ============ */
 const CCOL = { R:{fr:'#c83a24',bg:'#f0a070'}, B:{fr:'#3a2a48',bg:'#7a6a8a'}, U:{fr:'#2a5ac8',bg:'#90c0f0'}, W:{fr:'#e0d6b8',bg:'#f8f0d8'}, A:{fr:'#8a9098',bg:'#c8ccd0'}, G:{fr:'#2a7a3a',bg:'#98d088'}, L:{fr:'#e8b820',bg:'#fff4c0'} };
 const MANA = { R:'#e05030', B:'#2a2030', U:'#3a7ae8', W:'#f8f0d0', G:'#2a9a4a' };
+const POKEMON_CARD_STATS={"pkc_asc_160":{"hp":320,"prizes":2},"pkc_asc_158":{"hp":70,"prizes":1},"pkc_asc_159":{"hp":90,"prizes":1},"pkc_asc_99":{"hp":110,"prizes":1},"pkc_por_62":{"hp":170,"prizes":2},"pkc_asc_142":{"hp":210,"prizes":2},"pkc_tef_123":{"hp":240,"prizes":2},"pkc_meg_104":{"hp":300,"prizes":3},"pkc_twm_25":{"hp":210,"prizes":2},"pkc_ssp_76":{"hp":210,"prizes":2},"pkc_asc_76":{"hp":190,"prizes":2},"pkc_scr_128":{"hp":230,"prizes":2},"pkc_scr_114":{"hp":70,"prizes":1},"pkc_scr_115":{"hp":100,"prizes":1},"pkc_scr_118":{"hp":70,"prizes":1},"pkc_svi_86":{"hp":310,"prizes":2},"pkc_meg_58":{"hp":70,"prizes":1},"pkc_meg_59":{"hp":100,"prizes":1},"pkc_twm_95":{"hp":110,"prizes":1},"pkc_wht_44":{"hp":80,"prizes":1},"pkc_pbl_65":{"hp":340,"prizes":3},"pkc_cri_59":{"hp":70,"prizes":1},"pkc_tef_114":{"hp":100,"prizes":1},"pkc_cri_61":{"hp":180,"prizes":1},"pkc_pbl_46":{"hp":70,"prizes":1},"pkc_blk_67":{"hp":220,"prizes":2},"pkc_meg_77":{"hp":340,"prizes":3},"pkc_pre_50":{"hp":70,"prizes":1},"pkc_jtg_120":{"hp":70,"prizes":1},"pkc_pre_80":{"hp":140,"prizes":1},"pkc_jtg_121":{"hp":270,"prizes":2},"pkc_meg_75":{"hp":110,"prizes":1},"pkc_por_21":{"hp":330,"prizes":3},"pkc_por_20":{"hp":70,"prizes":1},"pkc_asc_171":{"hp":70,"prizes":1},"pkc_cri_22":{"hp":350,"prizes":3},"pkc_cri_20":{"hp":70,"prizes":1},"pkc_cri_21":{"hp":100,"prizes":1},"pkc_twm_106":{"hp":310,"prizes":2},"pkc_twm_128":{"hp":70,"prizes":1},"pkc_twm_129":{"hp":90,"prizes":1},"pkc_asc_79":{"hp":280,"prizes":2},"pkc_asc_18":{"hp":50,"prizes":1},"pkc_asc_19":{"hp":130,"prizes":1},"pkc_asc_97":{"hp":60,"prizes":1},"pkc_dri_51":{"hp":120,"prizes":1},"pkc_asc_162":{"hp":230,"prizes":2},"pkc_meg_86":{"hp":280,"prizes":3},"pkc_meg_88":{"hp":110,"prizes":1},"pkc_sfa_39":{"hp":190,"prizes":2}};
+const POKEMON_CARD_IMAGES={};
+function originalPokemonCard(id,x,y,w,h){
+ if(CARDS[id]?.realm!=='pokemon'||typeof Image==='undefined')return false;
+ let img=POKEMON_CARD_IMAGES[id];if(!img){img=new Image();img.src='assets/pokemon-cards/'+id+'.png';POKEMON_CARD_IMAGES[id]=img;}
+ if(!img.complete||!img.naturalWidth)return false;
+ ctx.save();ctx.imageSmoothingEnabled=true;ctx.drawImage(img,x,y,w,h);ctx.restore();return true;
+}
 function drawMetaArt(id,x,y,px,kind='POKEMON',name=null){
+ const card=DECK[id].cards.find(cid=>CARDS[cid].n===(name||DECK[id].star));if(card&&originalPokemonCard(card,x,y,px*.7,px))return;
  const d=DECK[id];ctx.save();ctx.translate(x,y);ctx.scale(px/16,px/16);
  if(kind==='ENERGIA'){disc(8,8,6,d.col);disc(8,8,4,'#fff0bd');R(7,3,2,10,d.col);R(3,7,10,2,d.col);}
  else if(kind==='ENTRENADOR'){R(3,2,10,13,'#f4ecd8');R(4,3,8,4,d.col);for(let i=0;i<3;i++)R(5,9+i*2,6,1,'#584868');}
@@ -3179,6 +3198,7 @@ function drawArt(id, x, y, px){
   } else drawIcon(c.art, x + Math.round(px / 16 * 2), y + Math.round(px / 16 * 2), Math.max(1, Math.round(px / 16)));
 }
 function drawCardSmall(id, x, y, have, count){
+  if(have&&originalPokemonCard(id,x,y,24,34)){if(count>1){R(x+13,y+26,11,7,'#171421');tiny('X'+count,x+18,y+27,'#fff','center');}return;}
   R(x, y, 24, 34, '#111');
   if (!have) { R(x + 1, y + 1, 22, 32, '#3a2818'); R(x + 3, y + 3, 18, 28, '#5a3a20'); disc(x + 12, y + 17, 6, '#3a2818'); tiny('?', x + 12, y + 15, '#c8904a', 'center'); return; }
   const c = CARDS[id], k = CCOL[c.c];
@@ -3188,6 +3208,7 @@ function drawCardSmall(id, x, y, have, count){
   if (count > 1) tiny('X' + count, x + 12, y + 25, '#1a1020', 'center'); else tiny(c.t[0], x + 12, y + 25, '#6a5a4a', 'center');
 }
 function drawCardBig(id, x, y){
+  if(originalPokemonCard(id,x,y,92,128))return;
   const c = CARDS[id], k = CCOL[c.c];
   R(x, y, 92, 128, '#111'); R(x + 2, y + 2, 88, 124, k.fr);
   R(x + 4, y + 4, 84, 11, '#f4ecd8'); tiny(realmText(c.n).slice(0,20), x + 6, y + 7, '#1a1020');
@@ -3229,7 +3250,7 @@ function configureTemples(){
   p.players.forEach((name,i)=>{const id=make('localPlayer_'+room+'_'+i,name,i);p.roster.push(id);});
   d.roster=p.roster;d.npcs=[{id:p.shopId,x:p.shop[0]+1,y:p.shop[1]-1},{id:p.judgeId,x:12,y:7},org,...p.roster.map((id,i)=>({id,x:p.tables[Math.floor(i/2)][0]+(i%2?2:0),y:p.tables[Math.floor(i/2)][1]+(i%2?1:-1),dir:i%2?1:0}))];
   d.props=[{k:'retroShelf',x:1,y:6,w:2,solid:false},{k:'mostrador',x:p.shop[0],y:p.shop[1],w:3,label:p.host.split(' ')[0],act:'localShop'},
-   {k:'standings',x:7,y:1,w:2,h:2,solid:false,top:true,act:'standings'},
+   {k:'standings',x:7,y:0,w:2,h:1,solid:false,top:true,act:'standings'},
    {k:'juegosMesa',x:11,y:1,w:2,act:'boardShop'},
    ...p.tables.map(([x,y],i)=>({k:'mesaCartas',x,y,w:3,act:'playCards',waiting:i===1,opponent:p.roster[i*2]})),
    {k:'ligaNeon',x:6,y:6,solid:false,top:true},
@@ -3243,6 +3264,7 @@ function configureTemples(){
  a.identity=p;a.name='CATEDRAL DE LA LLUVIA · SALON DE EVENTOS';a.roster=p.roster.slice();
  a.npcs=a.npcs.map((n,i)=>n.id==='azul'?{...n,id:p.shopId}:n.id==='diegoG'?{...n,id:p.judgeId}:TEMPLE_PLAYERS.includes(n.id)?{...n,id:p.roster[TEMPLE_PLAYERS.indexOf(n.id)]}:n);
  for(const prop of a.props){if(prop.k==='mostrador')prop.label='AURELIA';if(prop.opponent)prop.opponent=p.roster[0];}
+ for(const d of Object.values(ROOMS))for(const prop of d.props||[])if(prop.k==='standings'){prop.y=0;prop.h=1;}
  ROOMS.cartasPokemon={...ROOMS.tienda,name:'ARCHIVO POKEMON DE LAS CINCO LUNAS',pokemon:true,exitTo:ROOMS.cartasPokemon.exitTo};
  for(const d of Object.values(ROOMS)){d.props=(d.props||[]).filter(p=>p.k!=='tcgNeon'&&(!d.cardTemple||!['juegosMesa','retroShelf'].includes(p.k)));if(!d.interior&&d.plaques)d.props.push({k:'realmCrest',x:13,y:4,solid:false});}
  // National temple is the entrance to a sanctuary, in either realm.
@@ -3251,6 +3273,16 @@ function configureTemples(){
  ROOMS.santuarioPortal={name:'SANTUARIO DEL UMBRAL',zone:'tolaria',theme:'inside',music:'tcg',interior:true,exitTo:{room:'liga',tx:12,ty:5},map:['kkkkkkkkkkkkkkk',...Array(7).fill('kFFFFFFFFFFFFFk'),'kkkkkkkEkkkkkkk','kkkkkkkkkkkkkkk'],npcs:[],props:[{k:'urzaBox',x:3,y:7,solid:false,act:'urzaBox'},{k:'realmPortal',x:5,y:2,w:5,h:4,solid:false,act:'realmPortal'},...[2,12].flatMap(x=>[2,5].map(y=>({k:'portalPillar',x,y,solid:false}))),{k:'realmCrest',x:2,y:7,solid:false},{k:'realmCrest',x:12,y:7,solid:false}],signs:{'7,7':'EL UMBRAL UNE DOS REFLEJOS DEL MISMO MUNDO. EL PODER DE LAS CARTAS ABRE EL CAMINO.'}};
 }
 configureTemples();
+// An accessible bank replaces the decorative towers in Las Condes.
+ROOMS.lascondes.props=ROOMS.lascondes.props.filter(p=>p.k!=='torre');
+for(const y of [1,2,3]){const row=ROOMS.lascondes.map[y].split('');for(let i=0;i<4;i++)row[9+i]=y<3?'R':i===2?'D':'W';ROOMS.lascondes.map[y]=row.join('');}
+ROOMS.lascondes.doors['11,3']='bancoCondes';ROOMS.lascondes.plaques.push(['BANCO',176,19,'#273d59']);
+ROOMS.lascondes.signs['6,4']+=' BANCO AL NORESTE: DEPOSITA TUS MONEDAS PARA PROTEGERLAS AL DESMAYARTE.';
+NPCDEF.banquero={...NPCDEF.conserje,n:'ERNESTO DEL BANCO'};
+ROOMS.bancoCondes={name:'BANCO DE LAS CONDES',zone:'lascondes',theme:'inside',music:'town',interior:true,exitTo:{room:'lascondes',tx:11,ty:4},map:['kkkkkkkkkkkkkkk',...Array(7).fill('kFFFFFFFFFFFFFk'),'kkkkkkkEkkkkkkk','kkkkkkkkkkkkkkk'],npcs:[{id:'banquero',x:7,y:2}],props:[{k:'mostrador',x:5,y:3,w:5,label:'DEPOSITOS · RETIROS'},{k:'cartel',x:3,y:1,label:'BANCO',txt:'TUS DEPOSITOS NO SE PIERDEN AL DESMAYARTE.',solid:false,top:true},{k:'barril',x:12,y:2,solid:false}]};
+function bankTransfer(amount,withdraw=false){const available=withdraw?(S.bankCoins||0):S.coins,value=Math.min(available,Math.max(0,Math.floor(Number(amount)||0)));if(value<=0)return false;S.bankCoins=(S.bankCoins||0)+(withdraw?-value:value);S.coins+=withdraw?value:-value;saveGame();SFX.coin();return true;}
+function bankTalk(){say(['ERNESTO: Bienvenido al Banco de Las Condes. Tus depositos estan a salvo aunque te desmayes. Puedes retirarlos cuando quieras, sin comision.','EN BOLSILLO: '+money(S.coins)+' · DEPOSITADO: '+money(S.bankCoins||0)],[{t:'DEPOSITAR',fn:()=>bankAmounts(false)},{t:'RETIRAR',fn:()=>bankAmounts(true)},{t:'VOLVER',fn:null}]);}
+function bankAmounts(withdraw){const available=withdraw?(S.bankCoins||0):S.coins;say([(withdraw?'RETIRAR':'DEPOSITAR')+' · DISPONIBLE '+money(available)],[...Array.from(new Set([10000,100000,Math.floor(available/2),available].filter(n=>n>0&&n<=available))).map(n=>({t:money(n)+(n===available?' · TODO':''),fn:()=>{bankTransfer(n,withdraw);bankTalk();}})),{t:'VOLVER',fn:bankTalk}]);}
 NPCDEF.urzaEcho={...NPCDEF.viejo,n:'URZA · ECO DEL ARTIFICE',c:{...NPCDEF.viejo.c,hair:'#e8e0c8',shirt:'#446888',shirtD:'#283858',emblem:'#e8c878'}};NPCDEF.alerceEcho={...NPCDEF.profesor,n:'PROFESOR ALERCE · ECO DEL REFLEJO'};ROOMS.santuarioPortal.npcs.push({id:'urzaEcho',x:12,y:7});
 for(const id of ['pueblo','valpo','vina','talca','pmontt','puertoVaras','frutillar','tolaria','tempest','mercado'])ROOMS[id].props.push({k:'retroStreet',x:13,y:1,solid:false,style:'magazine'});
 ROOMS.hogar.props=[{k:'retroShelf',x:11,y:6,w:2,solid:false},...(ROOMS.hogar.props||[]),{k:'homeKitchen',x:10,y:2,w:3,act:'homeCook'},{k:'homeComputer',x:5,y:2,w:2,act:'homeAI'},{k:'mesaComida',x:6,y:6,w:3,act:'homeCook'},...[{x:2,id:24,mon:'angel'},{x:6,id:5,mon:'shivan'},{x:10,id:149,mon:'dread'}].map(p=>({k:'homePoster',...p,y:0,w:2,solid:false}))];
@@ -3306,6 +3338,7 @@ function realmText(value){
   for(const [id,name]of Object.entries(POKEMON_DECK_NAMES))words.set(DECK[id].n,name);
   for(const [id,m]of Object.entries(MON))words.set(m.n,pokemonEnemy(id).name);
   for(const [id,c]of Object.entries(CARDS))if(c.n&&c.realm!=='pokemon')words.set(c.n,reflectedCardName(id));
+  for(const [id,m]of Object.entries(MOUNTS))words.set(m.n,reflectedMount(id).name);
   REALM_WORDS=[...words].sort((a,b)=>b[0].length-a[0].length);REALM_LOOKUP=new Map(REALM_WORDS.map(([a,b])=>[a.toLowerCase(),b]));REALM_PATTERN=new RegExp(REALM_WORDS.map(([a])=>a.replace(/[.*+?^${}()|[\]\\]/g,'\\  REALM_WORDS=[...words].sort((a,b)=>b[0].length-a[0].length);}')).join('|'),'gi');}
  return text.replace(REALM_PATTERN,match=>REALM_LOOKUP.get(match.toLowerCase()));
 }
@@ -3323,10 +3356,11 @@ function applyPokemonGym(d){
  const ids=[0,1,2,3].map(i=>'gym_'+spec.key+'_'+i),names=[...spec.names,spec.leader];
  ids.forEach((id,i)=>{if(!NPCDEF[id])NPCDEF[id]={...NPCDEF[i===3&&spec.key==='nacional'?'fernando':d.identity.roster[i]],n:names[i],c:{...NPCDEF[d.identity.roster[i]].c,shirt:spec.color,shirtD:'#3a4058',hat:spec.color}};});
  d.gym={spec,ids,key:spec.key};d.name='GIMNASIO '+spec.type+' · '+d.identity.name;d.roster=ids;
- d.npcs=d.npcs.filter(n=>!d.identity.roster.includes(n.id)&&!n.id.startsWith('liga'));
- d.npcs.push(...ids.map((id,i)=>({id,x:i===3?6:d.identity.tables[i][0],y:i===3?7:d.identity.tables[i][1]-1,dir:0})));
+ d.npcs=d.npcs.filter(n=>!d.identity.roster.includes(n.id)&&!n.id.startsWith('liga')&&n.id!==d.identity.judgeId&&n.id!=='fernando');
+ d.npcs.push(...ids.map((id,i)=>({id,x:i===3?7:d.identity.tables[i][0],y:i===3?2:d.identity.tables[i][1]-1,dir:0})));
  d.props=d.props.map(p=>p.k==='mesaCartas'?{...p,waiting:true,opponent:ids[d.identity.tables.findIndex(([x,y])=>p.x===x&&p.y===y)]||ids[0]}:p.k==='leagueRelic'?{...p,color:spec.color,pokeId:spec.pokemon}:p);
  d.props.push({k:'gymSigil',x:2,y:0,solid:false,pokeId:spec.pokemon,color:spec.color},{k:'gymSigil',x:12,y:0,solid:false,pokeId:spec.pokemon,color:spec.color});
+ d.props.push({k:'gymThrone',x:6,y:1,w:3,h:3,solid:false,color:spec.color});
 }
 function gymRun(key=G.def.gym&&G.def.gym.key){S.gymRuns=S.gymRuns||{};return S.gymRuns[key]=S.gymRuns[key]||{next:0,won:false};}
 function nextGymTrainer(){if(!G.def.gym)return null;const run=gymRun();return G.npcs.find(n=>n.id===G.def.gym.ids[Math.min(run.next,3)]);}
@@ -3344,7 +3378,7 @@ function pokemonGymTalk(id,npc){
 function beginPokemonGymMatch(i){
  const gym=G.def.gym,run=gymRun();if(i!==run.next||run.won)return;
  const id=gym.ids[i],deck=POKEMON_GYM_DECKS[gym.key][i],opp={name:NPCDEF[id].n,look:NPCDEF[id],deck,bonus:i===3?4:i,gym:{key:gym.key,index:i,npc:id}};
- const done=activeDecks().filter(d=>deckDone(d.id));if(!done.length){say(['Te prestamos una baraja para el reto. Armar una propia eliminara la desventaja.'],[{t:'USAR BARAJA PRESTADA',fn:()=>say(['Elige una baraja meta prestada. Completar sus 12 cartas clave elimina la desventaja.'],deckChoices(POKEMON_META_DECKS,d=>beginDuel(opp,{id:d.id,borrowed:true},0)))},{t:'VOLVER',fn:null}]);return;}
+ const done=activeDecks().filter(d=>deckDone(d.id));if(!done.length){say(['Para disputar una liga necesitas tu propio mazo completo. Reune sus 12 cartas clave; aqui no se permiten barajas prestadas.'],[{t:'COMPRAR CARTAS',fn:()=>openShop('liga',G.def.name)},{t:'VOLVER',fn:null}]);return;}
  say(['Elige tu baraja. Este reto de gimnasio no necesita apuesta.'],deckChoices(done,d=>beginDuel(opp,{id:d.id},0)).concat([{t:'VOLVER',fn:null}]));
 }
 function finishPokemonGymMatch(challenge,won){
@@ -3632,7 +3666,7 @@ function hurtPlayer(dmg, fx, fy, fromBoss){
   const sh = S.gear && S.gear.shield ? ARMOR[S.gear.shield] : null;
   if (sh && Math.random() < Math.min(pokemonRealm()?0.35:0.75,sh.def * 0.05)) { PL.inv = 30; SFX.hit(); floatText('BLOQUEO', PL.x + 5, PL.y - 14, '#c8e0ff'); return; }
   dmg = pokemonRealm() ? Math.max(1,Math.round((18+dmg*3)*reflectedThreat()*(1-Math.min(0.6,defense()/180)))) : Math.max(1, Math.round(dmg * (fromBoss ? 1 : lvlScale())) - Math.floor(defense() / 4));
-  S.hp -= dmg; PL.inv = 60; PL.kb = 10;
+  G.lastHurtFrame=frame;S.hp -= dmg; PL.inv = 60; PL.kb = 10;
   const dx = PL.x + 5 - fx, dy = PL.y + 4 - fy, d = Math.hypot(dx, dy) || 1;
   PL.kx = dx / d * 2.4; PL.ky = dy / d * 2.4;
   SFX.hurt();
@@ -3702,7 +3736,7 @@ function propAction(p){
     if (G.hielera) { say(['La hielera ya esta vacia. Ivan dice que la proxima la traes tu.']); return; }
     G.hielera = true; S.hp = Math.min(S.maxHp, S.hp + 8); SFX.beer(); say(['Sacas una chela helada de la hielera de Ivan. ¡Salud!']);
   } else if (p.act === 'pool' || p.act === 'pong' || p.act === 'taca') {
-    const nm = { pool:'POOL', pong:'PING PONG', taca:'TACA-TACA' }[p.act], help = { pool:'Embocar las 6 bolas en 14 tiros o menos. Flechas apuntan, A carga la fuerza y A de nuevo tira.', pong:'Primero a 5 puntos contra Ivan. Arriba y abajo mueven tu paleta.', taca:'Primero a 3 goles. Arriba y abajo mueven tus palos, A le pega fuerte.' }[p.act];
+    const nm = { pool:'POOL', pong:'SUPER TENIS', taca:'TACA-TACA' }[p.act], help = { pool:'Embocar las 6 bolas en 14 tiros o menos. Flechas apuntan, A carga la fuerza y A de nuevo tira.', pong:'Elige Wimbledon, Roland Garros, US Open o Australia. Flechas mueven, A golpea, B globo, C fuerte. Set corto a 3 juegos.', taca:'Primero a 3 goles. Arriba y abajo mueven tus palos, A le pega fuerte.' }[p.act];
     say([nm + ': ' + help], [{ t:'JUGAR', fn:() => startFree(p.act) }, { t:'NO', fn:null }]);
   }
 }
@@ -3754,10 +3788,10 @@ function offerAshGuide(){
  const start=guidePosition(path,24);G.ashGuide={...start,path,t:0,progress:0,dir:2,walking:false};G.moveTarget=null;
  say(['ASH: ¡Hola! Soy Ash Ketchum, de Pueblo Paleta. ¿Tu tambien sales hoy de aventura?','Antes de ir tras las medallas, busca un compañero. El Safari queda por aqui. Ven, te acompaño.'],null,()=>{if(G.ashGuide)G.ashGuide.walking=true;});
 }
-function finishAshGuide(){const a=G.ashGuide;if(!a)return;const end=a.path[a.path.length-1];PL.x=end.x;PL.y=end.y;PL.dir=1;a.x=19;a.y=132;a.walking=false;a.done=true;S.ashIntroDone=true;S.ashIntroPending=false;saveGame();
+function finishAshGuide(){const a=G.ashGuide;if(!a)return;const end=a.path[a.path.length-1];PL.x=end.x;PL.y=end.y;PL.dir=1;a.x=19;a.y=132;a.walking=false;a.done=true;PL.moving=false;S.ashIntroDone=true;S.ashIntroPending=false;saveGame();
  say(['ASH: ¡Llegamos! Acercate con calma y lanza una Safari Ball. El primer compañero nunca se olvida.','No necesitas ganarlo todo hoy. Explora, conoce a la gente... y cuida a quien camine contigo. Nos vemos en el camino.'],[{t:'ENTRAR AL SAFARI',fn:()=>loadRoom('safari',115,116)},{t:'EXPLORAR LA VILLA',fn:()=>{G.ashGuide=null;}}]);
 }
-function updateAshGuide(){const a=G.ashGuide;if(!a||!a.walking)return;a.t++;a.progress=Math.min((a.path.length-1)*TS,a.progress+.7);const before={x:a.x,y:a.y},lead=guidePosition(a.path,Math.min((a.path.length-1)*TS,a.progress+24)),hero=guidePosition(a.path,a.progress);a.x=lead.x;a.y=lead.y;a.dir=Math.abs(a.x-before.x)>.05?(a.x<before.x?2:3):(a.y<before.y?1:0);PL.dir=Math.abs(hero.x-PL.x)>.05?(hero.x<PL.x?2:3):(hero.y<PL.y?1:0);PL.x=hero.x;PL.y=hero.y;PL.walk+=.12;if(pressed('menu')||a.progress>=(a.path.length-1)*TS)finishAshGuide();}
+function updateAshGuide(){const a=G.ashGuide;if(!a||!a.walking)return;a.t++;a.progress=Math.min((a.path.length-1)*TS,a.progress+.7);const before={x:a.x,y:a.y},lead=guidePosition(a.path,Math.min((a.path.length-1)*TS,a.progress+24)),hero=guidePosition(a.path,a.progress);a.x=lead.x;a.y=lead.y;a.dir=Math.abs(a.x-before.x)>.05?(a.x<before.x?2:3):(a.y<before.y?1:0);PL.dir=Math.abs(hero.x-PL.x)>.05?(hero.x<PL.x?2:3):(hero.y<PL.y?1:0);PL.x=hero.x;PL.y=hero.y;PL.moving=true;PL.walk+=.12;if(pressed('menu')||a.progress>=(a.path.length-1)*TS)finishAshGuide();}
 function goTo(id, ch){ const d = getDef(id), [x, y] = findTile(d, ch); SFX.door(); loadRoom(id, x * TS + 3, y * TS + 4); }
 function useStairs(c){
   const d = G.def;
@@ -3792,7 +3826,7 @@ const spikesUp = (tx, ty) => ((frame + tx * 23 + ty * 11) % 120) < 36;
 function hurtHazard(dmg, why){
   if(!G.enemies.some(e=>!e.dead))return;
   if (PL.inv > 0 || G.dead) return;
-  S.hp -= pokemonRealm()?Math.round((3+dmg*2)*reflectedThreat()):dmg; PL.inv = 45; SFX.hurt(); floatText(why, PL.x + 5, PL.y - 14, '#ff9060');
+  G.lastHurtFrame=frame;S.hp -= pokemonRealm()?Math.round((3+dmg*2)*reflectedThreat()):dmg; PL.inv = 45; SFX.hurt(); floatText(why, PL.x + 5, PL.y - 14, '#ff9060');
   if (S.hp <= 0) { S.hp = 0; G.dead = 1; playMusic(null); SFX.lose(); }
 }
 function hazardUnderPlayer(){
@@ -4057,6 +4091,7 @@ function unstuckPlayer_(){
   return false;
 }
 function updateWorld(){
+  const walkStartX=PL.x,walkStartY=PL.y;
   updateOctayRace();
   tickDay();
   const p = PL;
@@ -4083,7 +4118,6 @@ function updateWorld(){
     if (mx || my) {
       const sp = speed() * slow, n = Math.hypot(mx, my);
       dx = mx / n * sp; dy = my / n * sp;
-      p.walk += sp * 0.1;
       if (mx && !my) p.dir = mx < 0 ? 2 : 3;
       else if (my && !mx) p.dir = my < 0 ? 1 : 0;
       else { const cur = DIRV[p.dir]; if (!((cur[0] && cur[0] === mx) || (cur[1] && cur[1] === my))) p.dir = my < 0 ? 1 : 0; }
@@ -4093,6 +4127,9 @@ function updateWorld(){
       if (moveBox(p, p.ivx, p.ivy, false, true)) { p.ivx *= 0.3; p.ivy *= 0.3; }
     } else { p.ivx = dx; p.ivy = dy; if (dx || dy) moveBox(p, dx, dy, false, true); }
   }
+  const travelled=Math.hypot(p.x-walkStartX,p.y-walkStartY);p.moving=travelled>.05&&p.kb<=0;
+  if(p.moving){const prevStep=Math.floor(p.walk);p.walk+=travelled*(mounted()?.14:.16);if(Math.floor(p.walk)!==prevStep&&!G.def.interior&&T(Math.floor(p.x/TS),Math.floor(p.y/TS))!=='~')G.parts.push({k:'smoke',x:p.x+5,y:p.y+8,vx:0,vy:-.15,t:5});}
+  recoverLife();
   if (p.atk > 0) {
     p.atk--;
     const { ang, cx, cy } = swordPose(), st = stats();
@@ -4413,7 +4450,7 @@ const QUESTS = {
   q_piedraTolaria:{ giver:'mago', title:'La Piedra Tolaria', desc:'Recupera 3 runas: Ruinas de Serra, Pantano Profundo y Minas de Mishra piso 1.', type:'find', zones:['ruinas','pantanoProf','D:minas:1'], n:3, itemName:'RUNA', icon:'rune', reward:{ stone:'tolaria' } },
 };
 // Permanent quests continue the existing chains; contracts remain renewable.
-QUESTS.q_mazo2.giver='localJudge_tienda';QUESTS.q_mazo.giver='localJudge_cartasCurico';QUESTS.q_cartas.giver='localShop_tienda';
+QUESTS.q_mazo2.giver='cronista';QUESTS.q_mazo.giver='cronista';QUESTS.q_cartas.giver='cronista';
 QUESTS.q_maltaLago={giver:'cerveceraLago',title:'La malta del Oktoberfest',minLvl:3,desc:'Recupera 3 sacos de malta entre Puerto Montt, Puerto Varas y Frutillar.',type:'find',zones:['pmontt','puertoVaras','frutillar'],n:3,itemName:'MALTA DEL LAGO',icon:'beer',reward:{coins:60,xp:200}};
 QUESTS.q_pellucoAfiches={giver:'mechonaPelluco',title:'La bienvenida de los mechones',minLvl:3,desc:'Recupera 3 afiches en la playa, el campus y el quincho de Pelluco.',type:'find',zones:['pelluco','uachPelluco','quinchoPelluco'],n:3,itemName:'AFICHE DE BIENVENIDA',icon:'card',reward:{coins:40,xp:180,st:{int:1}}};
 const EXTRA_QUESTS=[
@@ -4528,12 +4565,19 @@ const FRIEND_LINES = {
   10:['Estoy produciendo el tema oficial de la Liga Nacional. Tiene un drop que hace bailar hasta al Langostino.','Escucha este beat... ¿lo sientes? Es el sonido de un Ball Lightning entrando al turno uno.'],
   11:['Saque, volea y Lightning Bolt a la cara. Así se gana en Premodern y en el tenis.','¿Un partido? Si pierdes, pagas las chelas. Si gano yo... también pagas tú.'],
 };
+/* ============ VIDA Y POCIONES ============ */
+const POTIONS={pocion:{n:'Pocion',heal:20,price:500},super:{n:'Super pocion',heal:80,price:3000},hiper:{n:'Hiper pocion',heal:200,price:10000},maxima:{n:'Pocion maxima',heal:Infinity,price:20000}};
+function recoverLife(){if(!S||S.hp<=0||S.hp>=S.maxHp||G.dead)return;if(frame-(G.lastHurtFrame??-600)<600)return;const danger=G.enemies.some(e=>!e.dead&&Math.hypot(e.x-PL.x,e.y-PL.y)<100)||G.eshots.length||G.aoes.length;if(danger)return;if(frame%180===0)S.hp=Math.min(S.maxHp,S.hp+Math.max(1,Math.round(S.maxHp*.01)));}
+function usePotion(id){const item=POTIONS[id];if(!item||!(S.potions?.[id]>0)||S.hp>=S.maxHp||G.dead)return false;S.potions[id]--;S.hp=Math.min(S.maxHp,S.hp+item.heal);SFX.heal();lootNotice(item.n.toUpperCase()+' · VIDA '+S.hp+'/'+S.maxHp,'#86e6bb');saveGame();return true;}
+function openPotions(){if(!S||G.state!=='world'||G.dead||G.warp||G.shop)return;G.menu=null;const counts=S.potions||{},items=Object.entries(POTIONS).filter(([id])=>counts[id]>0);say([items.length?'VIDA '+S.hp+'/'+S.maxHp+' · ELIGE UNA POCION.':'No llevas pociones. Compra en las tiendas de equipo o con la maga del Mercado de Mox.'],[...items.map(([id,p])=>({t:p.n+' ×'+counts[id],fn:()=>{usePotion(id);}})),{t:'VOLVER',fn:null}]);}
 /* ============ TIENDAS DEL MERCADO ============ */
 function shopItems(kind){
   const L = [];
+  if(kind==='pociones')return Object.entries(POTIONS).map(([id,p])=>({kind:'potion',id,name:p.n,price:p.price,info:(Number.isFinite(p.heal)?'RECUPERA '+p.heal+' VIDA.':'RECUPERA TODA LA VIDA.')+' EN LA BOLSA: '+(S.potions?.[id]||0)}));
   if(kind==='mesa')return Object.entries(BOARD_GAMES).map(([id,b])=>({kind:'board',id,name:b.n,price:b.price,info:'JUEGO DE MESA PARA TU COLECCION.',owned:!!(S.boardGames&&S.boardGames.includes(id))}));
   if(kind==='pokemon')return POKEMON_STORE_CARDS.map((name,i)=>({kind:'pokeCard',id:String(i),name,price:i===0?3000:12000,info:'CARTA POKEMON TCG PARA TU COLECCION.',owned:!!(S.pokemonCards&&S.pokemonCards[i])}));
   if (kind === 'armas') {
+    L.push(...shopItems('pociones'));
     for (const [id, p] of Object.entries(SWORD_PRICE)) L.push({ kind:'sword', id, name:SWORDS[id].n, price:p, info:'ARMA. ' + statLine(SWORDS[id].st), owned:S.swords.includes(id) });
     for (const [id, a] of Object.entries(ARMOR)) if (a.price) L.push({ kind:'armor', id, name:a.n, price:a.price, info:GEAR_SLOTS.find(g => g[0] === a.slot)[1] + '. +' + a.def + ' DEF ' + (Object.keys(a.st).length ? statLine(a.st) : ''), owned:S.armor.includes(id) });
   } else if (kind === 'magia') { for (const id of SPELL_ORDER) { const s = SPELLS[id]; L.push({ kind:'spell', id, name:s.n + (S.spells.includes(id) ? ' ' + spellXpLine(id) : ''), price:s.price, info:s.mp + ' MP. ' + s.desc + ' SUBE DE NIVEL CON EL USO (HASTA 20).', owned:S.spells.includes(id),req:s.req }); } }
@@ -4564,6 +4608,7 @@ function buyItem(it){
   else if (it.kind === 'board') {S.boardGames=S.boardGames || [];S.boardGames.push(it.id);}
   else if (it.kind === 'pokeCard') {S.pokemonCards=S.pokemonCards || {};S.pokemonCards[it.id]=(S.pokemonCards[it.id] || 0)+1;}
   else if (it.kind === 'card') { addCard(it.id); sh.msg = 'CARTA AGREGADA A TU COLECCION'; }
+  else if (it.kind === 'potion') {S.potions=S.potions||{};S.potions[it.id]=(S.potions[it.id]||0)+1;}
   else if (it.kind === 'mount') { S.mounts = S.mounts || []; S.mounts.push(it.id); S.mount = it.id; toast('MONTADO EN ' + MOUNTS[it.id].n.toUpperCase() + ' (R PARA BAJAR)', '#fcd84a'); }
   else if (it.kind === 'house') { S.house[it.id] = true; const b = (HOUSE[it.id] || PRIZES[it.id]).bonus; for (const [k, v] of Object.entries(b.st || {})) S.st[k] += v; if (b.maxHp) { S.maxHp += b.maxHp; S.hp = S.maxHp; } }
   SFX.chest(); sh.msg = '¡COMPRADO!'; sh.msgT = 60; sh.items = shopItems(sh.kind); sh.sel = Math.min(sh.sel, Math.max(0, sh.items.length - 1)); sh.scroll = Math.min(sh.scroll, sh.sel); G.cacheDirty = true; saveGame();
@@ -4749,6 +4794,8 @@ function leagueTalk(key){
   }).concat([{ t:'TIENDA DE CARTAS', fn:() => openShop('liga', L.n + ' - TIENDA') }, { t:'VOLVER', fn:null }]));
 }
 function talkTo(id, npc, skipQuest){
+  if(id==='banquero'){bankTalk();return;}
+  if(!skipQuest&&!G.def.cardTemple&&questMarker(id)&&questHook(id,npc))return;
   if(id==='alePelluco'){pellucoBeer();return;}if(id==='djPelluco'){pellucoDJ();return;}
   if(id==='mechonaPelluco'){if(!skipQuest&&questHook(id,npc))return;say(['TRINI: Entre clases, talleres y la feria de bienvenida siempre queda una mesa para jugar cartas. ¡Aqui los mechones tambien tienen mazo!','Despues pasamos al quincho La Ultima Diapo: pool, taca-taca y cassette. Mañana entregamos el informe... ¿cierto?'],[{t:'JUGAR CARTAS',fn:()=>offerDuel(npc)},{t:'VOLVER',fn:null}]);return;}
   if(id==='profePelluco'){say(['PROFE SIMON: Bienvenido al Campus Pelluco. La vida universitaria tambien son encuentros, arte y musica. Visita el cartel de la Semana Cultural.','Una IA puede sugerir tu baraja, pero nadie rinde el certamen de Counterspell por ti.']);return;}
@@ -4872,7 +4919,7 @@ function talkTo(id, npc, skipQuest){
     say(['CABALLERIZO: ¡Bienvenido al establo de Curico, patron! El burro cuesta $300.000: es manso y te lleva un 8% mas rapido. Despues vienen Mesa Pegasus, Nightmare, Pegasus Charger y War Mammoth, cada uno un poco mas veloz.', 'Los dragones se ganan venciendo a sus guardianes. Son la ultima mejora: rapidos, pero controlables. Con R te subes y te bajas.'], ch.slice(0, 6));
     return;
   }
-  if (id === 'mago') { say(['MAGA: ¿Quieres aprender magia? Cada libro te enseña un hechizo para siempre.'], null, () => openShop('magia', 'LIBROS DE MAGIA')); return; }
+  if (id === 'mago') { say(['MAGA: Para salir de aventura hay que ir preparado. Tengo libros de hechizos y pociones para recuperar fuerzas.'], [{t:'APRENDER MAGIA',fn:()=>openShop('magia','LIBROS DE MAGIA')},{t:'COMPRAR POCIONES',fn:()=>openShop('pociones','BOTICA DE LA MAGA')},{t:'VOLVER',fn:null}]); return; }
   if (id === 'mueblero') { say(['CARPINTERO: ¡Arreglemos tu casa en la Villa! Cada mejora te da un bonus permanente.'], null, () => openShop('hogar', 'MEJORAS PARA TU CASA')); return; }
   if (id === 'premiador') { say(['JUEZA DE PREMIOS: Premios de verdad de la liga: playmats, deck boxes, fundas... se lucen en tu casa y te dan ventajas.'], null, () => openShop('premios', 'PREMIOS DE LA LIGA')); return; }
   if (id === 'friend') {
@@ -5042,6 +5089,7 @@ function randomLook(name){
 }
 function startTour(deck, cfg){
   cfg = cfg || { rounds:3, diff:0, liga:false, name:'TORNEO' };
+  if((cfg.liga||cfg.league)&&!deckDone(deck)){say(['Las ligas exigen un mazo propio completo. Completa sus 12 cartas antes de inscribirte.']);return;}
   const localRoster=G.def.roster;const roster=localRoster?localRoster.map(id=>NPCDEF[id].n):cfg.liga||cfg.league?TEMPLE_PLAYERS.filter(id=>!cfg.liga||id!=='galindo').map(id=>NPCDEF[id].n):OPP_NAMES;
   const names = [...roster].sort(() => Math.random() - 0.5).slice(0, cfg.rounds-(cfg.liga?1:0));
   if(cfg.liga)names.push(pokemonRealm()?NPCDEF.fernando.n:NPCDEF.galindo.n);
@@ -5067,10 +5115,11 @@ function prepRound(){
   t.levelBonus=Math.floor(Math.min(levelCap(),S.lvl)/10);t.target=(t.cfg.liga?7:t.cfg.league==='tempest'?6:t.cfg.league?5:3)+Math.floor(t.round/3);
   t.deckBonus=pokemonRealm()?pokemonMatchup(t.deck,o.deck).bonus:BEATS[DECK_STYLE[t.deck]]===style?1:0;
   t.score=t.strategyScore+t.levelBonus+t.deckBonus+(t.retryBonus||0)+(CH().foresight?.5:0);
-  t.iwin=t.score>=t.target;t.ev=genDuel(t.deck,o.deck,t.iwin,t.first);t.ei=0;t.lives=[20,20];t.cur=null;t.phase='vs';t.t=0;t.pops=[];
+  t.iwin=t.score>=t.target;t.ev=genDuel(t.deck,o.deck,t.iwin,t.first);t.ei=0;t.lives=pokemonRealm()?[6,6]:[20,20];t.pokemon=pokemonRealm()?newPokemonBattle(t.deck,o.deck):null;t.cur=null;t.phase='vs';t.t=0;t.pops=[];
 }
 function isCounterCard(id){return !!CARDS[id]&&/contrarresta/i.test(CARDS[id].tx);}
 function genDuel(myDeck, oppDeck, iWin,first=rnd(2)){
+  if(pokemonRealm())return genPokemonReplay(myDeck,oppDeck,iWin,first);
   const L = [20, 20], ev = [], winner = iWin ? 0 : 1; let turn = first, guard = 0;
   while (L[0] > 0 && L[1] > 0 && guard++ < 60) {
     const deck = turn === 0 ? myDeck : oppDeck, isW = turn === winner, opp = 1 - turn;let card=pick(DECK[deck].cards);
@@ -5103,7 +5152,7 @@ function updateTour(){
     if (T_.t >= step) {
       T_.t = 0;
       if (T_.ei < T_.ev.length) {
-        const e = T_.ev[T_.ei++]; T_.cur = e; T_.lives = e.lives;
+        const e = T_.ev[T_.ei++]; T_.cur = e; T_.lives = e.lives;if(e.pokemon)T_.pokemon=e.pokemon;
         if (e.dmg) { T_.pops.push({ s:'-' + e.dmg, side:1 - e.who, col:'#ff6040', t:0 }); SFX.hit(); }
         if (e.heal) { T_.pops.push({ s:'+' + e.heal, side:e.who, col:'#60e070', t:0 }); SFX.heal(); }
         if (!e.dmg && !e.heal) { T_.pops.push({ s:e.effect.startsWith('COUNTER')?'COUNTER':'PREPARA', side:e.who, col:'#88c8f8', t:0 }); SFX.move(); }
@@ -5152,6 +5201,7 @@ function finishTour(){
 function drawTour(){
   const T_ = G.tour, o = T_.opps[T_.round];
   if(T_.phase==='end'){drawChampionSummary(T_);return;}
+  if(T_.pokemon&&['duel','res'].includes(T_.phase)){drawPokemonTour(T_);return;}
   R(0, 0, W, H, '#1a1430');
   if (T_.cfg.league || T_.cfg.liga) {
     const colors = ['#fcd84a','#40d8e8','#f070a0','#60d870'];
@@ -6246,6 +6296,7 @@ function updateArcade(){
   A.t++;
   if (A.game === 'slots'){if(pressed('b')){requestArcadeExit();return;}return updateTraga(A);}
   if (A.done) { if (A.t - A.doneT > 40 && (pressed('a') || pressed('b'))) arcadeExit(A); return; }
+  if(A.tennis)return updateTennis(A);
   if (A.game === 'bloques') return updateBloques(A);
   if (A.game === 'laberinto') return updateMaze(A);
   if (A.game === 'pelea') return updatePelea(A);
@@ -6292,7 +6343,7 @@ function drawArcade(){
   const A = G.arc;
   if(A.exitConfirm){R(0,0,W,H,'#101820');txt('¿SALIR DEL ARCADE?',120,48,'#fcd84a','center');tiny('LA PARTIDA ACTUAL NO DARA PREMIO',120,65,'#c8d8d0','center');['NO, SEGUIR JUGANDO','SI, SALIR'].forEach((name,i)=>{R(32,80+i*20,176,16,A.exitConfirm.sel===i?'#385870':'#182830');tiny(name,120,85+i*20,'#fff','center');});return;}
   if(A.game==='dkc2'){drawJungle(A);arcadeDone(A);return;}
-  if(A.game==='tenis'){drawTennis(A);arcadeDone(A);return;}
+  if(A.tennis){drawTennis(A);arcadeDone(A);return;}
   if (A.game === 'slots') { drawTraga(A); return; }
   if (A.game === 'bloques') { drawBloques(A); arcadeDone(A); scanlines(); return; }
   if (A.game === 'laberinto') { drawMaze(A); arcadeDone(A); scanlines(); return; }
@@ -6338,7 +6389,19 @@ function initPelea(A){
   A.wins = [0, 0]; A.round = 1; A.phase = 'select'; A.pt = 0; A.score = 0; A.bolts = []; A.sparks = []; A.rt = 60 * 60; A.lives = 1;
 }
 const MK_FIGHTERS=[['LIU KANG','#d83020','spiky','fire'],['SUB-ZERO','#2878d8','slick','ice'],['SCORPION','#e8b820','slick','fire'],['RAIDEN','#f4f4f8','cap','lightning'],['KITANA','#3878d8','bun','fan'],['SONYA','#48a858','bun','energy'],['JOHNNY CAGE','#507858','slick','energy'],['KUNG LAO','#383840','cap','hat'],['SHANG TSUNG','#9c2830','curly','fire']].map(([n,color,style,power])=>({n,style,power,mk:true,c:{skin:'#e8b088',hair:'#181018',shirt:color,shirtD:shadeCol(color,.6),pants:color,shoe:'#181820',hat:color,hatD:shadeCol(color,.6),emblem:'#e8d898'}}));
-function drawMKPerson(x,y,P,dir,f){drawPerson(x,y,P,dir,f);if(P.n==='SUB-ZERO'||P.n==='SCORPION'){R(x+3,y-3,10,3,'#181820');R(x+2,y-1,2,7,'#181820');R(x+12,y-1,2,7,'#181820');R(x+4,y+3,8,3,P.c.shirt);}else if(P.n==='LIU KANG'){R(x+3,y-1,10,2,'#e83020');R(x+4,y+6,8,3,P.c.skin);}else if(P.n==='RAIDEN'||P.n==='KUNG LAO'){R(x,y-2,16,2,P.n==='RAIDEN'?'#e8d898':'#8a9aa8');}}
+function drawMKPerson(x,y,P,dir,f){
+ const c=P.c,n=P.n,front=dir===0,face=dir===2?-1:1,unmasked=['LIU KANG','JOHNNY CAGE','SONYA','SHANG TSUNG','KUNG LAO','RAIDEN'].includes(n),bare=n==='LIU KANG'||n==='JOHNNY CAGE';
+ ctx.save();ctx.translate(x,y);if(face<0){ctx.translate(16,0);ctx.scale(-1,1);}
+ R(5,0,7,5,'#17151c');R(6,1,5,4,c.skin);R(10,2,2,1,'#fff');R(11,2,1,1,'#292638');R(6,4,5,2,unmasked?'#b97957':c.shirtD);
+ R(4,6,9,6,'#14141e');R(5,6,7,5,bare?c.skin:c.shirt);R(5,8,3,2,bare?'#c68c6c':c.shirtD);R(10,6,2,4,bare?'#f1c5a2':c.shirt);R(5,11,7,2,'#241924');R(7,11,2,1,'#edcc69');
+ R(3,7,2,3,c.skin);R(4,9,3,2,c.skin);R(10,7,4,2,c.skin);R(12,5,3,3,c.skin);R(13,5,2,1,'#f5d3b3');R(3,7,2,1,c.shirtD);R(11,8,2,1,c.shirtD);
+ R(5,12,3,3+f,c.pants);R(10,12,3,3-f,c.pants);R(4,15+f,5,1,c.shoe);R(10,15-f,5,1,c.shoe);R(6,12,1,3,c.shirtD);R(11,12,1,2,c.shirtD);
+ if(!unmasked){R(5,0,2,6,'#181820');R(7,0,5,1,'#181820');R(7,3,5,2,c.shirt);R(5,6,2,5,c.shirtD);R(10,6,2,5,c.shirtD);}
+ if(n==='LIU KANG'){R(5,0,7,1,'#e83a2c');R(2,1,4,1,'#b42528');R(8,6,1,4,'#b68061');}if(n==='JOHNNY CAGE'){R(7,2,5,1,'#181820');R(5,12,8,1,'#4a58a3');}
+ if(n==='RAIDEN'){R(4,-2,8,1,'#f3df99');R(2,-1,12,1,'#dacb89');R(0,0,16,1,'#b4a56e');R(5,6,2,5,'#e0dfcd');}
+ if(n==='KUNG LAO'){R(5,-2,6,1,'#222630');R(3,-1,10,1,'#383f49');R(0,0,16,1,'#a8b5c4');}if(n==='KITANA'||n==='SONYA'){R(3,0,4,3,'#252129');R(4,4,2,4,'#252129');R(6,11,5,2,c.skin);}
+ if(front){R(6,2,1,1,'#fff');R(7,2,1,1,'#292638');}ctx.restore();
+}
 function peleaAttack(A, i, kind){
   const F = A.f[i]; if (F.st !== 'idle' && F.st !== 'walk') return;
   if (kind === 'bolt') { if (F.cd > 0) return; F.cd = 150; F.st = 'cast'; F.st_t = 0; A.bolts.push({ x:F.x + F.face * 14, y:FLOOR_Y - 30 - F.hgt, vx:F.face * 3, o:i,power:F.P.power,col:F.P.power==='ice'?'#80e0ff':F.P.power==='fire'?'#ff7830':'#fce040' }); tone(900, 300, 0.15, 'square', 0.3); return; }
@@ -6404,9 +6467,12 @@ function updatePelea(A){
 function drawPelea(A){
   if(A.phase==='select'){R(0,0,W,H,'#181020');txt('MORTAL KOMBAT',120,7,'#fcd84a','center');MK_FIGHTERS.forEach((f,i)=>{const x=10+(i%3)*76,y=26+Math.floor(i/3)*38;R(x,y,70,34,i===A.sel?'#806030':'#282030');ctx.save();ctx.translate(x+27,y+1);ctx.scale(1.4,1.4);drawMKPerson(0,0,f,0,0);ctx.restore();tiny(f.n,x+35,y+26,'#fff','center');});tiny('FLECHAS: ELEGIR  A: PELEAR',120,149,'#c8d8e8','center');return;}
   const g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#1a0a30'); g.addColorStop(1, '#5a1a3a'); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  disc(181,49,18,'#dbb7b7');disc(175,45,18,'#3b2040');for(let i=0;i<24;i++)R(i*53%240,36+i*13%42,1,1,'#cab4d3');
+  for(const [x,w,y]of [[8,48,55],[164,60,61]]){R(x+5,y+9,w-10,23,'#28243a');R(x,y,w,3,'#18192c');R(x+3,y-4,w-6,3,'#28263b');R(x+8,y-8,w-16,3,'#18192c');R(x+15,y-11,w-30,2,'#28263b');for(let dx=10;dx<w-8;dx+=9){R(x+dx,y+13,3,10,'#756475');R(x+dx+1,y+14,1,8,'#cf9078');}}
   for (let i = 0; i < 30; i++) { const x = i * 8 + 2, y = 78 + ((i * 7) % 5); R(x, y, 6, 8, '#20102a'); disc(x + 3, y - 2, 3, '#20102a'); if ((frame >> 4) % 6 === i % 6) R(x + 2, y - 3, 1, 1, '#fce040'); }
   R(0, 90, W, 50, '#3a2a3a'); for (let x = 0; x < W; x += 16) for (let y = 90; y < 140; y += 8) R(x + ((y >> 3) % 2) * 8, y, 15, 7, '#4a3848');
   R(0, FLOOR_Y, W, H - FLOOR_Y, '#2a1a28');
+  for(const x of [22,216]){R(x-2,89,4,41,'#2a2028');R(x-4,87,8,4,'#b48951');disc(x,81,7,'#e56c2b');disc(x,78-((frame>>3)%3),4,'#ffd768');R(x-1,79,2,5,'#ffef9c');R(x-9,116,18,1,'#916049');}for(let y=137;y<149;y+=4)R(0,y,W,1,'#72534b');
   txt('MORTAL KOMBAT', 120, 2, '#fce040', 'center', '#a01010');
   A.f.forEach((F, i) => {
     const bx = i ? 132 : 8; R(bx, 14, 100, 7, '#1a1020'); R(bx + 1, 15, 98, 5, '#601010'); const w = Math.round(98 * F.hp / 100); R(i ? bx + 99 - w : bx + 1, 15, w, 5, F.hp > 30 ? '#f8d830' : '#f05030');
@@ -6414,6 +6480,7 @@ function drawPelea(A){
   });
   tiny(String(Math.ceil(Math.max(0, A.rt) / 60)), 120, 15, '#fff', 'center');
   for (const F of A.f) {
+    softShadow(F.x,FLOOR_Y,18,3,.45);
     ctx.save(); ctx.translate(Math.round(F.x - 24), Math.round(FLOOR_Y - 48 - F.hgt)); ctx.scale(3, 3);
     const dir = F.face > 0 ? 3 : 2, ox = F.face > 0 ? 13 : -3;
     if (F.flash & 2) ctx.globalAlpha = 0.6;if(F.frozen>0){ctx.fillStyle='rgba(100,200,255,.5)';ctx.fillRect(1,-2,15,20);}
@@ -6581,47 +6648,54 @@ function updateJungle(A){
  else if(A.lives<=0||A.time<=0){A.done=true;A.doneT=A.t;A.won=false;A.title='GAME OVER';A.resultText='BANANAS Y AVENTURA: '+A.score;SFX.lose();}
 }
 function drawMonkey(x,y,dixie,rolling,walk){
- softShadow(x+6,y+16,7,2,.4);if(rolling){disc(x+6,y+9,7,dixie?'#d84898':'#c83028');disc(x+6,y+9,4,'#9a6838');return;}
- disc(x+5,y+5,5,'#6a3a20');disc(x+6,y+6,3,'#d8b078');R(x+3,y,7,2,dixie?'#e870b8':'#e83030');R(x+2,y+1,10,2,dixie?'#d848a0':'#c82028');
- R(x+3,y+9,7,5,dixie?'#e870b8':'#d83028');R(x+6,y+4,1,2,'#181820');R(x+8,y+6,3,2,'#d8b078');R(x+2,y+13,3,3,'#9c6838');R(x+8,y+13+(walk&1),3,3,'#9c6838');
- ctx.strokeStyle='#8c5028';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x+2,y+11);ctx.lineTo(x-3,y+9);ctx.lineTo(x-5,y+13);ctx.stroke();
- if(dixie){R(x-2,y+3,4,4,'#f4d068');R(x-4,y+6,4,5,'#e8b850');}
+ const shirt=dixie?'#e36cac':'#d83028',step=walk&1;softShadow(x+6,y+16,7,2,.4);if(rolling){disc(x+6,y+9,7,'#53341f');disc(x+6,y+9,6,shirt);disc(x+6,y+9,4,'#bc8c56');R(x+3+step*4,y+5,2,3,'#ffe1a1');return;}
+ disc(x+5,y+5,5,'#59331f');disc(x+2,y+5,2,'#b8814a');disc(x+7,y+6,4,'#e4b97c');R(x+8,y+4,2,2,'#fff');R(x+9,y+4,1,2,'#181820');R(x+9,y+7,3,1,'#8c4d32');R(x+3,y,7,2,dixie?'#f68dc2':'#f64b39');R(x+2,y+1,10,2,shirt);R(x+3,y+1,2,1,'#ffd0a5');
+ R(x+3,y+9,7,5,shirt);R(x+3,y+10,2,3,dixie?'#9c3676':'#a92321');R(x+7,y+9,1,1,'#fce058');R(x+5,y+11,1,1,'#fce058');R(x+1,y+10-step,3,3,'#bd8b54');R(x+8,y+10+step,3,3,'#ddb078');R(x+1,y+13+step,4,3-step,'#b8864d');R(x+8,y+13-step,4,3+step,'#d8ac70');
+ ctx.strokeStyle='#b2824b';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x+2,y+11);ctx.quadraticCurveTo(x-8,y+6,x-5,y+13);ctx.stroke();
+ if(dixie){R(x-2,y+3,4,4,'#f4d068');if(walk===-1){R(x-8+(frame>>2)%3,y+1,17,2,'#f4d068');R(x-5,y,11,1,'#ffe496');}else{R(x-4,y+6,4,5,'#e8b850');R(x-5,y+8,2,4,'#c7963e');}}
 }
 function drawJungle(A){
- const j=A.jungle;R(0,0,W,H,'#263858');R(0,38,W,105,'#385848');
+ const j=A.jungle;R(0,0,W,H,'#324779');R(0,50,W,93,'#386458');disc(202-j.cam*.02,34,12,'#dad6a4');for(let y=65;y<140;y+=5)for(let i=0;i<12;i++)R((i*27-frame*.12+j.cam*.08)%260,y,9,1,y%2?'#6d9690':'#447c83');
+ for(let i=0;i<3;i++){const x=((i*130-j.cam*.12)%390+390)%390-60;R(x+28,25,3,62,'#36382f');R(x,80,66,4,'#363c34');R(x+6,84,55,8,'#293b34');ctx.fillStyle='#799386';ctx.beginPath();ctx.moveTo(x+30,27);ctx.lineTo(x+8,68);ctx.lineTo(x+28,71);ctx.fill();ctx.beginPath();ctx.moveTo(x+33,32);ctx.lineTo(x+59,72);ctx.lineTo(x+33,74);ctx.fill();}
  for(let i=0;i<9;i++){const x=((i*48-j.cam*.25)%288+288)%288-24;R(x,22,8,110,'#293c2a');disc(x+4,28,26,'#244c38');disc(x+4,32,18,'#386c42');}
  ctx.save();ctx.translate(-j.cam,0);
- for(const p of j.platforms){R(p.x,p.y,p.w,p.h,'#704820');R(p.x,p.y,p.w,3,'#a87838');for(let x=p.x;x<p.x+p.w;x+=16)R(x,p.y+4,1,p.h-4,'#302018');}
+ for(const p of j.platforms){R(p.x,p.y,p.w,p.h,'#704820');R(p.x,p.y,p.w,3,'#b88d50');R(p.x,p.y+3,p.w,1,'#53321d');for(let x=p.x;x<p.x+p.w;x+=16){R(x,p.y+4,1,p.h-4,'#302018');R(x+3,p.y+1,1,1,'#f3d998');for(let y=p.y+7;y<p.y+p.h;y+=7)R(x+3,y,9,1,'#926132');}if(p.y<130){R(p.x+3,p.y-13,2,13,'#bea87a');R(p.x+p.w-5,p.y-13,2,13,'#bea87a');R(p.x+3,p.y-11,p.w-6,1,'#bea87a');}}
  for(let i=0;i<6;i++){const x=i*300+42;R(x,56,5,76,'#8c6030');for(const dx of [-15,0,15]){ctx.strokeStyle='#58a04c';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(x+2,55);ctx.quadraticCurveTo(x+dx,38,x+dx*2,52);ctx.stroke();}}
- for(const b of j.bananas)if(!b.got){R(b.x,b.y,2,6,'#fce040');R(b.x+2,b.y+4,4,2,'#e8b828');}
- for(const e of j.enemies)if(!e.dead){R(e.x,e.y+3,11,10,'#48a848');R(e.x+6,e.y,10,5,'#70b848');R(e.x+12,e.y+1,2,2,'#fce040');R(e.x+3,e.y+12,10,2,'#284828');}
- for(const x of [620,1220]){outl(x,110,15,22,'#906038');tiny('DK',x+7,117,'#e83028','center');}
+ for(const b of j.bananas)if(!b.got){R(b.x,b.y,2,5,'#fff080');R(b.x+1,b.y+4,3,2,'#fce040');R(b.x+4,b.y+2,2,3,'#e8b828');R(b.x+4,b.y+1,1,1,'#805028');}
+ for(const e of j.enemies)if(!e.dead){softShadow(e.x+7,e.y+14,8,2,.3);R(e.x,e.y+4,12,9,'#285b37');R(e.x+2,e.y+5,8,7,'#4aa54f');R(e.x+4,e.y+8,5,5,'#bdb371');R(e.x+6,e.y,10,6,'#70b848');R(e.x+10,e.y,3,2,'#eef4ce');R(e.x+11,e.y,1,2,'#181820');R(e.x+10,e.y+4,7,2,'#244f30');for(let k=0;k<3;k++)R(e.x+10+k*2,e.y+4,1,1,'#fff7d7');R(e.x+3,e.y+12,4,2,'#264b30');R(e.x+9,e.y+12+((frame>>3)&1),5,2,'#264b30');}
+ for(const x of [620,1220]){outl(x,110,15,22,'#906038');for(let i=2;i<15;i+=4)R(x+i,112,1,18,'#bf8e52');for(const y of [112,128])R(x,y,15,2,'#d0b581');R(x+1,115,13,10,'#643825');tiny('DK',x+7,117,'#f64b39','center');}
  outl(1745,114,20,18,'#b88830');tiny('FIN',1755,119,'#fff','center');
- if(!j.inv||(j.inv>>2)&1)drawMonkey(j.x,j.y,j.dixie,j.roll>0,frame>>3);
- ctx.restore();R(0,0,W,17,'#182830');tiny((j.dixie?'DIXIE':'DIDDY')+'  VIDAS '+A.lives+'  '+A.score+' PTS',8,5,'#fff');tiny('A SALTA · B RUEDA · C CAMBIA',120,150,'#fff','center');
+ if(!j.inv||(j.inv>>2)&1)drawMonkey(j.x,j.y,j.dixie,j.roll>0,j.dixie&&!j.on&&K.a?-1:j.vx?frame>>3:0);
+ ctx.restore();for(let i=0;i<5;i++){const x=((i*70-j.cam*.65)%350+350)%350-40;R(x,20,2,36,'#142e29');disc(x,18,20,'#173f33');disc(x+9,19,11,'#1d4938');}R(0,0,W,17,'#182830');tiny((j.dixie?'DIXIE':'DIDDY')+'  VIDAS '+A.lives+'  '+A.score+' PTS',8,5,'#fff');R(0,148,W,12,'#182830');tiny('A SALTA · B RUEDA · C CAMBIA',120,150,'#fff','center');
 }
 /* ---- Tennis with serves, rallies, lobs, deuce and a short set ---- */
-function initTennis(A){A.tennis={px:120,py:126,ox:120,oy:37,bx:120,by:118,bz:3,vx:0,vy:0,vz:0,serve:true,server:0,last:1,points:[0,0],games:[0,0],rally:0,hitCd:0,msg:'A PARA SACAR',pause:0};A.lives=1;}
+const TENNIS_COURTS=[{n:'WIMBLEDON',type:'CESPED',court:'#548e55',edge:'#335b35',sky:'#495c80',speed:1.1,bounce:1.15},{n:'ROLAND GARROS',type:'ARCILLA',court:'#bc7147',edge:'#965133',sky:'#706250',speed:.9,bounce:1.4},{n:'US OPEN',type:'PISTA DURA',court:'#4779b9',edge:'#316048',sky:'#363f72',speed:1,bounce:1.25},{n:'AUSTRALIAN OPEN',type:'PISTA DURA',court:'#4296bd',edge:'#32758e',sky:'#48798e',speed:1.04,bounce:1.3}];
+function initTennis(A){A.tennis={court:0,selectCourt:true,px:120,py:126,ox:120,oy:37,bx:120,by:118,bz:3,vx:0,vy:0,vz:0,serve:true,server:0,last:1,points:[0,0],games:[0,0],rally:0,hitCd:0,msg:'A PARA SACAR',pause:0};A.lives=1;}
 function tennisPoint(A,winner){const t=A.tennis;t.points[winner]++;A.score+=winner===0?100:0;const p=t.points;if(p[winner]>=4&&p[winner]-p[1-winner]>=2){t.games[winner]++;p[0]=p[1]=0;t.server=1-t.server;t.msg=(winner===0?'GANASTE':'RIVAL GANO')+' EL JUEGO';}else t.msg=winner===0?'¡PUNTO!':'PUNTO DEL RIVAL';
- if(t.games[winner]>=3){A.done=true;A.doneT=A.t;A.won=winner===0;A.title=A.won?'¡GANASTE EL SET!':'SET DEL RIVAL';A.resultText=t.games[0]+'-'+t.games[1]+' JUEGOS';}t.pause=75;t.serve=true;t.vx=t.vy=t.vz=0;SFX.move();}
-function updateTennis(A){const t=A.tennis;if(t.pause>0){t.pause--;return;}if(t.hitCd>0)t.hitCd--;
+ if(t.games[winner]>=3){A.done=true;A.doneT=A.t;A.won=winner===0;A.title=A.won?'¡CAMPEON!':'SET DEL RIVAL';A.resultText=TENNIS_COURTS[t.court].n+' · '+t.games[0]+'-'+t.games[1];}t.pause=75;t.serve=true;t.vx=t.vy=t.vz=0;SFX.move();}
+function updateTennis(A){const t=A.tennis;if(t.selectCourt){if(pressed('up')||pressed('left'))t.court=(t.court+3)%4;if(pressed('down')||pressed('right'))t.court=(t.court+1)%4;if(pressed('a')){t.selectCourt=false;SFX.ok();}return;}const court=TENNIS_COURTS[t.court];if(t.pause>0){t.pause--;return;}if(t.hitCd>0)t.hitCd--;
  t.px=clamp(t.px+((K.right?1:0)-(K.left?1:0))*1.5,29,211);t.py=clamp(t.py+((K.down?1:0)-(K.up?1:0))*1.2,93,140);
- if(t.serve){t.bx=t.server===0?t.px:t.ox;t.by=t.server===0?t.py-8:t.oy+8;t.bz=3;if(t.server===1&&A.t%100===0||t.server===0&&pressed('a')){t.serve=false;t.vx=t.server===0?((K.right?1:0)-(K.left?1:0))*.8:(t.px-t.ox)*.015;t.vy=t.server===0?-1.8:1.8;t.vz=1.6;t.last=t.server;t.rally=0;t.msg='';}return;}
+ if(t.serve){t.bx=t.server===0?t.px:t.ox;t.by=t.server===0?t.py-8:t.oy+8;t.bz=3;if(t.server===1&&A.t%100===0||t.server===0&&pressed('a')){t.serve=false;t.vx=t.server===0?((K.right?1:0)-(K.left?1:0))*.8:(t.px-t.ox)*.015;t.vy=(t.server===0?-1.8:1.8)*court.speed;t.vz=1.6;t.last=t.server;t.rally=0;t.msg='';}return;}
  t.ox=clamp(t.ox+clamp(t.bx-t.ox,-1.2,1.2),29,211);t.oy=clamp(t.oy+clamp(t.by-15-t.oy,-.7,.7),22,63);
- t.bx+=t.vx;t.by+=t.vy;t.bz+=t.vz;t.vz-=.07;if(t.bz<0){t.bz=0;t.vz=1.25;t.rally++;if(t.rally>1){tennisPoint(A,1-t.last);return;}}
+ t.bx+=t.vx;t.by+=t.vy;t.bz+=t.vz;t.vz-=.07;if(t.bz<0){t.bz=0;t.vz=court.bounce;t.rally++;if(t.rally>1){tennisPoint(A,1-t.last);return;}}
  if(t.by>148||t.by<14||t.bx<20||t.bx>220){tennisPoint(A,1-t.last);return;}
  if(Math.abs(t.by-80)<2&&t.bz<5){tennisPoint(A,1-t.last);return;}
- if(t.vy>0&&Math.hypot(t.bx-t.px,t.by-t.py)<19&&t.bz<16&&!t.hitCd&&(pressed('a')||pressed('b')||pressed('c'))){t.vy=pressed('c')?-2.8:-2;t.vx=((K.right?1:0)-(K.left?1:0))*.9+(t.bx-t.px)*.07;t.vz=pressed('b')?2.5:1.4;t.last=0;t.rally=0;t.hitCd=15;SFX.hit();}
- else if(t.vy<0&&Math.hypot(t.bx-t.ox,t.by-t.oy)<16&&t.bz<14){t.vy=1.8;t.vx=(t.px<120?.75:-.75);t.vz=1.5;t.last=1;t.rally=0;SFX.hit();}}
-function drawTennis(A){const t=A.tennis;R(0,0,W,H,'#1e3c2c');R(22,16,196,132,'#427cc0');R(35,25,170,112,'#6098d0');ctx.strokeStyle='#f8f8f8';ctx.lineWidth=1;ctx.strokeRect(35,25,170,112);ctx.strokeRect(50,25,140,112);ctx.beginPath();ctx.moveTo(50,55);ctx.lineTo(190,55);ctx.moveTo(50,107);ctx.lineTo(190,107);ctx.moveTo(120,55);ctx.lineTo(120,107);ctx.stroke();R(28,79,184,3,'#e8e8e8');for(let x=28;x<212;x+=4)R(x,80,1,5,'#98a8b0');
- drawPerson(t.ox-5,t.oy-16,NPCDEF.fan1,0,(frame>>3)&1);drawPerson(t.px-5,t.py-16,playerLook(),1,(frame>>3)&1);disc(t.px+9,t.py-8,4,'#e8e0c0');disc(t.px+9,t.py-8,3,'#98b8c8');softShadow(t.bx,t.by,2,1,.5);disc(t.bx,t.by-t.bz,2,'#fce850');
- const p=t.points,labels=['0','15','30','40'];const point=i=>p[i]>3?(p[i]>p[1-i]?'AD':'40'):labels[p[i]];R(0,0,W,14,'#142838');tiny('SUPER TENIS  '+t.games[0]+'-'+t.games[1]+'  '+point(0)+'-'+point(1),7,4,'#fff');if(t.msg)tiny(t.msg,120,92,'#fff','center');tiny('A GOLPE · B GLOBO · C FUERTE',120,151,'#fff','center');}
+ if(t.vy>0&&Math.hypot(t.bx-t.px,t.by-t.py)<19&&t.bz<16&&!t.hitCd&&(pressed('a')||pressed('b')||pressed('c'))){t.vy=(pressed('c')?-2.8:-2)*court.speed;t.vx=((K.right?1:0)-(K.left?1:0))*.9+(t.bx-t.px)*.07;t.vz=pressed('b')?2.5:1.4;t.last=0;t.rally=0;t.hitCd=15;SFX.hit();}
+ else if(t.vy<0&&Math.hypot(t.bx-t.ox,t.by-t.oy)<16&&t.bz<14){t.vy=1.8*court.speed;t.vx=(t.px<120?.75:-.75);t.vz=1.5;t.last=1;t.rally=0;SFX.hit();}}
+function drawTennis(A){const t=A.tennis,c=TENNIS_COURTS[t.court];R(0,0,W,H,c.sky);
+ if(t.selectCourt){txt('SUPER TENIS',120,12,'#fcd84a','center');tiny('ELIGE TU GRAND SLAM',120,29,'#fff','center');TENNIS_COURTS.forEach((c,i)=>{const y=46+i*22;R(34,y,172,19,i===t.court?'#ebd59c':'#20344a');R(37,y+3,22,13,c.court);ctx.strokeStyle='#fff';ctx.strokeRect(40,y+5,16,9);R(47,y+5,1,9,'#fff');tiny(c.n,65,y+3,i===t.court?'#222238':'#fff');tiny(c.type,65,y+11,i===t.court?'#5a4838':'#92b9d0');});tiny('FLECHAS · A CONFIRMA · MENU SALE',120,146,'#fff','center');return;}
+ for(let y=17;y<142;y+=7)for(const side of [3,222]){R(side,y,15,2,'#24314a');for(let i=0;i<3;i++){R(side+1+i*5,y-3,2,2,['#f4d4b3','#e6aa80','#b07954'][(i+y)%3]);R(side+i*5,y-1,4,2,['#d490ae','#e0dba3','#86a9cc'][(i+y)%3]);}}
+ R(22,16,196,132,c.edge);R(35,25,170,112,c.court);if(t.court===0)for(let y=25;y<137;y+=14)R(35,y,170,7,'#ffffff0b');else if(t.court===1)for(let i=0;i<50;i++)R(36+i*47%168,26+i*19%109,2,1,'#d89261');
+ ctx.strokeStyle='#f8f8f8';ctx.lineWidth=1;ctx.strokeRect(35,25,170,112);ctx.strokeRect(50,25,140,112);ctx.beginPath();ctx.moveTo(50,55);ctx.lineTo(190,55);ctx.moveTo(50,107);ctx.lineTo(190,107);ctx.moveTo(120,55);ctx.lineTo(120,107);ctx.stroke();R(28,80,184,5,'#17303a');for(let x=28;x<212;x+=3)R(x,80,1,4,'#9cbdcc');R(28,79,184,1,'#fff');for(const x of [28,211])R(x,76,2,10,'#e6dcca');R(216,67,8,3,'#c9a770');R(222,70,2,15,'#c9a770');drawPerson(213,53,NPCDEF.juez,0,0);
+ const moving=K.left||K.right||K.up||K.down;for(const [x,y,look,dir,walk]of [[t.ox,t.oy,NPCDEF.fan1,0,!t.serve],[t.px,t.py,playerLook(),1,moving]]){softShadow(x+2,y,6,2,.35);drawPerson(x-5,y-16,look,dir,walk?(frame>>3)&1:0);R(x+8,y-9,1,5,'#dedcc9');disc(x+9,y-11,4,'#e8e0c0');disc(x+9,y-11,3,'#5b93a6');for(let k=-2;k<=2;k+=2){R(x+9+k,y-13,1,5,'#b8d7d5');R(x+7,y-11+k,5,1,'#b8d7d5');}}
+ if(!t.serve){R(t.bx-t.vx*2,t.by-t.bz-t.vy*2,2,2,'#f9ef7a88');R(t.bx-t.vx*4,t.by-t.bz-t.vy*4,1,1,'#f9ef7a55');}softShadow(t.bx,t.by,2,1,.5);disc(t.bx,t.by-t.bz,2,'#fce850');R(t.bx,t.by-t.bz-1,1,1,'#fffbd7');
+ const p=t.points,labels=['0','15','30','40'];const point=i=>p[i]>3?(p[i]>p[1-i]?'AD':'40'):labels[p[i]];R(0,0,W,15,'#142838');tiny(c.n,7,4,'#fcd84a');tiny(t.games[0]+'-'+t.games[1]+'  '+point(0)+'-'+point(1),190,4,'#fff','right');if(t.msg){R(62,89,116,10,'#142838dd');tiny(t.msg,120,92,'#fff','center');}R(0,149,W,11,'#142838');tiny('A GOLPE · B GLOBO · C FUERTE',120,151,'#fff','center');}
 
 /* ---- juegos de la casa de Iván (gratis, por diversión) ---- */
 function startFree(game){
   G.arc = { game, free:true, t:0, score:0, lives:1, done:false };
   const A = G.arc;
-  if (game === 'pong') Object.assign(A, { py:85, cy:85, bx:120, by:85, bvx:1.8, bvy:0.8, sp:0, sc:0, serve:60 });
+  if (game === 'pong') initTennis(A);
   if (game === 'taca') Object.assign(A, { py:85, cy:85, bx:120, by:85, bvx:0, bvy:0, sp:0, sc:0, serve:60, kick:0 });
   if (game === 'pool') initPool(A);
   G.state = 'arcade'; SFX.ok();
@@ -6852,10 +6926,52 @@ function setupDuel(n){
   if (!done.length) { const deck = pick(pokemonRealm()?POKEMON_META_DECKS:DECKS).id; say(['No tienes un mazo completo, asi que te presto uno: ' + DECK[deck].n + '. Juegas con -1 en los dados.'], null, () => pickBet({ id:deck, borrowed:true })); return; }
   say(['¿Con que mazo juegas?'], deckChoices(done, d => pickBet({ id:d.id })));
 }
+// Pokemon's RPG battles use active Pokemon, a bench and six prizes, never player life.
+function pokemonFighter(id){const c=CARDS[id],data=POKEMON_CARD_STATS[id];return {id,name:c.realm==='pokemon'?c.n:reflectedCardSpecies(id),hp:data?.hp||140,max:data?.hp||140,prizes:data?.prizes||1};}
+function pokemonTeam(deck){const d=DECK[deck],pool=d.cards.filter(id=>CARDS[id].realm!=='pokemon'||CARDS[id].t==='POKEMON'),star=pool.find(id=>CARDS[id].n===d.star)||pool[0],others=pool.filter(id=>id!==star);return [star,...Array.from({length:5},(_,i)=>others[i%others.length]||star)].map(pokemonFighter);}
+function newPokemonBattle(a,b){const teams=[pokemonTeam(a),pokemonTeam(b)];return {active:teams.map(t=>t.shift()),bench:teams,prizes:[0,0],winner:null,events:[],turn:0};}
+function pokemonStrike(b,who,damage){
+ if(b.winner!==null)return;const opp=1-who,target=b.active[opp],attacker=b.active[who];target.hp=Math.max(0,target.hp-damage);b.events.push(attacker.name+' ATACA: '+damage+' DAÑO');
+ if(target.hp===0){const prizes=Math.min(target.prizes,6-b.prizes[who]);b.prizes[who]+=prizes;b.lastKO={name:target.name,side:opp,prizes};b.events.push(target.name+' KO! '+(who===0?'SACAS ':'RIVAL SACA ')+prizes+' PREMIO'+(prizes>1?'S':''));
+  if(b.prizes[who]>=6){b.winner=who;b.events.push('¡SEIS PREMIOS! '+(who===0?'GANASTE':'GANA EL RIVAL'));return;}
+  const next=b.bench[opp].shift();if(!next){b.winner=who;b.events.push('SIN POKEMON EN BANCA: '+(who===0?'GANASTE':'GANA EL RIVAL'));return;}
+  b.active[opp]=next;b.events.push((opp===0?'SUBES ':'RIVAL SUBE ')+next.name);
+ }
+}
+function resolvePokemonTurn(d){
+ const b=d.pokemon;b.events=[];b.lastKO=null;b.turn++;
+ const edge=d.tot[0]-d.tot[1],damages=[clamp(Math.round((90+edge*14)/10)*10,30,250),clamp(Math.round((90-edge*14)/10)*10,30,250)];
+ if(d.myTact==='adapt')damages[0]=30;
+ const who=b.turn===1?d.first:(b.turn-1)%2;pokemonStrike(b,who,damages[who]);if(b.winner===null) pokemonStrike(b,1-who,damages[1-who]);
+ d.card=b.active[0].id;d.who=0;d.pl=b.winner===1?0:6-b.prizes[1];d.op=b.winner===0?0:6-b.prizes[0];d.effect=b.events.join(' · ');d.lines=b.events.slice(-3);d.pops=b.lastKO?[{s:'KO! +'+b.lastKO.prizes,side:1-b.lastKO.side,col:'#fcd84a',t:0}]:[];
+}
+function genPokemonReplay(a,b,iWin,first){const battle=newPokemonBattle(a,b),events=[],winner=iWin?0:1;let who=first,guard=0;while(battle.winner===null&&guard++<100){battle.events=[];battle.lastKO=null;const foe=battle.active[1-who],damage=who===winner?Math.min(240,foe.hp):Math.min(30,Math.max(0,foe.hp-1)),card=battle.active[who].id;pokemonStrike(battle,who,damage);events.push({who,card,dmg:damage,heal:0,effect:battle.events.join(' · '),lives:[6-battle.prizes[1],6-battle.prizes[0]],pokemon:structuredClone(battle)});who=1-who;}return events;}
+function drawPokemonBoard(b){
+ b.active.forEach((p,i)=>{const x=i?184:8;ctx.save();ctx.translate(x+2,22);ctx.scale(1.7,1.7);drawCardSmall(p.id,0,0,true,1);ctx.restore();tiny(p.name.slice(0,13),i?232:8,15,'#fff',i?'right':'left');tiny('PS '+p.hp+'/'+p.max,x+24,84,'#e2ecff','center');R(x,92,48,3,'#392638');R(x,92,48*p.hp/p.max,3,p.hp<p.max*.3?'#f07860':'#76d8ad');
+  b.bench[i].slice(0,4).forEach((p,j)=>{ctx.save();ctx.translate(x+j*12,101);ctx.scale(.48,.48);drawCardSmall(p.id,0,0,true,1);ctx.restore();});R(x,120,49,14,'#141c30');tiny('BANCA '+b.bench[i].length,x+24,123,'#9ab7cf','center');
+  for(let j=0;j<6;j++){R(x+j*8,140,6,8,j<b.prizes[i]?'#fcd84a':'#684b9f');R(x+j*8+1,141,4,1,'#f5e8bd');}tiny('PREMIOS '+b.prizes[i]+'/6',x+24,152,'#fcd84a','center');
+ });
+}
+function drawPokemonDuel(d){
+ R(0,0,W,H,'#121b30');txt('POKEMON TCG · TURNO '+d.turn,120,3,'#fcd84a','center',null);drawPokemonBoard(d.pokemon);
+ if(d.phase==='choose'){const opts=duelOptions();d.rects=[];tiny('ELIGE TU JUGADA',120,22,'#b7d7f5','center');opts.forEach((o,i)=>{const y=35+i*14;R(65,y,110,12,i===d.sel?o.col:'#26344c');tiny(o.n,120,y+3,'#fff','center');d.rects.push([65,y,110,12]);});tiny('NIVEL '+S.lvl+' · RIVAL '+d.opp.level,120,96,'#a6b9cc','center');}
+ else{drawDie(96,30,d.dice[0],'#f4ecd8');drawDie(126,30,d.dice[1],'#f0a0a0');tiny('TU / RIVAL',120,53,'#c9d6ed','center');if(d.phase!=='roll'){wrap(norm(d.lines.join(' · ')),26).slice(0,7).forEach((line,i)=>tiny(line,120,65+i*8,i>1?'#fcd84a':'#e3efff','center'));}}
+ if(d.phase==='end'){R(60,54,120,33,d.won?'#225840':'#62313e');txt(d.won?'¡GANASTE!':'PERDISTE',120,60,'#fff','center');tiny(d.pokemon.prizes[d.won?0:1]>=6?'SEIS PREMIOS COMPLETOS':'SIN POKEMON EN BANCA',120,78,'#fcd84a','center');}
+ tiny(d.phase==='choose'?matchupNote(d.deck,d.opp.deck):'A: CONTINUAR',120,137,'#a6c6ec','center');
+}
+function drawPokemonTour(t){
+ R(0,0,W,H,'#121b30');tiny('RONDA '+(t.round+1)+'/'+t.cfg.rounds+' · POKEMON TCG',120,4,'#fcd84a','center');drawPokemonBoard(t.pokemon);
+ tiny('TU / '+t.opps[t.round].n.split(' ')[0],120,23,'#b7d7f5','center');
+ const lines=t.cur?t.cur.pokemon.events:['DOS POKEMON ACTIVOS','SEIS PREMIOS PARA GANAR'];wrap(norm(lines.join(' · ')),26).slice(0,10).forEach((line,i)=>tiny(line,120,43+i*8,line.includes('KO')||line.includes('PREMIO')?'#fcd84a':'#e3efff','center'));
+ if(t.phase==='res'){R(61,55,118,33,t.iwin?'#225840':'#62313e');txt(t.iwin?'¡GANASTE!':'PERDISTE',120,61,'#fff','center');tiny('A: SIGUIENTE RONDA',120,80,'#fcd84a','center');}
+ else tiny('A: ACELERAR',120,137,'#a6c6ec','center');
+}
 function beginDuel(opp, deck, bet){
+  if(opp.gym&&(deck.borrowed||!deckDone(deck.id))){say(['Para jugar la liga necesitas un mazo propio completo. No se permiten mazos prestados.']);return;}
   opp={...opp,level:opp.level||(pokemonRealm()?(opp.gym?.key==='nacional'?130:80+(opp.bonus||0)*8):20+(opp.bonus||0)*4)};
   G.duel = { opp, deck:deck.id, borrowed:!!deck.borrowed, bet, pl:20, op:20, phase:'choose', sel:0, t:0, dice:[1, 1], card:null, pops:[], tricks:CH().cheat ? 2 : 0, turn:1, last:null, lines:[] };
   G.duel.retryKey=opp.gym?opp.gym.key+':'+opp.gym.index:opp.name;G.duel.retryBonus=Math.min(3,(S.duelRetries||{})[G.duel.retryKey]||0);
+  if(pokemonRealm()){G.duel.pokemon=newPokemonBattle(deck.id,opp.deck);G.duel.pl=G.duel.op=6;}
   G.state = 'duel'; playMusic('fanfare'); SFX.ok();
 }
 function duelOptions(){ const d=G.duel;return TACTICS.slice(0,3).concat(TACTICS.find(t=>t.id===(d.tricks>0?'trick':'adapt'))); }
@@ -6882,6 +6998,7 @@ function resolveDuel(d){
   d.first=r1>=r2?0:1;d.lines=['DADOS '+r1+'/'+r2+' · '+(d.first===0?'COMIENZAS TU':'COMIENZA EL RIVAL'),'NIVEL/TU DOMINIO '+power.toFixed(1)+' · TACTICA +'+myAdv+' · PRACTICA +'+(d.retryBonus||0)];
   if(pokemonRealm())d.lines[1]=matchupNote(d.deck,d.opp.deck)+' · NIVEL '+power.toFixed(1)+' · PRACTICA +'+(d.retryBonus||0);
   if(myT==='adapt'){d.predicted=oppPick(d);d.lines[0]='OBSERVAS: proxima jugada '+TACTICS.find(t=>t.id===d.predicted).n;}
+  if(d.pokemon){resolvePokemonTurn(d);return;}
   const diff = my - op;
   const before=[d.pl,d.op];
   d.pops = [];
@@ -6936,6 +7053,7 @@ function drawDie(x, y, v, col){
 }
 function drawDuel(){
   const d = G.duel;
+  if(d.pokemon){drawPokemonDuel(d);return;}
   R(0, 0, W, H, '#1a1430');
   for (let i = 0; i < 15; i++) R(i * 16, 100, 16, 60, i % 2 ? '#2a2248' : '#241c40');
   R(40, 96, 160, 6, '#5a3418'); R(40, 96, 160, 1, '#8a5a30');
@@ -7256,6 +7374,7 @@ netEl('netCopy').addEventListener('click', async () => {
 netEl('btnTitle').addEventListener('click', () => { audioInit(); if(G.state==='arcade')requestArcadeExit();else if (G.state !== 'title') goToTitle(); cvs.focus(); });
 netEl('btnJournal').addEventListener('click',()=>{audioInit();if(G.menu&&G.menu.tab===4)G.menu=null;else openQuestJournal();cvs.focus();});
 netEl('btnTravel').addEventListener('click', () => { audioInit(); openTravel(); cvs.focus(); });
+netEl('btnPotions').addEventListener('click',()=>{audioInit();openPotions();cvs.focus();});
 netEl('netHost').addEventListener('click', () => { audioInit(); netHost(); });
 netEl('netJoin').addEventListener('click', () => { audioInit(); netJoin(); });
 netEl('netLeave').addEventListener('click', () => { if (NET.role) toast('SALISTE DE LA SALA'); netLeave(); });
@@ -7288,7 +7407,7 @@ function step(){
       if (G.dead > 150) {
         G.dead = 0; S.hp = S.maxHp; S.coins = Math.floor(S.coins / 2); PL.inv = 60;
         loadRoom('pueblo', 7 * TS + 3, 6 * TS + 6);
-        say(['Despertaste en el pueblo. Perdiste la mitad de tus monedas.']);
+        saveGame();say(['Despertaste en el pueblo. Perdiste la mitad del dinero que llevabas contigo. El dinero depositado en el banco sigue a salvo.']);
       }
     }
     else {
@@ -7389,10 +7508,14 @@ function loop(now){
     if(location.hash.startsWith('#vista=portal')&&!G.tested){G.tested=true;G.preview=true;S=newSave(0);S.lvl=80;S.ligaWins=1;S.magicPet='shivan';G.state='world';loadRoom('santuarioPortal',115,116);if(location.hash.includes('viaje')){startRealmTravel();if(location.hash.includes('captura')){G.realmTravel.t=210;G.freeze=true;}}}
     if(location.hash.startsWith('#vista=safari')&&!G.tested){G.tested=true;G.preview=true;S=newSave(0);G.state='world';if(location.hash.includes('pokemon'))S.realm='pokemon';const id=new URLSearchParams(location.hash.split('&').slice(1).join('&')).get('zona')||'safariTalca';loadRoom(SAFARI_REGIONS.some(s=>s.id===id)?id:'safariTalca',115,116);}
     if(location.hash.startsWith('#vista=ash')&&!G.tested){G.tested=true;G.preview=true;S=newSave(0);G.state='world';loadRoom('pueblo',195,134);offerAshGuide();G.dialog=null;if(G.ashGuide){G.ashGuide.walking=true;G.ashGuide.progress=64;updateAshGuide();}if(location.hash.includes('captura')){G.fade=0;G.zoneT=0;G.freeze=true;}}
+    if(location.hash.startsWith('#vista=montura')&&!G.tested){G.tested=true;G.preview=true;S=newSave(0);if(location.hash.includes('pokemon'))S.realm='pokemon';S.mounts=['shivan'];S.mount='shivan';G.state='world';loadRoom('establo',115,100);G.fade=0;G.zoneT=0;G.freeze=true;}
+    if(location.hash.startsWith('#vista=botica')&&!G.tested){G.tested=true;G.preview=true;S=newSave(0);S.lvl=20;S.maxHp=100;S.hp=50;S.coins=20000;G.state='world';loadRoom('mercado',115,84);openShop('pociones','BOTICA DE LA MAGA');G.fade=0;G.zoneT=0;}
+    if(location.hash.startsWith('#vista=banco')&&!G.tested){G.tested=true;G.preview=true;S=newSave(0);S.coins=50000;S.bankCoins=150000;G.state='world';loadRoom('bancoCondes',115,84);bankTalk();G.dialog.ch=999;G.dialog.showChoices=true;}
+    if(location.hash.startsWith('#vista=arcade')&&!G.tested){G.tested=true;G.preview=true;S=newSave(0);G.state='world';loadRoom('arcade',115,116);const game=new URLSearchParams(location.hash.split('&').slice(1).join('&')).get('juego');startArcade(['tenis','dkc2','pelea'].includes(game)?game:'tenis');if(G.arc.tennis){G.arc.tennis.selectCourt=false;G.arc.tennis.court=1;}if(game==='pelea'){G.arc.phase='fight';G.arc.pt=220;}G.fade=0;G.freeze=true;}
     if(location.hash.startsWith('#vista=mazos')&&!G.tested){G.tested=true;G.preview=true;S=newSave(0);if(location.hash.includes('pokemon'))S.realm='pokemon';G.state='world';loadRoom('tienda',115,116);const list=pokemonRealm()?POKEMON_META_DECKS:DECKS,page=location.hash.includes('hoja=2')?1:0;say(['MAZOS META · HOJA '+(page+1)+'/2 · VISTA PREVIA'],deckChoices(list,d=>d.realm==='pokemon'?pokemonDeckInfo(d):say([d.n,...d.cards.map(id=>CARDS[id].n)]),page));G.dialog.ch=999;G.dialog.showChoices=true;}
     if(location.hash.startsWith('#vista=duelo-meta')&&!G.tested){G.tested=true;G.preview=true;S=newSave(0);S.realm='pokemon';S.lvl=100;loadRoom('tienda',115,116);beginDuel({name:'SABRINA',look:NPCDEF.vecina,deck:'pk_gardevoir',level:100},{id:'pk_bolt'},0);if(location.hash.includes('jugada')){G.duel.myT='combo';resolveDuel(G.duel);G.duel.phase='show';G.duel.t=40;G.freeze=true;}}
-    if(location.hash.startsWith('#vista=campeon')&&!G.tested){G.tested=true;G.preview=true;S=newSave(0);S.lvl=50;G.state='world';loadRoom('cartasCurico',115,116);startTour('burn',{rounds:4,league:'curico',name:'LIGA DE CURICO',champ:25000,perWin:4000});G.tour.wins=4;G.tour.phase='end';finishTour();G.tour.t=50;}
-    if(location.hash.startsWith('#vista=liga')&&!G.tested){G.tested=true;G.preview=true;S=newSave(0);G.state='world';const id=new URLSearchParams(location.hash.split('&').slice(1).join('&')).get('zona')||'cartasCurico';if(ROOMS[id]&&ROOMS[id].cardTemple)loadRoom(id,115,116);else loadRoom('cartasCurico',115,116);}
+    if(location.hash.startsWith('#vista=campeon')&&!G.tested){G.tested=true;G.preview=true;S=newSave(0);S.lvl=50;G.state='world';loadRoom('cartasCurico',115,116);DECK.burn.cards.forEach(id=>S.cards[id]=1);startTour('burn',{rounds:4,league:'curico',name:'LIGA DE CURICO',champ:25000,perWin:4000});G.tour.wins=4;G.tour.phase='end';finishTour();G.tour.t=50;}
+    if(location.hash.startsWith('#vista=liga')&&!G.tested){G.tested=true;G.preview=true;S=newSave(0);if(location.hash.includes('pokemon')){S.realm='pokemon';S.lvl=100;}G.state='world';const id=new URLSearchParams(location.hash.split('&').slice(1).join('&')).get('zona')||'cartasCurico';if(ROOMS[id]&&ROOMS[id].cardTemple)loadRoom(id,115,116);else loadRoom('cartasCurico',115,116);G.fade=0;G.zoneT=0;}
     if(location.hash.startsWith('#vista=pokemon') && !G.tested){G.tested=true;G.preview=true;S=newSave(0);S.realm='pokemon';S.lvl=80;S.maxHp=S.hp=200;S.coins=1000000;S.surf=true;S.pet=24;S.magicPet='shivan';S.visited=Object.fromEntries(Object.keys(WORLD).map(id=>[id,true]));G.state='world';const zone=new URLSearchParams(location.hash.split('&').slice(1).join('&')).get('zona');const room=zone&&(Object.hasOwn(ROOMS,zone)||Object.hasOwn(WILD,zone))?zone:'tienda';loadRoom(room,115,room==='tienda'?116:84);toast('UN ENTE LOS SACO DE LAS CARTAS: AHORA SON SALVAJES','#ffb070');}
     if (location.hash === '#test-arcade' && !G.tested) { G.tested = true; S = newSave(0); S.coins = 50; G.state = 'world'; loadRoom('arcade', 7 * TS + 3, 7 * TS + 4); }
     if (location.hash.startsWith('#elegir') && !G.tested) { G.tested = true; G.state = 'select'; G.sel = +location.hash.slice(8) || 0; }
