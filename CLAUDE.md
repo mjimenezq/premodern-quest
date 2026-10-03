@@ -34,6 +34,7 @@ Klaus, Katy, Pepe, Iván, Tebax, Le Ratui, Rubén, Tomo y Mati Guerra**. Selecci
 - **Diálogos (2 oct):** caja oscura semitransparente y compacta; sube arriba si el jugador está en la mitad de abajo (`d.box`). El cartel de zona se oculta mientras hay diálogo.
 - **Música por zona (2 oct):** `MUSIC_VARIANTS` + `musicVariant(nombre, roomId)` eligen una variante fija por zona/piso: field (4), dark (4), town (3), boss (3); temas originales `field2-4`, `dark2-4`, `town2-3`, `boss2-3`.
 - **Co-op (2 oct):** la hora la marca el anfitrión (`wt` en `pl`, `syncDay`); si el anfitrión entra a una zona donde el invitado ya peleaba, adopta sus monstruos (`sendRoomEnemies`/`adoptRoomEnemies`). Carta nueva: aviso lateral que no pausa (`drawCardPop`, cola `G.cardPopQ`).
+- **Interfaz (2 oct):** `tiny()` ya no usa la fuente 3x5: dibuja Press Start a 5 px condensada a la grilla de 4 px, con sombra negra. Tienda, menú y listas de opciones usan `uiPanel` (fondo oscuro semitransparente con línea amarilla) y se dibujan sobre el mundo.
 - **Nunca atascado** (`unstuckPlayer`, en `loadRoom` y cada cuadro en `updateWorld`): si el jugador queda dentro de algo
   sólido lo mueve a la casilla libre más cercana. Pasaba al salir de Viña por la playa (filas 6-7 del borde oeste, que son
   arena caminable) y aparecer dentro de los árboles del Bosque de la Roca. Prueba: `#probar=vina&atascado`.

@@ -584,12 +584,15 @@ function tiny(s, x, y, col='#fff', al='left', raw=false){
   s = norm(raw?s:realmText(s));
   if (al === 'center') x = Math.round(x - (s.length * 4 - 1) / 2);
   else if (al === 'right') x = x - (s.length * 4 - 1);
-  ctx.fillStyle = col;
-  for (let i = 0; i < s.length; i++) {
-    const g = F3[s[i]];
-    if (g) for (let k = 0; k < 15; k++) if (g[k] === '1') ctx.fillRect(x + i * 4 + (k % 3), y + ((k / 3) | 0), 1, 1);
-  }
+  // Misma letra de los diálogos (Press Start), ajustada a la grilla de 4 px por letra, con sombra negra suave.
+  ctx.save(); ctx.font = '5px "Press Start 2P", monospace'; ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+  ctx.translate(x, y); ctx.scale(0.8, 1);
+  ctx.fillStyle = 'rgba(0,0,0,.75)'; ctx.fillText(s, 0.7, 0.6);
+  ctx.fillStyle = col; ctx.fillText(s, 0, 0);
+  ctx.restore();
 }
+// Panel de interfaz: fondo oscuro semitransparente con detalle amarillo arriba.
+function uiPanel(x, y, w, h, a = 0.78){ ctx.fillStyle = 'rgba(10,14,24,' + a + ')'; ctx.fillRect(x, y, w, h); R(x, y, w, 1, '#fcd84a'); R(x, y + h - 1, w, 1, 'rgba(252,216,74,.35)'); }
 function wrap(s, n){
   const words = String(s).split(' '), lines = []; let cur = '';
   for (const w of words) { if ((cur + (cur ? ' ' : '') + w).length > n) { if (cur) lines.push(cur); cur = w; } else cur += (cur ? ' ' : '') + w; }
@@ -4593,8 +4596,8 @@ function drawDialog(){
   if (d.showChoices) {
     const decks=d.choices.some(c=>c.deckId), row=decks?10:12, w = Math.min(232,Math.max(...d.choices.map(c => c.t.length)) * (decks?4:8) + (decks?38:20)), h = d.choices.length * row + 8, x = 236 - w, y = top ? Math.min(H - h - 2, by + bh + 2) : Math.max(4, by - 2 - h);
     d.cbox = { x, y, w, h, row };
-    R(x, y, w, h, '#1a1020'); R(x + 1, y + 1, w - 2, h - 2, '#fffaf0');
-    d.choices.forEach((c, i) => { const cy=y+5+i*row;if(decks){if(!c.deckId&&c.fn)R(x+12,cy,w-16,9,'#ead59c');if(c.deckId)drawDeckIcon(c.deckId,x+14,cy);tiny(c.t,x+(c.deckId?28:14),cy+2,'#2a2030');}else txt(c.t, x + 14, cy, '#2a2030', 'left', null); if (i === d.sel) { R(x + 5, cy+1, 2, 6, '#d83020'); R(x + 7, cy+2, 2, 4, '#d83020'); R(x + 9, cy+3, 1, 2, '#d83020'); } });
+    ctx.fillStyle = 'rgba(10,14,24,.85)'; ctx.fillRect(x, y, w, h); R(x, y, w, 1, '#fcd84a'); R(x, y + h - 1, w, 1, 'rgba(252,216,74,.35)');
+    d.choices.forEach((c, i) => { const cy=y+5+i*row;const on = i === d.sel; if (on) { ctx.fillStyle = 'rgba(252,216,74,.16)'; ctx.fillRect(x + 2, cy - 1, w - 4, row - 1); } if(decks){if(c.deckId)drawDeckIcon(c.deckId,x+14,cy);tiny(c.t,x+(c.deckId?28:14),cy+2,on?'#fcd84a':'#fff8e8');}else txt(c.t, x + 14, cy, on ? '#fcd84a' : '#fff8e8', 'left', '#000'); if (on) { R(x + 5, cy+1, 2, 6, '#fcd84a'); R(x + 7, cy+2, 2, 4, '#fcd84a'); R(x + 9, cy+3, 1, 2, '#fcd84a'); } });
   }
 }
 
@@ -4815,15 +4818,15 @@ function updateShop(){
 }
 function drawShop(){
   const sh = G.shop;
-  R(0, 0, W, H, '#14101e'); R(0, 0, W, 17, '#2a1a3a');
-  txt(sh.title, 6, 5, '#fcd84a', 'left', null);
+  ctx.fillStyle = 'rgba(8,10,20,.82)'; ctx.fillRect(0, 0, W, H); uiPanel(0, 0, W, 17, 0.94);
+  txt(sh.title, 6, 5, '#fcd84a', 'left', '#000');
   tiny(money(S.coins), 234, 7, '#fcd84a', 'right');
-  if (!sh.items.length) { R(18, 42, 204, 48, '#241c40'); txt('COLECCION COMPLETA', 120, 54, '#fcd84a', 'center', '#000'); tiny('Ya tienes todas las cartas disponibles.', 120, 68, '#e8e4ff', 'center'); tiny('A O X PARA SALIR', 120, 151, '#9db8a8', 'center'); return; }
+  if (!sh.items.length) { uiPanel(18, 42, 204, 48); txt('COLECCION COMPLETA', 120, 54, '#fcd84a', 'center', '#000'); tiny('Ya tienes todas las cartas disponibles.', 120, 68, '#e8e4ff', 'center'); tiny('A O X PARA SALIR', 120, 151, '#9db8a8', 'center'); return; }
   sh.rows = [];
   for (let i = 0; i < 8; i++) {
     const idx = sh.scroll + i, it = sh.items[idx]; if (!it) break;
     const y = 22 + i * 12, sel = idx === sh.sel;
-    if (sel) R(3, y - 2, 234, 11, '#3a2a58');
+    if (sel) { ctx.fillStyle = 'rgba(252,216,74,.16)'; ctx.fillRect(3, y - 2, 234, 11); R(3, y - 2, 2, 11, '#fcd84a'); }
     tiny((it.owned ? '* ' : '') + it.name, 8, y, it.owned ? '#6a8a80' : sel ? '#fff' : '#c8d8d0');
     tiny(it.owned ? 'LO TIENES' : money(it.price), 232, y, it.owned ? '#6a8a80' : S.coins >= it.price ? '#fcd84a' : '#e87070', 'right');
     sh.rows.push([idx, y - 2]);
@@ -4831,9 +4834,9 @@ function drawShop(){
   if (sh.scroll > 0) tiny('^', 120, 18, '#9db8a8', 'center');
   if (sh.scroll + 8 < sh.items.length) tiny('V', 120, 118, '#9db8a8', 'center');
   const it = sh.items[sh.sel];
-  R(3, 124, 234, 22, '#1c1428'); wrap(norm(it.info), 57).slice(0, 2).forEach((l, i) => tiny(l, 7, 127 + i * 8, '#c8c0e8'));
+  uiPanel(3, 124, 234, 22, 0.7); wrap(norm(it.info), 57).slice(0, 2).forEach((l, i) => tiny(l, 7, 127 + i * 8, '#e8e4ff'));
   tiny(hint('✕: COMPRAR   ◯: SALIR', 'A: COMPRAR   B: SALIR', 'Z O CLIC: COMPRAR   X: SALIR'), 120, 151, '#6a8a80', 'center');
-  if (sh.msgT > 0) { const w = sh.msg.length * 8 + 12; R(120 - w / 2, 64, w, 16, '#000'); txt(sh.msg, 120, 68, sh.msg[0] === '¡' ? '#60e070' : '#ff8080', 'center', null); }
+  if (sh.msgT > 0) { const w = sh.msg.length * 8 + 12; uiPanel(120 - w / 2, 64, w, 16, 0.9); txt(sh.msg, 120, 68, sh.msg[0] === '¡' ? '#60e070' : '#ff8080', 'center', '#000'); }
 }
 function houseInteract(c){
   const key = HOUSE_TILE[c], owned = houseTileOwned(c);
@@ -5613,10 +5616,10 @@ function drawLeagueProgress(){
 }
 function drawMenu(){
   const m = G.menu;
-  R(0, 0, W, H, '#10161a'); R(0, 0, W, 16, '#1c2a2e');
+  ctx.fillStyle = 'rgba(8,10,20,.93)'; ctx.fillRect(0, 0, W, H); uiPanel(0, 0, W, 16, 0.94);
   ['MAZOS','EQUIPO','ESTADO','MAPA','MISIONES','MEDALLAS'].forEach((t, i) => {
     const x = i * 40;
-    if (i === m.tab) R(Math.round(x), 2, 39, 13, '#2e4a44');
+    if (i === m.tab) { ctx.fillStyle = 'rgba(252,216,74,.16)'; ctx.fillRect(Math.round(x), 2, 39, 13); R(Math.round(x) + 3, 14, 33, 1, '#fcd84a'); }
     tiny(t, Math.round(x + 20), 6, i === m.tab ? '#fcd84a' : '#9db8a8', 'center');
   });
   if (m.tab === 0) {
@@ -5624,7 +5627,7 @@ function drawMenu(){
       const decks=activeDecks();m.deckScroll=Math.max(0,Math.min(m.sel,decks.length-9,m.deckScroll||0));if(m.sel>=m.deckScroll+9)m.deckScroll=m.sel-8;
       decks.slice(m.deckScroll,m.deckScroll+9).forEach((d,j)=>{const i=j+m.deckScroll;
         const y = 20 + j * 12, sel = i === m.sel, cnt = deckCount(d.id), full = cnt === DECK_SIZE;
-        if (sel) R(4, y - 2, 232, 11, '#1c2a2e');
+        if (sel) { ctx.fillStyle = 'rgba(252,216,74,.16)'; ctx.fillRect(4, y - 2, 232, 11); R(4, y - 2, 2, 11, '#fcd84a'); }
         R(10, y - 1, 8, 8, '#000'); R(11, y, 6, 6, d.col);
         tiny(deckLabel(d.id), 24, y + 1, sel ? '#fff' : '#c8d8d0');
         R(128, y + 1, 72, 4, '#2a3a3a'); R(128, y + 1, cnt * 6, 4, full ? '#fcd84a' : d.col);
@@ -7853,8 +7856,8 @@ function render(){
   else if (G.state === 'duel') { drawDuel(); if (G.dialog) drawDialog(); }
   else if (G.state === 'ending') drawEnding();
   else if (G.state === 'world') {
-    if (G.menu) drawMenu();
-    else if (G.shop && !G.dialog) drawShop();
+    if (G.menu) { drawWorld(); drawMenu(); }
+    else if (G.shop && !G.dialog) { drawWorld(); drawShop(); }
     else {
       drawWorld();
       if (G.warp) drawWarp();
