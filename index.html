@@ -1344,7 +1344,7 @@ const ROOMS = {
     roof:(tx,ty) => ty >= 6 ? 'blue' : tx < 8 ? 'red' : 'green',
     plaques:[['ANGELMO',80,35,'#5a3418'],['CURANTO',176,35,'#1a4a2a'],['CARTAS',64,100,'#1a2a58']],
     doors:{'4,3':'angelmo','11,3':'curanto','3,7':'cartasSur'},
-    signs:{'3,5':'PUERTO MONTT. CARTAS Y TORNEOS ABAJO A LA IZQUIERDA: LIGA DEL SUR. PUEDES RECORRER LA CIUDAD A PIE, SIN SURF. EN ANGELMO HAY EQUIPO DEL SUR.'},
+    signs:{'3,5':'PUERTO MONTT. CARTAS Y TORNEOS ABAJO A LA IZQUIERDA: LIGA DEL SUR. PUEDES RECORRER LA CIUDAD A PIE, SIN SURF. EN ANGELMO HAY EQUIPO DEL SUR. EL BARQUERO DEL MUELLE TE LLEVA GRATIS A VIÑA O PICHILEMU.'},
     npcs:[{id:'sureno',x:10,y:4},{id:'barquero',x:9,y:8}] },
   cartasSur:{ name:'CARTAS Y TORNEOS DEL SUR', theme:'inside', music:'town', interior:true, exitTo:{room:'pmontt',tx:3,ty:8},
     map:['kkkkkkkkkkkkkkk','kBKKKKFKKKKKBBk','kFFFFFFFFFFFFFk','kFFFFFFFFFFFFFk','kFtFFFFFFFFFtFk','kFFFFFFFFFFFFFk','kFFFFFFFFFFFFFk','kFFFFFFFFFFFFFk','kkkkkkkEkkkkkkk','kkkkkkkkkkkkkkk'],
@@ -1519,7 +1519,7 @@ ROOMS.cartasSur.props.push({k:'cartel',x:12,y:5,label:'MAS MESAS',txt:'GRAN CENT
 ROOMS.anexoTCG=makeCardTemple('CENTRO TCG DEL SUR · SALON DE EVENTOS',{room:'cartasSur',tx:12,ty:5},'ligaPmontt');ROOMS.anexoTCG.zone='pmontt';
 ROOMS.anexoTCG.props.push({k:'mesaCartas',x:1,y:6,w:3,act:'playCards',waiting:true,opponent:'durandal'});
 ROOMS.pmontt.plaques.find(p=>p[0]==='TIENDA TCG')[0]='CENTRO TCG';
-ROOMS.pmontt.signs['3,5']='PUERTO MONTT: EL GRAN CENTRO TCG DEL SUR TIENE TIENDA, SALON DE EVENTOS, STANDINGS Y LIGA NOCTURNA. AL SUR, EL CAMINO A PUERTO VARAS Y FRUTILLAR. TODO ACCESIBLE A PIE.';
+ROOMS.pmontt.signs['3,5']='PUERTO MONTT: EL GRAN CENTRO TCG DEL SUR TIENE TIENDA, SALON DE EVENTOS, STANDINGS Y LIGA NOCTURNA. AL SUR, EL CAMINO A PUERTO VARAS, FRUTILLAR, PUERTO OCTAY Y LAS CONDES. EL BARQUERO DEL MUELLE TE LLEVA GRATIS A VIÑA O PICHILEMU.';
 ROOMS.puertoVaras={name:'PUERTO VARAS · LAGO LLANQUIHUE',theme:'town',music:'town',rain:true,zone:'puertoVaras',
  map:['TTTTTTT=TTTTTTT','T.RRRR.=......T','T.RRRR.=......T','T.WWDW.=......T','T......=......T','T..S...=......T','T......=......T','T......=......T','~~~~~~~=~~~~~~~','~~~~~~~=~~~~~~~'],doors:{'4,3':'cafeVaras'},npcs:[{id:'turista',x:3,y:5}],signs:{'3,5':'PUERTO VARAS: CASAS DE TRADICION ALEMANA, EL LAGO LLANQUIHUE Y EL VOLCAN OSORNO. NORTE: PUERTO MONTT. SUR: COSTANERA HACIA FRUTILLAR.'},
  props:[{k:'casaAlemana',x:2,y:1,w:4,h:3,solid:false},{k:'volcanOsorno',x:10,y:1,w:4,h:3,solid:false},{k:'cartel',x:10,y:7,label:'LLANQUIHUE',txt:'COSTANERA DEL LAGO LLANQUIHUE. EL CAMINO CENTRAL PERMITE RECORRER LAS CIUDADES SIN SURF.',solid:false},{k:'farol',x:1,y:4,solid:false},{k:'farol',x:13,y:5,solid:false}]};
@@ -1586,8 +1586,8 @@ WORLD.pelluco=[5,4];SHORT.pelluco='PELLUCO';
 const OCTAY_CHECKPOINTS=[[3,2],[11,2],[11,7],[3,7],[3,5]];
 WILD.puertoOctay={name:'PUERTO OCTAY · HUMEDAL DEL LLANQUIHUE',theme:'meadow',music:'field',rain:true,walls:['T','b','r'],decks:['terragedon','rock','langostino'],enemies:['mongrelOctay','balothOctay','looterOctay'],fixedRoster:true,n:4,chest:'hierro',
  map:['TTTTTTTTTTTTTTT','T.............T','T.............T','T.............T','..............T','...====.......T','T.............T','T.............T','~~~~~~===~~~~~~','~~~~~~~~~~~~~~~'],
- npcs:[{id:'friend',ch:15,role:'cheer',x:2,y:6}],signs:{'2,4':'PUERTO OCTAY: OESTE, FRUTILLAR. LAS CRIATURAS DE LAS CARTAS HAN INVADIDO EL CIRCUITO DE RODOLFO.'},
- props:[{k:'cartel',x:2,y:4,label:'FRUTILLAR',txt:'AL OESTE: FRUTILLAR. EL SENDERO ES TRANSITABLE A PIE.',solid:false},{k:'marathonTrack',x:0,y:0,solid:false},{k:'marathonStart',x:3,y:5,act:'octayRace',solid:false},{k:'fogata',x:1,y:7,act:'waitPhase',solid:false},...OCTAY_CHECKPOINTS.slice(0,4).map(([x,y],i)=>({k:'marathonFlag',x,y,label:String(i+1),solid:false}))]};
+ npcs:[{id:'friend',ch:15,role:'cheer',x:2,y:6}],signs:{'2,4':'PUERTO OCTAY: OESTE, FRUTILLAR. NORTE, LAS CONDES. LAS CRIATURAS DE LAS CARTAS HAN INVADIDO EL CIRCUITO DE RODOLFO.'},
+ props:[{k:'cartel',x:2,y:4,label:'FRUTILLAR',txt:'AL OESTE: FRUTILLAR. AL NORTE: LAS CONDES. EL SENDERO ES TRANSITABLE A PIE.',solid:false},{k:'marathonTrack',x:0,y:0,solid:false},{k:'marathonStart',x:3,y:5,act:'octayRace',solid:false},{k:'fogata',x:1,y:7,act:'waitPhase',solid:false},...OCTAY_CHECKPOINTS.slice(0,4).map(([x,y],i)=>({k:'marathonFlag',x,y,label:String(i+1),solid:false}))]};
 function startOctayRace(){
  if(G.octayRace){say(['RODOLFO: Tu vuelta ya comenzo. Sigue la bandera indicada y regresa a la meta.']);return;}
  if(!areaCleared()){say(['RODOLFO: ¡Este es mi circuito del lago! Primero limpiemos el humedal de criaturas; despues corremos tranquilos.']);return;}
@@ -1655,7 +1655,7 @@ function genMaze(seed, braid, openP){
 const CELLS = []; for (let j = 0; j < 4; j++) for (let i = 0; i < 7; i++) CELLS.push([1 + 2 * i, 1 + 2 * j]);
 const OPEN_TILES = { n:[[6,0],[7,0],[8,0],[6,1],[7,1],[8,1]], s:[[6,8],[7,8],[8,8],[6,9],[7,9],[8,9]], w:[[0,4],[1,4],[0,5],[1,5]], e:[[13,4],[14,4],[13,5],[14,5]] };
 function zoneNeighbors(id){
-  if(id==='puertoVaras')return {n:'pmontt',s:'frutillar'};if(id==='frutillar')return {n:'puertoVaras',e:'puertoOctay'};if(id==='puertoOctay')return {w:'frutillar'};
+  if(id==='puertoVaras')return {n:'pmontt',s:'frutillar'};if(id==='frutillar')return {n:'puertoVaras',e:'puertoOctay'};if(id==='puertoOctay')return {w:'frutillar',n:'lascondes'};
   if(id==='pelluco')return {w:'pmontt'};
   const p = WORLD[id]; if (!p) return {};
   const at = (x, y) => Object.keys(WORLD).find(k => WORLD[k][0] === x && WORLD[k][1] === y);
