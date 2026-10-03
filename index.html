@@ -506,6 +506,10 @@ const SONGS = {
   // Original: Furia del jefe, frenetica.
   boss3:makeSong({bpm:150,leadInst:'lead',leadVol:.09,bass:'pump',drums:'battle',drumVol:.32,arpInst:'brass',arpVol:.04,chords:['Dm','Dm','Bb','C','Dm','Dm','A','A'],lead:'D5:1 D5:1 F5:1 D5:1 A5:2 F5:2 D6:2 C6:2 A5:4 A#5:2 F5:2 D5:2 F5:2 G5:2 E5:2 C5:4 F5:1 G5:1 A5:2 D6:2 A5:2 F5:2 E5:2 D5:4 E5:1 F5:1 G5:1 A5:1 C#6:2 E6:2 A5:6 -:2'}),
   oktober:makeSong({bpm:118,chords:['D','A','G','D','Bm','G','A','D'],leadInst:'brass',leadVol:.08,padVol:.035,bass:'walk',bassVol:.18,arpInst:'harp',arpVol:.035,drums:'reel',drumVol:.14,lead:'D5:1 F#5:1 A5:2 F#5:2 D5:2 E5:1 C#5:1 A4:2 C#5:2 E5:2 G5:1 B5:1 D6:2 B5:2 G5:2 F#5:2 E5:2 D5:4 B4:1 D5:1 F#5:2 A5:2 F#5:2 G5:2 B5:2 A5:2 G5:2 E5:1 F#5:1 E5:2 C#5:2 A4:2 F#5:2 E5:2 D5:4'}),
+  // Original: lluvia valdiviana con flauta y arpa de bosque.
+  valdivia:makeSong({bpm:96,chords:['Em','C','G','D','Em','C','D','Em'],leadInst:'flute',leadVol:.08,padVol:.045,bass:'walk',bassVol:.17,arpInst:'harp',arpVol:.06,drums:'soft',drumVol:.12,lead:'E5:3 F#5:1 G5:2 B5:2 C6:2 B5:2 G5:2 E5:2 D5:2 G5:2 B5:3 A5:1 F#5:2 A5:2 D5:4 E5:2 G5:2 B5:2 E6:2 C6:3 B5:1 A5:2 G5:2 F#5:2 A5:2 D6:2 C6:2 B5:2 G5:2 E5:4'}),
+  // Original: tienda TCG colorida y alegre de Providencia.
+  piedraBruja:makeSong({bpm:122,chords:['C','Am','F','G','C','Em','F','G'],leadInst:'lead',leadVol:.075,padVol:.045,bass:'pump',bassVol:.17,arpInst:'harp',arpVol:.055,drums:'house',drumVol:.15,lead:'E5:2 G5:2 C6:2 G5:2 A5:2 E5:2 C5:2 E5:2 F5:2 A5:2 C6:3 A5:1 G5:2 B5:2 D6:2 B5:2 C6:2 G5:1 E5:1 G5:2 C6:2 B5:2 G5:2 E5:2 B4:2 A5:2 C6:2 F5:2 A5:2 G5:2 D5:2 G5:4'}),
   pelluco:makeSong({bpm:104,chords:['G','D','Em','C','G','D','C','G'],leadInst:'flute',leadVol:.085,padVol:.035,bass:'walk',bassVol:.18,arpInst:'harp',arpVol:.045,drums:'beach',drumVol:.14,lead:'B4:2 D5:2 E5:2 D5:2 A4:2 B4:2 D5:4 G4:2 B4:2 E5:2 G5:2 E5:3 D5:1 C5:2 E5:2 D5:2 B4:2 A4:2 G4:2 F#4:2 A4:2 D5:4 E5:2 D5:2 C5:2 A4:2 B4:2 G4:2 G5:4'}),
   mechones:makeSong({bpm:126,chords:['Am','F','C','G','Am','F','G','G'],leadInst:'lead',leadVol:.075,padVol:.045,bass:'pump',bassVol:.17,arpInst:'harp',arpVol:.05,drums:'house',drumVol:.16,lead:'A4:1 C5:1 E5:2 C5:2 A4:2 F4:2 A4:2 C5:2 E5:2 G4:1 C5:1 E5:2 G5:2 E5:2 D5:2 B4:2 G4:2 B4:2 A4:1 C5:1 E5:2 A5:2 E5:2 F5:2 E5:2 C5:2 A4:2 B4:2 D5:2 G5:2 D5:2 B4:2 A4:2 G4:4'}),
   // Original hopeful medieval RPG theme: "El templo de la esperanza".
@@ -703,9 +707,10 @@ const CHARS = [
   { id:'matias', n:'MATÍAS', tag:'EL PROTAGONISTA', style:'cap', st:{fue:5,des:5,agi:5,int:5}, main:'fue',
     c:{ hat:'#c8281c', hatD:'#7a1410', mark:'#f4e8c0', feather:'#f4f1e8', hair:'#9a4422', skin:'#f1b98a', shirt:'#1a8a78', shirtD:'#0e5a4e',
         cape:'#8a1a14', capeD:'#5a0e0a', belt:'#4a2a14', pants:'#5a3a24', shoe:'#3a2414', sleeve:'#1a8a78' } },
-  { id:'davis', n:'DAVIS', tag:'RÁPIDO Y CERTERO', style:'spiky', tall:true, st:{fue:4,des:6,agi:7,int:3}, main:'agi',
-    c:{ hair:'#f0d070', hairD:'#c8a040', skin:'#fbdcc4', eye:'#2a6ad8', shirt:'#2a4ab0', shirtD:'#18307a', emblem:'#e8e0c8',
-        cape:'#e8e0c8', capeD:'#b8ae98', belt:'#4a2a14', pants:'#4a3a2a', shoe:'#2a1a10', sleeve:'#9aa4b4' } },
+  // Davis (3 oct): colorín, agrónomo y fanático del Burn; ama el Lightning Bolt para ganar rápido.
+  { id:'davis', n:'DAVIS', tag:'EL AGRÓNOMO COLORÍN', style:'spiky', tall:true, freckles:true, plaid:true, burnLover:true, st:{fue:4,des:6,agi:7,int:3}, main:'agi',
+    c:{ hair:'#d8562a', hairD:'#9a3418', hairL:'#f08048', skin:'#fbdcc4', eye:'#3a8a3a', shirt:'#5a8a3a', shirtD:'#36602a', emblem:'#e8e0c8',
+        cape:'#c84a20', capeD:'#8a2a10', belt:'#4a2a14', pants:'#6a5a3a', shoe:'#4a3018', sleeve:'#5a8a3a' } },
   { id:'gucho', n:'GUCHO', tag:'PURA FUERZA', style:'beanie', st:{fue:7,des:4,agi:4,int:5}, main:'fue',
     c:{ hat:'#3f6a2a', hatD:'#243f18', hood:true, hair:'#6a4020', skin:'#e8a878', shirt:'#8a5a30', shirtD:'#5a3418',
         cape:'#3f6a2a', capeD:'#243f18', belt:'#2a1a0c', pants:'#4a3a2a', shoe:'#2a1a0c', sleeve:'#8a5a30' } },
@@ -753,6 +758,11 @@ const CUSTOM_CHAR = CHARS.length;
 CHARS.push(friendCharacter('custom','CREAR MI PERSONAJE', 'CREA TU PROPIO PERSONAJE','spiky',{fue:5,des:5,agi:5,int:5},'fue',{},{}));
 // El creador conserva el indice 18; los nuevos amigos se agregan despues.
 CHARS.push(friendCharacter('martin','MARTÍN','GYM RAT Y SOCIO COMERCIAL','upspike',{fue:6,des:3,agi:5,int:6},'fue',{muscular:true,shirtless:true,finance:true},{hair:'#30241c',hairD:'#1c1814',skin:'#e6ad82',shirt:'#e6ad82',shirtD:'#ad7658',sleeve:'#e6ad82',pants:'#252d42',shoe:'#f4f4f8',belt:'#252d42',eye:'#65472e'}));
+// Gonzalo (3 oct): "el Alcalde", abogado y maestro de los mazos azules. Indice 20, solo se agrega al final.
+CHARS.push(friendCharacter('gonzalo','GONZALO','EL ALCALDE · ABOGADO','curly',{fue:4,des:5,agi:4,int:7},'int',{blueMaster:true,mayor:true,suit:true},{hair:'#2a2020',hairD:'#141010',skin:'#efc29a',eye:'#3a4a7a',shirt:'#283a68',shirtD:'#18244a',sleeve:'#283a68',emblem:'#c83040',pants:'#202a48',shoe:'#141418',belt:'#141418'}));
+// Mazos con azul: el Alcalde los domina en ligas y duelos.
+const BLUE_DECKS = new Set(['langostino','landstill','replenish']);
+function deckPerkBonus(deck){ if (pokemonRealm()) return 0; const ch = CH(); return (ch.blueMaster && BLUE_DECKS.has(deck)) || (ch.burnLover && deck === 'burn') ? 1 : 0; }
 const CUSTOM_STATS = ['fue','des','agi','int'], CUSTOM_STAT_BUDGET = 20, CUSTOM_SKILL_BUDGET = 6;
 const CUSTOM_STYLES = { spiky:'Pelo en punta', curly:'Rulos', upspike:'Pelo levantado', ponytail:'Pelo largo', bun:'Moño', cap:'Jockey', beanie:'Gorro', tennis:'Cintillo', wizard:'Sombrero de mago', baby:'Bebé' };
 const CUSTOM_SKILLS = {
@@ -956,6 +966,18 @@ const CARDS = {
   city:{n:'City of Traitors',c:'A',cost:'0',t:'Tierra',art:'land',tx:'Agrega 2. Se sacrifica si juegas otra tierra.'},
   juggernaut:{n:'Juggernaut',c:'A',cost:'4',t:'Criatura artefacto',mon:'juggernaut',pt:'5/3',tx:'Ataca cada turno. No lo bloquean muros.'},
   winterorb:{n:'Winter Orb',c:'A',cost:'2',t:'Artefacto',art:'gear',tx:'Las tierras se enderezan de a una.'},
+  // --- Elfos (3 oct): arquetipo clasico del Premodern, de Urza's Saga a Legions ---
+  fyndhorn:{n:'Fyndhorn Elves',c:'G',cost:'G',t:'Criatura',mon:'elf',pt:'1/1',tx:'Gíralo: agrega G.'},
+  priestTitania:{n:'Priest of Titania',c:'G',cost:'1G',t:'Criatura',mon:'elf',pt:'1/1',tx:'Gíralo: agrega G por cada elfo en juego.'},
+  symbiote:{n:'Wirewood Symbiote',c:'G',cost:'G',t:'Criatura',mon:'elf',pt:'1/1',tx:'Regresa un elfo a tu mano: endereza una criatura.'},
+  quirion:{n:'Quirion Ranger',c:'G',cost:'G',t:'Criatura',mon:'elf',pt:'1/1',tx:'Regresa un bosque a tu mano: endereza una criatura.'},
+  wellwisher:{n:'Wellwisher',c:'G',cost:'1G',t:'Criatura',mon:'elf',pt:'1/1',tx:'Gíralo: ganas 1 vida por cada elfo en juego.'},
+  herald:{n:'Wirewood Herald',c:'G',cost:'1G',t:'Criatura',mon:'elf',pt:'1/1',tx:'Al morir, busca un elfo en tu mazo.'},
+  timberwatch:{n:'Timberwatch Elf',c:'G',cost:'2G',t:'Criatura',mon:'elf',pt:'1/2',tx:'Gíralo: una criatura recibe +X/+X; X son los elfos en juego.'},
+  acolyte:{n:"Multani's Acolyte",c:'G',cost:'GG',t:'Criatura',mon:'elf',pt:'2/1',tx:'Eco. Al entrar, roba una carta.'},
+  cradle:{n:"Gaea's Cradle",c:'A',cost:'0',t:'Tierra legendaria',art:'land',tx:'Gírala: agrega G por cada criatura que controlas.'},
+  rofellos:{n:'Rofellos, Llanowar Emissary',c:'G',cost:'GG',t:'Criatura legendaria',mon:'elf',pt:'2/1',tx:'Gíralo: agrega G por cada bosque que controlas.'},
+  lyrist:{n:'Elvish Lyrist',c:'G',cost:'G',t:'Criatura',mon:'elf',pt:'1/1',tx:'G, gíralo y sacrifícalo: destruye un encantamiento.'},
   // --- carta legendaria, rarísima, sirve en todos los mazos ---
   moxd:{n:'Mox Diamond',c:'L',cost:'0',t:'Artefacto',art:'gem',legend:true,tx:'LEGENDARIA: rarísima. +5% en torneos y duelos con cualquier mazo.'},
 };
@@ -971,12 +993,13 @@ const DECKS = [
   { id:'landstill', n:'LANDSTILL', col:'#7ab0e8', cards:['standstill','factory','conclave','fof','decree','humility','absorb','tsabo','counter','wrath','stp','brainstorm'] },
   { id:'rock', n:'THE ROCK', col:'#3a6a2a', cards:['monger','deed','baloth','hermit','plaguelord','therapy','survival','birds','elves','duress','vtutor','hymn'] },
   { id:'mud', n:'MUD METALWORKER', col:'#9aa0a8', cards:['metalworker','monolith','tanglewire','masticore','keg','vkey','karn','tomb','city','juggernaut','winterorb','factory'] },
+  { id:'elfos', n:'ELFOS', col:'#4ab050', cards:['elves','fyndhorn','priestTitania','symbiote','quirion','wellwisher','herald','timberwatch','acolyte','cradle','rofellos','lyrist'] },
 ];
 const DECK_SIZE = 12;
 const DECK = Object.fromEntries(DECKS.map(d => [d.id, d]));
-const POKEMON_DECK_NAMES={burn:'FUEGO',goblins:'ENJAMBRE',black:'SOMBRA',replenish:'RENACER',life:'VITALIDAD',langostino:'GIGANTES',terragedon:'BOSQUE',landstill:'MAREAS',rock:'ROCA',mud:'ACERO'};
+const POKEMON_DECK_NAMES={burn:'FUEGO',goblins:'ENJAMBRE',black:'SOMBRA',replenish:'RENACER',life:'VITALIDAD',langostino:'GIGANTES',terragedon:'BOSQUE',landstill:'MAREAS',rock:'ROCA',mud:'ACERO',elfos:'HOJAS'};
 function deckLabel(id){return DECK[id]?.realm==='pokemon'?DECK[id].n:pokemonRealm()?POKEMON_DECK_NAMES[id]:DECK[id].n;}
-const POKEMON_DECK_SPECIES={burn:['Charmander','Charmeleon','Charizard','Vulpix','Ninetales','Growlithe','Arcanine','Magmar','Ponyta','Rapidash','Flareon','Moltres'],goblins:['Caterpie','Metapod','Butterfree','Weedle','Kakuna','Beedrill','Paras','Parasect','Venonat','Venomoth','Scyther','Pinsir'],black:['Gastly','Haunter','Gengar','Drowzee','Hypno','Zubat','Golbat','Ekans','Arbok','Grimer','Muk','Mewtwo'],replenish:['Eevee','Vaporeon','Jolteon','Flareon','Ditto','Porygon','Abra','Kadabra','Alakazam','Exeggcute','Exeggutor','Mew'],life:['Chansey','Clefairy','Clefable','Jigglypuff','Wigglytuff','Mr. Mime','Snorlax','Kangaskhan','Lickitung','Chansey','Jynx','Lapras'],langostino:['Gyarados','Lapras','Articuno','Seel','Dewgong','Squirtle','Wartortle','Blastoise','Shellder','Cloyster','Tentacool','Tentacruel'],terragedon:['Bulbasaur','Ivysaur','Venusaur','Oddish','Gloom','Vileplume','Bellsprout','Weepinbell','Victreebel','Tangela','Exeggcute','Exeggutor'],landstill:['Psyduck','Golduck','Poliwag','Poliwhirl','Poliwrath','Staryu','Starmie','Horsea','Seadra','Goldeen','Seaking','Slowbro'],rock:['Geodude','Graveler','Golem','Onix','Rhyhorn','Rhydon','Cubone','Marowak','Sandshrew','Sandslash','Diglett','Dugtrio'],mud:['Magnemite','Magneton','Porygon','Voltorb','Electrode','Pikachu','Raichu','Jolteon','Electabuzz','Zapdos','Koffing','Weezing']};
+const POKEMON_DECK_SPECIES={burn:['Charmander','Charmeleon','Charizard','Vulpix','Ninetales','Growlithe','Arcanine','Magmar','Ponyta','Rapidash','Flareon','Moltres'],goblins:['Caterpie','Metapod','Butterfree','Weedle','Kakuna','Beedrill','Paras','Parasect','Venonat','Venomoth','Scyther','Pinsir'],black:['Gastly','Haunter','Gengar','Drowzee','Hypno','Zubat','Golbat','Ekans','Arbok','Grimer','Muk','Mewtwo'],replenish:['Eevee','Vaporeon','Jolteon','Flareon','Ditto','Porygon','Abra','Kadabra','Alakazam','Exeggcute','Exeggutor','Mew'],life:['Chansey','Clefairy','Clefable','Jigglypuff','Wigglytuff','Mr. Mime','Snorlax','Kangaskhan','Lickitung','Chansey','Jynx','Lapras'],langostino:['Gyarados','Lapras','Articuno','Seel','Dewgong','Squirtle','Wartortle','Blastoise','Shellder','Cloyster','Tentacool','Tentacruel'],terragedon:['Bulbasaur','Ivysaur','Venusaur','Oddish','Gloom','Vileplume','Bellsprout','Weepinbell','Victreebel','Tangela','Exeggcute','Exeggutor'],landstill:['Psyduck','Golduck','Poliwag','Poliwhirl','Poliwrath','Staryu','Starmie','Horsea','Seadra','Goldeen','Seaking','Slowbro'],rock:['Geodude','Graveler','Golem','Onix','Rhyhorn','Rhydon','Cubone','Marowak','Sandshrew','Sandslash','Diglett','Dugtrio'],mud:['Magnemite','Magneton','Porygon','Voltorb','Electrode','Pikachu','Raichu','Jolteon','Electabuzz','Zapdos','Koffing','Weezing'],elfos:['Oddish','Gloom','Vileplume','Bellsprout','Weepinbell','Victreebel','Exeggcute','Exeggutor','Tangela','Paras','Parasect','Bulbasaur']};
 const POKEMON_CARD_SPECIES={};DECKS.forEach(d=>d.cards.forEach((id,i)=>{POKEMON_CARD_SPECIES[id]??=POKEMON_DECK_SPECIES[d.id][i];}));
 function reflectedCardSpecies(id){const named=POKEMON_CARD_SPECIES[id];return named&&POKE.some(p=>p.n.toLowerCase().replace(/[^a-z]/g,'')===named.toLowerCase().replace(/[^a-z]/g,''))?named:POKE[strHash(String(id))%151].n;}
 function reflectedCardName(id){return reflectedCardSpecies(id)+' · '+(DECKS.find(d=>d.cards.includes(id))?.cards.indexOf(id)+1||'RARA');}
@@ -992,7 +1015,8 @@ function pokemonDeckInfo(d){say([d.n+': '+d.strategy,'Lista de referencia: 60 ca
 const ALL_CARDS = Object.keys(CARDS);
 const MU = { burn:{goblins:0,black:.05,replenish:.12,life:-.15,langostino:.05,terragedon:.02,landstill:.08,rock:-.04,mud:.06}, goblins:{black:.05,replenish:.1,life:0,langostino:-.05,terragedon:-.03,landstill:-.08,rock:-.06,mud:.04},
   black:{replenish:.1,life:.05,langostino:0,terragedon:.05,landstill:.06,rock:-.02,mud:.03}, replenish:{life:.1,langostino:-.08,terragedon:.06,landstill:-.05,rock:.02,mud:-.04}, life:{langostino:.05,terragedon:-.08,landstill:-.04,rock:.03,mud:-.02},
-  langostino:{terragedon:.04,landstill:-.03,rock:.05,mud:-.06}, terragedon:{landstill:.07,rock:.02,mud:-.03}, landstill:{rock:-.04,mud:.05}, rock:{mud:.04} };
+  langostino:{terragedon:.04,landstill:-.03,rock:.05,mud:-.06}, terragedon:{landstill:.07,rock:.02,mud:-.03}, landstill:{rock:-.04,mud:.05}, rock:{mud:.04},
+  elfos:{burn:-.06,goblins:.02,black:-.03,replenish:.05,life:.04,langostino:-.05,terragedon:.03,landstill:-.04,rock:-.02,mud:.03} };
 const mu = (a, b) => a === b ? 0 : (MU[a] && MU[a][b] !== undefined ? MU[a][b] : -((MU[b] && MU[b][a]) || 0));
 
 const SWORDS = {
@@ -1014,13 +1038,15 @@ const SWORDS = {
   baculo:{n:'Baculo de la Quietud',st:{int:7,des:3},col:'#80c0ff'},
   hachaRoca:{n:'Hacha de la Roca',st:{fue:8,des:2},col:'#5a8a3a'},
   martilloKarn:{n:'Martillo de Karn',st:{fue:9,int:2},col:'#e0e0f0'},
+  hojaLlanowar:{n:'Hoja de Llanowar',st:{fue:8,des:4,agi:3},col:'#58d068'},
+  sableNiebla:{n:'Sable del Castillo de Niebla',st:{fue:7,des:5},col:'#a8c0d8'},
   argivia:{n:'Espada de Argivia',st:{fue:10,des:4},col:'#f0d8a0'},
   phyrexia:{n:'Filo de Phyrexia',st:{fue:12,int:4},col:'#a0b0a0'},
   masticoreBlade:{n:'Hoja del Masticore',st:{fue:14,des:6},col:'#c8a878'},
   yawgmoth:{n:'Mazo de Yawgmoth',st:{fue:16,int:8},col:'#6a3a8a'},
   moxEterno:{n:'Espada del Mox Eterno',st:{fue:12,des:12,agi:12,int:12},col:'#a0fff0'},
 };
-const SWORD_ORDER = ['palo','hierro','goblin','sombra','urza','mar','serra','mishra','tourach','avatar','campeon','shivanSword','hachaKjeldor','guadana','garra','baculo','hachaRoca','martilloKarn','argivia','phyrexia','masticoreBlade','yawgmoth','moxEterno'];
+const SWORD_ORDER = ['palo','hierro','goblin','sombra','urza','mar','serra','mishra','tourach','avatar','campeon','shivanSword','hachaKjeldor','guadana','garra','baculo','hachaRoca','martilloKarn','hojaLlanowar','sableNiebla','argivia','phyrexia','masticoreBlade','yawgmoth','moxEterno'];
 // Economia (30 sept): todo cuesta mucho mas. Un sobre vale $80.000 (pedido de Matias: que cueste juntar plata).
 const PACK_PRICE = 600000;
 const SWORD_PRICE = { hierro:10000, sombra:35000, urza:40000, mar:38000 };
@@ -1244,7 +1270,7 @@ for(let i=0;i<10;i++){
 
 // Plata con puntos de mil, como en Chile: $10.000
 const COIN_X = 50; // monedas que sueltan las criaturas y el arcade (30 sept: bajado de 150, daban demasiado)
-function questCoins(reward,level=S.lvl){const raw=reward.coins||0;if(!raw)return 0;const base=raw<=100?raw*70:1200+Math.sqrt(raw)*65;return Math.round(Math.min(6000,base)*(.5+Math.min(100,Math.max(1,level))*.025)/100)*100;}
+function questCoins(reward,level=S.lvl){const raw=reward.coins||0;if(!raw)return 0;const mayor=S&&CH().mayor?1.15:1;if(reward.contract)return Math.round(raw*mayor/100)*100;const base=raw<=100?raw*70:1200+Math.sqrt(raw)*65;return Math.round(Math.min(6000,base)*(.5+Math.max(1,level)*.025)*mayor/100)*100;}
 function levelCoins(base,level=S.lvl){return Math.max(10,Math.round(base*(.35+Math.min(100,Math.max(1,level))*.018)/10)*10);}
 function itemLevel(kind,id){const luxury=LUXURY.find(it=>it.kind===kind&&it.id===id);if(luxury&&luxury.req)return luxury.req.lvl||1;if(kind==='sword')return Math.max(1,(SWORD_ORDER.indexOf(id)-1)*2);if(kind==='armor')return ARMOR[id]?.lvl||Math.max(1,((ARMOR[id]||{}).tier-1)*6);return 1;}
 function acquisitionOk(kind,id){const obj=kind==='armor'?ARMOR[id]:kind==='spell'?SPELLS[id]:SWORDS[id];return !obj?.realm||obj.realm===(S.realm||'magic');}
@@ -1271,7 +1297,7 @@ function addGear(id){
   S.armor.push(id); SFX.chest();
   const cur = S.gear[A.slot], better = !cur || ARMOR[cur].def < A.def;
   if (better) S.gear[A.slot] = id;
-  lootNotice(A.n.toUpperCase()+' · +'+A.def+' DEF'+(better?' · EQUIPADO':''),'#b0e8ff');
+  if(!rareLootNotice('gear',id,better?'EQUIPADO · +'+A.def+' DEF': '+'+A.def+' DEF'))lootNotice(A.n.toUpperCase()+' · +'+A.def+' DEF'+(better?' · EQUIPADO':''),'#b0e8ff');
   saveGame();
 }
 function learnSpell(id){
@@ -1335,6 +1361,14 @@ MON.bomba={...MON.gob,n:'Bomba · destruible',hp:1,xp:2,ai:'bomb',spd:0,dmg:0,si
 MON.mongrelOctay={...MON.mongrel,n:'Wild Mongrel del Humedal',hp:7,xp:9,spd:.85,visual:'mongrel',pokemon:54};
 MON.balothOctay={...MON.baloth,n:'Baloth Musgoso de Octay',hp:20,xp:18,regen:true,visual:'baloth',pokemon:113};
 MON.looterOctay={...MON.merfolk,n:'Merfolk Looter del Llanquihue',hp:8,xp:11,ai:'shooter',shot:'#78c8e8',visual:'merfolk',pokemon:60};
+// Elfos de la selva valdiviana (3 oct). Sus ids van al final de MON para no mover los sprites del reflejo.
+MON.elfoLlanowar={...MON.elf,n:'Llanowar Elves del Calle-Calle',hp:5,xp:6,spd:.8,visual:'elf',elfMark:'leaf',pokemon:42,cards:['elves','fyndhorn']};
+MON.elfoRanger={...MON.elf,n:'Quirion Ranger',hp:6,xp:8,spd:1.05,ai:'charge',visual:'elf',elfMark:'hood',pokemon:68,cards:['quirion','wellwisher']};
+MON.elfoLirista={...MON.elf,n:'Elvish Lyrist',hp:6,xp:9,ai:'shooter',shot:'#9cf070',visual:'elf',elfMark:'lyre',pokemon:69,cards:['lyrist','timberwatch']};
+MON.elfoSimbionte={...MON.elf,n:'Wirewood Symbiote',hp:3,xp:5,spd:1.15,small:true,visual:'elf',elfMark:'bug',pokemon:45,cards:['symbiote','herald']};
+MON.elfoDruida={...MON.elf,n:'Priest of Titania',hp:16,xp:14,size:24,spd:.45,ai:'siege',summon:'elfoLlanowar',elfScale:1.5,pokemon:102,cards:['priestTitania','acolyte']};
+MON.sacerdotisa={n:'Sacerdotisa de Titania',hp:90,spd:.6,dmg:3,xp:70,size:32,ai:'siege',summon:'elfoLlanowar',elfScale:2,crown:'#f0e080',col:'#7ad070',cards:['priestTitania','cradle'],boss:true,sword:'sableNiebla',pokemon:44};
+MON.rofellos={n:'Rofellos, Emisario de Llanowar',hp:380,spd:.6,dmg:4,xp:185,size:48,ai:'titan',col:'#60c860',elfScale:3,crown:'#fcd84a',summon:['elfoLlanowar','elfoLirista','elfoSimbionte'],cards:['rofellos','cradle'],boss:true,raid:true,sword:'hojaLlanowar',pokemon:2};
 const bossHere = () => !!(G.bossBar && !G.bossBar.dead);
 // Dificultad según tu nivel (solo criaturas normales; los jefes son siempre iguales, al 100 %): en nivel 1 tienen el 30 % de vida y daño, suben parejo hasta el 100 % en el
 // nivel 11 y desde ahí un 3 % más por nivel, hasta un tope de 160 % (nivel 31).
@@ -1455,7 +1489,7 @@ const ROOMS = {
     npcs:[{id:'marchante',x:7,y:5}],
     props:[{k:'barra',x:5,y:3,w:5,c:'#b89048'},{k:'cartel',x:2,y:6,solid:false,label:'ULTRA RAROS',txt:'PIEZAS ULTRA RARAS: ARMAS, ARMADURAS Y MONTURAS LEGENDARIAS. HABLA CON EL MARCHANTE.'},{k:'neon',x:4,y:1,w:7,solid:false,top:true}] },
   hogar:{ name:'TU CASA', theme:'inside', music:'town', interior:true, exitTo:{room:'pueblo',tx:12,ty:8},
-    map:['kkkkkkkkkkkkkkk','k2FF3FF8FF4FF6k','kFFFFFFFFFFFFFk','k1FFFFF7FFFFF5k','kF^^^^FFF^^^^Fk','k9FFF0FFF@FFF%k','kFFFFFFFFFFFFFk','k&FFFFFFFFFFF$k','kkkkkkkEkkkkkkk','kkkkkkkkkkkkkkk'] },
+    map:['kkkkkkkkkkkkkkk','k2FF3FF8FF4FF6k','kFFFFFFFFFFFFFk','k1FFFFF7FFFFF5k','k^^^^^FFF^^^^Fk','k9FFF0FFF@FFF%k','kFFFFFFFFFFFFFk','k&FFFFFFFFFFF$k','kkkkkkkEkkkkkkk','kkkkkkkkkkkkkkk'] },
   arcade:{ name:'ARCADE TOLARIA', theme:'inside', music:'town', interior:true, exitTo:{room:'tolaria',tx:9,ty:8},
     map:['kkkkkkkkkkkkkkk','kZFZFZFZFZFZFZk','kFFFFFFFFFFFFFk','kFFFFFFFFFFFFFk','kZFZFFFFFFFZFZk','kFFFFFFFFFFFFFk','kFFFFFFFFFFFFFk','kFFFFFFFFFFFFFk','kkkkkkkEkkkkkkk','kkkkkkkkkkkkkkk'],
     npcs:[{id:'arcadeOrg',x:7,y:4},{id:'fan1',x:4,y:6}] },
@@ -1505,7 +1539,7 @@ ROOMS.tempest = { name:'CIUDAD DE TEMPEST', theme:'town', music:'town', rain:tru
   roof:(tx) => tx < 7 ? 'purple' : 'red',
   plaques:[['LIGA TEMPEST',72,19,'#3a1a58'],['SOBRES',168,19,'#5a3418'],['MUSEO',176,99,'#3a2a58']],
   doors:{'4,3':'salaTempest','10,3':'sobresTempest','10,7':'museo'},
-  signs:{'6,4':'CIUDAD DE TEMPEST, SIEMPRE EN TORMENTA. AQUI SE JUEGA LA LIGA TEMPEST. NORTE: MERCADO DE MOX.'},
+  signs:{'6,4':'CIUDAD DE TEMPEST, SIEMPRE EN TORMENTA. AQUI SE JUEGA LA LIGA TEMPEST. OESTE: MERCADO DE MOX. NORTE: LAS CONDES Y PROVIDENCIA. SUR: PARQUE ONCOL Y LOS BOSQUES DE VALDIVIA.'},
   npcs:[{id:'fan2',x:12,y:8},{id:'fan4',x:2,y:7}] };
 ROOMS.museo = { name:'MUSEO DE TEMPEST', theme:'inside', music:'tavern', interior:true, exitTo:{room:'tempest',tx:10,ty:8},
   map:['kkkkkkkkkkkkkkk','kBKKKKFKKKKKBBk','kFFFFFFFFFFFFFk','kBFFFFFFFFFFFBk','kFFFFFFFFFFFFFk','kBFFFFFFFFFFFBk','kFFFFFFFFFFFFFk','kBFFFFFFFFFFFBk','kkkkkkkEkkkkkkk','kkkkkkkkkkkkkkk'],
@@ -1520,7 +1554,7 @@ ROOMS.vina.npcs.push({ id:'ligaVina', x:8, y:4 });
 // Los amigos por Chile: tomando cerveza, apoyando o como rivales de liga (el que juegas no aparece)
 const FRIENDS_ON_MAP = [
   { ch:12, room:'pueblo', x:12, y:5, role:'family' },
-  { ch:13, room:'pmontt', x:3, y:4, role:'family' },
+  { ch:13, room:'pmontt', x:6, y:7, role:'family' },
   { ch:14, room:'pmontt', x:9, y:6, role:'engineer' },
   { ch:15, room:'pmontt', x:11, y:6, role:'engineer' },
   { ch:16, room:'mercado', x:6, y:7, role:'finance' },
@@ -1530,7 +1564,7 @@ const FRIENDS_ON_MAP = [
   { ch:1, room:'arena', x:10, y:6, role:'rival' },
   { ch:2, room:'bar', x:3, y:4, role:'beer' },
   { ch:3, room:'bar', x:11, y:4, role:'beer' },
-  { ch:4, room:'pmontt', x:2, y:4, role:'rival' },
+  { ch:4, room:'pmontt', x:6, y:6, role:'rival' },
   { ch:5, room:'bar', x:11, y:6, role:'beer' },
   { ch:7, room:'talca', x:5, y:6, role:'beer' },
   { ch:8, room:'pmontt', x:12, y:5, role:'beer' },
@@ -1539,13 +1573,17 @@ const FRIENDS_ON_MAP = [
   { ch:11, room:'salaTempest', x:11, y:6, role:'rival' },
 ];
 for (const fr of FRIENDS_ON_MAP) ROOMS[fr.room].npcs = (ROOMS[fr.room].npcs || []).concat({ id:'friend', ch:fr.ch, role:fr.role, x:fr.x, y:fr.y });
-const FRIEND_PLACE = { pueblo:'la Villa', arena:'la Arena', bar:'Xcso Club', liga:'la Liga Nacional', arcade:'el Arcade', taberna:'la Taberna El Mazo', pmontt:'Puerto Montt', vina:'la playa de Viña', salaTempest:'la Liga Tempest' };
+const FRIEND_PLACE = { teno:'Teno', casaDavis:'su casa en Teno', campoFamilia:'el campo de la familia', providencia:'Piedra Bruja', pueblo:'la Villa', arena:'la Arena', bar:'Xcso Club', liga:'la Liga Nacional', arcade:'el Arcade', taberna:'la Taberna El Mazo', pmontt:'Puerto Montt', vina:'la playa de Viña', salaTempest:'la Liga Tempest' };
 const ROLE_LINES = {
   family:['¡Un abrazo! La familia te acompaña en esta aventura.'],
   engineer:['Javier y Rodolfo: compañeros de Ingeniería de Katy, inseparables desde la U.'],
   finance:['Con Matías estudiamos Ingeniería Comercial. Después de clases nos íbamos a jugar Tibia.'],
   beer:['¡Salud! Siéntate, que la otra ronda la pagas tú.','Una chelita y después salimos a pegarle a unos monos. Palabra.','¿Tú también vienes a "estudiar el metagame"? Aquí se estudia con cerveza.'],
   cheer:['¡Vamos, tú puedes! Yo te apoyo desde aquí... bien lejos de los monstruos.','Si derrotas a todos los jefes, en la Liga Nacional te voy a gritar más fuerte que en el Estadio Nacional.','Llévate una jarra de cerveza pa\' las mazmorras. Cura más que cualquier poción.'],
+  mayor:['Como alcalde de Teno decreto que hoy se juega una partida en la plaza. Con mazo azul, obviamente.','Abogado de día, contrarrestador de noche. Si traes combo, tengo un Counterspell con tu nombre.','Pasa al campo de la familia de Matías: los abuelos hicieron una casita de juegos para Rai. ¡Es patrimonio municipal!'],
+  gamer:['World of Warcraft me enseñó a planificar la rotación: cada turno, el hechizo justo. Así armé mi Burn: Bolt, Chain y Fireblast en el orden perfecto.','En Diablo farmeaba equipo por horas. Con las cartas es igual: abro sobres, comparo y me quedo con lo mejor. ¡Mi baraja es mi build!','Mi baraja Pokémon la armé como un personaje de Diablo: un atacante principal, soporte y la energía justa. Charizard es mi hechicera de fuego.','En una raid de WoW nadie gana solo: tanque, sanador y daño. En Magic igual: criaturas que presionan, quemadas que rematan y tierras que no fallan.','De Diablo saqué que el daño directo gana partidas. Por eso amo el Lightning Bolt: tres de daño, un maná, ¡y a la cara!'],
+  campo:['¡Mi casita! Los tatas me la hicieron con ventanita y techo rosado. ¡Ven a jugar!','¡Tírate por el refalín conmigo! Yo cuento las bajadas: una, dos, ¡MUCHAS!','En el campo hay vacas que dicen muuu y un caballo. Y la abuela hace pan amasado.'],
+  pb:['Piedra Bruja es EL lugar para jugar cartas en Santiago: Pokémon, Magic, torneos y amigos.','Aquí se juega la Liga Nacional de los dos mundos. Si llegas a la final, te gritamos desde la primera fila.','La mensajera siempre tiene misiones. Las tomo antes de jugar: monedas para sobres, experiencia para la liga.'],
   rival:['Nos vemos en la liga. Esta vez no te tengo piedad.','Estuve practicando toda la semana. Tu mazo no me asusta... bueno, un poquito.','Si ganas la liga te invito una chela. Si gano yo, me invitas dos.'],
 };
 ROOMS.valpo.npcs.push({ id:'ligaCurico', x:9, y:4 });
@@ -1653,13 +1691,13 @@ ROOMS.cartasSur.props.push({k:'cartel',x:12,y:5,label:'MAS MESAS',txt:'GRAN CENT
 ROOMS.anexoTCG=makeCardTemple('CENTRO TCG DEL SUR · SALON DE EVENTOS',{room:'cartasSur',tx:12,ty:5},'ligaPmontt');ROOMS.anexoTCG.zone='pmontt';
 ROOMS.anexoTCG.props.push({k:'mesaCartas',x:1,y:6,w:3,act:'playCards',waiting:true,opponent:'durandal'});
 ROOMS.pmontt.plaques.find(p=>p[0]==='TIENDA TCG')[0]='CENTRO TCG';
-ROOMS.pmontt.signs['3,5']='PUERTO MONTT: EL GRAN CENTRO TCG DEL SUR TIENE TIENDA, SALON DE EVENTOS, STANDINGS Y LIGA NOCTURNA. AL SUR, EL CAMINO A PUERTO VARAS, FRUTILLAR, PUERTO OCTAY Y LAS CONDES. EL BARQUERO DEL MUELLE TE LLEVA GRATIS A VIÑA O PICHILEMU.';
+ROOMS.pmontt.signs['3,5']='PUERTO MONTT: EL GRAN CENTRO TCG DEL SUR TIENE TIENDA, SALON DE EVENTOS, STANDINGS Y LIGA NOCTURNA. AL SUR, EL CAMINO A PUERTO VARAS, FRUTILLAR Y PUERTO OCTAY; DESDE PUERTO VARAS, AL ESTE, VALDIVIA. AL ESTE DE AQUI, PELLUCO. EL BARQUERO DEL MUELLE TE LLEVA GRATIS A VIÑA O PICHILEMU.';
 ROOMS.puertoVaras={name:'PUERTO VARAS · BALNEARIO DEL LLANQUIHUE',theme:'town',music:'town',rain:true,zone:'puertoVaras',
- map:['TTTTTTT=TTTTTTT','T.RRRR.=.TTTTTT','T.RRRR.=.TTTTTT','T.WWDW.=..TTTTT','T......=......T','T..S...=......T','T......=......T','sssssss=sssssss','~~~~~~~=~~~~~~~','~~~~~~~=~~~~~~~'],doors:{'4,3':'cafeVaras'},npcs:[{id:'turista',x:3,y:5}],signs:{'3,5':'PUERTO VARAS: BALNEARIO DEL LAGO LLANQUIHUE CON EL VOLCAN OSORNO AL FONDO. OESTE: PARQUE PHILIPPI. NORTE: PUERTO MONTT. SUR: COSTANERA HACIA FRUTILLAR.'},
- props:[{k:'volcanOsorno',x:8,y:0,w:7,h:4,solid:false,top:true},{k:'casaAlemana',x:2,y:1,w:4,h:3,solid:false},{k:'cartel',x:10,y:7,label:'LLANQUIHUE',txt:'BALNEARIO DEL LAGO LLANQUIHUE. EL CAMINO CENTRAL PERMITE RECORRER LAS CIUDADES SIN SURF.',solid:false},{k:'cartel',x:1,y:3,label:'P. PHILIPPI',txt:'AL OESTE: PARQUE PHILIPPI. CUIDADO, LAS CRIATURAS DE LAS CARTAS SE ESCONDEN ENTRE LOS ARBOLES.',solid:false},{k:'farol',x:1,y:4,solid:false},{k:'farol',x:13,y:5,solid:false},
+ map:['TTTTTTT=TTTTTTT','T.RRRR.=.TTTTTT','T.RRRR.=.TTTTTT','T.WWDW.=..TTTTT','T......=......T','T..S...=......T','T......=......T','sssssss=sssssss','~~~~~~~=~~~~~~~','~~~~~~~=~~~~~~~'],doors:{'4,3':'cafeVaras'},npcs:[{id:'turista',x:3,y:5}],signs:{'3,5':'PUERTO VARAS: BALNEARIO DEL LAGO LLANQUIHUE CON EL VOLCAN OSORNO AL FONDO. NORTE: PUERTO MONTT. ESTE: VALDIVIA. SUR: COSTANERA HACIA FRUTILLAR.'},
+ props:[{k:'volcanOsorno',x:8,y:0,w:7,h:4,solid:false,top:true},{k:'casaAlemana',x:2,y:1,w:4,h:3,solid:false},{k:'cartel',x:10,y:7,label:'LLANQUIHUE',txt:'BALNEARIO DEL LAGO LLANQUIHUE. EL CAMINO CENTRAL PERMITE RECORRER LAS CIUDADES SIN SURF.',solid:false},{k:'cartel',x:1,y:3,label:'P. PHILIPPI',txt:'EL PARQUE PHILIPPI SE ALCANZA DESDE FRUTILLAR, POR EL OESTE. CUIDADO, LAS CRIATURAS DE LAS CARTAS SE ESCONDEN ENTRE LOS ARBOLES.',solid:false},{k:'farol',x:1,y:4,solid:false},{k:'farol',x:13,y:5,solid:false},
   {k:'quitasol',x:3,y:7,solid:false,top:true,c:'#e83040'},{k:'reposera',x:4,y:7,act:'reposera',c:'#f0c030',solid:false},{k:'quitasol',x:12,y:7,solid:false,top:true,c:'#3a8ae8'},{k:'reposera',x:13,y:7,act:'reposera',c:'#40c070',solid:false},{k:'lakeReeds',x:1,y:8,solid:false},{k:'lakeReeds',x:13,y:8,solid:false}]};
 ROOMS.frutillar={name:'FRUTILLAR · TEATRO DEL LAGO',theme:'town',music:'town',rain:true,zone:'frutillar',
- map:['TTTTTTT=TTTTTTT','T.RRRR.=......T','T.RRRR.=......T','T.WWDW.=......T','T......=......T','T..S...=......T','T......=.RRRRTT','T......=.WWDWTT','~~~~~~~======~~','~~~~~~~~~~~~~~~'],doors:{'4,3':'cafeFrutillar','11,7':'teatroLago'},npcs:[{id:'sureno',x:5,y:5}],signs:{'3,5':'FRUTILLAR: PASEA POR LA COSTANERA, PRUEBA KUCHEN Y VISITA EL TEATRO DEL LAGO A LA DERECHA. NORTE: PUERTO VARAS. EL LAGO AL FRENTE.'},
+ map:['TTTTTTT=TTTTTTT','T.RRRR.=......T','T.RRRR.=......T','T.WWDW.=......T','T......=......T','T..S...=......T','T......=.RRRRTT','T......=.WWDWTT','~~~~~~~======~~','~~~~~~~~~~~~~~~'],doors:{'4,3':'cafeFrutillar','11,7':'teatroLago'},npcs:[{id:'sureno',x:5,y:5}],signs:{'3,5':'FRUTILLAR: PASEA POR LA COSTANERA, PRUEBA KUCHEN Y VISITA EL TEATRO DEL LAGO A LA DERECHA. NORTE: PUERTO VARAS. OESTE: PARQUE PHILIPPI. EL LAGO AL FRENTE.'},
  props:[{k:'casaAlemana',x:2,y:1,w:4,h:3,solid:false},{k:'teatroLago',x:9,y:6,w:4,h:2,solid:false},{k:'cartel',x:10,y:5,label:'TEATRO DEL LAGO',txt:'TEATRO DEL LAGO: FUNCIONES, MUSICA Y CULTURA EN LA COSTANERA.',solid:false},{k:'farol',x:1,y:4,solid:false},{k:'farol',x:13,y:5,solid:false}]};
 for(const [id,city]of [['cafeVaras','puertoVaras'],['cafeFrutillar','frutillar']])ROOMS[id]={name:'CAFE Y KUCHEN · '+(city==='puertoVaras'?'PUERTO VARAS':'FRUTILLAR'),theme:'inside',music:'tavern',interior:true,zone:city,exitTo:{room:city,tx:4,ty:4},map:['kkkkkkkkkkkkkkk',...Array(7).fill('kFFFFFFFFFFFFFk'),'kkkkkkkEkkkkkkk','kkkkkkkkkkkkkkk'],npcs:[{id:'tortera',x:4,y:2}],props:[{k:'mostrador',x:2,y:3,w:4,label:'CAFE · KUCHEN',act:'southFood'},{k:'mesaComida',x:9,y:4,w:3,act:'southFood'}]};
 for(const [y,tiles]of [[4,'RRRR'],[5,'RRRR'],[6,'WWDW']]){const row=ROOMS.puertoVaras.map[y].split('');for(let i=0;i<4;i++)row[9+i]=tiles[i];ROOMS.puertoVaras.map[y]=row.join('');}
@@ -1723,8 +1761,8 @@ WILD.parquePhilippi={name:'PARQUE PHILIPPI · CERRO DE PUERTO VARAS',theme:'fore
 const OCTAY_CHECKPOINTS=[[3,2],[11,2],[11,7],[3,7],[3,5]];
 WILD.puertoOctay={name:'PUERTO OCTAY · HUMEDAL DEL LLANQUIHUE',theme:'meadow',music:'field',rain:true,walls:['T','b','r'],decks:['terragedon','rock','langostino'],enemies:['mongrelOctay','balothOctay','looterOctay'],fixedRoster:true,n:4,chest:'hierro',
  map:['TTTTTTTTTTTTTTT','T.............T','T.............T','T.............T','..............T','...====.......T','T.............T','T.............T','~~~~~~===~~~~~~','~~~~~~~~~~~~~~~'],
- npcs:[{id:'friend',ch:15,role:'cheer',x:2,y:6}],signs:{'2,4':'PUERTO OCTAY: OESTE, FRUTILLAR. NORTE, LAS CONDES. LAS CRIATURAS DE LAS CARTAS HAN INVADIDO EL CIRCUITO DE RODOLFO.'},
- props:[{k:'cartel',x:2,y:4,label:'FRUTILLAR',txt:'AL OESTE: FRUTILLAR. AL NORTE: LAS CONDES. EL SENDERO ES TRANSITABLE A PIE.',solid:false},{k:'marathonTrack',x:0,y:0,solid:false},{k:'marathonStart',x:3,y:5,act:'octayRace',solid:false},{k:'fogata',x:1,y:7,act:'waitPhase',solid:false},...OCTAY_CHECKPOINTS.slice(0,4).map(([x,y],i)=>({k:'marathonFlag',x,y,label:String(i+1),solid:false}))]};
+ npcs:[{id:'friend',ch:15,role:'cheer',x:2,y:6}],signs:{'2,4':'PUERTO OCTAY: OESTE, FRUTILLAR. NORTE, VALDIVIA. ESTE, FUERTE DE NIEBLA. LAS CRIATURAS DE LAS CARTAS HAN INVADIDO EL CIRCUITO DE RODOLFO.'},
+ props:[{k:'cartel',x:2,y:4,label:'FRUTILLAR',txt:'AL OESTE: FRUTILLAR. AL NORTE: VALDIVIA. AL ESTE: FUERTE DE NIEBLA. EL SENDERO ES TRANSITABLE A PIE.',solid:false},{k:'marathonTrack',x:0,y:0,solid:false},{k:'marathonStart',x:3,y:5,act:'octayRace',solid:false},{k:'fogata',x:1,y:7,act:'waitPhase',solid:false},...OCTAY_CHECKPOINTS.slice(0,4).map(([x,y],i)=>({k:'marathonFlag',x,y,label:String(i+1),solid:false}))]};
 function startOctayRace(){
  if(G.octayRace){say(['RODOLFO: Tu vuelta ya comenzo. Sigue la bandera indicada y regresa a la meta.']);return;}
  if(!areaCleared()){say(['RODOLFO: ¡Este es mi circuito del lago! Primero limpiemos el humedal de criaturas; despues corremos tranquilos.']);return;}
@@ -1753,9 +1791,10 @@ const DUNGEONS = {
   raices:{ name:'RAICES DE LA ROCA', theme:'crypt', from:'bosqueRoca', floors:4, enemies:['baloth','monger','hermit','squirrel'], decks:['rock'], boss:'mongerAnc', mult:2, hazard:'q', hazRate:0.15, swarm:['squirrel'] },
 };
 const GUARDIANS = ['siege','dread','reyMinas','negAnc','serraAsc'];
+const ELF_BOSSES = ['rofellos','sacerdotisa'];
 const RAIDS = ['shivan','kjeldor','pit'];
 const NEW_BOSSES = ['terraBoss','conclaveQ','mongerAnc','masticore'];
-const ALL_BOSSES = GUARDIANS.concat(RAIDS, NEW_BOSSES);
+const ALL_BOSSES = GUARDIANS.concat(RAIDS, NEW_BOSSES, ELF_BOSSES);
 const bossesDone = () => ALL_BOSSES.filter(b => S.bosses[b]).length;
 // Ligas regionales: hay que ganar las 5 para poder jugar la Liga Nacional
 const LEAGUES = {
@@ -1767,6 +1806,195 @@ const LEAGUES = {
 };
 const leaguesDone = () => Object.keys(LEAGUES).filter(k => S.leagues && S.leagues[k]).length;
 const guardiansDone = () => GUARDIANS.filter(g => S.bosses[g]).length;
+/* ============ 3 OCT: SUR ORDENADO, VALDIVIA Y LOS ELFOS, TENO Y PROVIDENCIA ============ */
+// El mapamundi dibuja cada lugar junto a los lugares con que conecta. Tempest, Las Condes y Providencia forman la
+// columna este; Pelluco queda pegado a Puerto Montt y Valdivia con sus bosques elficos llena los huecos del sur.
+// Los ids de sala no cambian, asi que las partidas guardadas siguen funcionando.
+Object.assign(WORLD,{tempest:[5,3],lascondes:[5,2],providencia:[5,1],pelluco:[4,4],valdivia:[4,5],oncol:[5,4],selvaValdiviana:[5,5],niebla:[5,6]});
+Object.assign(SHORT,{valdivia:'VALDIVIA',oncol:'ONCOL',selvaValdiviana:'S.ELFICA',niebla:'NIEBLA',providencia:'PROVIDENC.',teno:'TENO'});
+const SOUTH_LINKS={
+ valdivia:{w:'puertoVaras',s:'puertoOctay',e:'selvaValdiviana'},selvaValdiviana:{w:'valdivia',n:'oncol',s:'niebla'},oncol:{s:'selvaValdiviana',n:'tempest'},niebla:{n:'selvaValdiviana',w:'puertoOctay'},
+ tempest:{w:'mercado',n:'lascondes',s:'oncol'},lascondes:{s:'tempest',n:'providencia'},providencia:{s:'lascondes'}
+};
+Object.assign(ZONE_TIER,{valdivia:2,oncol:3,selvaValdiviana:4,niebla:4,teno:1,campoFamilia:1,providencia:1});
+WILD.oncol={name:'PARQUE ONCOL · BOSQUE VALDIVIANO',theme:'forest',music:'field3',rain:true,walls:['T','T','b','T'],decks:['elfos'],enemies:['elfoLlanowar','elfoRanger','birds','elfoLlanowar','elfoSimbionte'],n:6,chest:'hierro',
+ map:['TTTTTT...TTTTTT','T...,.b...,.b.T','T.TT..,..TT...T','T...b.....b...T','T.TT..,..TT.,.T','T.....b.......T','T..,.TT..TT...T','T.,.....b..,..T','TTTTTTTTTTTTTTT','TTTTTTTTTTTTTTT'],
+ signs:{'7,7':'PARQUE ONCOL: BOSQUE VALDIVIANO DE OLIVILLOS Y HELECHOS. LOS ELFOS DE LLANOWAR SE ESCONDEN ENTRE LOS ARBOLES. SUR: SELVA VALDIVIANA. NORTE: CIUDAD DE TEMPEST.'}};
+WILD.selvaValdiviana={name:'SELVA VALDIVIANA · REINO DE LOS ELFOS',theme:'forest',music:'dark2',rain:true,walls:['T','T','b'],decks:['elfos'],enemies:['elfoLlanowar','elfoRanger','elfoLirista','elfoSimbionte','elfoDruida'],n:8,dungeon:'arboleda',hazard:'q',hazRate:0.06,turrets:1,mult:1.8};
+WILD.niebla={name:'FUERTE DE NIEBLA · BAHIA DE CORRAL',theme:'dirt',music:'dark3',rain:true,walls:['r','r','T','b'],decks:['elfos','langostino'],enemies:['elfoRanger','elfoLirista','merfolk','elfoDruida'],n:8,dungeon:'polvorin',hazard:'n',hazRate:0.08,turrets:2,mult:2};
+Object.assign(DUNGEONS,{
+ arboleda:{name:'ARBOLEDA DE ARGOTH',theme:'crypt',from:'selvaValdiviana',floors:4,enemies:['elfoLlanowar','elfoRanger','elfoLirista','elfoDruida'],decks:['elfos'],boss:'rofellos',mult:2,hazard:'q',hazRate:0.12,swarm:['elfoSimbionte','elfoLlanowar']},
+ polvorin:{name:'POLVORIN DEL CASTILLO DE NIEBLA',theme:'mine',from:'niebla',floors:3,enemies:['elfoRanger','elfoLirista','merfolk','elfoDruida'],decks:['elfos','langostino'],boss:'sacerdotisa',mult:1.6,hazard:'n',hazRate:0.08,swarm:['elfoSimbionte']}
+});
+LEAGUES.valdivia={n:'LIGA ELFICA DE VALDIVIA',npc:'ligaValdivia',place:'VALDIVIA',rounds:5,diff:0.05,fee:15000,perWin:6000,champ:45000};
+const REGIONALS_FOR_NATIONAL=5;
+NPCDEF.ligaValdivia={...NPCDEF.ligaOrg,n:'ORGANIZADOR ELFICO'};
+
+// --- Personajes del sur, de Teno y de Providencia ---
+NPCDEF.guardabosque={...NPCDEF.sureno,n:'GUARDAPARQUES DEL ALERCE',style:'cap',c:{...NPCDEF.sureno.c,hat:'#3f6a2a',hatD:'#243f18',shirt:'#5a7a3a',shirtD:'#3a5226',pants:'#4a3a2a'}};
+NPCDEF.capitanBarcaza={...NPCDEF.marinero,n:'CAPITAN DE LA BARCAZA'};
+NPCDEF.elfaCafe={...NPCDEF.posadera,n:'ELFA DEL CAFE',elfEars:true,c:{...NPCDEF.posadera.c,hair:'#e8d890',shirt:'#3e9a50',shirtD:'#286a36',pants:'#3e9a50'}};
+NPCDEF.elfoParroquiano={...NPCDEF.fan1,n:'ELFO VETERANO DEL PREMODERN',elfEars:true,c:{...NPCDEF.fan1.c,hair:'#c8b070',shirt:'#2f6a2a',shirtD:'#1c4a18'}};
+NPCDEF.historiadoraValdivia={...NPCDEF.posadera,n:'HISTORIADORA DEL TORREON',c:{...NPCDEF.posadera.c,hair:'#6a4a3a',shirt:'#6a5a8a',shirtD:'#46385e',pants:'#46385e'}};
+NPCDEF.carlitos={n:'CARLITOS RUN',style:'cap',c:{hat:'#f0e030',hatD:'#a8a020',hair:'#3a2418',skin:'#e8b088',shirt:'#20c0e0',shirtD:'#1080a0',pants:'#202838',shoe:'#f4f4f8'}};
+NPCDEF.secretariaTeno={...NPCDEF.vecina,n:'SECRETARIA MUNICIPAL',c:{...NPCDEF.vecina.c,shirt:'#3a4a7a',shirtD:'#26325a',pants:'#26325a'}};
+NPCDEF.tataCampo={...NPCDEF.huaso,n:'EL TATA'};
+NPCDEF.abuelaCampo={...NPCDEF.vecina,n:'LA ABUELA',c:{...NPCDEF.vecina.c,hair:'#e0e0e8',shirt:'#c86a8a',shirtD:'#8a4060',pants:'#5a4a6a'}};
+NPCDEF.mensajeraPB={...NPCDEF.ligaOrg,n:'MENSAJERA DE LA LIGA',c:{...NPCDEF.ligaOrg.c,shirt:'#e858c8',shirtD:'#a03090',hair:'#5a2a78'}};
+NPCDEF.pbJugador={...NPCDEF.fan2,n:'JUGADORA DE PIEDRA BRUJA',c:{...NPCDEF.fan2.c,shirt:'#38c8e8',shirtD:'#1a88a8',hair:'#e86a28'}};
+const southInterior=(name,zone,exitTo,npcs,props,extra={})=>({name,theme:'inside',music:'tavern',interior:true,zone,exitTo,map:['kkkkkkkkkkkkkkk',...Array(7).fill('kFFFFFFFFFFFFFk'),'kkkkkkkEkkkkkkk','kkkkkkkkkkkkkkk'],npcs,props,...extra});
+
+// --- VALDIVIA: rio Calle-Calle, cafe del elfo, torreon, templo elfico y Carlitos Run en bicicleta ---
+ROOMS.valdivia={name:'VALDIVIA · CIUDAD DE LOS RIOS',theme:'town',music:'valdivia',rain:true,
+ map:['TTTTTTTTTTTTTTT','T.RRRR.=.RRRR.T','T.RRRR.=.RRRR.T','T.WWDW.=.WDWW.T','T.....S=......T','T.RRR..=......T','T.WDW..=......T','===============','~~~~~~===~~~~~~','~~~~~~===~~~~~~'],
+ roof:(tx,ty)=>ty>=5?'red':tx<7?'green':'purple',
+ doors:{'4,3':'cafeElfo','10,3':'cartasValdivia','3,6':'torreonValdivia'},
+ plaques:[['CAFE DEL ELFO',64,19,'#2a5a2a'],['TEMPLO ELFICO',168,19,'#1a3a2a'],['TORREON',56,83,'#5a3a2a']],
+ signs:{'6,4':'VALDIVIA: FUNDADA EN 1552 POR PEDRO DE VALDIVIA. SUS FUERTES COLONIALES, COMO EL CASTILLO DE NIEBLA, SE LEVANTARON CONTRA CORSARIOS Y EXPEDICIONES HOLANDESAS. EN EL SIGLO XIX LLEGARON COLONOS ALEMANES QUE CAMBIARON SU ARQUITECTURA, SU INDUSTRIA Y SU CULTURA CERVECERA. ESTE: SELVA DE LOS ELFOS. SUR: PUERTO OCTAY. OESTE: PUERTO VARAS.'},
+ npcs:[{id:'guardabosque',x:10,y:5},{id:'capitanBarcaza',x:12,y:6}],
+ animals:[{k:'ciclista',x:2,y:4,box:[1,4,12,4],spd:.9}],
+ props:[{k:'barcazaMuelle',x:9,y:8,w:3,act:'barcaza',solid:false},...[[1,8],[4,9],[13,8]].map(([x,y])=>({k:'loboMarino',x,y,solid:false})),
+  {k:'cartel',x:3,y:7,label:'FERIA FLUVIAL',txt:'FERIA FLUVIAL: PESCADORES, MARISCOS Y LOBOS MARINOS QUE ESPERAN SU PORCION JUNTO AL RIO CALLE-CALLE.',solid:false},
+  {k:'cartel',x:13,y:3,label:'ELFOS',txt:'AL ESTE: SELVA VALDIVIANA, EL REINO DE LOS ELFOS. MAS ALLA, LA ARBOLEDA DE ARGOTH. AL SUR DE LA SELVA, EL FUERTE DE NIEBLA.',solid:false},
+  {k:'cartel',x:8,y:7,label:'BARCAZA',txt:'PASEOS EN BARCAZA POR EL RIO CALLE-CALLE: HABLA CON EL CAPITAN O ACERCATE AL MUELLE.',solid:false}]};
+ROOMS.cafeElfo=southInterior('CAFE DEL ELFO · VALDIVIA','valdivia',{room:'valdivia',tx:4,ty:4},[{id:'elfaCafe',x:4,y:2},{id:'elfoParroquiano',x:10,y:5}],
+ [{k:'mostrador',x:2,y:3,w:4,label:'CAFE DEL ELFO',act:'cafeElfo'},{k:'mesaComida',x:9,y:2,w:3,act:'cafeElfo'},{k:'mesaCartas',x:8,y:6,w:3,act:'cafeCards'},{k:'cartel',x:12,y:1,label:'PREMODERN',act:'premodernFacts',solid:false},{k:'fogata',x:1,y:6,solid:false},{k:'retroShelf',x:12,y:6,w:2,solid:false},{k:'huertoMacetas',x:6,y:1,w:2,solid:false}],{party:true});
+ROOMS.torreonValdivia=southInterior('TORREON · MUSEO DE VALDIVIA','valdivia',{room:'valdivia',tx:3,ty:7},[{id:'historiadoraValdivia',x:7,y:2}],
+ [{k:'cartel',x:2,y:2,label:'1552',txt:'1552: PEDRO DE VALDIVIA FUNDA LA CIUDAD A ORILLAS DEL RIO.',solid:false},{k:'cartel',x:5,y:5,label:'NIEBLA',txt:'LOS FUERTES DE NIEBLA, CORRAL Y MANCERA DEFENDIAN LA BAHIA DE CORSARIOS Y EXPEDICIONES HOLANDESAS.',solid:false},{k:'cartel',x:9,y:5,label:'COLONOS',txt:'SIGLO XIX: COLONOS ALEMANES TRAEN CASAS DE MADERA, CURTIEMBRES, ASTILLEROS Y CERVECERIAS.',solid:false},{k:'cartel',x:12,y:2,label:'1960',txt:'1960: EL TERREMOTO MAS GRANDE REGISTRADO CAMBIO EL PAISAJE DE VALDIVIA. LA CIUDAD SE LEVANTO OTRA VEZ.',solid:false},{k:'barril',x:12,y:6,solid:false}],{music:'valdivia'});
+ROOMS.cartasValdivia=makeCardTemple('TIENDA TCG PREMODERN DE VALDIVIA',{room:'valdivia',tx:10,ty:4},'ligaValdivia');ROOMS.cartasValdivia.music='tcg';ROOMS.cartasValdivia.zone='valdivia';
+ROOMS.rioCalleCalle={name:'BARCAZA · RIO CALLE-CALLE',theme:'town',music:'valdivia',rain:true,chill:true,zone:'valdivia',
+ map:['~~~~~~~~~~~~~~~','~~~~~~~~~~~~~~~','~~~~~~~~~~~~~~~','~~~=========~~~','~~~=========~~~','~~~=========~~~','~~~~~~~~~~~~~~~','~~~~~~~~~~~~~~~','~~~~~~~~~~~~~~~','~~~~~~~~~~~~~~~'],
+ props:[{k:'barcazaDeck',x:3,y:3,w:9,h:3,solid:false},{k:'torreonRio',x:0,y:0,w:2,h:2,solid:false,top:true},{k:'castilloNiebla',x:10,y:7,w:4,h:2,solid:false,top:true},
+  ...[[1,7],[12,1],[6,8]].map(([x,y])=>({k:'loboMarino',x,y,solid:false})),{k:'cartel',x:4,y:4,label:'GUIA',act:'barcazaGuia',solid:false},{k:'cartel',x:10,y:4,label:'MUELLE',act:'barcazaVolver',solid:false}]};
+
+// --- TENO: el pueblo del alcalde Gonzalo, la casa de Davis y el campo de la familia de Matias ---
+ROOMS.teno={name:'TENO · TIERRA DE HUERTOS',theme:'town',music:'huaso',chill:true,zone:'valpo',
+ map:['TTTTTTTTTTTTTTT','T.RRRRRTRRRRR.T','T.RRRRRTRRRRR.T','T.WWDWWTWWDWW.T','T......S......=','T..=========..T','T..=...o...=..T','T..=.......=..T','T,.,...=...,.,T','TTTTTTT=TTTTTTT'],
+ roof:tx=>tx<7?'blue':'red',doors:{'4,3':'municipalidadTeno','10,3':'casaDavis'},
+ trails:{'7,9':{room:'valpo',tx:12,ty:1},'14,4':{room:'campoFamilia',tx:1,ty:4}},
+ plaques:[['MUNICIPALIDAD',72,19,'#3a2a58'],['CASA DE DAVIS',168,19,'#5a2a1a']],
+ signs:{'7,4':'TENO: COMUNA AGRICOLA DE LA PROVINCIA DE CURICO, CON HUERTOS DE MANZANAS Y CEREZAS Y EL RIO TENO BAJANDO DE LA CORDILLERA. AQUI SE VIENE A DESCANSAR: SIN MONSTRUOS. ESTE: EL CAMPO DE LA FAMILIA. SUR: CURICO.'},
+ npcs:[{id:'friend',ch:20,role:'mayor',x:2,y:4},{id:'huaso',x:12,y:7}],
+ props:[{k:'roadGate',x:14,y:4,label:'CAMPO',solid:false},{k:'roadGate',x:7,y:9,label:'CURICO',solid:false},{k:'cerezo',x:1,y:8,solid:false},{k:'cerezo',x:13,y:8,solid:false},{k:'farol',x:1,y:5,solid:false},{k:'farol',x:13,y:5,solid:false}]};
+ROOMS.municipalidadTeno=southInterior('MUNICIPALIDAD DE TENO','valpo',{room:'teno',tx:4,ty:4},[{id:'secretariaTeno',x:7,y:2}],
+ [{k:'mostrador',x:5,y:3,w:5,label:'OFICINA DEL ALCALDE'},{k:'cartel',x:2,y:1,label:'TENO',txt:'BIENVENIDOS A TENO: CAMPO, RIO, HUERTOS Y BUENOS VECINOS. EL ALCALDE GONZALO ATIENDE EN LA PLAZA.',solid:false},{k:'cartel',x:12,y:1,label:'COUNTERSPELL',txt:'CUADRO EN LA OFICINA: UN COUNTERSPELL FIRMADO. "TODO TRAMITE PUEDE SER CONTRARRESTADO."',solid:false}],{music:'huaso'});
+ROOMS.casaDavis=southInterior('EL MUNDO DE DAVIS','valpo',{room:'teno',tx:10,ty:4},[{id:'friend',ch:1,role:'gamer',x:9,y:4}],
+ [{k:'pcGamer',x:3,y:1,w:3,act:'pcDavis',solid:false},{k:'cartel',x:7,y:1,label:'BOLT',txt:'POSTER: LIGHTNING BOLT. UN MANA, TRES DE DAÑO. "A LA CARA, SIN MIEDO."',solid:false},{k:'mesaCartas',x:8,y:6,w:3,act:'davisCards'},{k:'retroShelf',x:12,y:6,w:2,solid:false},{k:'huertoMacetas',x:12,y:1,w:2,solid:false},{k:'sofa',x:2,y:6,w:3}],{music:'electro'});
+ROOMS.campoFamilia={name:'EL CAMPO DE LA FAMILIA · TENO',theme:'meadow',music:'huaso',chill:true,zone:'valpo',
+ map:['TTTTTTTTTTTTTTT','T.RRRRR...,,,,T','T.RRRRR..,,,,,T','T.WWDWW..,,,,,T','=........=....T','T.........RRR.T','T.........WDW.T','T..,,,...=....T','T,,..,,..=.,,.T','TTTTTTTTTTTTTTT'],
+ roof:tx=>tx>=10?'pink':'red',doors:{'4,3':'casaCampo','11,6':'casitaRai'},trails:{'0,4':{room:'teno',tx:13,ty:4}},
+ plaques:[['CASA DEL CAMPO',72,19,'#5a3418'],['CASITA DE RAI',184,83,'#c84878']],
+ signs:{},npcs:[{id:'tataCampo',x:12,y:8},{id:'friend',ch:12,role:'campo',x:6,y:6}],
+ animals:[{k:'vaca',x:11,y:2,box:[10,1,13,3]},{k:'vaca',x:12,y:1,box:[10,1,13,3]},{k:'caballo',x:11,y:8,box:[10,7,13,8]}],
+ props:[{k:'refalin',x:1,y:5,w:2,h:3,act:'refalin',solid:false},{k:'columpio',x:4,y:7,w:2,act:'columpio',solid:false},{k:'arenero',x:7,y:7,w:2,act:'arenero',solid:false},{k:'roadGate',x:0,y:4,label:'TENO',solid:false},{k:'fogata',x:8,y:8,act:'waitPhase',solid:false},{k:'huertoMacetas',x:7,y:1,w:2,solid:false},{k:'cartel',x:8,y:4,label:'LA FAMILIA',txt:'EL CAMPO DE LA FAMILIA DE MATIAS: VACAS, HUERTA, LA CASA DE LOS ABUELOS Y LA CASITA DE JUEGOS DE RAI.',solid:false}]};
+ROOMS.casaCampo=southInterior('LA CASA DE LOS ABUELOS','valpo',{room:'campoFamilia',tx:4,ty:4},[{id:'abuelaCampo',x:5,y:2}],
+ [{k:'homeKitchen',x:9,y:1,w:3,act:'campoFood'},{k:'mesaComida',x:5,y:5,w:3,act:'campoFood'},{k:'fogata',x:1,y:2,solid:false,act:'waitPhase'},{k:'sofa',x:11,y:6,w:2},{k:'cartel',x:2,y:6,label:'FOTOS',txt:'FOTOS DE LA FAMILIA: MATIAS CHICO JUGANDO CARTAS, RAI EN SU AUTITO Y UN ASADO DE CAMPO.',solid:false}],{music:'huaso'});
+ROOMS.casitaRai=southInterior('LA CASITA DE JUEGOS DE RAI','valpo',{room:'campoFamilia',tx:11,ty:7},[],
+ [{k:'juguetes',x:2,y:2,w:2,act:'casitaToys',solid:false},{k:'ositoTito',x:11,y:2,act:'ositoTito',solid:false},{k:'autito',x:5,y:5,act:'autito',solid:false},{k:'sofa',x:9,y:6,w:3},{k:'cartel',x:7,y:1,label:'CASITA DE RAI',txt:'HECHA CON CARIÑO POR LOS ABUELOS: TECHO DE COLORES, VENTANITA Y UN MONTON DE JUGUETES.',solid:false}],{music:'town'});
+// Curico gets a road north to Teno in its free top-right corner.
+ROOMS.valpo.trails={...(ROOMS.valpo.trails||{}),'13,1':{room:'teno',tx:7,ty:8}};ROOMS.valpo.props.push({k:'roadGate',x:13,y:1,label:'TENO',solid:false});
+ROOMS.valpo.signs['6,4']+=' NORTE, POR EL CAMINO DE LA ESQUINA: TENO Y EL CAMPO.';
+
+// --- PROVIDENCIA: Piedra Bruja, el gran templo TCG de Santiago y sede de la Liga Nacional ---
+ROOMS.providencia={name:'PROVIDENCIA · PIEDRA BRUJA',theme:'town',music:'piedraBruja',
+ map:['TTTTTTTTTTTTTTT','T.RRRRRRRRRRR.T','T.RRRRRRRRRRR.T','T.WWWWWDWWWWW.T','T.....S=......T','T.===========.T','T.=.,.,.,.,.=.T','T.=.,.,.,.,.=.T','T.....===.....T','TTTTTT===TTTTTT'],
+ roof:tx=>['purple','blue','red','green'][Math.floor(tx/4)%4],doors:{'7,3':'liga'},
+ plaques:[['PIEDRA BRUJA',120,19,'#5a2a78']],
+ signs:{'6,4':'PROVIDENCIA: PIEDRA BRUJA, EL LUGAR DE SANTIAGO Y DE LA REGION PARA JUGAR POKEMON TCG Y MAGIC. AQUI SE JUEGA LA LIGA NACIONAL DE AMBOS MUNDOS. MISIONES CON LA MENSAJERA. SUR: LAS CONDES.'},
+ npcs:[{id:'mensajeraPB',x:10,y:4},{id:'pbJugador',x:5,y:7},{id:'friend',ch:0,role:'pb',x:3,y:6},{id:'friend',ch:2,role:'pb',x:11,y:6}],
+ props:[{k:'muralPB',x:2,y:3,w:5,solid:false,top:true},{k:'muralPB',x:8,y:3,w:5,solid:false,top:true},{k:'festivalBunting',x:3,y:4,w:9,color:'#e858c8',solid:false,top:true},{k:'cerezo',x:1,y:7,solid:false},{k:'cerezo',x:13,y:7,solid:false},{k:'farol',x:1,y:4,solid:false},{k:'farol',x:13,y:5,solid:false}]};
+// The national temple keeps its room id (saves, portal and records stay intact) and now opens in Providencia.
+ROOMS.liga.exitTo={room:'providencia',tx:7,ty:4};ROOMS.liga.music='piedraBruja';
+delete ROOMS.tolaria.doors['6,7'];ROOMS.tolaria.map[7]=ROOMS.tolaria.map[7].slice(0,6)+'W'+ROOMS.tolaria.map[7].slice(7);ROOMS.tolaria.plaques[2]=['ARCHIVO',80,83,'#3a1a58'];
+ROOMS.tolaria.signs['8,3']='TOLARIA: CAPITAL DEL PREMODERN CHILENO. LA LIGA NACIONAL SE MUDO A PIEDRA BRUJA, EN PROVIDENCIA (AL NORTE DE LAS CONDES).';
+for(const id of ['valdivia','teno','campoFamilia','providencia'])ROOMS[id].socialHub=true;
+// Friends placed above are also listed in FRIENDS_ON_MAP (their rooms already include them).
+FRIENDS_ON_MAP.push({ch:20,room:'teno',x:2,y:4,role:'mayor'},{ch:1,room:'casaDavis',x:9,y:4,role:'gamer'},{ch:12,room:'campoFamilia',x:6,y:6,role:'campo'},{ch:0,room:'providencia',x:3,y:6,role:'pb'},{ch:2,room:'providencia',x:11,y:6,role:'pb'});
+
+/* ---- Conversaciones y acciones de los lugares nuevos ---- */
+const PREMODERN_FACTS=['Premodern se juega con cartas impresas entre Cuarta Edicion (1995) y Scourge (2003), con su propia lista de cartas prohibidas.','Es un formato hecho por la comunidad: mazos clasicos como Goblins, Burn, Replenish, Landstill, The Rock y, claro, Elfos.','Los Elfos de Premodern generan mucho mana: Priest of Titania y Gaea\'s Cradle, y reciclan criaturas con Wirewood Symbiote y Quirion Ranger.','En Premodern no hay planeswalkers ni cartas modernas: cada partida se siente como jugar en el colegio a fines de los noventa.','Burn gana rapido con Lightning Bolt, Chain Lightning y Fireblast; Landstill espera con Standstill y Mishra\'s Factory.'];
+function premodernFact(who){say([who+': '+pick(PREMODERN_FACTS),who+': '+pick(PREMODERN_FACTS.filter(f=>f!==PREMODERN_FACTS[0]))]);}
+function southTalk(id,npc){
+ if(id==='guardabosque'){say(['GUARDAPARQUES: Al este empieza la Selva Valdiviana: alerces, helechos gigantes... y elfos que salieron de las cartas cuando se abrio la Caja de Urza.','En Premodern los elfos son un mazo clasico: mana rapido con Priest of Titania y Gaea\'s Cradle, y criaturas que se reciclan con Wirewood Symbiote.','En lo profundo de la selva esta la Arboleda de Argoth, donde manda Rofellos, Emisario de Llanowar. Al sur, en el Castillo de Niebla, la Sacerdotisa de Titania custodia el polvorin.']);return true;}
+ if(id==='capitanBarcaza'){barcazaOffer();return true;}
+ if(id==='elfaCafe'){cafeElfoMenu();return true;}
+ if(id==='historiadoraValdivia'){const first=!S.valdiviaHistory;say(['HISTORIADORA: Valdivia fue fundada en 1552 por Pedro de Valdivia. Los fuertes de Niebla, Corral y Mancera defendian la bahia de corsarios y expediciones holandesas.','En el siglo XIX llegaron colonos alemanes: casas de madera, industria y cerveceria. Por eso aqui el kuchen y la cerveza son casi patrimonio.','En 1960 el terremoto mas grande registrado cambio el rio y la ciudad. Valdivia se levanto otra vez, como un buen mazo despues de un Armageddon.',first?'¡Gracias por escuchar! +200 EXP y +1 INT por aprender la historia de Valdivia.':'Vuelve cuando quieras: la historia tambien es estrategia.'],null,()=>{if(first&&!S.valdiviaHistory){S.valdiviaHistory=true;S.st.int+=1;addXP(200);saveGame();}});return true;}
+ if(id==='secretariaTeno'){say(['SECRETARIA: Bienvenido a la Municipalidad de Teno. El alcalde Gonzalo esta en la plaza saludando a los vecinos.','Es abogado y juega mazos azules: dice que un Counterspell bien puesto es como una buena objecion en un juicio.']);return true;}
+ if(id==='tataCampo'){say(['EL TATA: ¡Llegaste al campo! Aqui no hay monstruos: hay vacas, huerta, asado y la casita de juegos que le hicimos a Rai.','Rai se tira por el refalin una y otra vez. Si lo acompañas, mas contento se pone.']);return true;}
+ if(id==='abuelaCampo'){say(['LA ABUELA: ¡Pasa, mijo! Hay cazuela y pan amasado en la cocina. Sientate a la mesa y recupera fuerzas.','Matias de chico jugaba cartas en esta misma mesa. Ahora Rai juega con su autito en la casita.']);return true;}
+ if(id==='mensajeraPB'){say(['MENSAJERA: ¡Bienvenido a Piedra Bruja! Aqui se juega la Liga Nacional de Magic y de Pokemon, y siempre hay misiones nuevas en mi tablon.','Termina tu encargo y vuelve: cada mision que entregas abre otra un poco mas dificil, hasta el nivel 200 y mas alla.']);return true;}
+ if(id==='pbJugador'||id==='elfoParroquiano'){premodernFact(NPCDEF[id].n);return true;}
+ return false;
+}
+function barcazaOffer(){say(['CAPITAN: Paseo en barcaza por el rio Calle-Calle: lobos marinos de la Feria Fluvial, la Isla Teja, los torreones y, a lo lejos, el Castillo de Niebla. $5.000 por persona.'],[{t:'SUBIR ($5.000)',fn:()=>{if(S.coins<5000){say(['CAPITAN: Te faltan lucas, grumete.']);return;}S.coins-=5000;saveGame();SFX.door();loadRoom('rioCalleCalle',7*TS+3,4*TS+4);G.fade=40;toast('PASEO POR EL RIO CALLE-CALLE','#88c8f8');}},{t:'VOLVER',fn:null}]);}
+function barcazaGuide(){const first=!S.barcazaTour;say(['GUIA: A babor, los lobos marinos de la Feria Fluvial: esperan que los pescadores les tiren algo.','A estribor, la Isla Teja, con su campus universitario y parques. Atras quedan los torreones de la ciudad colonial.','Al fondo, rio abajo, el Castillo de Niebla: parte de los fuertes que protegian la bahia. Hoy, dicen, lo ocupan elfos.',first?'¡Primer paseo! +250 EXP y vida y magia recuperadas.':'Vida y magia recuperadas. ¡El rio relaja!'],null,()=>{S.hp=S.maxHp;S.mp=maxMp();if(first&&!S.barcazaTour){S.barcazaTour=true;addXP(250);}saveGame();});}
+function cafeElfoMenu(){say(['ELFA: Bienvenido al Cafe del Elfo. Cafe de grano, kuchen de murta y cerveza valdiviana. Aqui los elfos juegan Premodern bajo la lluvia.'],[
+ {t:'CAFE LLANOWAR ($2.500)',fn:()=>{if(S.coins<2500){say(['ELFA: Te faltan monedas.']);return;}S.coins-=2500;S.mp=maxMp();SFX.heal();saveGame();say(['Un cafe que huele a bosque. Magia recuperada.']);}},
+ {t:'KUCHEN DE MURTA ($3.000)',fn:()=>{if(S.coins<3000){say(['ELFA: Te faltan monedas.']);return;}S.coins-=3000;S.hp=S.maxHp;const first=!S.kuchenMurta;if(first){S.kuchenMurta=true;S.maxHp+=2;S.hp=S.maxHp;addXP(120);}SFX.heal();saveGame();say([first?'¡Kuchen de murta! +1 corazon permanente y 120 EXP.':'Vida recuperada. La murta es la fruta del sur.']);}},
+ {t:'CERVEZA VALDIVIANA ($3.500)',fn:()=>{if(S.coins<3500){say(['ELFA: Te faltan monedas.']);return;}S.coins-=3500;S.hp=Math.min(S.maxHp,S.hp+10);S.beerTotal=(S.beerTotal||0)+1;SFX.beer();saveGame();say(['¡Prost! Herencia de los colonos alemanes. +VIDA.']);}},
+ {t:'HABLAR DE PREMODERN',fn:()=>premodernFact('ELFA')},{t:'VOLVER',fn:null}]);}
+function carlitosTalk(){const first=!S.carlitosMet;if(first){S.carlitosMet=true;addXP(100);saveGame();}PL.piscola=600;say(['CARLITOS RUN: ¡Wena! Voy pedaleando por la costanera del Calle-Calle. ¡Ni la lluvia de Valdivia me para!','Si te topas elfos en la selva, no te preocupes: yo les gano en la subida. ¡Dale, que la energia se contagia!',(first?'+100 EXP. ':'')+'Te contagia su energia: corres mas rapido un rato.']);}
+function davisDuel(){const n=G.npcs.find(n=>n.id==='friend'&&n.ch===1);if(n)setupDuel(n);else say(['Es tu propia mesa. Invita a un amigo a jugar: aqui se prueba el Burn.']);}
+function startRefalin(p){if(G.refalin)return;PL.x=p.x*TS+8;PL.y=p.y*TS;PL.dir=0;G.moveTarget=null;G.refalin={t:0,y1:(p.y+(p.h||3)-1)*TS+4};SFX.ok();}
+function updateRefalin(){const s=G.refalin;s.t++;PL.y=Math.min(s.y1,PL.y+Math.min(2.8,.3+s.t*.09));PL.dir=0;if(s.t%3===0)G.parts.push({k:'spark',x:PL.x+5,y:PL.y,vx:(Math.random()-.5),vy:-.3,t:0});
+ if(PL.y<s.y1)return;G.refalin=null;S.refalines=(S.refalines||0)+1;SFX.win();floatText('¡WIIIII!',PL.x+5,PL.y-14,'#fff8c0');
+ const rai=G.npcs.find(n=>n.id==='friend'&&n.ch===12);if(rai)floatText('¡OTRA VEZ!',rai.x+5,rai.y-14,'#ffb0e0');
+ toast('REFALIN: '+S.refalines+(S.refalines===1?' BAJADA':' BAJADAS'),'#f8c0e0');if(S.refalines%5===0)addXP(25);saveGame();}
+function southPropAction(p){
+ const a=p.act;
+ if(a==='barcaza'){barcazaOffer();return true;}
+ if(a==='barcazaVolver'){SFX.door();loadRoom('valdivia',10*TS+3,7*TS+4);G.fade=40;return true;}
+ if(a==='barcazaGuia'){barcazaGuide();return true;}
+ if(a==='cafeElfo'){cafeElfoMenu();return true;}
+ if(a==='cafeCards'){const n=G.npcs.find(n=>n.id==='elfoParroquiano');if(n)setupDuel(n);return true;}
+ if(a==='premodernFacts'){premodernFact('CARTEL');return true;}
+ if(a==='refalin'){startRefalin(p);return true;}
+ if(a==='columpio'){PL.dance=120;S.hp=Math.min(S.maxHp,S.hp+2);say(['Te columpias alto, alto... Rai grita: "¡MAS ALTO! ¡HASTA LAS NUBES!"']);return true;}
+ if(a==='arenero'){say(['Construyes un castillo de arena con Rai. Tiene torres, foso y un Mox de mentira en la punta.']);return true;}
+ if(a==='casitaToys'){const first=!S.casitaToys;if(first){S.casitaToys=true;addXP(80);saveGame();}say(['Bloques, pelotas, un tren de madera y una pista de autos. Los abuelos pensaron en todo.',first?'Rai te presta sus juguetes favoritos. +80 EXP.':'Ordenas los juguetes antes de salir. ¡La abuela va a estar orgullosa!']);return true;}
+ if(a==='ositoTito'){const first=!S.ositoTito;S.hp=S.maxHp;if(first){S.ositoTito=true;S.maxHp+=2;S.hp=S.maxHp;}saveGame();SFX.heal();say(['Lees un cuento de Osito Tito sentado en la casita. Rai se queda dormido abrazando a su peluche.',first?'Tanta ternura te da fuerzas: +1 corazon permanente.':'Vida recuperada.']);return true;}
+ if(a==='autito'){say(['¡BRRRUM! El autito de Rai da una vuelta completa por la casita. Rai dice que es mas rapido que el Pegasus Charger.']);return true;}
+ if(a==='pcDavis'){say(['EL PC DE DAVIS: en una pantalla, una raid de World of Warcraft; en la otra, Diablo con el inventario lleno de botin.','Al lado del teclado hay una libreta: "Rotacion de Burn: Bolt, Chain, Fireblast. Build Pokemon: atacante, soporte y energia justa."']);return true;}
+ if(a==='davisCards'){davisDuel();return true;}
+ if(a==='tronoFinal'){tronoFinal();return true;}
+ if(a==='campoFood'){const first=!S.campoFood;S.hp=S.maxHp;S.mp=maxMp();if(first){S.campoFood=true;addXP(150);}SFX.heal();saveGame();say(['LA ABUELA: Cazuela, pan amasado y pebre. ¡Come tranquilo, que en el campo no hay apuro!',first?'Primera comida en familia: +150 EXP. Vida y magia recuperadas.':'Vida y magia recuperadas.']);return true;}
+ return false;
+}
+function drawSouthProp(p){
+ const X=p.x*TS,Y=p.y*TS,w=(p.w||1)*TS,h=(p.h||1)*TS,t=frame;
+ switch(p.k){
+  case 'roadGate':R(X+1,Y+2,2,13,'#6a4a2a');R(X+13,Y+2,2,13,'#6a4a2a');R(X,Y+1,16,3,'#c8a060');plaque(p.label,X+8,Y-6,'#4a3018');return true;
+  case 'loboMarino':{const b=(t>>4)&1;softShadow(X+8,Y+12,7,2,.3);disc(X+7,Y+9,5,'#5a4a40');disc(X+11,Y+5-b,3,'#6a5a50');R(X+12,Y+4-b,2,1,'#1a1010');R(X+2,Y+11,4,2,'#4a3a30');if(((t+p.x*37)>>5)%7===0)tiny('ARF',X+12,Y-6,'#fff','center');return true;}
+  case 'barcazaMuelle':R(X,Y,w,6,'#7a5430');for(let i=0;i<w;i+=8)R(X+i,Y,1,6,'#4a3018');R(X+2,Y+6,2,8,'#4a3018');R(X+w-4,Y+6,2,8,'#4a3018');outl(X+4,Y+8,w-8,7,'#c84030');R(X+6,Y+9,w-12,2,'#f4e8d0');tiny('BARCAZA',X+w/2,Y+16,'#fff','center');return true;
+  case 'barcazaDeck':{const bob=Math.round(Math.sin(t*.05));outl(X-4,Y-3+bob,w+8,h+6,'#5a3418');R(X-2,Y-1+bob,w+4,h+2,'#9a6a3a');for(let i=0;i<w;i+=6)R(X+i,Y+bob,1,h,'#7a4e28');R(X-4,Y-6+bob,w+8,2,'#c84030');R(X-4,Y+h+4+bob,w+8,2,'#c84030');return true;}
+  case 'torreonRio':outl(X+4,Y,22,30,'#3a2a20');R(X+6,Y+2,18,26,'#8a7a6a');for(let i=0;i<4;i++)R(X+6+i*5,Y-3,3,4,'#8a7a6a');R(X+13,Y+16,4,12,'#2a2020');return true;
+  case 'castilloNiebla':outl(X,Y+6,w,h-6,'#2a2a30');R(X+2,Y+8,w-4,h-10,'#7a8088');for(let i=0;i<w;i+=8)R(X+i,Y+3,5,4,'#7a8088');R(X+w/2-3,Y+14,6,h-14,'#2a2a30');tiny('NIEBLA',X+w/2,Y-4,'#e0e8f0','center');return true;
+  case 'refalin':R(X+2,Y,3,h,'#c84040');R(X+9,Y,3,h,'#c84040');for(let i=4;i<h;i+=6)R(X+2,Y+i,10,1,'#f0d040');ctx.fillStyle='#38a8e8';ctx.beginPath();ctx.moveTo(X+14,Y+2);ctx.lineTo(X+30,Y+h-4);ctx.lineTo(X+26,Y+h);ctx.lineTo(X+12,Y+8);ctx.fill();R(X+1,Y-2,14,3,'#f0d040');tiny('REFALIN',X+w/2,Y+h+1,'#fff','center');return true;
+  case 'columpio':{const sw=Math.round(Math.sin(t*.08)*3);R(X+1,Y-8,2,22,'#6a4a2a');R(X+w-3,Y-8,2,22,'#6a4a2a');R(X,Y-9,w,2,'#6a4a2a');R(X+9+sw,Y-7,1,15,'#c8c8c8');R(X+w-10+sw,Y-7,1,15,'#c8c8c8');R(X+7+sw,Y+8,w-14,3,'#e85858');return true;}
+  case 'arenero':outl(X,Y+4,w,10,'#8a5a30');R(X+2,Y+6,w-4,6,'#f0d898');R(X+6,Y+5,4,3,'#e8c070');R(X+20,Y+7,3,2,'#e83040');return true;
+  case 'juguetes':for(let i=0;i<4;i++)R(X+2+i*7,Y+6+(i%2)*3,5,5,['#e83040','#38a8e8','#f0d040','#60c060'][i]);disc(X+26,Y+4,3,'#f080c0');return true;
+  case 'ositoTito':disc(X+8,Y+9,5,'#b07040');disc(X+8,Y+3,4,'#b07040');disc(X+5,Y,2,'#b07040');disc(X+11,Y,2,'#b07040');R(X+6,Y+2,1,1,'#1a1010');R(X+9,Y+2,1,1,'#1a1010');R(X+7,Y+4,2,1,'#5a3018');return true;
+  case 'autito':{const d=(t>>3)&1;outl(X+1,Y+6,14,6,'#c82828');R(X+4,Y+3,7,4,'#e85050');disc(X+4,Y+13,2,'#1a1a1a');disc(X+12,Y+13,2,'#1a1a1a');R(X+11,Y+4,2,2,d?'#fff':'#a0d8ff');return true;}
+  case 'pcGamer':outl(X,Y+10,w,8,'#4a3020');outl(X+2,Y-6,20,15,'#202030');R(X+4,Y-4,16,11,(t>>5)&1?'#801818':'#5a1010');tiny('D',X+12,Y-2,'#f0c040','center');outl(X+24,Y-6,20,15,'#202030');R(X+26,Y-4,16,11,'#18306a');tiny('WOW',X+34,Y-2,'#f0d040','center');for(let i=0;i<3;i++)R(X+5+i*14,Y+12,10,2,['#ff3060','#30ff80','#3080ff'][(i+(t>>4))%3]);return true;
+  case 'huertoMacetas':for(let i=0;i<w;i+=8){R(X+i+1,Y+9,6,6,'#a05a30');R(X+i+3,Y+3,2,6,'#3a8a3a');disc(X+i+4,Y+3,2,'#58c040');}return true;
+  case 'estandarte':{const c=p.color||'#8a2a2a',wv=Math.round(Math.sin(t*.06+p.x)*1);R(X+7,Y-12,2,26,'#5a3a1a');R(X+2,Y-13,12,2,'#d8b048');outl(X+3+wv,Y-11,10,15,'#2a1a10');R(X+4+wv,Y-10,8,13,c);R(X+3+wv,Y+4,4,3,c);R(X+9+wv,Y+4,4,3,c);disc(X+8+wv,Y-4,3,'#e8c048');R(X+7+wv,Y-6,2,5,shadeCol(c,.6));R(X+6+wv,Y-5,4,2,shadeCol(c,.6));return true;}
+  case 'antorcha':{const fl=Math.round(Math.sin(t*.35+p.x*2));R(X+7,Y-1,2,9,'#4a3a2a');R(X+5,Y-3,6,3,'#6a5a4a');disc(X+8,Y-6,3,'#f07a28');disc(X+8,Y-7+fl,2,'#f8d040');R(X+8,Y-11+fl,1,3,'#fff0a0');return true;}
+  case 'armadura':{softShadow(X+8,Y+14,6,2,.3);outl(X+4,Y-9,8,7,'#22222c');R(X+5,Y-8,6,5,'#b8c0cc');R(X+5,Y-6,6,1,'#1a1a24');R(X+7,Y-12,2,3,'#c83040');outl(X+3,Y-2,10,10,'#22222c');R(X+4,Y-1,8,8,'#a8b0bc');R(X+4,Y-1,8,1,'#e0e6ee');R(X+7,Y,2,6,'#7a8290');R(X+5,Y+8,2,6,'#8a92a0');R(X+9,Y+8,2,6,'#8a92a0');R(X+13,Y-14,1,28,'#7a5a3a');R(X+12,Y-16,3,3,'#d8dce4');return true;}
+  case 'torreMedieval':{const c=p.color||'#8a2a2a',fl=Math.round(Math.sin(t*.08)*2);outl(X+3,Y+2,w-6,h-4,'#2a2a34');R(X+4,Y+3,w-8,h-6,'#8a8a96');for(let yy=Y+6;yy<Y+h-4;yy+=5)R(X+4,yy,w-8,1,'#6a6a76');for(let xx=X+3;xx<X+w-4;xx+=5)R(xx,Y-1,3,4,'#8a8a96');R(X+w/2-1,Y+12,3,7,'#1a1a24');R(X+w/2,Y-12,1,12,'#5a3a1a');R(X+w/2+1,Y-12+fl/2,7,5,c);disc(X+w/2+4,Y-10+fl/2,1,'#e8c048');return true;}
+  case 'alfombra':R(X+3,Y,10,h,'#8a1424');R(X+3,Y,1,h,'#e0b040');R(X+12,Y,1,h,'#e0b040');for(let yy=Y+6;yy<Y+h;yy+=12)R(X+6,yy,4,2,'#e0b040');return true;
+  case 'tronoFinal':{outl(X+1,Y-14,14,26,'#3a2410');R(X+2,Y-13,12,24,'#e0b040');R(X+4,Y-11,8,12,'#8a1424');R(X+3,Y+2,10,4,'#8a1424');for(const xx of [X+2,X+7,X+12])R(xx,Y-17,2,4,'#e0b040');disc(X+8,Y-8,2,'#60c0f0');tiny('FINALES',X+8,Y-24,'#fcd84a','center');return true;}
+  case 'muralPB':{const cols=['#e858c8','#38c8e8','#f0d040','#60e080','#f07838'];for(let i=0;i<w;i+=4)R(X+i,Y+2,4,12,cols[((i>>2)+(t>>5))%5]);R(X,Y+6,w,2,'rgba(255,255,255,.35)');return true;}
+ }
+ return false;
+}
+function drawCyclist(a){
+ const x=Math.round(a.x),y=Math.round(a.y),spin=(a.t>>2)&1;
+ softShadow(x+8,y+14,9,2,.35);
+ for(const wx of [x+1,x+13]){ctx.strokeStyle='#1a1a1a';ctx.lineWidth=1.2;ctx.beginPath();ctx.arc(wx+1,y+11,3.2,0,Math.PI*2);ctx.stroke();R(wx+(spin?0:1),y+11,1,1,'#c8c8c8');}
+ R(x+2,y+9,12,1,'#e83040');R(x+7,y+6,1,4,'#e83040');
+ ctx.save();ctx.translate(x+1,y-8);drawPerson(0,0,NPCDEF.carlitos,a.flip?2:3,spin);ctx.restore();
+ tiny('CARLITOS RUN',x+8,y+16,'#f0e030','center');
+}
 const strHash = s => { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; };
 function mulberry32(a){ return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 function genMaze(seed, braid, openP){
@@ -1792,15 +2020,17 @@ function genMaze(seed, braid, openP){
 const CELLS = []; for (let j = 0; j < 4; j++) for (let i = 0; i < 7; i++) CELLS.push([1 + 2 * i, 1 + 2 * j]);
 const OPEN_TILES = { n:[[6,0],[7,0],[8,0],[6,1],[7,1],[8,1]], s:[[6,8],[7,8],[8,8],[6,9],[7,9],[8,9]], w:[[0,4],[1,4],[0,5],[1,5]], e:[[13,4],[14,4],[13,5],[14,5]] };
 function zoneNeighbors(id){
-  if(id==='puertoVaras')return {n:'pmontt',s:'frutillar',w:'parquePhilippi'};if(id==='parquePhilippi')return {e:'puertoVaras'};if(id==='frutillar')return {n:'puertoVaras',e:'puertoOctay'};if(id==='puertoOctay')return {w:'frutillar',n:'lascondes'};
+  if(id==='puertoVaras')return {n:'pmontt',s:'frutillar',e:'valdivia'};if(id==='parquePhilippi')return {e:'frutillar'};if(id==='frutillar')return {n:'puertoVaras',e:'puertoOctay',w:'parquePhilippi'};if(id==='puertoOctay')return {w:'frutillar',n:'valdivia',e:'niebla'};
   if(id==='pelluco')return {w:'pmontt'};
+  // 3 oct: cada conexion coincide con lo que se ve en el mapamundi.
+  if(SOUTH_LINKS[id])return {...SOUTH_LINKS[id]};
   const p = WORLD[id]; if (!p) return {};
   const at = (x, y) => Object.keys(WORLD).find(k => WORLD[k][0] === x && WORLD[k][1] === y);
   const at0 = at;
   const atOk = (x, y) => { const k = at0(x, y); return k && !BOAT_ONLY.has(k) && !BOAT_ONLY.has(id) ? k : undefined; };
   const out = {}, n = atOk(p[0], p[1] - 1), s = atOk(p[0], p[1] + 1), w = atOk(p[0] - 1, p[1]), e = atOk(p[0] + 1, p[1]);
   if (n) out.n = n; if (s) out.s = s; if (w) out.w = w; if (e) out.e = e;
-  Object.assign(out,SURF_LINKS[id] || {});if(id==='pmontt'){out.s='puertoVaras';out.e='pelluco';}if(id==='lascondes')delete out.w;if(id==='tempest')delete out.e;
+  Object.assign(out,SURF_LINKS[id] || {});if(id==='pmontt'){out.s='puertoVaras';out.e='pelluco';}if(id==='mercado')delete out.s;if(id==='tolaria'||id==='minas')delete out.e;
   return out;
 }
 function farCell(m, from){
@@ -1977,7 +2207,7 @@ function newSave(ci, custom){
   const ch = ci === CUSTOM_CHAR ? customCharacter(custom) : CHARS[ci];
   return { v:1, ch:ci, ...(ci === CUSTOM_CHAR ? {customChar:normalizeCustom(custom)} : {}), lvl:1, xp:0, st:{...ch.st}, hp:6, maxHp:6, coins:1500, bankCoins:0, potions:{}, econ:2, leagues:{}, cards:{}, swords:['palo'], eq:'palo',
     chests:{}, bosses:{}, trophies:0, buzz:0, beers:0, room:'hogar', x:2*TS+3, y:3*TS+4, complete:{}, visited:{}, ligaWins:0, arcadeBest:0, lore:false, quests:{}, kills:{}, killsTotal:0, beerTotal:0,
-    gear:{ shield:null, head:null, body:null, legs:null, feet:null }, armor:[], spells:ch.superBaby ? ['bolt'] : [], spellSel:0, mp:4, house:{}, found:{}, foundZones:{}, stones:{}, pet:null, dex:{}, keys:{}, relics:{}, spellXp:{}, mounts:[], mount:null, surf:false, talca:{}, sacos:0, worldTicks:3 * DAY_PHASE_TICKS };
+    gear:{ shield:null, head:null, body:null, legs:null, feet:null }, armor:[], spells:ch.superBaby || ch.burnLover ? ['bolt'] : [], spellSel:0, mp:4, house:{}, found:{}, foundZones:{}, stones:{}, pet:null, dex:{}, keys:{}, relics:{}, spellXp:{}, mounts:[], mount:null, surf:false, talca:{}, sacos:0, worldTicks:3 * DAY_PHASE_TICKS };
 }
 const SLOTS = 5, SLOT_TOP = 20, SLOT_ROW_H = 24, slotKey = n => 'pmq_save_' + n;
 function saveGame(){
@@ -2017,7 +2247,7 @@ function loadSave(n){
     if (s.ch === CUSTOM_CHAR) s.customChar = normalizeCustom(s.customChar);
     s.slot = n;
     s.quests = s.quests || {}; s.kills = s.kills || {}; s.killsTotal = s.killsTotal || 0; s.beerTotal = s.beerTotal || 0;
-    s.gear = s.gear || { shield:null, head:null, body:null, legs:null, feet:null }; s.armor = s.armor || []; s.spells = s.spells || [];
+    s.gear = s.gear || { shield:null, head:null, body:null, legs:null, feet:null }; s.armor = s.armor || []; s.spells = s.spells || []; if (CHARS[s.ch].burnLover && !s.spells.includes('bolt')) s.spells.push('bolt');
     s.spellSel = s.spellSel || 0; s.mp = s.mp ?? 4; s.house = s.house || {}; s.found = s.found || {}; s.foundZones = s.foundZones || {};
     if (!s.econ) { s.coins = Math.round((s.coins || 0) * COIN_X); s.econ = 2; }
     s.leagues = s.leagues || {}; s.stones = s.stones || {}; s.dex = s.dex || {}; s.keys = s.keys || {}; s.relics = s.relics || {}; s.spellXp = s.spellXp || {}; s.mounts = s.mounts || []; if (s.mount === undefined) s.mount = null; if (s.pet === undefined) s.pet = null;
@@ -2153,7 +2383,7 @@ function drawTile(c, tx, ty, theme){
     case 'm': R(x, y, 16, 16, '#54442e'); R(x + 3, y + 4, 5, 2, '#44361f'); R(x + 9, y + 10, 5, 2, '#44361f'); R(x + 4, y + 4, 3, 1, '#6c5a3c'); R(x + 11, y + 3, 1, 1, '#7a6a4a'); R(x + 6, y + 12, 2, 1, '#6c5a3c'); break;
     case 's': { R(x, y, 16, 16, '#e2c486'); const r = rng(h + 0.2); for (let i = 0; i < 4; i++) R(x + Math.floor(r() * 15), y + Math.floor(r() * 15), 1, 1, '#c0a064'); R(x + Math.floor(r() * 12), y + Math.floor(r() * 14), 3, 1, '#f4dca8'); break; }
     case 'R': {
-      const RC = { red:['#e87858','#c84830','#8a2a18','#5a1408'], blue:['#78a8f0','#3e6ed4','#24428c','#101e50'], purple:['#b078e8','#7a3ab0','#4a1a78','#280840'], green:['#78d088','#3a9a4a','#1e6a2a','#0c3a14'] };
+      const RC = { red:['#e87858','#c84830','#8a2a18','#5a1408'], blue:['#78a8f0','#3e6ed4','#24428c','#101e50'], purple:['#b078e8','#7a3ab0','#4a1a78','#280840'], green:['#78d088','#3a9a4a','#1e6a2a','#0c3a14'], pink:['#f8b0d8','#e870a8','#a83a70','#601840'] };
       const rk = G.def && G.def.roof ? G.def.roof(tx, ty) : (tx < 7 ? 'red' : 'blue');
       const [lt, col, dk, ol] = RC[rk];
       R(x, y, 16, 16, col);
@@ -2333,8 +2563,9 @@ const TROPHY_CASE = {
   5:{ n:'LIGA DE PUERTO MONTT', cup:'#d8dce8', league:'pmontt' },
   9:{ n:'LIGA URZA SAGA', cup:'#d8dce8', league:'urza' },
   10:{ n:'LIGA TEMPEST', cup:'#d8dce8', league:'tempest' },
-  11:{ n:'LIGA NACIONAL', cup:'#ffd040', won:() => (S.ligaWins || 0) > 0, how:'Gana la Liga Nacional en Tolaria.' },
-  12:{ n:'COPA DE LOS 12 JEFES', cup:'#b060f0', won:() => bossesDone() >= ALL_BOSSES.length, how:'Derrota a los 12 jefes de Chile.' },
+  11:{ n:'LIGA NACIONAL', cup:'#ffd040', won:() => (S.ligaWins || 0) > 0, how:'Gana la Liga Nacional en Piedra Bruja, Providencia.' },
+  12:{ n:'COPA DE LOS JEFES', cup:'#b060f0', won:() => bossesDone() >= ALL_BOSSES.length, how:'Derrota a los ' + ALL_BOSSES.length + ' jefes de Chile.' },
+  1:{ n:'LIGA ELFICA DE VALDIVIA', cup:'#9ce07a', league:'valdivia' },
 };
 const trophyWon = t => t.league ? !!(S.leagues && S.leagues[t.league]) : t.won();
 function drawTrophyTile(x, y, tx, ty){
@@ -2346,7 +2577,7 @@ function drawTrophyTile(x, y, tx, ty){
   R(x + 4, y - 1, 8, 7, O); R(x + 5, y, 6, 5, c); R(x + 5, y, 2, 4, '#ffffff'); R(x + 10, y, 1, 5, d);
   R(x + 2, y + 1, 3, 3, O); R(x + 11, y + 1, 3, 3, O); R(x + 3, y + 2, 1, 1, c); R(x + 12, y + 2, 1, 1, c);
   R(x + 7, y + 5, 2, 3, O); R(x + 7, y + 5, 2, 2, d); R(x + 5, y + 8, 6, 2, O); R(x + 6, y + 8, 4, 1, c);
-  if (t.league) { const fl = { vina:'#f878a8', curico:'#48a860', pmontt:'#2a6a8a', urza:'#6a8ab8', tempest:'#c82848' }[t.league]; R(x + 7, y + 12, 2, 2, fl); }
+  if (t.league) { const fl = { vina:'#f878a8', curico:'#48a860', pmontt:'#2a6a8a', urza:'#6a8ab8', tempest:'#c82848', valdivia:'#4ab050' }[t.league]; R(x + 7, y + 12, 2, 2, fl); }
 }
 function trophyInteract(tx){
   const t = TROPHY_CASE[tx]; if (!t) return;
@@ -2495,7 +2726,7 @@ function gatherLights(dark){
     else if ((c === 'U' || c === 'V') && dark) add(x, y, 24, '200,200,255', 0.5);
   }
   for (const p of (G.def.props || [])) { const px = p.x * TS + (p.w || 1) * 8, py = p.y * TS + 8;
-    if(p.k==='ligaNeon')add(px,py,60,hslRgb((frame*3)%360),1);else if(p.k==='farol'&&(ph==='night'||ph==='dusk'))add(px,py-12,38,'255,210,120',.85);else if (p.k === 'fogata') add(px, py, 40 + Math.sin(frame * 0.2) * 3, '255,140,50', 1); else if (p.k === 'dj') add(px, py, 44, hslRgb((frame * 3) % 360), 0.9); else if (p.k === 'neon') add(px, py + 6, 60, hslRgb((frame * 2) % 360), 0.5); else if (p.k === 'parlante') add(px, py, 18, '120,120,255', 0.4); }
+    if(p.k==='antorcha')add(px,py-12,34+Math.sin(frame*.3)*3,'255,170,80',.9);else if(p.k==='ligaNeon')add(px,py,60,hslRgb((frame*3)%360),1);else if(p.k==='farol'&&(ph==='night'||ph==='dusk'))add(px,py-12,38,'255,210,120',.85);else if (p.k === 'fogata') add(px, py, 40 + Math.sin(frame * 0.2) * 3, '255,140,50', 1); else if (p.k === 'dj') add(px, py, 44, hslRgb((frame * 3) % 360), 0.9); else if (p.k === 'neon') add(px, py + 6, 60, hslRgb((frame * 2) % 360), 0.5); else if (p.k === 'parlante') add(px, py, 18, '120,120,255', 0.4); }
   if (G.roomId === 'islote' && (ph === 'night' || ph === 'dusk')) for (const p of G.def.props || []) { if (p.k === 'palafito') add(p.x * TS + 16, p.y * TS - 2, 22, '255,200,110', 0.8); else if (p.k === 'iglesiaChiloe') add(p.x * TS + 24, p.y * TS + 26, 30, '255,210,140', 0.7); else if (p.k === 'caleuche') add(((frame * 0.15) % (W + 80)) - 40 + 15, p.y * TS + 14, 40, '255,220,120', 0.9); }
   // Medianoche en casa: la pantalla, las velas de la mesa y la baraja que brilla sobre el escritorio.
   if (G.roomId === 'hogar' && ph === 'night') { add(95, 36, 44 + Math.sin(frame * 0.3) * 1.5, '110,240,170', 0.9); add(110, 44, 34 + Math.sin(frame * 0.06) * 5, '200,140,255', 1); add(120, 102, 38 + Math.sin(frame * 0.25) * 2, '255,180,90', 0.9); add(184, 40, 24, '255,200,140', 0.5); }
@@ -2563,6 +2794,7 @@ function propSolidSet(d){ const s = new Set(); for (const p of (d.props || [])) 
 const propAt = (tx, ty) => (G.def.props || []).find(p => tx >= p.x && tx < p.x + (p.w || 1) && ty >= p.y && ty < p.y + (p.h || 1));
 function outl(x, y, w, hh, col){ R(x - 1, y - 1, w + 2, hh + 2, '#1a1020'); R(x, y, w, hh, col); }
 function drawProp(p){
+  if(drawSouthProp(p))return;
   if(p.k==='safariGate'){const x=p.x*TS,y=p.y*TS;R(x,y,3,15,'#395b30');R(x+13,y,3,15,'#395b30');R(x,y,16,3,'#a4c06a');plaque('SAFARI',x+8,y-6,'#35582c');return;}
   const X = p.x * TS, Y = p.y * TS, wpx = (p.w || 1) * TS, t = frame;
   if(p.waiting){outl(X+wpx/2-4,Y+18,8,6,'#e8c080');tiny('TU ASIENTO',X+wpx/2,Y+27,'#a0ffb0','center');}
@@ -2685,12 +2917,13 @@ function updateAnimals(){
   for (const a of (G.animals || [])) {
     a.t++; if (a.wait > 0) { a.wait--; continue; }
     const dx = a.tx - a.x, dy = a.ty - a.y, d = Math.hypot(dx, dy);
-    if (d < 1) { a.wait = 60 + rnd(160); const [x0, y0, x1, y1] = a.box; a.tx = (x0 + Math.random() * (x1 - x0)) * TS; a.ty = (y0 + Math.random() * (y1 - y0)) * TS; if (a.k === 'vaca' && Math.random() < 0.4) floatText('MUUU', a.x + 8, a.y - 4, '#fff'); continue; }
-    a.x += dx / d * 0.25; a.y += dy / d * 0.25; a.flip = dx < 0;
+    if (d < 1) { a.wait = 60 + rnd(160); const [x0, y0, x1, y1] = a.box; a.tx = (x0 + Math.random() * (x1 - x0)) * TS; a.ty = (y0 + Math.random() * (y1 - y0)) * TS; if (a.k === 'vaca' && Math.random() < 0.4) floatText('MUUU', a.x + 8, a.y - 4, '#fff'); if (a.k === 'ciclista') { a.wait = 10 + rnd(40); if (Math.random() < 0.3) floatText('¡VAMOS!', a.x + 8, a.y - 22, '#f0e030'); } continue; }
+    const sp = Math.min(d, a.spd || 0.25); a.x += dx / d * sp; a.y += dy / d * sp; a.flip = dx < 0;
   }
 }
 function drawAnimal(a){
   const x = Math.round(a.x), y = Math.round(a.y), f = (a.t >> 4) & 1, walking = !a.wait;
+  if (a.k === 'ciclista') { drawCyclist(a); return; }
   if (a.k === 'caballo') { const d = a.flip ? 2 : 3; drawMount('caballo', x - 3, y, d, walking ? f : 0, 'back'); drawMount('caballo', x - 3, y, d, walking ? f : 0, 'front'); return; }
   softShadow(x + 8, y + 15, 8, 2, 0.4);
   const p = (rx, ry, w, hh, c) => { ctx.fillStyle = c; ctx.fillRect(a.flip ? x + 16 - rx - w : x + rx, y + ry, w, hh); };
@@ -2870,6 +3103,8 @@ function drawPerson(x, y, P, dir, f){
     p(side ? 5 : 4,9,side ? 6 : 8,1,'#581020');
     p(side ? 5 : 4,12,side ? 6 : 8,1,'#581020');
   }
+  // Gonzalo: terno con camisa blanca y corbata roja de abogado.
+  if (P.suit && dir === 0) { p(6,8,4,1,'#f4f4f8'); p(7,8,2,1,C.emblem || '#c83040'); p(7,9,2,3,C.emblem || '#c83040'); }
   if(P.id==='martin'){
     const palm=shadeCol(C.skin,1.1),shade=shadeCol(C.skin,.72);
     if(!side){for(const hx of [0,13]){p(hx,11,3,3,O);p(hx+1,11,1,1,C.skin);p(hx+1,12,2,1,palm);p(hx+1,13,1,1,shade);}}
@@ -2886,6 +3121,8 @@ function drawPerson(x, y, P, dir, f){
       p(5, 4, 2, 2, eye); p(9, 4, 2, 2, eye); p(5, 4, 1, 1, '#ffffff'); p(9, 4, 1, 1, '#ffffff');
       if (C.lashes) { p(4, 3, 1, 1, O); p(11, 3, 1, 1, O); }
       p(4, 6, 1, 1, '#f09080'); p(11, 6, 1, 1, '#f09080');
+      if (P.elfEars) { p(0, 2, 2, 3, O); p(14, 2, 2, 3, O); p(1, 3, 1, 1, C.skin); p(14, 3, 1, 1, C.skin); }
+      if (P.freckles) { p(4, 5, 1, 1, '#c8703c'); p(11, 5, 1, 1, '#c8703c'); p(3, 6, 1, 1, '#c8703c'); p(12, 6, 1, 1, '#c8703c'); }
       p(6, 6, 1, 1, lip); p(7, 7, 2, 1, lip); p(9, 6, 1, 1, lip); p(7, 6, 2, 1, '#ffffff');
     }
     else { p(3, 4, 2, 2, eye); p(3, 4, 1, 1, '#ffffff'); p(2, 6, 1, 1, lip); p(3, 7, 2, 1, lip); p(3, 6, 1, 1, '#ffffff'); p(9, 4, 2, 2, '#e09070'); p(1, 4, 2, 2, O); p(2, 4, 1, 1, C.skin); if (C.lashes) p(2, 3, 1, 1, O); }
@@ -3081,7 +3318,10 @@ function pokemonEnemy(type){const m=MON[type],id=POKEMON_ENEMY_IDS[type],species
 function enemyName(type){return pokemonRealm()?pokemonEnemy(type).name:MON[type].n;}
 function drawMon(type, x, y, t, flip, forceMagic=false){
   if(pokemonRealm()&&!forceMagic){const {id}=pokemonEnemy(type);ctx.save();ctx.translate(x,y);ctx.scale(MON[type].size/16,MON[type].size/16);drawPoke(id,0,0,t,flip);ctx.restore();return;}
-  if(MON[type].visual){drawMon(MON[type].visual,x,y,t,flip,true);if(type==='balothOctay'){for(const dx of [4,10,17]){disc(x+dx,y+7,3,'#537848');R(x+dx,y+3,1,3,'#a0c868');}}else if(type==='mongrelOctay'){R(x+4,y+10,4,2,'#385048');R(x+10,y+12,3,2,'#385048');}else{R(x+1,y+13,14,1,'#a0e8f8');disc(x+13,y+4,2,'#a0e8f8');}return;}
+  if(MON[type].elfScale){const m=MON[type],k=m.elfScale,sz=16*k;if(m.boss)disc(x+sz/2,y+sz/2,sz/2,'rgba(90,200,90,.2)');ctx.save();ctx.translate(flip?x+sz:x,y);ctx.scale(flip?-k:k,k);drawMon('elf',0,0,t,false,true);ctx.restore();
+    R(x+sz*.2,y+sz*.55,sz*.6,Math.max(1,k),'#3a7a30');if(m.crown){R(x+sz*.3,y-k,sz*.4,2*k,m.crown);for(const f of [.3,.48,.66])R(x+sz*f,y-3*k,k*1.5,2*k,m.crown);R(x+sz*.48,y-k,k,k,'#60f0a0');}
+    if(m.boss)for(let i=0;i<4;i++){const a=t*.06+i*1.57;R(Math.round(x+sz/2+Math.cos(a)*sz*.55),Math.round(y+sz/2+Math.sin(a)*sz*.45),2,2,'#b8ff90');}return;}
+  if(MON[type].visual){drawMon(MON[type].visual,x,y,t,flip,true);if(MON[type].elfMark){const mk=MON[type].elfMark;if(mk==='hood'){R(x+3,y,10,3,'#2f6a2a');R(x+2,y+2,2,4,'#2f6a2a');}else if(mk==='lyre'){R(x+12,y+6,1,6,'#e8c040');R(x+15,y+6,1,6,'#e8c040');R(x+12,y+6,4,1,'#e8c040');R(x+13,y+7,1,4,'#fff8c0');}else if(mk==='bug'){disc(x+3,y+5,2,'rgba(200,255,200,.7)');disc(x+13,y+5,2,'rgba(200,255,200,.7)');}else{disc(x+8,y-1,2,'#58c040');R(x+8,y+1,1,2,'#2a7a2a');}return;}if(type==='balothOctay'){for(const dx of [4,10,17]){disc(x+dx,y+7,3,'#537848');R(x+dx,y+3,1,3,'#a0c868');}}else if(type==='mongrelOctay'){R(x+4,y+10,4,2,'#385048');R(x+10,y+12,3,2,'#385048');}else{R(x+1,y+13,14,1,'#a0e8f8');disc(x+13,y+4,2,'#a0e8f8');}return;}
   if(type==='arqueroGoblin'||type==='bombardero'){drawMon('gob',x,y,t,flip);if(type==='arqueroGoblin'){ctx.strokeStyle='#b88848';ctx.lineWidth=1;ctx.beginPath();ctx.arc(x+13,y+8,5,-1.4,1.4);ctx.stroke();R(x+12,y+2,1,12,'#e8d8a0');}else{disc(x+12,y+10,4,'#303038');R(x+12,y+4,1,3,'#f8b040');}return;}
   if(type==='espinero'){R(x+7,y+8,2,8,'#386838');for(const dx of [-4,4]){disc(x+8+dx,y+8,4,'#508838');R(x+8+dx,y+4,1,2,'#b8d878');}disc(x+8,y+5,5,'#b85878');R(x+5,y+4,2,2,'#fcd84a');R(x+10,y+4,2,2,'#fcd84a');return;}
   if(type==='mimic'){outl(x+1,y+4,14,11,'#b08038');R(x+1,y+8,14,3,'#181820');for(let i=0;i<5;i++)R(x+2+i*3,y+8,1,2,'#fff');R(x+4,y+3,2,2,'#e83040');R(x+10,y+3,2,2,'#e83040');return;}
@@ -3447,14 +3687,106 @@ const CCOL = { R:{fr:'#c83a24',bg:'#f0a070'}, B:{fr:'#3a2a48',bg:'#7a6a8a'}, U:{
 const MANA = { R:'#e05030', B:'#2a2030', U:'#3a7ae8', W:'#f8f0d0', G:'#2a9a4a' };
 const POKEMON_CARD_STATS={"pkc_asc_160":{"hp":320,"prizes":2},"pkc_asc_158":{"hp":70,"prizes":1},"pkc_asc_159":{"hp":90,"prizes":1},"pkc_asc_99":{"hp":110,"prizes":1},"pkc_por_62":{"hp":170,"prizes":2},"pkc_asc_142":{"hp":210,"prizes":2},"pkc_tef_123":{"hp":240,"prizes":2},"pkc_meg_104":{"hp":300,"prizes":3},"pkc_twm_25":{"hp":210,"prizes":2},"pkc_ssp_76":{"hp":210,"prizes":2},"pkc_asc_76":{"hp":190,"prizes":2},"pkc_scr_128":{"hp":230,"prizes":2},"pkc_scr_114":{"hp":70,"prizes":1},"pkc_scr_115":{"hp":100,"prizes":1},"pkc_scr_118":{"hp":70,"prizes":1},"pkc_svi_86":{"hp":310,"prizes":2},"pkc_meg_58":{"hp":70,"prizes":1},"pkc_meg_59":{"hp":100,"prizes":1},"pkc_twm_95":{"hp":110,"prizes":1},"pkc_wht_44":{"hp":80,"prizes":1},"pkc_pbl_65":{"hp":340,"prizes":3},"pkc_cri_59":{"hp":70,"prizes":1},"pkc_tef_114":{"hp":100,"prizes":1},"pkc_cri_61":{"hp":180,"prizes":1},"pkc_pbl_46":{"hp":70,"prizes":1},"pkc_blk_67":{"hp":220,"prizes":2},"pkc_meg_77":{"hp":340,"prizes":3},"pkc_pre_50":{"hp":70,"prizes":1},"pkc_jtg_120":{"hp":70,"prizes":1},"pkc_pre_80":{"hp":140,"prizes":1},"pkc_jtg_121":{"hp":270,"prizes":2},"pkc_meg_75":{"hp":110,"prizes":1},"pkc_por_21":{"hp":330,"prizes":3},"pkc_por_20":{"hp":70,"prizes":1},"pkc_asc_171":{"hp":70,"prizes":1},"pkc_cri_22":{"hp":350,"prizes":3},"pkc_cri_20":{"hp":70,"prizes":1},"pkc_cri_21":{"hp":100,"prizes":1},"pkc_twm_106":{"hp":310,"prizes":2},"pkc_twm_128":{"hp":70,"prizes":1},"pkc_twm_129":{"hp":90,"prizes":1},"pkc_asc_79":{"hp":280,"prizes":2},"pkc_asc_18":{"hp":50,"prizes":1},"pkc_asc_19":{"hp":130,"prizes":1},"pkc_asc_97":{"hp":60,"prizes":1},"pkc_dri_51":{"hp":120,"prizes":1},"pkc_asc_162":{"hp":230,"prizes":2},"pkc_meg_86":{"hp":280,"prizes":3},"pkc_meg_88":{"hp":110,"prizes":1},"pkc_sfa_39":{"hp":190,"prizes":2}};
 const POKEMON_CARD_IMAGES={};
+/* ============ CARTAS POKEMON DIBUJADAS A MANO (3 oct) ============ */
+// El reflejo ya no muestra escaneos de cartas oficiales: cada carta lleva un dibujo pixel propio, al estilo de las
+// cartas de Magic del juego. Se parece a la especie, pero es arte original. Cada nombre usa su propia especie
+// (Dragapult se dibuja como Dragapult, no como Dreepy).
+const PK_PAL={K:'#1c1a2a',W:'#f4f0e4',w:'#c8c4d4',Y:'#f4d848',y:'#c89a28',R:'#d84848',r:'#8a2a2a',O:'#f08838',G:'#78c868',g:'#3c8a4a',T:'#58c8b8',t:'#2a8078',B:'#5a9ae8',b:'#2c5aa8',N:'#1e2c58',P:'#a868d0',p:'#64367e',M:'#e888c0',m:'#a8487e',S:'#a8b0c0',s:'#6a7284',C:'#9a6a40',c:'#5e3c22',E:'#2a2a34',L:'#c8f0ff',X:'#7ee0e8'};
+const PK_SPRITES={
+ Dreepy:['................','................','.....KKKK.......','....KGGGGK......','...KGGGGGGK.....','..KGYRGGGGGK....','..KGGGGGGGGK....','...KgGGGGGK.....','....KggGGK......','.....KgGGK......','......KgGK......','......KgGGK.....','.......KgGGK....','........KKK.....','................','................'],
+ Drakloak:['................','.KKKKKKKKKKKK...','KGGGGGGGGGGGGK..','KggGGYRGGGGGGGK.','.KKgGGGGGKKKKK..','...KgGGGK.......','...KgGGGGK......','....KgGGGGK.....','.....KggGGK.....','......KgGGK.....','.......KgGK.....','........KGK.....','.........K......','................','................','................'],
+ Dragapult:['KK............KK','KYK..........KYK','KGGK........KGGK','.KGGKKKKKKKKGGK.','..KgGGGGGGGGgK..','...KGYRGGRYGK...','....KGGGGGGK....','.....KRRRRK.....','.....KgGGgK.....','....KgGGGGgK....','...KgGGRRGGgK...','....KgGGGGgK....','.....KggggK.....','......KggK......','.......KgK......','........KK......'],
+ Munkidori:['................','....KK....KK....','...KppK..KppK...','...KpppKKpppK...','....KpWWWWpK....','....KWRWWRWK....','....KWWYYWWK....','...KppWWWWppK...','..KpppYYYYpppK..','..KppKYYYYKppK..','...KK.KYYK.KK...','.....KppppK.....','.....KpKKpK.....','....KppK.KppK...','....KKK...KKK...','................'],
+ Fezandipiti:['................','.......KK.......','......KMMK......','.....KMEEMK.....','.....KEYEEK.....','......KEEK......','.....KEMMEK.....','....KEMMMMEK....','...KEEMMMMEEK...','..KTTEEEEEETTK..','.KTT.KEEEEK.TTK.','.....KYKKYK.....','.....KK..KK.....','................','................','................'],
+ RagingBolt:['..YY............','.YYYY...........','YYKKYY..........','.KbbKYY.........','.KbYbK..........','..KbbK..........','...KbbK.........','....KbbKKKKK....','.....KbbbbbbKK..','....KbbbbbbbbbK.','...KbbYbbbYbbbK.','...KbbbbbbbbbK..','....KbK.KbK.KbK.','....KbK.KbK.KbK.','....KKK.KKK.KKK.','................'],
+ Ogerpon:['......KKKK......','....KKGGGGKK....','...KGGgGGgGGK...','...KTTTTTTTTK...','...KTWKTTKWTK...','...KTTTTTTTTK...','....KTTKKTTK....','.....KTTTTK.....','....KggGGggK....','...KgGGGGGGgK...','...KgGgGGgGgK...','....KGGGGGGK....','....KgK..KgK....','....KK....KK....','................','................'],
+ Latias:['................','......KKKK......','.....KRRRRK.....','....KRWRRWRK....','....KRRKBRRK....','.....KRRRRK.....','..KKKKWWWWKKKK..','.KRRRRWWWWRRRRK.','KRRRRKWWWWKRRRRK','.KKK.KRRRRK.KKK.','.....KRRRRK.....','......KRRK......','.......KK.......','................','................','................'],
+ Terapagos:['................','.....KKKKKK.....','....KXLXLXLK....','...KLXRXBXGXK...','...KXLXYXLXLK...','..KKKKKKKKKKKK..','.KTTTTTTTTTTTTK.','.KTtTTtTTtTTtTK.','..KTTTTTTTTTTK..','..KKTKWWKKTKK...','...KTKKKK.KTK...','...KK......KK...','................','................','................','................'],
+ Hoothoot:['................','.....KK..KK.....','.....KCKKCK.....','....KCCCCCCK....','...KCWWCCWWCK...','...KCWKCCWKCK...','...KCCCYYCCCK...','...KCCCCCCCCK...','....KCccccCK....','....KCccccCK....','.....KCCCCK.....','.......KOK......','......KOOOK.....','................','................','................'],
+ Noctowl:['...KK......KK...','...KcK....KcK...','...KCCKKKKCCK...','..KCCCCCCCCCCK..','..KCWWRCCRWWCK..','..KCWKRCCRKWCK..','..KCCCCYYCCCCK..','.KCCcCCCCCCcCCK.','.KCccCWWWWCccCK.','KCCccKWWWWKccCCK','.KK.KcWWWWcK.KK.','....KCCCCCCK....','.....KOK.KOK....','.....KK...KK....','................','................'],
+ FanRotom:['................','.....KKKKKK.....','...KKOOOOOOKK...','..KOOKOOOOKOOK..','..KOOOKOOKOOOK..','.KOOOOOLLOOOOOK.','.KOOOOLBBLOOOOK.','.KOOOOLBBLOOOOK.','.KOOOOOLLOOOOOK.','..KOOOKOOKOOOK..','..KOOKOOOOKOOK..','...KKOOOOOOKK...','.....KKYYKK.....','.......YY.......','......YY........','................'],
+ Gardevoir:['.....KKKK.......','....KGGGGK......','...KGGGGGGK.....','...KGWWGGGK.....','....KWRWGK......','.....KWWK.......','.....KRRK.......','....KWWWWK......','...KWWRRWWK.....','..KWWWWWWWWK....','.KWWWwWWwWWWK...','KWWWWwWWwWWWWK..','KWWWWwWWwWWWWK..','.KKKKKKKKKKKK...','................','................'],
+ Ralts:['................','................','.....KKKKKK.....','....KGGGGGGK....','...KGGGGGGGGK...','...KGRGGGGRGK...','...KGGGGGGGGK...','....KWWWWWWK....','....KWGWWGWK....','.....KWWWWK.....','....KWWWWWWK....','....KWWWWWWK....','.....KWKKWK.....','.....KK..KK.....','................','................'],
+ Kirlia:['.....KKKK.......','....KGGGGK......','...KGGGGGGK.....','...KGWWGGGK.....','....KWRWK.......','.....KWWK.......','..K..KWWK..K....','..KWKWWWWKWK....','...KWWWWWWK.....','.....KWWK.......','....KWWWWK......','...KWWWWWWK.....','..KWWKWWKWWK....','.....KW..WK.....','.....KK..KK.....','................'],
+ Frillish:['................','.....KKKKK......','....KBBBBBK.....','...KBBWWBBBK....','..KBBWBBBBBBK...','..KBBBBBBBBBK...','..KBWKBBBKWBK...','..KBBBBBBBBBK...','...KBRRRBBBK....','..KBBKBKBKBBK...','..KBK.KBK.KBK...','..KBK.KBK.KBK...','...K..KBK..K....','.......K........','................','................'],
+ Excadrill:['......KK........','.....KSSK.......','....KSWSSK......','...KSSWSSSK.....','...KSSSWSSK.....','..KKSRSSRSKK....','.KccKSSSSKccK...','KccccKSSKccccK..','KcCCcKRRKcCCcK..','.KcCCccccCCcK...','..KcCCCCCCcK....','..KcCCCCCCcK....','...KcCKKCcK.....','...KSSK.KSSK....','...KKK...KKK....','................'],
+ Beldum:['................','................','......KKKK......','....KKBBBBKK....','...KBBBBBBBBK...','..KBBSRRRSBBBK..','..KBBSRWRSBBBK..','...KBBBBBBBBK...','....KKBBBBKK....','.....KSKKSK.....','....KSK..KSK....','....KK....KK....','................','................','................','................'],
+ Metang:['................','..KK........KK..','.KSSK......KSSK.','.KSBBK....KBBSK.','..KBBBKKKKBBBK..','...KBBBBBBBBK...','...KBSRRRRSBK...','...KBSRWWRSBK...','...KBBBBBBBBK...','..KBBBKKKKBBBK..','.KSBBK....KBBSK.','.KSSK......KSSK.','..KK........KK..','................','................','................'],
+ Metagross:['................','.....KKKKKK.....','...KKBBBBBBKK...','..KBBBSSSSBBBK..','.KBBSSBRRBSSBBK.','.KBBBSBBBBSBBBK.','.KBRRBBBBBBRRBK.','..KBBBBBBBBBBK..','.KSBKBBBBBBKBSK.','KSSK.KBBBBK.KSSK','KSK..KSKKSK..KSK','KK...KSK.KSK..KK','.....KK...KK....','................','................','................'],
+ Drilbur:['................','.....KKKK.......','....KSWSSK......','...KccSScK......','..KccKccKcK.....','..KcRcccRcK.....','..KccccccK......','.KccKCCCcK......','KSKcCCCCCcK.....','KSKcCCCCCcKSK...','.K.KcCCCcK.KSK..','...KcK.KcK..K...','...KSK.KSK......','...KK...KK......','................','................'],
+ Genesect:['................','...KKKKK........','..KPPPPPK.KKKK..','.KPRRRPPKKSSSSK.','.KPPPPPPPSSWSSK.','..KKPPPPKKSSSSK.','...KPPPPK.KKKK..','..KPPpPPPK......','.KPPPpPPPPK.....','.KPpKPPPpPK.....','..KK.KPPK.KK....','....KPPK........','...KPPK.........','...KKK..........','................','................'],
+ Lucario:['...K.......K....','..KNK.....KNK...','..KNNK...KNNK...','...KNNKKKNNK....','...KNBBBBBNK....','...KBRBBBRBK....','....KBBEBBK.....','....KYYYYYK.....','..KKBYSYSYBKK...','.KBBKBYYYBKBBK..','.KSK.KBBBK.KSK..','.....KNNNK......','.....KNKNK......','....KBNKKNBK....','....KKK..KKK....','................'],
+ Riolu:['................','...K......K.....','..KNK....KNK....','..KNNKKKKNNK....','...KNBBBBNK.....','...KBRBBRBK.....','....KBEBBK......','....KNNNNK......','...KBNBBNBK.....','..KBBKBBKBBK....','...KK.KBBK.KK...','.....KNKNK......','....KBK.KBK.....','....KK...KK.....','................','................'],
+ Dunsparce:['................','................','..KKKK..........','.KYYYYK.........','KYKYYYYK........','KYYYYYYK..KK....','.KYYYYYK.KBBK...','..KYbYbYKBWBK...','..KYbYbYYKBK....','...KYYYYYYYK....','....KYYYbYbYK...','.....KYYYYYYYKK.','......KKKKKYYYYK','..........KYKYK.','...........K.K..','................'],
+ Dudunsparce:['................','.KKKK...........','KYYYYK.....KK...','KYKYYK....KBBK..','KYYYYK...KBWWBK.','.KYbYK....KBBK..','.KYbYYK....KK...','..KYbYYK........','...KYbYYKKK.....','....KYbYYYYKK...','.....KYYbYbYYK..','......KYYYYYYYK.','.......KKKKKYYYK','...........KYYK.','............KK..','................'],
+ Solrock:['.......KK.......','...K..KOOK..K...','...KK.KOOK.KK...','....KKOOOOKK....','.KKKOOOYYOOOKKK.','KOOOOYYYYYYOOOOK','.KKOOYKYYKYOOKK.','...KOYYYYYYOK...','.KKOOYYRRYYOOKK.','KOOOOYYYYYYOOOOK','.KKKOOOYYOOOKKK.','....KKOOOOKK....','...KK.KOOK.KK...','...K..KOOK..K...','.......KK.......','................'],
+ Greninja:['.......KK.......','......KNNK......','..KK.KNBBNK.KK..','..KNKNBBBBNKNK..','...KNBYKBBBNK...','....KBBBBBNK....','..KMMMMMMMMMK...','.KMMKKBBBBMMMK..','..KK.KBBBBK.KMK.','....KBBWWBBK.KMK','...KBBBWWBBBK.K.','....KBBBBBBK....','...KBBK..KBBK...','..KBBK....KBBK..','..KKK......KKK..','................'],
+ Froakie:['................','................','...KKK....KKK...','..KBYBK..KBYBK..','..KBKBKKKKBKBK..','...KBBBBBBBBK...','..KWWWWWWWWWWK..','..KWWWWWWWWWWK..','...KBBBBBBBBK...','....KBBBBBBK....','...KBBK..KBBK...','..KBBK....KBBK..','..KKK......KKK..','.WW........WW...','WWWW......WWWW..','................'],
+ Frogadier:['................','....KKKKK.......','...KBBBBBK......','..KBYKBBBBK.....','..KBBBBBBBBK....','...KWWWWWWBK....','....KKBBBBK.....','..KWWWBBBBWWK...','.KWWKBBBBBKWWK..','..KK.KBBBK.KK...','.....KBBBBK.....','....KBBK.KBK....','...KBBK...KBK...','..KKK.....KKK...','................','................'],
+ Tarountula:['................','................','.....KKKKKK.....','...KKWWWWWWKK...','..KWWWWwWWWWWK..','.KWWwWWWWWwWWK..','.KWWWEEWWEEWWWK.','.KWWWEREWERWWWK.','.KWWWWWWWWWWWWK.','..KWWwWWWwWWWK..','...KKWWWWWWKK...','..K.KKKKKKKK.K..','.K..K..KK..K..K.','K...K......K...K','................','................'],
+ Spidops:['................','....KKKKKKKK....','...KSSSSSSSSK...','..KSsSSSSSSsSK..','..KSSKRSSRKSSK..','..KSSSSSSSSSSK..','.KSSKKKSSKKKSSK.','KSSK..KSSK..KSSK','KSK..KSSSSK..KSK','KK..KSSSSSSK..KK','...KSK.KK.KSK...','..KSK......KSK..','..KK........KK..','................','................','................'],
+ Mimikyu:['......K.........','.....KYK........','....KYYK........','....KYYYK.......','...KYYYYYK......','..KYYYYYYYK.....','..KYEYYYEYYK....','..KYYYYYYYYK....','..KYYEEEYYYK....','.KYYYYYYYYYYK...','.KYYYYYYYYYYK...','KYYKYYKYYKYYK...','.KK.KK.KK.KK....','..K..K..K.......','................','................'],
+ Absol:['..........KK....','.........KNNK...','........KNNK....','...KKKKKKNK.....','..KWWWWWWWK.....','.KWNWWWWNWWK....','.KWRWWWWWWWK....','..KWWWWWWWKKK...','.KWWWWWWWWWWWK..','KWWWWWWWWWWWWK..','KWWNWWWWWWNWK...','.KWWWWWWWWWK....','..KWNK.KWNK.....','..KNNK.KNNK.....','..KKK...KKK.....','................'],
+ Yveltal:['K..............K','RK............KR','RRK....KK....KRR','RRRK..KRRK..KRRR','.RRRKKRRRRKKRRR.','..RRRRRRRRRRRR..','...KRRrEErRRK...','....KRrEErRK....','.....KREERK.....','......KEEK......','.....KRrrRK.....','....KRK..KRK....','....KK....KK....','................','................','................'],
+ Pecharunt:['................','......KKKK......','....KKPPPPKK....','...KPPPMMPPPK...','...KPPMMMMPPK...','..KPPPPPPPPPPK..','..KPPYKPPKYPPK..','..KMMMMMMMMMMK..','.KMMWMMMMMMWMMK.','.KMMMMMRRMMMMMK.','..KMMMMMMMMMMK..','...KKMMMMMMKK...','....KPPKKPPK....','....KKK..KKK....','................','................'],
+};
+// Gen-1 species reuse the game's own sprites; others use the art above.
+const PK_GEN1={'Meowth':51,'Kangaskhan':114,'Clefairy':34,'Starmie':120,'Staryu':119,'Mewtwo':149,'Articuno':143};
+function pokeCardSpecies(name){return name.replace(/^Team Rocket's |^Lillie's |^Teal Mask /,'').replace(/^Mega /,'').replace(/ ex$/,'').replace(/^Fan /,'Fan').replace(/ /g,'');}
+function drawPkSprite(rows,flash){rows.forEach((row,iy)=>{for(let ix=0;ix<16;ix++){const v=row[ix];if(v!=='.')R(ix,iy,1,1,PK_PAL[v]);}});if(flash)R(1,1,1,1,'#fff');}
+const TRAINER_LOOKS={
+ "Lillie's Determination":{style:'cap',c:{hat:'#f4f4f8',hatD:'#c8c8d8',hair:'#f0e090',shirt:'#f4f4f8',shirtD:'#c8ccd8',pants:'#f4f4f8',shoe:'#f4f4f8',skin:'#f6d6b8'}},
+ "Boss's Orders":{style:'bald',c:{hair:'#2a1a10',shirt:'#2a2a38',shirtD:'#14141c',emblem:'#d84848',pants:'#2a2a38',shoe:'#141418',skin:'#e8b088'}},
+ 'Crispin':{style:'spiky',c:{hair:'#e85028',hairD:'#f0c040',shirt:'#3a3a48',shirtD:'#24242e',pants:'#3a3a48',shoe:'#e85028',skin:'#f1c9a0'}},
+ 'Iono':{style:'ponytail',c:{hair:'#e868b8',hairL:'#5a9ae8',shirt:'#f0e060',shirtD:'#c8a028',pants:'#2a2a38',shoe:'#e868b8',skin:'#f6d6b8',lashes:true}},
+ 'Hilda':{style:'cap',c:{hat:'#f4f4f8',hatD:'#d84848',hair:'#5a3418',shirt:'#f4f4f8',shirtD:'#3a3a48',pants:'#4a6aa8',shoe:'#d84848',skin:'#f1c9a0'}},
+ 'Kieran':{style:'spiky',c:{hair:'#2a4a5a',hairD:'#58b8a8',shirt:'#3a6a48',shirtD:'#24442e',pants:'#2a2a38',shoe:'#141418',skin:'#f1c9a0'}},
+ 'Arven':{style:'curly',c:{hair:'#3a2a1a',shirt:'#f0c040',shirtD:'#a87a20',pants:'#3a4a68',shoe:'#5a3418',skin:'#e8b088'}},
+ "Professor's Research":{style:'bald',c:{hair:'#d8d8e0',shirt:'#f4f4f8',shirtD:'#c8ccd8',pants:'#5a6a8a',shoe:'#3a2414',skin:'#f1c9a0'}},
+ "Professor Turo's Scenario":{style:'curly',c:{hair:'#2a2a38',shirt:'#f4f4f8',shirtD:'#8a6ac8',pants:'#3a3a58',shoe:'#141418',skin:'#e8b088'}},
+ 'Dawn':{style:'beanie',c:{hat:'#f4f4f8',hatD:'#d8d8e8',hair:'#2a3a78',shirt:'#2a2a38',shirtD:'#e868b8',pants:'#e868b8',shoe:'#e868b8',skin:'#f6d6b8'}},
+ 'Surfer':{style:'spiky',c:{hair:'#f0d070',shirt:'#e8a050',shirtD:'#c87a30',pants:'#38a8e8',shoe:'#e8a050',skin:'#c8946a'}},
+ 'Cyrano':{style:'bald',c:{hair:'#3a2a1a',shirt:'#6a3ab0',shirtD:'#46247a',emblem:'#f0c040',pants:'#2a2a38',shoe:'#141418',skin:'#e8b088'}},
+ "Janine's Secret Art":{style:'ponytail',c:{hair:'#3a2a58',shirt:'#6a4a98',shirtD:'#46306a',pants:'#3a2a58',shoe:'#141418',skin:'#f1c9a0'}},
+ "Wally's Compassion":{style:'spiky',c:{hair:'#68c868',shirt:'#f4f4f8',shirtD:'#c8ccd8',pants:'#4a6a48',shoe:'#3a2414',skin:'#f6d6b8'}},
+ "Ciphermaniac's Codebreaking":{style:'beanie',c:{hat:'#3a3a58',hatD:'#24243a',hood:true,hair:'#2a2a38',shirt:'#3a3a58',shirtD:'#24243a',pants:'#24243a',shoe:'#141418',skin:'#e8b088'}}
+};
+const TEAM_ROCKET_LOOK={style:'cap',c:{hat:'#1c1c24',hatD:'#0c0c12',hair:'#8a2a5a',shirt:'#1c1c24',shirtD:'#0c0c12',emblem:'#d84848',pants:'#1c1c24',shoe:'#f4f4f8',skin:'#f1c9a0'}};
+const POKE_ITEM_ICONS={
+ 'Ultra Ball':['................','.....KKKKKK.....','...KKEYEEYEKK...','..KEEYEEEEYEEK..','..KEEEYEEYEEEK..','.KEEEEEEEEEEEEK.','.KKKKKKWWKKKKKK.','.KKKKKWKKWKKKKK.','.KWWWWKWWKWWWWK.','.KWWWWWKKWWWWWK.','..KWWWWWWWWWWK..','..KWWWWWWWWWWK..','...KKWWWWWWKK...','.....KKKKKK.....','................','................'],
+ 'Poké Pad':['................','..KKKKKKKKKKKK..','..KRRRRRRRRRRK..','..KRLLLLLLLLRK..','..KRLBBLLBBLRK..','..KRLLLLLLLLRK..','..KRLBBBBBBLRK..','..KRLLLLLLLLRK..','..KRLBBLBBBLRK..','..KRLLLLLLLLRK..','..KRRRRKKRRRRK..','..KKKKKKKKKKKK..','................','................','................','................'],
+ 'Buddy-Buddy Poffin':['................','................','.....KKKKKK.....','....KMMMMMMK....','...KMWMMMWMMK...','..KMMMMMMMMMMK..','..KMMRRMMRRMMK..','..KCCCCCCCCCCK..','..KCYYYYYYYYCK..','...KCCCCCCCCK...','....KKKKKKKK....','................','................','................','................','................'],
+ 'Energy Switch':['................','....KK..........','...KYYK.........','..KYYYYKKKKKK...','.KYYYYYYYYYYK...','..KYYYYKKKKKK...','...KYYK..KK.....','....KK..KBBK....','......KKKKBBK...','......KBBBBBBK..','......KKKKBBK...','.........KBBK...','..........KK....','................','................','................'],
+ 'Fighting Gong':['................','.KK..........KK.','.KCK........KCK.','.KCKKKKKKKKKKCK.','.KCK..KKKK..KCK.','.KCK.KyYYyK.KCK.','.KCKKYYOOYYKKCK.','.KCKKYOYYOYKKCK.','.KCKKYYOOYYKKCK.','.KCK.KyYYyK.KCK.','.KCK..KKKK..KCK.','.KCK........KCK.','KKCKK......KKCKK','KCCCK......KCCCK','KKKKK......KKKKK','................']
+};
+const ENERGY_COLORS={Fire:'#e85838',Psychic:'#a868d0',Fighting:'#c87a40',Grass:'#58b848','Bubbly Water':'#58b8e8',Water:'#4a8ae8',Metal:'#a8b0c0',Darkness:'#3a3448'};
+function drawPokeCardArt(id,x,y,px){
+ const c=CARDS[id];if(!c)return;ctx.save();ctx.translate(x,y);ctx.scale(px/16,px/16);
+ if(c.t==='ENERGIA'){const type=c.n.replace(/ Energy$/,''),col=ENERGY_COLORS[type]||'#d8d0b0';disc(8,8,7,'#1c1a2a');disc(8,8,6,col);disc(8,8,4,'#fff6d8');disc(8,8,3,col);if(type==='Bubbly Water'){disc(5,4,1,'#fff');disc(12,11,1,'#fff');}}
+ else if(c.t==='ENTRENADOR'){
+  if(POKE_ITEM_ICONS[c.n])drawPkSprite(POKE_ITEM_ICONS[c.n]);
+  else{const look=c.n.startsWith("Team Rocket's")?TEAM_ROCKET_LOOK:TRAINER_LOOKS[c.n]||{style:'curly',c:{hair:'#5a3418',shirt:DECK[c.meta]?.col||'#5a8ab8',shirtD:'#3a3a48',pants:'#3a3a48',shoe:'#141418',skin:'#f1c9a0'}};
+   const P={...look,c:{...look.c,sleeve:look.c.shirt}};R(0,0,16,16,'rgba(255,255,255,.18)');ctx.save();ctx.translate(2,1);ctx.scale(.8,.8);drawPerson(0,0,P,0,0);ctx.restore();if(c.n.startsWith("Team Rocket's"))tiny('R',12,1,'#d84848','center',true);}
+ }else{
+  const sp=pokeCardSpecies(c.n),mega=/^Mega /.test(c.n),ex=/ ex$/.test(c.n);
+  if(mega||ex){ctx.globalAlpha=.35;disc(8,8,8,mega?'#f0a0f0':'#a0e8ff');ctx.globalAlpha=1;}
+  if(PK_GEN1[sp]!==undefined)drawPoke(PK_GEN1[sp],0,0,frame,false);else if(PK_SPRITES[sp])drawPkSprite(PK_SPRITES[sp]);else{disc(8,8,6,DECK[c.meta]?.col||'#888');tiny(sp.slice(0,2),8,6,'#fff','center',true);}
+  if(c.n.startsWith("Team Rocket's")){R(0,0,5,6,'#1c1c24');tiny('R',2,1,'#d84848','center',true);}
+  if(c.n.startsWith("Lillie's")){R(10,1,4,2,'#f4f4f8');R(11,0,2,1,'#e868b8');}
+  if(mega){R(12,0,4,4,'#1c1a2a');R(13,1,2,2,'#f0a0f0');}
+ }
+ ctx.restore();
+}
+// 3 oct: las cartas del reflejo se dibujan en pixel (drawPokeCardArt); ya no se muestran escaneos oficiales.
 function originalPokemonCard(id,x,y,w,h){
+ return false;
  if(CARDS[id]?.realm!=='pokemon'||typeof Image==='undefined')return false;
  let img=POKEMON_CARD_IMAGES[id];if(!img){img=new Image();img.src='assets/pokemon-cards/'+id+'.png';POKEMON_CARD_IMAGES[id]=img;}
  if(!img.complete||!img.naturalWidth)return false;
  ctx.save();ctx.imageSmoothingEnabled=true;ctx.drawImage(img,x,y,w,h);ctx.restore();return true;
 }
 function drawMetaArt(id,x,y,px,kind='POKEMON',name=null){
- const card=DECK[id].cards.find(cid=>CARDS[cid].n===(name||DECK[id].star));if(card&&originalPokemonCard(card,x,y,px*.7,px))return;
+ const card=DECK[id].cards.find(cid=>CARDS[cid].n===(name||DECK[id].star));if(card){drawPokeCardArt(card,x,y,px);return;}
  const d=DECK[id];ctx.save();ctx.translate(x,y);ctx.scale(px/16,px/16);
  if(kind==='ENERGIA'){disc(8,8,6,d.col);disc(8,8,4,'#fff0bd');R(7,3,2,10,d.col);R(3,7,10,2,d.col);}
  else if(kind==='ENTRENADOR'){R(3,2,10,13,'#f4ecd8');R(4,3,8,4,d.col);for(let i=0;i<3;i++)R(5,9+i*2,6,1,'#584868');}
@@ -3479,7 +3811,7 @@ function drawMetaArt(id,x,y,px,kind='POKEMON',name=null){
 
 function drawArt(id, x, y, px){
   const c = CARDS[id];
-  if(c.realm==='pokemon'){drawMetaArt(c.meta,x,y,px,c.t,c.n);return;}
+  if(c.realm==='pokemon'){drawPokeCardArt(id,x,y,px);return;}
   if(pokemonRealm()){const poke=Math.max(0,POKE.findIndex(p=>p.n.toLowerCase().replace(/[^a-z]/g,'')===reflectedCardSpecies(id).toLowerCase().replace(/[^a-z]/g,'')));ctx.save();ctx.translate(x,y);ctx.scale(px/16,px/16);drawPoke(poke,0,0,frame,false);ctx.restore();return;}
   if (c.mon) {
     const sz = MON[c.mon].size, s = px / sz;
@@ -3502,7 +3834,7 @@ function drawCardBig(id, x, y){
   R(x, y, 92, 128, '#111'); R(x + 2, y + 2, 88, 124, k.fr);
   R(x + 4, y + 4, 84, 11, '#f4ecd8'); tiny(realmText(c.n).slice(0,20), x + 6, y + 7, '#1a1020');
   R(x + 5, y + 16, 82, 52, '#1a1020'); R(x + 6, y + 17, 80, 50, k.bg);
-  if(pokemonRealm())drawArt(id,x+22,y+18,48);else if (c.mon) { const sz = MON[c.mon].size; const s = sz === 16 ? 3 : sz === 24 ? 2 : sz === 48 ? 1 : 1.5; const w = sz * s; ctx.save(); ctx.translate(x + 46 - w / 2, y + 42 - w / 2); ctx.scale(s, s); drawMon(c.mon, 0, 0, frame, false); ctx.restore(); }
+  if(pokemonRealm()||c.realm==='pokemon')drawArt(id,x+22,y+18,48);else if (c.mon) { const sz = MON[c.mon].size; const s = sz === 16 ? 3 : sz === 24 ? 2 : sz === 48 ? 1 : 1.5; const w = sz * s; ctx.save(); ctx.translate(x + 46 - w / 2, y + 42 - w / 2); ctx.scale(s, s); drawMon(c.mon, 0, 0, frame, false); ctx.restore(); }
   else drawIcon(c.art, x + 22, y + 18, 4);
   R(x + 4, y + 70, 84, 10, '#f4ecd8'); tiny(c.t, x + 6, y + 73, '#1a1020');
   const cost = c.cost.split('');
@@ -3526,10 +3858,12 @@ const TEMPLE_IDENTITIES={
  cartasSur:{name:'CATEDRAL DE LA LLUVIA',host:'AURELIA DEL ESTERO',judge:'CAPITAN NICANOR',color:'#80b8a8',motif:'fogata',line:'Soy Aurelia, hija de carpinteros de ribera. Deja tu abrigo junto al fuego. Mientras llueva en Puerto Montt, ninguna mesa se queda sin compañero.',challenge:'TEMPORAL: rivales de control, desgaste y un cierre de combo.',styles:['ctrl','ctrl','agro','ctrl','combo','combo'],players:['MILENA DEL ASTILLERO','OSVALDO LANCHERO','LEONOR DEL MERCADO','FELIPE QUELLE','AMALIA DEL CANAL','TOMAS CHILOTE'],tables:[[2,3],[9,3],[2,6]],shop:[9,6]},
  tienda:{name:'ARCHIVO DE LAS CINCO LUNAS',host:'AMARANTA DEL ASTROLABIO',judge:'MAESE ELIAS',color:'#a898ef',motif:'torre',line:'Soy Amaranta. Colecciono cartas y relatos de quienes cruzan Tolaria. Cinco lunas vigilan el archivo: ninguna estrategia gobierna para siempre.',challenge:'ASTROLABIO: combina lectura del rival y preparacion de combo.',styles:['combo','ctrl','combo','ctrl','agro','combo'],players:['TEO CARTOGRAFO','INES TINTA AZUL','BRUNO RELOJERO','ALMA DEL COMETA','NOE ARCHIVISTA','VERA ASTRONOMA'],tables:[[2,4],[6,4],[10,6]],shop:[9,2]},
  salaTempest:{name:'FORJA DEL TRUENO',host:'BRUNILDA COBRE',judge:'MAESTRO AMARO',color:'#f09858',motif:'fogata',line:'¡Que ardan las dudas! Soy Brunilda, grabadora de metal. Aqui forjamos cartas bajo tormentas: una jugada lenta puede costarte la ronda.',challenge:'FORJA: presion agresiva; protege tu preparacion de combo.',styles:['agro','agro','combo','agro','ctrl','agro'],players:['SAUL HERRERO','GRETA CENTELLA','MATEO CARBON','OLIVIA DEL YUNQUE','FELIX COBRE','NORA TORMENTA'],tables:[[2,3],[10,3],[6,6]],shop:[6,2]},
- liga:{name:'SALON DEL ECLIPSE',host:'DOÑA ISADORA',judge:'MAESE BALTASAR',color:'#e8d898',motif:'torre',line:'Soy Isadora, guardiana de los campeones. Cada ciudad te enseño una forma de jugar; el Eclipse exige dominarlas todas. Tras la victoria, el umbral despertara.',challenge:'ECLIPSE: todos los estilos; Galindo custodia la ultima ronda.',styles:['agro','ctrl','combo','ctrl','agro','combo'],players:['ANTONIA DEL ALBA','GASPAR PLATERO','FLORA DEL ECLIPSE','JULIAN DE LOS ANDES','ESTELA NOCTURNA','MARTIN DEL SOL'],tables:[[2,4],[6,3],[10,6]],shop:[2,6]}
+ liga:{name:'PIEDRA BRUJA · SALON DEL ECLIPSE',host:'DOÑA ISADORA',judge:'MAESE BALTASAR',color:'#e8d898',motif:'torre',line:'Soy Isadora, guardiana de los campeones. Bienvenido a Piedra Bruja, en Providencia: el gran lugar de Santiago para Pokemon TCG y Magic. Cada ciudad te enseño una forma de jugar; aqui se exige dominarlas todas. Tras la victoria, el umbral despertara.',challenge:'ECLIPSE: todos los estilos; Galindo custodia la ultima ronda.',styles:['agro','ctrl','combo','ctrl','agro','combo'],players:['ANTONIA DEL ALBA','GASPAR PLATERO','FLORA DEL ECLIPSE','JULIAN DE LOS ANDES','ESTELA NOCTURNA','MARTIN DEL SOL'],tables:[[2,4],[6,3],[10,6]],shop:[2,6]}
 };
 // Keep a broad aisle above the entrance, especially in Tempest.
 TEMPLE_IDENTITIES.salaTempest.tables[2]=[2,6];
+// Valdivia (3 oct): el templo elfico de la sexta liga regional.
+TEMPLE_IDENTITIES.cartasValdivia={name:'SANTUARIO DEL ALERCE',host:'LAURA DEL ALERCE',judge:'MAESE ROBLE',color:'#58b058',motif:'cerezo',line:'Soy Laura, tallo madera de alerce y juego Elfos desde los tiempos de Urza Saga. En Valdivia la lluvia nunca para, y las mesas tampoco.',challenge:'SELVA: los elfos crecen rapido; corta su mana antes del gran turno.',styles:['combo','agro','combo','ctrl','agro','combo'],players:['IGNACIO DE ISLA TEJA','MAITE DEL CALLE-CALLE','TOMAS FYNDHORN','PAZ DE NIEBLA','DIEGO DEL TORREON','AMANDA LLANOWAR'],tables:[[2,4],[9,3],[9,6]],shop:[2,2]};
 function configureTemples(){
  for(const [room,p]of Object.entries(TEMPLE_IDENTITIES)){
   const d=ROOMS[room],org=d.npcs.find(n=>n.id.startsWith('liga'));
@@ -3553,15 +3887,39 @@ function configureTemples(){
  a.identity=p;a.name='CATEDRAL DE LA LLUVIA · SALON DE EVENTOS';a.roster=p.roster.slice();
  a.npcs=a.npcs.map((n,i)=>n.id==='azul'?{...n,id:p.shopId}:n.id==='diegoG'?{...n,id:p.judgeId}:TEMPLE_PLAYERS.includes(n.id)?{...n,id:p.roster[TEMPLE_PLAYERS.indexOf(n.id)]}:n);
  for(const prop of a.props){if(prop.k==='mostrador')prop.label='AURELIA';if(prop.opponent)prop.opponent=p.roster[0];}
+ // 3 oct: this player used to wall off the north-west corner of the hall.
+ for(const n of a.npcs)if(n.x===3&&n.y===5)n.x=5;
  for(const d of Object.values(ROOMS))for(const prop of d.props||[])if(prop.k==='standings'){prop.y=0;prop.h=1;}
  ROOMS.cartasPokemon={...ROOMS.tienda,name:'ARCHIVO POKEMON DE LAS CINCO LUNAS',pokemon:true,exitTo:ROOMS.cartasPokemon.exitTo};
  for(const d of Object.values(ROOMS)){d.props=(d.props||[]).filter(p=>p.k!=='tcgNeon'&&(!d.cardTemple||!['juegosMesa','retroShelf'].includes(p.k)));if(!d.interior&&d.plaques)d.props.push({k:'realmCrest',x:13,y:4,solid:false});}
  // National temple is the entrance to a sanctuary, in either realm.
  ROOMS.liga.map[5]='kFFFFFFFFFFFFDk';ROOMS.liga.doors={...(ROOMS.liga.doors||{}),'13,5':'santuarioPortal'};
  ROOMS.liga.props.push({k:'cartel',x:12,y:5,solid:false,label:'UMBRAL',txt:'EL SANTUARIO DEL UMBRAL: SE ABRE AL CAMPEON DE LA LIGA NACIONAL.'});
- ROOMS.santuarioPortal={name:'SANTUARIO DEL UMBRAL',zone:'tolaria',theme:'inside',music:'tcg',interior:true,exitTo:{room:'liga',tx:12,ty:5},map:['kkkkkkkkkkkkkkk',...Array(7).fill('kFFFFFFFFFFFFFk'),'kkkkkkkEkkkkkkk','kkkkkkkkkkkkkkk'],npcs:[],props:[{k:'urzaBox',x:3,y:7,solid:false,act:'urzaBox'},{k:'realmPortal',x:5,y:2,w:5,h:4,solid:false,act:'realmPortal'},...[2,12].flatMap(x=>[2,5].map(y=>({k:'portalPillar',x,y,solid:false}))),{k:'realmCrest',x:2,y:7,solid:false},{k:'realmCrest',x:12,y:7,solid:false}],signs:{'7,7':'EL UMBRAL UNE DOS REFLEJOS DEL MISMO MUNDO. EL PODER DE LAS CARTAS ABRE EL CAMINO.'}};
+ ROOMS.santuarioPortal={name:'SANTUARIO DEL UMBRAL',zone:'providencia',theme:'inside',music:'tcg',interior:true,exitTo:{room:'liga',tx:12,ty:5},map:['kkkkkkkkkkkkkkk',...Array(7).fill('kFFFFFFFFFFFFFk'),'kkkkkkkEkkkkkkk','kkkkkkkkkkkkkkk'],npcs:[],props:[{k:'urzaBox',x:3,y:7,solid:false,act:'urzaBox'},{k:'realmPortal',x:5,y:2,w:5,h:4,solid:false,act:'realmPortal'},...[2,12].flatMap(x=>[2,5].map(y=>({k:'portalPillar',x,y,solid:false}))),{k:'realmCrest',x:2,y:7,solid:false},{k:'realmCrest',x:12,y:7,solid:false}],signs:{'7,7':'EL UMBRAL UNE DOS REFLEJOS DEL MISMO MUNDO. EL PODER DE LAS CARTAS ABRE EL CAMINO.'}};
 }
 configureTemples();
+// 3 oct: aspecto medieval al maximo en Valdivia y en Piedra Bruja, donde se disputan las finales de todo el TCG.
+// Toda esta decoracion es atravesable (solid:false): no bloquea puertas, mesas ni caminos.
+{
+ const banner=(x,y,color)=>({k:'estandarte',x,y,color,solid:false,top:true}),torch=(x,y,top=false)=>({k:'antorcha',x,y,solid:false,top});
+ const noLamps=d=>{d.props=(d.props||[]).filter(p=>p.k!=='farol');};
+ noLamps(ROOMS.valdivia);noLamps(ROOMS.providencia);
+ ROOMS.valdivia.props.push({k:'torreMedieval',x:0,y:0,w:2,h:3,color:'#2a6a3a',solid:false,top:true},{k:'torreMedieval',x:13,y:0,w:2,h:3,color:'#6a2a5a',solid:false,top:true},
+  banner(2,3,'#2a6a3a'),banner(5,3,'#2a6a3a'),banner(9,3,'#6a2a5a'),banner(12,3,'#6a2a5a'),torch(1,5),torch(6,6),torch(13,6),torch(5,4),torch(9,4));
+ ROOMS.providencia.props.push({k:'torreMedieval',x:0,y:0,w:2,h:3,color:'#8a2a8a',solid:false,top:true},{k:'torreMedieval',x:13,y:0,w:2,h:3,color:'#2a5a9a',solid:false,top:true},
+  banner(3,3,'#8a2a8a'),banner(5,3,'#c8a030'),banner(9,3,'#2a5a9a'),banner(11,3,'#c8a030'),{k:'alfombra',x:7,y:4,h:5,solid:false},torch(1,4),torch(13,4),torch(4,8),torch(10,8));
+ ROOMS.providencia.signs['6,4']+=' AQUI SE DISPUTAN LAS FINALES DE TODO EL TCG: EL TRONO DE LOS CAMPEONES ESPERA AL GANADOR.';
+ for(const [id,color] of [['cartasValdivia','#2a6a3a'],['cafeElfo','#2a6a3a'],['torreonValdivia','#6a2a5a']]){
+  const d=ROOMS[id];d.props=(d.props||[]).concat(banner(5,0,color),banner(10,0,color),torch(2,0,true),torch(12,0,true));
+  if(id!=='cafeElfo')d.props.push({k:'armadura',x:13,y:2,solid:false},{k:'armadura',x:1,y:6,solid:false});
+ }
+ // Piedra Bruja inside: the national hall with carpet, throne, armours, torches and finals banners.
+ const liga=ROOMS.liga;liga.name='PIEDRA BRUJA · SALON DE LAS FINALES';
+ liga.props=liga.props.concat({k:'alfombra',x:7,y:1,h:7,solid:false},{k:'tronoFinal',x:7,y:1,solid:false,act:'tronoFinal'},
+  banner(5,0,'#8a2a8a'),banner(11,0,'#2a5a9a'),banner(1,0,'#c8a030'),banner(13,0,'#c8a030'),torch(4,0,true),torch(10,0,true),
+  {k:'armadura',x:13,y:2,solid:false},{k:'armadura',x:13,y:4,solid:false},{k:'armadura',x:1,y:6,solid:false});
+}
+function tronoFinal(){const champ=(S.ligaWins||0)>0;say(['EL TRONO DE LOS CAMPEONES: en Piedra Bruja se disputan las finales de todo el TCG, de Magic y de Pokemon. Solo el campeon nacional puede sentarse aqui.',champ?'Te sientas en el trono. Los estandartes ondean y toda la sala aplaude: ¡CAMPEON NACIONAL!':'Gana la Liga Nacional y este trono sera tuyo.']);if(champ){PL.dance=120;SFX.win();}}
 // An accessible bank replaces the decorative towers in Las Condes.
 ROOMS.lascondes.props=ROOMS.lascondes.props.filter(p=>p.k!=='torre');
 for(const y of [1,2,3]){const row=ROOMS.lascondes.map[y].split('');for(let i=0;i<4;i++)row[9+i]=y<3?'R':i===2?'D':'W';ROOMS.lascondes.map[y]=row.join('');}
@@ -3618,7 +3976,7 @@ ROOMS.oktoberfest={name:'OKTOBERFEST DEL LAGO',zone:'puertoVaras',theme:'inside'
 function festivalBeer(){say(['HILDEGARD: ¡Bienvenido a la Oktoberfest del lago! Una jarra y un pretzel por $3.000. Nuestra IA intento inventar una IPA: resulto un Instantaneo Pale Ale.'],[{t:'JARRA Y PRETZEL',fn:()=>{if(S.coins<3000){say(['Te faltan monedas para el menu. Puedes disfrutar de la fiesta y conversar igual.']);return;}S.coins-=3000;S.hp=S.maxHp;S.mp=maxMp();S.beerTotal=(S.beerTotal||0)+1;SFX.beer();saveGame();say(['¡PROST! El brindis recupera vida y magia. Don Otto te espera para el desafio de cata; Lucho para jugar cartas.']);}},{t:'DESAFIO DE CATA',fn:festivalTasting},{t:'VOLVER',fn:null}]);}
 function festivalTasting(){if((S.festivalNextAt||0)>Date.now()){say(['DON OTTO: Tu diploma de catador sigue fresco. Conversa, juega cartas y vuelve en unos minutos para otro desafio.']);return;}const rounds=[{q:'El jardinero trae el ingrediente que da amargor y aroma. ¿Cual eliges?',a:['LUPULO','ARROZ CON LECHE','UN MOX DIAMOND','CABLE DE MODEM'],correct:0},{q:'La receta empieza con cereal preparado. ¿Que saco abres?',a:['AZUCAR DEL ARCADE','MALTA','FUNDAS DE CARTAS','DISQUETES'],correct:1},{q:'El ultimo ingrediente hace fermentar la mezcla. ¿A quien llamas?',a:['AL JUEZ','A LA IA','LEVADURA','A UN GOBLIN'],correct:2}];let i=0,score=0;const ask=()=>{const r=rounds[i];say(['DON OTTO: '+r.q],r.a.map((t,j)=>({t,fn:()=>{if(j===r.correct)score++;if(++i<rounds.length){ask();return;}S.festivalNextAt=Date.now()+180000;const xp=score===3?200:50;addXP(xp);S.festivalMedals=(S.festivalMedals||0)+(score===3?1:0);saveGame();say([score===3?'¡CATADOR DEL LAGO! Acertaste las tres. Tu diploma dice: este heroe domina cartas y barriles.':'DON OTTO: '+score+'/3. Buena practica: el paladar tambien aprende.', '+'+xp+' EXP. ¡Prost!']);}})));};ask();}
 
-function homeOracle(){const next=Object.keys(LEAGUES).find(k=>!S.leagues[k]);say(['ORACULO IA: ¡Buenos dias, '+CH().n+'! Tu sueño de ser campeon sigue vivo. Hoy eres '+reputationTitle()+'.'],[{t:'MI PROXIMO RETO',fn:()=>say([next?'Tu siguiente liga pendiente es '+LEAGUES[next].place+'. Revisa LIGAS en el menu para ver tu avance. Puedes jugar a cualquier hora.':'Ya ganaste las cinco ligas. Busca al campeon nacional en Tolaria.',pokemonRealm()?'Visita cuatro mesas: tres retadores y el lider. Los signos ! muestran el siguiente rival.':'Completa una baraja y practica antes de inscribirte.'])},{t:'CONSEJO DE CARTAS',fn:()=>say(['Presion vence al combo; combo supera al control; control frena la presion. Observar permite leer al rival.','Ganar cartas y ligas te da mucha experiencia. La estrategia importa incluso a nivel alto.'])},{t:'MI GRAN SUEÑO',fn:()=>say(['Quiero armar la mejor baraja, dominar a las criaturas liberadas y salvar ambos mundos.','Mis trofeos, mis cartas y las personas que conozco contaran esta aventura.'])},{t:'VOLVER',fn:null}]);}
+function homeOracle(){const next=Object.keys(LEAGUES).find(k=>!S.leagues[k]);say(['ORACULO IA: ¡Buenos dias, '+CH().n+'! Tu sueño de ser campeon sigue vivo. Hoy eres '+reputationTitle()+'.'],[{t:'MI PROXIMO RETO',fn:()=>say([next?'Tu siguiente liga pendiente es '+LEAGUES[next].place+'. Revisa LIGAS en el menu para ver tu avance. Puedes jugar a cualquier hora.':'Ya tienes las ligas que pide la Nacional. Busca al campeon nacional en Piedra Bruja, Providencia.',pokemonRealm()?'Visita cuatro mesas: tres retadores y el lider. Los signos ! muestran el siguiente rival.':'Completa una baraja y practica antes de inscribirte.'])},{t:'CONSEJO DE CARTAS',fn:()=>say(['Presion vence al combo; combo supera al control; control frena la presion. Observar permite leer al rival.','Ganar cartas y ligas te da mucha experiencia. La estrategia importa incluso a nivel alto.'])},{t:'MI GRAN SUEÑO',fn:()=>say(['Quiero armar la mejor baraja, dominar a las criaturas liberadas y salvar ambos mundos.','Mis trofeos, mis cartas y las personas que conozco contaran esta aventura.'])},{t:'VOLVER',fn:null}]);}
 
 let REALM_WORDS=null,REALM_PATTERN=null,REALM_LOOKUP=null;
 function realmText(value){
@@ -3632,13 +3990,14 @@ function realmText(value){
   REALM_WORDS=[...words].sort((a,b)=>b[0].length-a[0].length);REALM_LOOKUP=new Map(REALM_WORDS.map(([a,b])=>[a.toLowerCase(),b]));REALM_PATTERN=new RegExp(REALM_WORDS.map(([a])=>a.replace(/[.*+?^${}()|[\]\\]/g,'\\  REALM_WORDS=[...words].sort((a,b)=>b[0].length-a[0].length);}')).join('|'),'gi');}
  return text.replace(REALM_PATTERN,match=>REALM_LOOKUP.get(match.toLowerCase()));
 }
-const POKEMON_GYM_DECKS={curico:['pk_bolt','pk_excadrill','pk_terabox','pk_gardevoir'],vina:['pk_starmie','pk_lucario','pk_greninja','pk_starmie'],pmontt:['pk_dragapult','pk_terabox','pk_absol','pk_greninja'],urza:['pk_excadrill','pk_absol','pk_mewtwo','pk_gardevoir'],tempest:['pk_lucario','pk_bolt','pk_dragapult','pk_excadrill'],nacional:['pk_terabox','pk_absol','pk_mewtwo','pk_dragapult']};
+const POKEMON_GYM_DECKS={curico:['pk_bolt','pk_excadrill','pk_terabox','pk_gardevoir'],vina:['pk_starmie','pk_lucario','pk_greninja','pk_starmie'],pmontt:['pk_dragapult','pk_terabox','pk_absol','pk_greninja'],urza:['pk_excadrill','pk_absol','pk_mewtwo','pk_gardevoir'],tempest:['pk_lucario','pk_bolt','pk_dragapult','pk_excadrill'],valdivia:['pk_dragapult','pk_gardevoir','pk_greninja','pk_lucario'],nacional:['pk_terabox','pk_absol','pk_mewtwo','pk_dragapult']};
 const POKEMON_GYMS={
  cartasCurico:{key:'curico',leader:'ERIKA',type:'PLANTA',style:'combo',color:'#78c878',pokemon:2,names:['AMANDA DEL HUERTO','RAMIRO SEMILLAS','VERONICA PARRA'],challenge:'JARDIN: prepara tu combo, pero una ofensiva rapida puede marchitarlo.',boast:'Mi jardin florece con cada carta. ¡No me venceras con una baraja improvisada!'},
  cartasVina:{key:'vina',leader:'MISTY',type:'AGUA',style:'ctrl',color:'#68b8ed',pokemon:8,names:['CAMILA DEL MUELLE','BENJAMIN BUZO','ROCIO CORRIENTE'],challenge:'MAREA: guarda respuestas y anticipa el siguiente ataque.',boast:'¡Soy la lider de las mareas! Mi control arrastrara tu mejor jugada.'},
  cartasSur:{key:'pmontt',leader:'LORELEI',type:'HIELO',style:'ctrl',color:'#a0dce8',pokemon:130,names:['ELENA DEL CANAL','NICOLAS ESCARCHA','MARGARITA AUSTRAL'],challenge:'ESCARCHA: supera el control sin quedarte sin recursos.',boast:'El sur me enseño a resistir. ¡Tu baraja se congelara antes de vencerme!'},
  tienda:{key:'urza',leader:'SABRINA',type:'PSIQUICO',style:'combo',color:'#d898e8',pokemon:64,names:['DARIO ASTROLABIO','LUCIA DEL ORACULO','SEBASTIAN COMETA'],challenge:'ORACULO: lee las señales; interrumpe el combo antes del desenlace.',boast:'Ya vi tu proxima jugada. ¡Prueba que puedes cambiar el destino!'},
  salaTempest:{key:'tempest',leader:'BLAINE',type:'FUEGO',style:'agro',color:'#f09858',pokemon:5,names:['SOFIA BRASA','GABRIEL DEL HORNO','RENATA CENIZA'],challenge:'BRASA: controla la presion; un combo expuesto arde rapido.',boast:'¡Mi mazo es una hoguera! Veremos si tus respuestas soportan el calor.'},
+ cartasValdivia:{key:'valdivia',leader:'ANTON',type:'BICHO',style:'agro',color:'#9cc848',pokemon:122,names:['CATA DEL HUMEDAL','BRUNO CAZABICHOS','VALERIA COLMENA'],challenge:'COLMENA: el enjambre crece rapido; cortalo antes de que se multiplique.',boast:'¡Mis Pokemon bicho invaden el tablero! Veremos si tu baraja resiste el enjambre.'},
  liga:{key:'nacional',leader:'FERNANDO CIFUENTES',type:'MAESTROS',style:'ctrl',color:'#e8d898',pokemon:149,names:['ANTONIA ESTELAR','MIGUEL DEL ALBA','VALENTINA ECLIPSE'],challenge:'MAESTROS: tres estilos distintos antes del campeon Fernando.',boast:'Llegaste muy lejos. Ahora demuestra que tu lectura de cartas merece el titulo mundial.'}
 };
 function applyPokemonGym(d){
@@ -3662,7 +4021,7 @@ function pokemonGymTalk(id,npc){
  const i=gym.ids.indexOf(id),run=gymRun(),name=NPCDEF[id].n;
  if(run.won){say([name+': '+CH().n+', '+reputationTitle()+'. Ganaste nuestra medalla. El gimnasio recuerda tu victoria.'],[{t:'REPETIR RECORRIDO',fn:()=>{S.gymRuns[gym.key]={next:0,won:false};saveGame();say(['Comienza otra vez por '+NPCDEF[gym.ids[0]].n+'.']);}},{t:'VOLVER',fn:null}]);return true;}
  if(i!==run.next){say([name+': '+(i<run.next?'Ya me venciste. ¡Sigue adelante!':i===3?gym.spec.boast:'Primero vence a los retadores anteriores.'),'Siguiente rival: '+NPCDEF[gym.ids[run.next]].n+'. Tres retadores y despues el lider. Tu avance se guarda entre partidas.']);return true;}
- if(gym.key==='nacional'&&leaguesDone()<5){say(['FERNANDO: Conquista las cinco medallas regionales. Entonces aceptare tu desafio.']);return true;}
+ if(gym.key==='nacional'&&leaguesDone()<5){say(['FERNANDO: Conquista cinco medallas regionales. Entonces aceptare tu desafio.']);return true;}
  const deck=DECK[POKEMON_GYM_DECKS[gym.key][i]];say([name+': '+(i===3?gym.spec.boast:'¡Te vi entrar! Mi '+deck.n+' protege esta mesa.'),deck.n+': '+deck.strategy],[{t:'DESAFIAR CON CARTAS',fn:()=>beginPokemonGymMatch(i)},{t:'PREPARARME',fn:null}]);return true;
 }
 function beginPokemonGymMatch(i){
@@ -3702,11 +4061,20 @@ function localTempleTalk(id,npc,skipQuest){
 }
 function localPlayerDeck(id){for(const p of Object.values(TEMPLE_IDENTITIES)){const i=p.roster.indexOf(id);if(i>=0&&pokemonRealm())return POKEMON_META_DECKS[(i+Object.keys(TEMPLE_IDENTITIES).indexOf(p.room))%10].id;if(i>=0)return {agro:'goblins',ctrl:'landstill',combo:'replenish'}[p.styles[i]];}return null;}
 function lootNotice(s,col){const prev=G.toasts.find(t=>t.loot&&t.s===s);if(prev){prev.t=0;return;}toast(s,col);G.toasts[G.toasts.length-1].loot=true;}
+function rareLootNotice(kind,id,sub=''){
+  const item=kind==='sword'?SWORDS[id]:kind==='gear'?ARMOR[id]:RELICS[id];if(!item)return false;
+  const epic=kind==='relic'?item.w<=3:item.realm==='pokemon'||itemLevel(kind==='gear'?'armor':'sword',id)>=40;
+  const rare=epic||(kind==='gear'?item.tier>=3:kind==='sword'?itemLevel('sword',id)>=12:item.w<=9);if(!rare)return false;
+  const queue=G.cardPopQ=G.cardPopQ||[],same=c=>c?.kind==='loot'&&c.objKind===kind&&c.id===id;
+  if(same(G.cardPop)||queue.some(same))return true;
+  queue.push({kind:'loot',objKind:kind,id,t:0,name:item.n,col:epic?'#c8a0ff':'#fcd84a',epic,sub:sub||(kind==='relic'?money(item.v):kind==='sword'?statLine(item.st):'+'+item.def+' DEF')});SFX.card();return true;
+}
+
 function drawRealmCrest(x,y,p){
  disc(x,y,7,'#16162c');if(p.pokemon||pokemonRealm()){disc(x,y,6,'#f4e8d8');R(x-5,y-5,11,5,'#e85858');R(x-6,y,13,1,'#28243a');disc(x,y,2,'#28243a');disc(x,y,1,'#fff');}
  else{const colors=['#e8ddaa','#6098d8','#907898','#df7860','#80b878'];for(let i=0;i<5;i++)disc(x+Math.cos(i*1.256-1.57)*4,y+Math.sin(i*1.256-1.57)*4,2,colors[i]);disc(x,y,1,'#fff');}
 }
-function drawLeagueRelic(x,y,p){const a=TEMPLE_IDENTITIES[p.identity];outl(x,y,30,24,'#202238');R(x+2,y+2,26,20,a.color);const sym={cartasCurico:'VID',cartasVina:'MAR',cartasSur:'SUR',tienda:'LUNA',salaTempest:'FORJA',liga:'SOL'}[p.identity];tiny(sym,x+15,y+4,'#202238','center');drawRealmCrest(x+15,y+16,p);}
+function drawLeagueRelic(x,y,p){const a=TEMPLE_IDENTITIES[p.identity];outl(x,y,30,24,'#202238');R(x+2,y+2,26,20,a.color);const sym={cartasCurico:'VID',cartasVina:'MAR',cartasSur:'SUR',tienda:'LUNA',salaTempest:'FORJA',cartasValdivia:'ELFO',liga:'SOL'}[p.identity];tiny(sym,x+15,y+4,'#202238','center');drawRealmCrest(x+15,y+16,p);}
 function drawRealmPortal(cx,cy){
  const pulse=1+Math.sin(frame*.045)*.08;ctx.save();
  const glow=ctx.createRadialGradient(cx,cy,5,cx,cy,68);glow.addColorStop(0,'rgba(142,104,255,.65)');glow.addColorStop(1,'rgba(40,64,150,0)');ctx.fillStyle=glow;ctx.fillRect(cx-72,cy-66,144,130);
@@ -3768,7 +4136,7 @@ function loadRoom(id, px, py){
   });
   if (bossResting && d.bossFloor) G.map[4][7] = 'O';
   G.wild = []; G.balls = []; G.propSolid = propSolidSet(d); G.slide = null; G.hielera = false;
-  G.animals = (d.animals || []).map(a => ({ k:a.k, x:a.x * TS, y:a.y * TS, tx:a.x * TS, ty:a.y * TS, box:a.box, t:rnd(100), wait:rnd(60), flip:false }));
+  G.animals = (d.animals || []).map(a => ({ k:a.k, spd:a.spd, x:a.x * TS, y:a.y * TS, tx:a.x * TS, ty:a.y * TS, box:a.box, t:rnd(100), wait:rnd(60), flip:false }));
   G.surfers = []; for (let i = 0; i < (d.surfers || 0); i++) G.surfers.push({ x:[20, 180, 12][i] || 60, y:[9, 9, 7][i] * TS + 2, vx:[0.6, -0.5, 0.35][i] || 0.4, t:rnd(100), board:['#f05a8a','#40b8e0','#f8d040'][i % 3] });
   if (d.safari) { S.safariBalls = 15; for (let i = 0; i < 6; i++) spawnWildPoke(); }
   G.pet = companionInfo() ? { x:px - 14, y:py + 2, t:0, cd:40, tgt:null } : null;
@@ -3889,7 +4257,7 @@ function addSword(id){
   const cur = SWORDS[S.eq].st, nw = SWORDS[id].st, sum = o => Object.values(o).reduce((a, b) => a + b, 0);
   const auto = sum(nw) > sum(cur);
   if (auto) S.eq = id;
-  lootNotice(SWORDS[id].n.toUpperCase()+(auto?' · EQUIPADA':''),'#b0e8ff');
+  if(!rareLootNotice('sword',id,auto?'EQUIPADA':statLine(nw)))lootNotice(SWORDS[id].n.toUpperCase()+(auto?' · EQUIPADA':''),'#b0e8ff');
   saveGame();
 }
 const statLine = st => Object.entries(st).map(([k, v]) => '+' + v + ' ' + k.toUpperCase()).join(' ') || 'SIN BONOS';
@@ -3906,7 +4274,7 @@ function dropLoot(e){
     G.items.push({ k, id, v, x, y, z:0, vz:-2.2, t:0 });
   };
   if (m.boss) {
-    S.bosses[e.type] = true; G.bossBar = null; playMusic(roomMusic());
+    S.bosses[e.type] = true; G.bossBar = null; playMusic(roomMusic()); awardBossDiploma(e.type);
     if (G.def.bossFloor) { G.map[4][7] = 'O'; G.cacheDirty = true; }
     if (GUARDIANS.includes(e.type)) toast('GUARDIANES DERROTADOS: ' + guardiansDone() + '/5', '#fcd84a');
     drop('card', m.cards[0]); drop('sword', m.sword); if (BOSS_GEAR[e.type]) drop('gear', BOSS_GEAR[e.type]); if (e.type === 'shivan' && !(S.mounts || []).includes('shivan')) setTimeout(() => giveMount('shivan'), 600);
@@ -4036,6 +4404,7 @@ function hostTalk(n){
   return false;
 }
 function propAction(p){
+  if(southPropAction(p))return;
   if(p.act==='regionalFest'){regionalFestival(p.region);return;}
   if(p.act==='urzaBox'){closeUrzaBox();return;}
   if(p.act==='octayRace'){startOctayRace();return;}
@@ -4083,6 +4452,7 @@ function updateSlide(){
   if (PL.y >= s.y1) { G.slide = null; S.sacos = (S.sacos || 0) + 1; SFX.win(); floatText('¡WIIIIII!', PL.x + 5, PL.y - 14, '#fff8c0'); toast('BAJADAS EN SACO: ' + S.sacos, '#f0d090'); if (S.sacos % 10 === 0) { addXP(20); toast('¡' + S.sacos + ' BAJADAS! +20 EXP', '#fcd84a'); } saveGame(); }
 }
 function tryInteract(){
+  const rider=(G.animals||[]).find(a=>a.k==='ciclista'&&Math.hypot(a.x+8-PL.x-5,a.y+8-PL.y-4)<26);if(rider){carlitosTalk();return true;}
   const hidden=hiddenSpot();if(hidden&&Math.hypot(PL.x+5-hidden.x,PL.y+4-hidden.y)<22){searchHidden();return true;}
   for (const dist of [11, 20]) {
     const pt = interactPoint(dist);
@@ -4260,7 +4630,7 @@ function explodeShot(s){
 }
 function hitWithSpell(e, s, splash){
   if(e.dead)return;
-  const sp = SPELLS[s.id], lv = s.lv || 1, dmg = sp.dmg + aquaticBonus(e) + Math.floor(stats().int / 3) + Math.floor((lv - 1) * sp.dmg / 2);
+  const sp = SPELLS[s.id], lv = s.lv || 1, dmg = Math.round((sp.dmg + aquaticBonus(e) + Math.floor(stats().int / 3) + Math.floor((lv - 1) * sp.dmg / 2)) * (s.id === 'bolt' && CH().burnLover ? 1.5 : 1));
   if (!s.xpGiven) { s.xpGiven = true; gainSpellXp(s.id, 6+2*lv);saveGame(); }
   const d = Math.hypot(s.vx, s.vy) || 1, kx = s.vx / d * 1.6, ky = s.vy / d * 1.6;
   floatText(String(dmg), e.x + e.w / 2, e.y - 4, sp.col);
@@ -4293,12 +4663,13 @@ function drawShots(){
 
 /* ============ AMBIENTE (vida en los escenarios) ============ */
 function spawnQuestItems(){
+  ensureContracts();
   for (const q in S.quests || {}) {
     const Q = QUESTS[q];
     if (!Q || Q.type !== 'find' || S.quests[q].st !== 'active' || !Q.zones.includes(G.roomId) || S.foundZones[q + '@' + G.roomId]) continue;
     const cand = [];
     for (let y = 2; y <= 7; y++) for (let x = 2; x <= 12; x++) if ('.,=sm'.includes(G.map[y][x])) cand.push([x, y]);
-    if (!cand.length) continue;
+    if (!cand.length||G.items.some(it=>it.k==='qitem'&&it.q===q&&!it.dead)) continue;
     const [x, y] = cand[strHash(q + G.roomId) % cand.length];
     G.items.push({ k:'qitem', q, x:x * TS + 3, y:y * TS + 3, z:0, vz:0, t:20 });
   }
@@ -4434,6 +4805,7 @@ function updateWorld(){
   const p = PL;
   if(p.dance>0){if(G.moveTarget||K.up||K.down||K.left||K.right||pressed('a')||pressed('b'))p.dance=0;else{p.dance--;p.dir=Math.floor(frame/30)%4;p.walk+=.25;if(frame%12===0)G.parts.push({k:'note',x:p.x+5,y:p.y-14,vx:(Math.random()-.5)*.4,vy:-.4,t:0,c:'#ff90e0'});if(p.dance===0){S.dances=(S.dances||0)+1;toast('¡QUE BUEN BAILE!','#ff90e0');saveGame();}}}
   if (G.slide) { updateSlide(); return; }
+  if (G.refalin) { updateRefalin(); return; }
   updateSurfers();
   updateAnimals();
   unstuckPlayer();
@@ -4692,7 +5064,7 @@ function updateItems(){
       if (it.k === 'coin') { const value = Math.round(it.v * (CH().finance ? 1.2 : 1)); S.coins += value; SFX.coin(); lootNotice('MONEDAS +'+money(value),'#fcd84a'); }
       else if (it.k === 'heart') { S.hp = Math.min(S.maxHp, S.hp + 2); SFX.heart();lootNotice('CORAZON · +2 VIDA','#ff90a0'); }
       else if (it.k === 'key') { S.keys = S.keys || {}; S.keys[it.id] = true; SFX.chest(); toast('¡LLAVE DEL PISO! YA PUEDES BAJAR', '#fcd84a'); saveGame(); }
-      else if (it.k === 'relic') { S.relics = S.relics || {}; S.relics[it.id] = (S.relics[it.id] || 0) + 1; SFX.chest(); toast('ANTIGUEDAD: ' + RELICS[it.id].n.toUpperCase() + ' (' + money(RELICS[it.id].v) + ')', '#e8c040'); saveGame(); }
+      else if (it.k === 'relic') { S.relics = S.relics || {}; S.relics[it.id] = (S.relics[it.id] || 0) + 1; SFX.chest(); if(!rareLootNotice('relic',it.id))lootNotice('ANTIGUEDAD: ' + RELICS[it.id].n.toUpperCase() + ' (' + money(RELICS[it.id].v) + ')', '#e8c040'); saveGame(); }
       else if (it.k === 'beer') { const hl = CH().beer ? 8 : 4; S.hp = Math.min(S.maxHp, S.hp + hl); S.beersFound = (S.beersFound || 0) + 1; SFX.beer(); if (CH().piscola) { PL.piscola = 600; toast('¡PISCOLITA! CORRES MAS RAPIDO', '#f0e040'); } lootNotice('CERVEZA · +'+hl+' VIDA','#fce060'); for (let i = 0; i < 6; i++) G.parts.push({ k:'bubble', x:it.x + 5, y:it.y, vx:0, vy:-0.5 - Math.random() * 0.4, t:0 }); }
       else if (it.k === 'card') addCard(it.id);
       else if (it.k === 'sword') addSword(it.id);
@@ -4814,20 +5186,63 @@ const EXTRA_QUESTS=[
  ['marinero','Expedicion sin fronteras','visit',null,28]
 ];
 EXTRA_QUESTS.forEach(([giver,title,type,target,n,itemName,icon],i)=>{QUESTS['q_nueva'+i]={giver,title,type,n,desc:type==='find'?'Recupera '+n+' '+itemName.toLowerCase()+' en '+target.join(', ')+'.':type==='kill'?'Derrota '+n+' '+target.join(' o ')+'.':type==='killAll'?'Derrota '+n+' criaturas desde que aceptes.':type==='decks'?'Completa '+n+' barajas.':type==='cards'?'Colecciona '+n+' cartas distintas.':type==='visit'?'Visita '+n+' zonas.':'Alcanza '+n+' puntos en el arcade.',...(type==='find'?{zones:target,itemName,icon}:type==='kill'?{target}:{}),minLvl:5+i*2,reward:{st:{[i%2?'des':'int']:2},coins:1000+i*100,xp:300+i*50}};});
-function ensureContract(){S.contractRound=S.contractRound||0;for(let i=0;i<=S.contractRound;i++){const id='q_contrato'+i;if(!QUESTS[id])QUESTS[id]={giver:'cronista',title:'Patrulla '+(i+1),minLvl:Math.min(80,1+i*3),type:'killAll',n:20+Math.min(80,i*5),desc:'Derrota criaturas y vuelve al cronista de la Villa. Siempre habra otra patrulla.',reward:{coins:800+i*100,xp:500+i*50}};}return 'q_contrato'+S.contractRound;}
+// Teno, Valdivia y Providencia (3 oct): misiones del lugar y encargos renovables que escalan hasta el nivel 200.
+Object.assign(QUESTS,{
+ q_teno_huevos:{giver:'abuelaCampo',title:'Huevos para el kuchen',type:'find',n:3,zones:['campoFamilia','teno','valpo'],itemName:'HUEVO DE CAMPO',icon:'egg',desc:'La Abuela necesita 3 huevos de campo. Las gallinas los dejaron en el campo, en Teno y en Curico.',reward:{coins:40,xp:250,maxHp:2}},
+ q_teno_refalin:{giver:'tataCampo',title:'Cinco bajadas con Rai',type:'refalin',n:5,desc:'Tirate 5 veces por el refalin de la casita de juegos. Rai cuenta cada bajada.',reward:{coins:30,xp:200,st:{agi:1}}},
+ q_teno_juguetes:{giver:'tataCampo',title:'Los juguetes perdidos de Rai',type:'find',n:3,zones:['campoFamilia','teno','pueblo'],itemName:'JUGUETE DE RAI',icon:'toy',desc:'Rai dejo juguetes repartidos: en el campo, en la plaza de Teno y en la Villa. Devuelvelos a la casita.',reward:{coins:60,xp:300,st:{des:1}}},
+ q_teno_alcalde:{giver:'secretariaTeno',title:'Objecion, su señoria',type:'kill',target:['magoAzul','merfolk'],n:8,desc:'El alcalde Gonzalo pide frenar a los magos del Counterspell y a los merfolk que bloquean los tramites. Derrota 8.',reward:{coins:80,xp:400,st:{int:1}}},
+ q_valdivia_elfos:{giver:'guardabosque',title:'Elfos en la selva',type:'kill',target:['elfoLlanowar','elfoRanger','elfoLirista','elfoSimbionte','elfoDruida'],n:15,minLvl:15,desc:'Derrota 15 elfos liberados de las cartas en Oncol, la Selva Valdiviana o Niebla.',reward:{coins:90,xp:900,st:{fue:1}}},
+ q_valdivia_niebla:{giver:'guardabosque',title:'El polvorin de Niebla',type:'kill',target:['sacerdotisa'],n:1,minLvl:25,desc:'Vence a la Sacerdotisa de Titania en el polvorin del Castillo de Niebla.',reward:{coins:150,xp:1800,maxHp:2}},
+ q_valdivia_rofellos:{giver:'guardabosque',title:'El emisario de Llanowar',type:'kill',target:['rofellos'],n:1,minLvl:35,desc:'Entra a la Arboleda de Argoth y derrota a Rofellos, Emisario de Llanowar.',reward:{coins:250,xp:3500,st:{fue:2,des:1}}}
+});
+const CONTRACT_GIVERS={cronista:1,marinero:10,curadoraTalca:15,mago:20,mensajeraPB:1,guardabosque:20};
+const CONTRACT_HOME={cronista:'la Villa',marinero:'Curico',curadoraTalca:'el Museo de Talca',mago:'Mercado Mox',mensajeraPB:'Piedra Bruja, en Providencia',guardabosque:'Valdivia'};
+function contractId(giver,round){return giver==='cronista'?'q_contrato'+round:'q_encargo_'+giver+'_'+round;}
+function contractRound(giver){return giver==='cronista'?(S.contractRound||0):(S.contractRounds?.[giver]||0);}
+function buildContract(giver,round){
+  const level=Math.max(1,S.lvl||1),tier=level<25?1:level<60?2:level<100?3:4,extra=round*3;
+  const base={giver,minLvl:CONTRACT_GIVERS[giver],renewable:true,round,level,realm:S.realm||'magic'};
+  let quest;
+  if(giver==='curadoraTalca'){
+    const route=level<25?['bosque','pradera','costa']:level<60?['bosqueProf','pantanoProf','ruinas','dunas']:['volcan','glaciar','urborg','pampa','D:minas:3','D:cripta:2','D:torre:3'];
+    const count=Math.min(route.length,(level>=100?5:3)+Math.floor(round/3)),offset=round%route.length,zones=Array.from({length:count},(_,i)=>route[(i+offset)%route.length]);
+    quest={type:'find',n:count,zones,itemName:'RELIQUIA DEL SELLO',icon:'rune',title:'Archivo de Urza '+(round+1),desc:'Recupera '+count+' reliquias del sello: '+zones.map(z=>getDef(z).name.split(' · ')[0]).join(', ')+'. Una por zona; vuelve al Museo de Talca.'};
+  }else{
+    const elite=level>=60&&(giver==='mago'||round%3===2),n=elite?3+Math.floor(level/50)+Math.floor(extra/15):12+Math.floor(level*.3)+extra;
+    quest={type:'hunt',n,minTier:tier,bossOnly:elite,title:(elite?'Caza de guardianes':giver==='marinero'?'Rutas sin monstruos':'Patrulla del sello')+' '+(round+1),desc:'Derrota '+n+' '+(elite?'jefes':'criaturas')+' en zonas de peligro '+tier+' o superior, en el mundo '+(pokemonRealm()?'Pokemon':'Magic')+'. Solo cuentan desde que aceptes. Vuelve a '+(CONTRACT_HOME[giver]||'la Villa')+'.'};
+  }
+  const difficulty=quest.bossOnly?1.65:quest.type==='find'?1.25:1;
+  return {...base,...quest,reward:{contract:true,coins:Math.round((1600+level*190+level*level*2+round*650)*difficulty/100)*100,xp:Math.round((200+level*40+level*level*.8+round*100)*difficulty)}};
+}
+function ensureContract(giver='cronista'){
+  if(!S||!CONTRACT_GIVERS[giver])return null;
+  S.contractRound=S.contractRound||0;S.contractRounds=S.contractRounds||{};
+  const round=contractRound(giver);
+  for(const [id,st] of Object.entries(S.quests||{})){
+    if(st.contract?.giver===giver)QUESTS[id]=st.contract;
+    else if(giver==='cronista'&&/^q_contrato\d+$/.test(id)){const i=Number(id.slice(10));QUESTS[id]={giver,title:'Patrulla '+(i+1),minLvl:Math.min(80,1+i*3),type:'killAll',n:20+Math.min(80,i*5),desc:'Derrota criaturas y vuelve al cronista de la Villa.',reward:{coins:800+i*100,xp:500+i*50}};}
+  }
+  const id=contractId(giver,round);if(!S.quests[id])QUESTS[id]=buildContract(giver,round);
+  return id;
+}
+function ensureContracts(){for(const giver of Object.keys(CONTRACT_GIVERS))ensureContract(giver);}
+function questXP(reward,level=S.lvl){const raw=reward.xp||100;return reward.contract?raw:Math.round(raw*(1+(Math.max(1,level)-1)*.025));}
 
 const GIVER_PLACE = {completero:'COMPLETOS (TALCA)',curadoraTalca:'MUSEO (TALCA)',vinero:'TALCA',talquino:'TALCA',caballerizo:'ESTABLO (CURICO)',azul:'TIENDA DE CARTAS',diegoG:'TIENDA DE CARTAS',galindo:'TIENDA DE CARTAS', vecina:'VILLA', cronista:'VILLA', cantinero:'TABERNA DE LA VILLA', klaus:'TABERNA DE LA VILLA', coleccionista:'TABERNA DE LA VILLA',
   organizador:'ARENA DE LA VILLA', pescador:'CURICO', marinero:'CURICO', viejo:'CASA DEL VIEJO (CURICO)', juez:'TOLARIA', fan2:'TOLARIA',
-  tendero:'TIENDA (TOLARIA)', posadera:'POSADA (TOLARIA)', arcadeOrg:'ARCADE (TOLARIA)', mueblero:'MERCADO DE MOX', mago:'MERCADO DE MOX',mechonaPelluco:'CAMPUS/PLAYA PELLUCO' };
+  tendero:'TIENDA (TOLARIA)', posadera:'POSADA (TOLARIA)', arcadeOrg:'ARCADE (TOLARIA)', mueblero:'MERCADO DE MOX', mago:'MERCADO DE MOX',mechonaPelluco:'CAMPUS/PLAYA PELLUCO',abuelaCampo:'CAMPO (TENO)',tataCampo:'CAMPO (TENO)',secretariaTeno:'MUNICIPALIDAD DE TENO',guardabosque:'VALDIVIA',mensajeraPB:'PIEDRA BRUJA (PROVIDENCIA)' };
 const STN = { fue:'FUE', des:'DES', agi:'AGI', int:'INT' };
-const rewardText = r => [Object.entries(r.st || {}).map(([k, v]) => '+' + v + ' ' + STN[k]).join(' '), r.maxHp ? '+' + r.maxHp / 2 + ' CORAZÓN' : '', r.coins ? money(questCoins(r)) : '', r.spell ? 'HECHIZO ' + SPELLS[r.spell].n.toUpperCase() : '', r.stone ? STONES[r.stone].n : '',r.xp ? '+'+r.xp+' EXP' : ''].filter(Boolean).join(', ');
+const rewardText = (r,level=S.lvl) => [Object.entries(r.st || {}).map(([k, v]) => '+' + v + ' ' + STN[k]).join(' '), r.maxHp ? '+' + r.maxHp / 2 + ' CORAZÓN' : '', r.coins ? money(questCoins(r,level)) : '', r.spell ? 'HECHIZO ' + SPELLS[r.spell].n.toUpperCase() : '', r.stone ? STONES[r.stone].n : '','+'+questXP(r,level)+' EXP'].filter(Boolean).join(', ');
 const killsOf = ts => ts.reduce((a, t) => a + ((S.kills || {})[t] || 0), 0);
-function questBase(q){ const Q = QUESTS[q]; return Q.type === 'kill' ? killsOf(Q.target) : Q.type === 'killAll' ? (S.killsTotal || 0) : Q.type === 'beer' ? (S.beerTotal || 0) : 0; }
+function questBase(q){ const Q = QUESTS[q]; return Q.type === 'kill' ? killsOf(Q.target) : Q.type === 'killAll' ? (S.killsTotal || 0) : Q.type === 'beer' ? (S.beerTotal || 0) : Q.type === 'refalin' ? (S.refalines || 0) : 0; }
 function questProg(q){
   const Q = QUESTS[q], st = S.quests[q], base = st ? st.base : 0;
   switch (Q.type) {
     case 'kill': return killsOf(Q.target) - base;
     case 'killAll': return (S.killsTotal || 0) - base;
+    case 'refalin': return (S.refalines || 0) - base;
+    case 'hunt': return st?.count||0;
     case 'beer': return (S.beerTotal || 0) - base;
     case 'visit': return Object.keys(S.visited || {}).length;
     case 'guardians': return guardiansDone();
@@ -4840,7 +5255,7 @@ function questProg(q){
   }
   return 0;
 }
-const questsOf = id => {if(id==='cronista')ensureContract();return Object.keys(QUESTS).filter(q => QUESTS[q].giver === id&&((S.lvl||1)>=(QUESTS[q].minLvl||1)||!!S.quests[q])&&(!q.startsWith('q_contrato')||Number(q.slice(10))<=(S.contractRound||0)));};
+const questsOf = id => {const current=ensureContract(id);return Object.keys(QUESTS).filter(q => QUESTS[q].giver===id&&((S.lvl||1)>=(QUESTS[q].minLvl||1)||!!S.quests[q])&&(!q.startsWith('q_contrato')&&!q.startsWith('q_encargo_')||q===current||!!S.quests[q]));};
 function questMarker(id){
   if (!S || !S.quests) return null;
   const list = questsOf(id); if (!list.length) return null;
@@ -4852,18 +5267,18 @@ function questHook(id, npc){
   const list = questsOf(id), who = NPCDEF[id] ? NPCDEF[id].n : id.toUpperCase();
   if (!list.length) return false;
   for (const q of list) {
-    const st = S.quests[q], Q = QUESTS[q],cashReward=questCoins(Q.reward);
+    const st = S.quests[q], Q = QUESTS[q],rewardLevel=S.lvl,cashReward=questCoins(Q.reward,rewardLevel),xpReward=questXP(Q.reward,rewardLevel);
     if (st && st.st === 'active' && questProg(q) >= Q.n) {
       st.st = 'done';
-      if(q.startsWith('q_contrato')){S.contractRound=(S.contractRound||0)+1;ensureContract();}
-      if(Q.reward.xp)addXP(Q.reward.xp);
+      if(Q.renewable||q.startsWith('q_contrato')){if(Q.giver==='cronista')S.contractRound=(S.contractRound||0)+1;else{S.contractRounds=S.contractRounds||{};S.contractRounds[Q.giver]=contractRound(Q.giver)+1;}ensureContract(Q.giver);}
+      addXP(xpReward);
       for (const [k, v] of Object.entries(Q.reward.st || {})) S.st[k] += v;
       if (Q.reward.maxHp) { S.maxHp += Q.reward.maxHp; }
       S.hp = S.maxHp; S.coins += cashReward;
       if (Q.reward.spell) learnSpell(Q.reward.spell);
       if (Q.reward.stone) { S.stones = S.stones || {}; S.stones[Q.reward.stone] = true; toast(STONES[Q.reward.stone].n + ': USALA CON EL BOTON VIAJAR (TECLA T)', '#c8a0ff'); }
       SFX.lvl(); saveGame();
-      say([who + ': ¡Cumpliste el encargo "' + Q.title + '"! Muchas gracias.', 'Recompensa: ' + rewardText(Q.reward) + '. Tus atributos subieron para siempre.']);
+      say([who + ': ¡Cumpliste el encargo "' + Q.title + '"! Muchas gracias.', 'Recompensa: ' + rewardText(Q.reward,rewardLevel) + '.'+(Q.reward.st?' Tus atributos subieron para siempre.':'')+(Q.renewable?' Tengo otro encargo cuando estes listo.':'')]);
       return true;
     }
   }
@@ -4872,7 +5287,7 @@ function questHook(id, npc){
   if (!next) return false;
   const Q = QUESTS[next];
   say([who + ': Oye, tengo un encargo para ti: "' + Q.title + '". ' + Q.desc, 'Recompensa: ' + rewardText(Q.reward) + '.'],
-    [{ t:'ACEPTAR', fn:() => { S.quests[next] = { st:'active', base:questBase(next) };spawnQuestItems(); SFX.ok(); toast('NUEVO ENCARGO: ' + Q.title, '#fcd84a'); saveGame(); } },
+    [{ t:'ACEPTAR', fn:() => { S.quests[next] = { st:'active', base:questBase(next),...(Q.renewable?{count:0,contract:structuredClone(Q)}:{}) };spawnQuestItems(); SFX.ok(); toast('NUEVO ENCARGO: ' + Q.title, '#fcd84a'); saveGame(); } },
      { t:'AHORA NO', fn:() => talkTo(id, npc, true) }]);
   return true;
 }
@@ -4880,8 +5295,9 @@ function questKill(type){
   S.kills = S.kills || {}; S.kills[type] = (S.kills[type] || 0) + 1; S.killsTotal = (S.killsTotal || 0) + 1;
   for (const q in S.quests || {}) {
     const Q = QUESTS[q], st = S.quests[q];
-    if (!Q || st.st !== 'active' || (Q.type !== 'kill' && Q.type !== 'killAll')) continue;
+    if (!Q || st.st !== 'active' || (Q.type !== 'kill' && Q.type !== 'killAll' && Q.type !== 'hunt')) continue;
     if (Q.type === 'kill' && !Q.target.includes(type)) continue;
+    if(Q.type==='hunt'){if((S.realm||'magic')!==Q.realm||(pokemonRealm()?reflectedTier():zoneTier())<Q.minTier||Q.bossOnly&&!MON[type]?.boss)continue;st.count=(st.count||0)+1;}
     const p = questProg(q);
     if (p === Q.n) toast('ENCARGO LISTO: VUELVE A HABLAR CON ' + (NPCDEF[Q.giver] ? NPCDEF[Q.giver].n : ''), '#60e070');
     else if (p < Q.n && (Q.type === 'kill' || p % 5 === 0)) toast(Q.title + ' ' + p + '/' + Q.n, '#c8e8d8');
@@ -4897,7 +5313,8 @@ const FRIEND_LINES = {
   16:['Con Matías y PabloT estudiábamos Ingeniería Comercial. ¡Ahora toca financiar la aventura!','En Tibia aprendí a cuidar el equipo y las lucas. Cada moneda cuenta.'],
   17:['Cahe, Matías y yo: trabajos de la U de día, Tibia de noche.','Diversifica: un buen mazo, una buena armadura y monedas para el próximo viaje.'],
   0:['Wena. Yo ando buscando un Force of Will hace años. Si te sale uno, avísame, cachai.','¿Vamos a la Torre de Serra? Dicen que la Ángel Ascendida invoca Soul Wardens sin parar.'],
-  1:['Oe, si vas a la Cripta de Tourach lleva harta vida. El Negator Ancestral pega como camión.','Yo juego Burn: Bolt, Chain, Fireblast y a la cara. Sin miedo.'],
+  20:['Bienvenido a Teno. Como alcalde te digo: aquí se vive tranquilo, entre huertos, el río y buenas partidas.','Soy abogado: leo la letra chica igual que un Counterspell. ¡Objeción a tu combo!','Los mazos azules son como un buen alegato: Force of Will, Counterspell y paciencia. El que apura la jugada, pierde el juicio.'],
+  1:['Soy agrónomo y colorín: de día reviso cultivos, de noche reviso mi Burn. Las dos cosas necesitan buen clima y paciencia.','Lightning Bolt: un maná, tres de daño y a la cara. Para ganar rápido no hay nada mejor.','Oe, si vas a la Cripta de Tourach lleva harta vida. El Negator Ancestral pega como camión.','Yo juego Burn: Bolt, Chain, Fireblast y a la cara. Sin miedo.'],
   4:['¿Trampa? Yo no hago trampa... solo tengo mucha suerte con los dados. Mucha.','Si juegas conmigo, mírame las manos. O no, mejor mírame a los ojos.'],
   3:['Yo no juego rápido, juego bien. Por eso gano los torneos... a veces.','Tip de Klaus: la cerveza sube la INT para el torneo. Es ciencia, cachai.'],
   2:['¿Una partida? Te juego mi Replenish contra lo que traigas. Pierde el que paga la ronda.','En las Minas de Mishra hay un Rey Goblin con corona. Me pegó tan fuerte que volví a pie a Tolaria.'],
@@ -5034,8 +5451,8 @@ function sellPacks(who, hello){
 const STONES = { home:{ n:'PIEDRA HOGAR' }, tolaria:{ n:'PIEDRA TOLARIA' } };
 const FLY_DECKS = 6;
 // Donde aterriza uno en cada pueblo (casilla libre cerca del centro)
-const TOWN_SPOTS = { pueblo:[6,5], tolaria:[7,4], valpo:[7,4], vina:[7,4], pmontt:[7,4], mercado:[7,4], tempest:[7,4] };
-const DEST_NAME = { hogar:'TU CASA', tolaria:'TOLARIA', pueblo:'VILLA PREMODERN', mercado:'MERCADO DE MOX', valpo:'CURICO', vina:'VIÑA DEL MAR', pmontt:'PUERTO MONTT', tempest:'TEMPEST' };
+const TOWN_SPOTS = { pueblo:[6,5], tolaria:[7,4], valpo:[7,4], vina:[7,4], pmontt:[7,4], mercado:[7,4], tempest:[7,4], valdivia:[7,5], providencia:[7,5] };
+const DEST_NAME = { hogar:'TU CASA', tolaria:'TOLARIA', pueblo:'VILLA PREMODERN', mercado:'MERCADO DE MOX', valpo:'CURICO', vina:'VIÑA DEL MAR', pmontt:'PUERTO MONTT', tempest:'TEMPEST', valdivia:'VALDIVIA', providencia:'PROVIDENCIA' };
 const WARP_T = { stone:{ out:70, in:45 }, fly:{ out:45, sky:120, in:50 } };
 function travelTo(dest, mode){
   G.warp = { dest, mode:mode || 'stone', phase:'out', t:0, name:DEST_NAME[dest] || dest };
@@ -5117,7 +5534,7 @@ function openTravel(){
   const st = S.stones || {}, fly = activeDecks().filter(d => deckDone(d.id)).length >= FLY_DECKS, opts = [];
   if (st.home) opts.push({ t:'MI CASA', fn:() => travelTo('hogar', 'stone') });
   if (st.tolaria || fly) opts.push({ t:'TOLARIA (LIGA Y ARCADE)', fn:() => travelTo('tolaria', st.tolaria ? 'stone' : 'fly') });
-  if (fly) for (const [id, name] of [['pueblo','VILLA PREMODERN'],['mercado','MERCADO DE MOX'],['valpo','CURICO'],['vina','VIÑA DEL MAR'],['pmontt','PUERTO MONTT'],['tempest','TEMPEST']]) opts.push({ t:name, fn:() => travelTo(id, 'fly') });
+  if (fly) for (const [id, name] of [['pueblo','VILLA PREMODERN'],['mercado','MERCADO DE MOX'],['valpo','CURICO'],['vina','VIÑA DEL MAR'],['pmontt','PUERTO MONTT'],['tempest','TEMPEST'],['valdivia','VALDIVIA'],['providencia','PROVIDENCIA']]) opts.push({ t:name, fn:() => travelTo(id, 'fly') });
   if (!opts.length) {
     say(['Todavia no puedes viajar.', 'La PIEDRA HOGAR te la da el Carpintero y la PIEDRA TOLARIA la Maga, los dos en el Mercado de Mox: hazles su encargo.', 'Y con ' + FLY_DECKS + ' mazos completos podras volar entre todos los pueblos (llevas ' + activeDecks().filter(d => deckDone(d.id)).length + ').']);
     return;
@@ -5140,6 +5557,7 @@ function leagueTalk(key){
 function talkTo(id, npc, skipQuest){
   if(id==='banquero'){bankTalk();return;}
   if(!skipQuest&&!G.def.cardTemple&&questMarker(id)&&questHook(id,npc))return;
+  if(southTalk(id,npc))return;
   if(id==='alePelluco'){pellucoBeer();return;}if(id==='djPelluco'){pellucoDJ();return;}
   if(id==='mechonaPelluco'){if(!skipQuest&&questHook(id,npc))return;say(['TRINI: Entre clases, talleres y la feria de bienvenida siempre queda una mesa para jugar cartas. ¡Aqui los mechones tambien tienen mazo!','Despues pasamos al quincho La Ultima Diapo: pool, taca-taca y cassette. Mañana entregamos el informe... ¿cierto?'],[{t:'JUGAR CARTAS',fn:()=>offerDuel(npc)},{t:'VOLVER',fn:null}]);return;}
   if(id==='profePelluco'){say(['PROFE SIMON: Bienvenido al Campus Pelluco. La vida universitaria tambien son encuentros, arte y musica. Visita el cartel de la Semana Cultural.','Una IA puede sugerir tu baraja, pero nadie rinde el certamen de Counterspell por ti.']);return;}
@@ -5275,7 +5693,7 @@ function talkTo(id, npc, skipQuest){
   }
   if (id === 'cronista') {
     const g = guardiansDone();
-    say(g >= 5 ? ['CRONISTA: ¡Derrotaste a los cinco guardianes! Ahora solo falta la Liga Nacional en Tolaria. Escribiré tu nombre en la historia del Premodern chileno.']
+    say(g >= 5 ? ['CRONISTA: ¡Derrotaste a los cinco guardianes! Ahora solo falta la Liga Nacional en Piedra Bruja, Providencia. Escribiré tu nombre en la historia del Premodern chileno.']
       : ['CRONISTA: Soy el cronista de Villa Premodern. Llevo el registro de todo lo que pasa desde que se abrió la Caja de Urza.',
          'Cinco guardianes custodian el poder de la caja: el Comandante de la Guarida, el Langostino de Chiloé, el Rey de las Minas, el Negator Ancestral de la Cripta y la Ángel Ascendida de la Torre.',
          'Llevas ' + g + ' de 5. Revisa tus MISIONES y el MAPA en el menú. Si quieres saber cómo empezó todo, habla con el viejo del río en Curicó.']);
@@ -5288,7 +5706,7 @@ function talkTo(id, npc, skipQuest){
       'Una noche de temporal la abrí aquí mismo, junto al río. Adentro había sobres de todas las ediciones: desde Cuarta Edición hasta Scourge. Ni una carta más nueva.',
       'Cuando rompí el primer sobre, un Goblin Lackey me saltó a la cara. Y después otro. Y un Jackal Pup. Las cartas... despertaron.',
       'Desde entonces las criaturas andan sueltas por Chile, y cinco guardianes protegen el poder de la caja.',
-      'Dicen que quien derrote a los cinco y gane la Liga Nacional en Tolaria podrá cerrar la caja para siempre... o quedarse con todas las cartas. Tú decides, ' + CH().n + '.']);
+      'Dicen que quien derrote a los cinco y gane la Liga Nacional en Piedra Bruja podrá cerrar la caja para siempre... o quedarse con todas las cartas. Tú decides, ' + CH().n + '.']);
     return;
   }
   if (id === 'juez') {
@@ -5339,8 +5757,8 @@ function talkTo(id, npc, skipQuest){
     const done = activeDecks().filter(d => deckDone(d.id)), lg = leaguesDone(), bs = bossesDone();
     if (lg < 5) {
       say(['ORGANIZADORA: La Liga Nacional es solo para leyendas.',
-        'Primero gana las 5 ligas regionales: Viña, Curicó, Puerto Montt, Urza Saga (aquí en Tolaria) y Tempest (al sur del Mercado de Mox). Llevas ' + lg + ' de 5.',
-        'Cada liga entrega una medalla. Reune las cinco de este mundo para acceder a la Gran Liga Nacional de Tolaria. Puedes revisar ambas colecciones en MENU > MEDALLAS.']);
+        'Primero gana 5 de las 6 ligas regionales: Viña, Curicó, Puerto Montt, Urza Saga (Tolaria), Tempest (al este del Mercado de Mox) y la Liga Élfica de Valdivia. Llevas ' + lg + ' de 5.',
+        'Cada liga entrega una medalla. Reune cinco de las seis de este mundo para acceder a la Gran Liga Nacional de Piedra Bruja, en Providencia. Puedes revisar ambas colecciones en MENU > MEDALLAS.']);
       return;
     }
     if (!done.length) { say(['ORGANIZADORA: Necesitas un mazo completo de ' + DECK_SIZE + ' cartas para inscribirte.'], [{ t:'TIENDA DE CARTAS', fn:() => openShop('liga', 'LIGA NACIONAL - TIENDA') }, { t:'VOLVER', fn:null }]); return; }
@@ -5358,7 +5776,7 @@ function talkTo(id, npc, skipQuest){
   if (id === 'vecina') {
     say([pick([
       'Dicen que el viejo del río, en Curicó, sabe cómo empezó todo esto.',
-      'En Tolaria venden sobres de cartas y hay un arcade. ¡Y ahí se juega la Liga Nacional!',
+      'En Tolaria venden sobres de cartas y hay un arcade. La Liga Nacional se juega en Piedra Bruja, en Providencia.',
       'Las Minas de Mishra, la Cripta de Tourach y la Torre de Serra son laberintos de varios pisos. No entres sin cerveza.',
       'Dicen que en el bosque hay un goblin enorme que llama a otros goblins. Ten cuidado.',
       'Las criaturas del pantano son fuertes. Cómprate una cerveza antes de ir.',
@@ -5458,9 +5876,9 @@ function prepRound(){
   t.stage=(t.stage||0)+1;t.sel=0;
   if(t.stage<3){prepareCardQuestion(t);SFX.move();return;}
   t.roll=[1+rnd(6),1+rnd(6)];t.first=t.roll[0]>=t.roll[1]?0:1;
-  t.levelBonus=Math.floor(Math.min(levelCap(),S.lvl)/10);t.target=(t.cfg.liga?7:t.cfg.league==='tempest'?6:t.cfg.league?5:3)+Math.floor(t.round/3);
+  t.levelBonus=Math.floor(Math.min(levelCap(),S.lvl)/10);t.target=(t.cfg.liga?7:t.cfg.league==='tempest'||t.cfg.league==='valdivia'?6:t.cfg.league?5:3)+Math.floor(t.round/3);
   t.deckBonus=pokemonRealm()?pokemonMatchup(t.deck,o.deck).bonus:BEATS[DECK_STYLE[t.deck]]===style?1:0;
-  t.score=t.strategyScore+t.levelBonus+t.deckBonus+(t.retryBonus||0)+(CH().foresight?.5:0);
+  t.perkBonus=deckPerkBonus(t.deck);t.score=t.strategyScore+t.levelBonus+t.deckBonus+t.perkBonus+(t.retryBonus||0)+(CH().foresight?.5:0);
   t.iwin=t.score>=t.target;t.ev=genDuel(t.deck,o.deck,t.iwin,t.first);t.ei=0;t.lives=pokemonRealm()?[6,6]:[20,20];t.pokemon=pokemonRealm()?newPokemonBattle(t.deck,o.deck):null;t.cur=null;t.phase='vs';t.t=0;t.pops=[];
 }
 function isCounterCard(id){return !!CARDS[id]&&/contrarresta/i.test(CARDS[id].tx);}
@@ -5533,7 +5951,7 @@ function finishTour(){
   const lines = [champ ? (liga ? '¡CAMPEÓN NACIONAL DE PREMODERN! Ganaste las ' + N + ' rondas de la Liga.' : T_.cfg.league ? '¡CAMPEÓN DE LA ' + T_.cfg.name + '! Ganaste las ' + N + ' rondas.' : '¡CAMPEÓN DEL TORNEO PREMODERN! Ganaste las ' + N + ' rondas.') : 'Ganaste ' + w + ' de ' + (T_.round + 1) + ' partidas.', 'Premio: ' + money(coins) + '.'];
   const reward = { lines,coins,xp:earnedXP };
   lines.push('EXPERIENCIA DE CARTAS: +'+earnedXP+' EXP. Tu dominio de la baraja fortalece al heroe.');
-  if (champ && T_.cfg.league) { S.leagues = S.leagues || {}; const first = !S.leagues[T_.cfg.league]; S.leagues[T_.cfg.league] = true; lines.push(first ? 'Ligas regionales ganadas: ' + leaguesDone() + '/5.' + (leaguesDone() === 5 ? ' ¡Ya cumples una parte de lo que pide la Liga Nacional!' : '') : 'Ya eras campeón de esta liga: te llevas el premio igual.'); }
+  if (champ && T_.cfg.league) { S.leagues = S.leagues || {}; const first = !S.leagues[T_.cfg.league]; S.leagues[T_.cfg.league] = true; lines.push(first ? 'Ligas regionales ganadas: ' + leaguesDone() + '/' + Object.keys(LEAGUES).length + '.' + (leaguesDone() === REGIONALS_FOR_NATIONAL ? ' ¡Ya cumples una parte de lo que pide la Liga Nacional!' : '') : 'Ya eras campeón de esta liga: te llevas el premio igual.'); }
   if(leaguesDone()>=4&&!S.finder){S.finder=true;lines.push('¡CONSEGUISTE EL BUSCAOBJETOS! Limpia las zonas y sigue la señal dorada para encontrar tesoros ocultos.');}
   if (champ && liga) { S.ligaWins = (S.ligaWins || 0) + 1; reward.ending = true; }
   if (champ) lines.push('El trofeo quedó en la vitrina de tu casa, en la Villa.');
@@ -5587,7 +6005,7 @@ function drawTour(){
   } else if (T_.phase === 'vs') {
     txt('VS', 120, 60, '#fcd84a', 'center', '#7a3a10', 16);
     tiny('DADOS '+T_.roll[0]+' / '+T_.roll[1]+' · '+(T_.first===0?'COMIENZAS TU':'COMIENZA EL RIVAL'),120,83,'#fcd84a','center');
-    tiny('JUGADAS '+T_.strategyScore+' + NIVEL '+T_.levelBonus+' + MAZO '+T_.deckBonus,120,94,'#c8c0e8','center');
+    tiny('JUGADAS '+T_.strategyScore+' + NIVEL '+T_.levelBonus+' + MAZO '+(T_.deckBonus+(T_.perkBonus||0)),120,94,'#c8c0e8','center');
     tiny('PRACTICA +'+(T_.retryBonus||0)+' · TOTAL '+T_.score+' / META '+T_.target,120,103,'#90e8ff','center');
     tiny('A: VER PARTIDA · DADO: SOLO EL ORDEN',120,151,'#c8c0e8','center');
   } else if (T_.cur) {
@@ -5622,7 +6040,7 @@ function drawChampionSummary(t){
  for(const x of [40,124]){R(x,95,76,22,'#554368');R(x+1,96,74,20,'#100e21');}
  tiny('PREMIO',78,99,'#b9aecb','center');tiny(money(r.coins),78,109,'#fcd84a','center');tiny('EXPERIENCIA',162,99,'#b9aecb','center');tiny('+'+r.xp+' EXP',162,109,'#8fe4ef','center');
  tiny(won?(t.cfg.liga?'CORONA NACIONAL OBTENIDA':t.cfg.league?'MEDALLA DE LIGA':'TROFEO PARA TU CASA'):'CADA INTENTO TE DA PRACTICA',120,123,'#f8e7a1','center');
- if(t.cfg.league)tiny(leaguesDone()+' DE 5 LIGAS REGIONALES',120,131,'#b8afc7','center');
+ if(t.cfg.league)tiny(leaguesDone()+' DE '+Object.keys(LEAGUES).length+' LIGAS REGIONALES',120,131,'#b8afc7','center');
  R(77,139,86,9,'#fcd84a');tiny('A: CONTINUAR',120,142,'#24172c','center');tiny('X: VER OTROS PREMIOS',120,151,'#c6b6df','center');
 }
 function updateMenu(){
@@ -5652,9 +6070,10 @@ function updateMenu(){
     return;
   }
   if (pressed('menu') || pressed('b')) { G.menu = null; SFX.back(); saveGame(); return; }
-  if (pressed('left')) { m.tab = (m.tab + 5) % 6; m.sel = 0; SFX.move(); }
-  if (pressed('right')) { m.tab = (m.tab + 1) % 6; m.sel = 0; SFX.move(); }
+  if (pressed('left')) { m.tab = (m.tab + MENU_TABS.length - 1) % MENU_TABS.length; m.sel = 0; SFX.move(); }
+  if (pressed('right')) { m.tab = (m.tab + 1) % MENU_TABS.length; m.sel = 0; SFX.move(); }
   if(m.tab===5){if(!pokemonDiscovered()){m.medalRealm='magic';return;}if(pressed('up')||pressed('down')||pressed('a')){m.medalRealm=(m.medalRealm||S.realm||'magic')==='magic'?'pokemon':'magic';SFX.move();}return;}
+  if(m.tab===6)return;
   const n = m.tab === 0 ? activeDecks().length : m.tab === 1 ? 6 : m.tab === 4 ? 2 : 0;
   if(m.tab===4&&m.sel===1){if(pressed('up'))m.questScroll=Math.max(0,(m.questScroll||0)-1);if(pressed('down'))m.questScroll=(m.questScroll||0)+1;if(pressed('a')){const q=journalEntries()[m.questScroll||0];if(q)questDetail(q);return;}return;}
   if (n) { if (pressed('up')) { m.sel = (m.sel + n - 1) % n; SFX.move(); } if (pressed('down')) { m.sel = (m.sel + 1) % n; SFX.move(); } }
@@ -5670,11 +6089,11 @@ function updateMenu(){
 }
 const THEME_COL = { town:'#d8b060', forest:'#3e8a36', dirt:'#a88050', swamp:'#4a6a40', meadow:'#88c860', sand:'#e8d098', volcano:'#c84a20', ice:'#c8e8ff', bog:'#5a6a3a' };
 const zoneTheme = id => WILD[id] ? WILD[id].theme : ROOMS[id].theme;
-const LEAGUE_MAP = { vina:'vina', curico:'valpo', pmontt:'pmontt', urza:'tolaria', tempest:'tempest', nacional:'tolaria' };
+const LEAGUE_MAP = { vina:'vina', curico:'valpo', pmontt:'pmontt', urza:'tolaria', tempest:'tempest', valdivia:'valdivia', nacional:'providencia' };
 function leagueMapMarks(id){
   return Object.entries(LEAGUE_MAP).filter(([,place]) => place === id).map(([key]) => ({key,
     won:key === 'nacional' ? (S.ligaWins || 0) > 0 : !!(S.leagues && S.leagues[key]),
-    available:key !== 'nacional' || leaguesDone() === 5
+    available:key !== 'nacional' || leaguesDone() >= REGIONALS_FOR_NATIONAL
   }));
 }
 function drawWorldMap(){
@@ -5704,7 +6123,7 @@ function drawWorldMap(){
   tiny((G.preview?'VISTA PREVIA · ':'ESTAS EN: ') + SHORT[cur] + floor, 120, 146, '#fcd84a', 'center');
   tiny('S: SAFARI · L/N: LIGA · AMARILLA: PENDIENTE', 120, 153, '#6a8a80', 'center');
 }
-function journalEntries(){ensureContract();const all=Object.keys(QUESTS);return [...all.filter(q=>S.quests[q]&&S.quests[q].st==='active'),...all.filter(q=>!S.quests[q]&&!questsOf(QUESTS[q].giver).some(o=>S.quests[o]&&S.quests[o].st==='active')&&questsOf(QUESTS[q].giver).find(o=>!S.quests[o])===q),...all.filter(q=>S.quests[q]&&S.quests[q].st==='done')];}
+function journalEntries(){ensureContracts();const all=Object.keys(QUESTS);return [...all.filter(q=>S.quests[q]&&S.quests[q].st==='active'),...all.filter(q=>!S.quests[q]&&!questsOf(QUESTS[q].giver).some(o=>S.quests[o]&&S.quests[o].st==='active')&&questsOf(QUESTS[q].giver).find(o=>!S.quests[o])===q),...all.filter(q=>S.quests[q]&&S.quests[q].st==='done')];}
 function questDetail(q){const Q=QUESTS[q],st=S.quests[q],who=NPCDEF[Q.giver]?NPCDEF[Q.giver].n:Q.giver;G.menu=null;say([Q.title.toUpperCase()+': '+Q.desc,who+' · '+(GIVER_PLACE[Q.giver]||'TIENDA DE CARTAS')+'. '+(st?(st.st==='done'?'COMPLETADA.':'PROGRESO '+Math.min(Q.n,questProg(q))+'/'+Q.n+'.'):'Habla con este personaje para aceptar.'),'RECOMPENSA: '+rewardText(Q.reward)],null,openQuestJournal);}
 function openQuestJournal(){if(!S||G.state!=='world')return;G.menu={tab:4,sel:1,deck:null,sub:null,questScroll:0};G.dialog=null;SFX.ok();}
 function drawQuests(){
@@ -5720,14 +6139,14 @@ function drawMissions(){
   if (G.menu && G.menu.sel === 1) { drawQuests(); return; }
   txt('LA CAJA DE URZA', 8, 21, '#fcd84a', 'left', '#000');
   const g = guardiansDone(), rd = RAIDS.filter(r => S.bosses[r]).length, nb = NEW_BOSSES.filter(r => S.bosses[r]).length, lg = leaguesDone();
-  const items=[['Escucha al viejo del rio en Curico',!!S.lore],['Devuelve el poder de los 5 guardianes ('+g+'/5)',g>=5],['Domina todos los mazos ('+DECKS.filter(d=>deckDone(d.id)).length+'/'+DECKS.length+')',DECKS.every(d=>deckDone(d.id))],['Gana las 5 ligas regionales ('+lg+'/5)',lg>=5],['Gana la Liga Nacional en Tolaria',(S.ligaWins||0)>0],['Sella la Caja de Urza en el santuario',!!S.boxClosed],['Devuelve las criaturas y restaura la paz',!!S.boxClosed]];
+  const items=[['Escucha al viejo del rio en Curico',!!S.lore],['Devuelve el poder de los 5 guardianes ('+g+'/5)',g>=5],['Domina todos los mazos ('+DECKS.filter(d=>deckDone(d.id)).length+'/'+DECKS.length+')',DECKS.every(d=>deckDone(d.id))],['Gana 5 de las 6 ligas regionales ('+Math.min(lg,5)+'/5)',lg>=5],['Gana la Liga Nacional en Providencia',(S.ligaWins||0)>0],['Sella la Caja de Urza en el santuario',!!S.boxClosed],['Devuelve las criaturas y restaura la paz',!!S.boxClosed]];
   items.forEach(([t, ok], i) => {
     const y = 36 + i * 12;
     R(8, y, 7, 7, '#1a1020'); R(9, y + 1, 5, 5, ok ? '#60e070' : '#2a3a3a');
     if (ok) { R(10, y + 3, 1, 1, '#1a1020'); R(11, y + 4, 1, 1, '#1a1020'); R(12, y + 2, 1, 2, '#1a1020'); }
     tiny(t, 20, y + 1, ok ? '#9db8a8' : '#fff');
   });
-  tiny('JEFES ' + bossesDone() + '/' + ALL_BOSSES.length + '  LIGAS ' + lg + '/5  CARTAS ' + totalCards() + '/' + realmCards().length + '  MAZOS ' + activeDecks().filter(d => deckDone(d.id)).length + '/' + activeDecks().length, 120, 144, '#fcd84a', 'center');
+  tiny('JEFES ' + bossesDone() + '/' + ALL_BOSSES.length + '  LIGAS ' + lg + '/' + Object.keys(LEAGUES).length + '  CARTAS ' + totalCards() + '/' + realmCards().length + '  MAZOS ' + activeDecks().filter(d => deckDone(d.id)).length + '/' + activeDecks().length, 120, 144, '#fcd84a', 'center');
   tiny('ABAJO: VER ENCARGOS (SUBEN TUS ATRIBUTOS)', 120, 152, '#6a8a80', 'center');
 }
 function goToTitle(){
@@ -5750,29 +6169,88 @@ function drawMedal(x,y,won,color){
  disc(x,y+2,5,won?'#f0d078':'#53606c');disc(x,y+2,3,won?color:'#293440');
  if(won)R(x-1,y,2,3,'#fff0b0');
 }
+/* ============ CONDECORACIONES: DIPLOMAS DE JEFES (3 oct) ============ */
+// Cada jefe vencido entrega un diploma timbrado con lacre. Se guarda en S.bossDiplomas y se mira en MEDALLAS > JEFES.
+// Las partidas antiguas reciben el diploma de los jefes que ya habian vencido (sin fecha).
+function bossDiplomas(){S.bossDiplomas=S.bossDiplomas||{};for(const b of ALL_BOSSES)if(S.bosses&&S.bosses[b]&&!S.bossDiplomas[b])S.bossDiplomas[b]={old:true,wins:1};return S.bossDiplomas;}
+function bossGoalLine(n,total){const left=total-n;return left<=0?'¡VENCISTE A TODOS! LA COPA ES TUYA':left===1?'TE FALTA SOLO UN JEFE PARA LA COPA':'TE ACERCAS A TU META: FALTAN '+left+' JEFES';}
+function awardBossDiploma(type){
+ const all=bossDiplomas(),prev=all[type],first=!prev||!!prev.old;
+ const rec=prev&&!prev.old?prev:{wins:prev?prev.wins||0:0};rec.wins=(rec.wins||0)+1;
+ if(first){rec.date=new Date().toLocaleDateString('es-CL');rec.lvl=S.lvl;rec.hero=CH().n;rec.realm=S.realm||'magic';}
+ delete rec.old;all[type]=rec;
+ G.bossDiploma={type,t:0,first,n:bossesDone(),total:ALL_BOSSES.length,wins:rec.wins};
+}
+function updateBossDiploma(){const d=G.bossDiploma;d.t++;if((d.t>40&&(pressed('a')||pressed('b')||pressed('menu')))||d.t>900){G.bossDiploma=null;SFX.ok();}}
+function drawParchment(x,y,w,h,won=true){
+ R(x,y,w,h,won?'#4a3018':'#20242c');R(x+1,y+1,w-2,h-2,won?'#e6d2a2':'#3a404a');R(x+2,y+2,w-4,h-4,won?'#f4e6c4':'#2c323c');
+ if(!won)return;const gold='#b08848';R(x+4,y+4,w-8,1,gold);R(x+4,y+h-5,w-8,1,gold);R(x+4,y+4,1,h-8,gold);R(x+w-5,y+4,1,h-8,gold);
+ for(const [cx,cy] of [[x+4,y+4],[x+w-5,y+4],[x+4,y+h-5],[x+w-5,y+h-5]])R(cx-1,cy-1,3,3,gold);
+}
+// Lacre antiguo: cera roja con borde ondulado, cintas y una estrella grabada.
+function drawWaxSeal(cx,cy,r,col='#b01e24'){
+ const dk=shadeCol(col,.6),lt=shadeCol(col,1.35);
+ R(cx-r+1,cy+1,3,r+5,'#7a1418');R(cx+r-4,cy+1,3,r+5,'#7a1418');R(cx-r+1,cy+r+5,3,1,'#5a0a0e');R(cx+r-4,cy+r+5,3,1,'#5a0a0e');
+ for(let i=0;i<10;i++){const a=i*Math.PI/5;disc(cx+Math.cos(a)*r*.85,cy+Math.sin(a)*r*.85,Math.max(1,r*.32),dk);}
+ disc(cx,cy,r*.85,col);disc(cx,cy,r*.6,dk);disc(cx-r*.25,cy-r*.3,Math.max(1,r*.18),lt);
+ const s=Math.max(1,Math.round(r/5));R(cx-s/2,cy-r*.45,s,r*.9,lt);R(cx-r*.45,cy-s/2,r*.9,s,lt);R(cx-r*.3,cy-r*.3,s,s,lt);R(cx+r*.3-s,cy+r*.3-s,s,s,lt);R(cx+r*.3-s,cy-r*.3,s,s,lt);R(cx-r*.3,cy+r*.3-s,s,s,lt);
+}
+const BOSS_SHORT={siege:'SIEGE-GANG',dread:'LANGOSTINO',reyMinas:'REY MINAS',negAnc:'NEGATOR',serraAsc:'ANGEL',shivan:'SHIVAN',kjeldor:'KJELDOR',pit:'LORD PIT',terraBoss:'TERRAVORE',conclaveQ:'CONCLAVE',mongerAnc:'MONGER',masticore:'MASTICORE',rofellos:'ROFELLOS',sacerdotisa:'TITANIA'};
+function bossLabelLines(type){const name=pokemonRealm()?pokemonEnemy(type).species.toUpperCase().slice(0,10):BOSS_SHORT[type]||MON[type].n.toUpperCase().slice(0,10);return [name,MON[type].raid?'RAID':GUARDIANS.includes(type)?'GUARDIAN':'JEFE'];}
+function drawBossDiploma(){
+ const d=G.bossDiploma,fade=Math.min(1,d.t/18),x=22,y=12,w=196,h=128;
+ ctx.save();ctx.globalAlpha=fade;R(0,0,W,H,'rgba(8,6,16,.6)');
+ drawParchment(x,y,w,h);
+ tiny('¡GENIAL! DERROTASTE AL JEFE',120,y+8,'#9a1a1a','center');
+ txt('DIPLOMA DE HONOR',120,y+16,'#5a3a14','center',null);
+ tiny('SE CERTIFICA QUE '+CH().n,120,y+32,'#3a2a14','center');
+ tiny('VENCIO A '+enemyName(d.type).toUpperCase(),120,y+40,'#3a2a14','center');
+ ctx.save();ctx.translate(x+12,y+50);const k=20/MON[d.type].size;ctx.scale(k,k);drawMon(d.type,0,0,frame,false);ctx.restore();
+ tiny('JEFES DERROTADOS: '+d.n+'/'+d.total,120,y+52,'#9a1a1a','center');
+ R(x+44,y+60,w-88,5,'#5a3a14');R(x+45,y+61,w-90,3,'#d8c090');R(x+45,y+61,Math.round((w-90)*d.n/d.total),3,'#b01e24');
+ tiny(bossGoalLine(d.n,d.total),120,y+69,'#5a3a14','center');
+ tiny(GUARDIANS.includes(d.type)?'GUARDIANES '+guardiansDone()+'/5 · EL SELLO DE URZA ESTA MAS CERCA':d.first?'CONDECORACION NUEVA PARA TU COLECCION':'REVANCHA GANADA · VICTORIA NUMERO '+d.wins,120,y+78,'#3a2a14','center');
+ const rec=bossDiplomas()[d.type]||{};tiny('FECHA: '+(rec.date||'-')+' · NIVEL '+(rec.lvl||S.lvl),x+12,y+h-28,'#5a3a14');
+ R(x+12,y+h-16,64,1,'#5a3a14');tiny('LA LIGA PREMODERN',x+12,y+h-13,'#5a3a14');
+ drawWaxSeal(x+w-34,y+h-30,12);
+ tiny('MENU > JEFES',x+w-34,y+h-11,'#5a3a14','center');
+ if(d.t>40){R(77,y+h+3,86,9,'#fcd84a');tiny('A: CONTINUAR',120,y+h+5,'#24172c','center');}
+ ctx.restore();
+}
+function drawBossDiplomas(){
+ const all=bossDiplomas(),total=ALL_BOSSES.length,n=ALL_BOSSES.filter(b=>all[b]).length;
+ ALL_BOSSES.forEach((b,i)=>{
+  const x=11+(i%5)*44,y=37+Math.floor(i/5)*36,rec=all[b];drawParchment(x,y,42,34,!!rec);
+  bossLabelLines(b).forEach((line,j)=>tiny(line,x+21,y+5+j*7,rec?'#3a2a14':'#6a7480','center'));
+  if(rec){drawWaxSeal(x+31,y+24,5);if(rec.wins>1)tiny('X'+rec.wins,x+9,y+25,'#9a1a1a','center');else if(rec.date)tiny(rec.date.slice(0,5),x+11,y+25,'#7a5a30','center');}
+  else tiny('?',x+21,y+22,'#6a7480','center');
+ });
+ tiny('JEFES '+n+'/'+total+' · '+bossGoalLine(n,total),120,146,'#fcd84a','center',true);
+}
 function drawLeagueProgress(){
  const discovered=pokemonDiscovered(),realm=discovered?(G.menu.medalRealm||S.realm||'magic'):'magic',p=medalProgress(realm),poke=realm==='pokemon';
  if(discovered)for(const [i,r] of ['magic','pokemon'].entries()){R(12+i*112,20,104,13,realm===r?'#34554e':'#202c38');tiny(r.toUpperCase(),64+i*112,24,realm===r?'#ffe090':'#9db8a8','center',true);}
  else{R(12,20,216,13,'#34554e');tiny('MEDALLAS DE MAGIC',120,24,'#ffe090','center',true);}
- const badges={vina:['MAREAS','#68b8ed'],curico:['VENDIMIA','#78c878'],pmontt:['LLUVIA','#a0dce8'],urza:['CINCO LUNAS','#d898e8'],tempest:['TRUENO','#f09858']};
- Object.entries(LEAGUES).forEach(([key,l],i)=>{const y=41+i*16,won=!!(p.data.leagues&&p.data.leagues[key]),gym=Object.values(POKEMON_GYMS).find(g=>g.key===key);
+ const badges={vina:['MAREAS','#68b8ed'],curico:['VENDIMIA','#78c878'],pmontt:['LLUVIA','#a0dce8'],urza:['CINCO LUNAS','#d898e8'],tempest:['TRUENO','#f09858'],valdivia:['BOSQUE','#58b058']};
+ Object.entries(LEAGUES).forEach(([key,l],i)=>{const y=38+i*13,won=!!(p.data.leagues&&p.data.leagues[key]),gym=Object.values(POKEMON_GYMS).find(g=>g.key===key);
   drawMedal(16,y+4,won,poke?gym.color:badges[key][1]);
   tiny('MEDALLA '+(poke?gym.type:badges[key][0]),29,y,won?'#f8e0a0':'#c8d8d0','left',true);
   tiny(l.place+(poke?' · '+gym.leader:''),29,y+7,'#9db8a8','left',true);
   tiny(won?'GANADA':'PENDIENTE',233,y+2,won?'#90f0a0':'#85909c','right',true);
  });
- drawMedal(16,126,p.national,'#fff0a0');tiny('GRAN LIGA NACIONAL · TOLARIA',29,120,'#fcd84a','left',true);
- tiny(p.national?'MEDALLA NACIONAL GANADA':p.count===5?'ACCESO ABIERTO · A CUALQUIER HORA':discovered?'REUNE LAS 5 MEDALLAS DE ESTE MUNDO':'REUNE LAS 5 MEDALLAS REGIONALES',29,129,p.national?'#90f0a0':'#c8d8d0','left',true);
- tiny(p.count+'/5 REGIONALES'+(discovered?' · COLECCIONES SEPARADAS':''),120,141,'#9db8a8','center',true);
+ drawMedal(16,126,p.national,'#fff0a0');tiny('GRAN LIGA NACIONAL · PIEDRA BRUJA',29,120,'#fcd84a','left',true);
+ tiny(p.national?'MEDALLA NACIONAL GANADA':p.count>=REGIONALS_FOR_NATIONAL?'ACCESO ABIERTO · A CUALQUIER HORA':discovered?'REUNE 5 DE LAS 6 MEDALLAS DE ESTE MUNDO':'REUNE 5 DE LAS 6 MEDALLAS REGIONALES',29,129,p.national?'#90f0a0':'#c8d8d0','left',true);
+ tiny(p.count+'/'+Object.keys(LEAGUES).length+' REGIONALES'+(discovered?' · COLECCIONES SEPARADAS':''),120,141,'#9db8a8','center',true);
  tiny(discovered?'TOCA MAGIC / POKEMON · ARRIBA/ABAJO: CAMBIAR':'B: VOLVER A TU AVENTURA',120,152,'#9db8a8','center',true);
 }
+const MENU_TABS = ['MAZOS','EQUIPO','ESTADO','MAPA','MISIONES','MEDALLAS','JEFES'], MENU_TAB_W = 240 / MENU_TABS.length;
 function drawMenu(){
   const m = G.menu;
   ctx.fillStyle = 'rgba(8,10,20,.93)'; ctx.fillRect(0, 0, W, H); uiPanel(0, 0, W, 16, 0.94);
-  ['MAZOS','EQUIPO','ESTADO','MAPA','MISIONES','MEDALLAS'].forEach((t, i) => {
-    const x = i * 40;
-    if (i === m.tab) { ctx.fillStyle = 'rgba(252,216,74,.16)'; ctx.fillRect(Math.round(x), 2, 39, 13); R(Math.round(x) + 3, 14, 33, 1, '#fcd84a'); }
-    tiny(t, Math.round(x + 20), 6, i === m.tab ? '#fcd84a' : '#9db8a8', 'center');
+  MENU_TABS.forEach((t, i) => {
+    const x = i * MENU_TAB_W;
+    if (i === m.tab) { ctx.fillStyle = 'rgba(252,216,74,.16)'; ctx.fillRect(Math.round(x), 2, Math.round(MENU_TAB_W) - 1, 13); R(Math.round(x) + 2, 14, Math.round(MENU_TAB_W) - 4, 1, '#fcd84a'); }
+    tiny(t, Math.round(x + MENU_TAB_W / 2), 6, i === m.tab ? '#fcd84a' : '#9db8a8', 'center');
   });
   if (m.tab === 0) {
     if (m.deck === null) {
@@ -5827,6 +6305,10 @@ function drawMenu(){
     tiny('A: CAMBIAR. EQUIPO: COFRES, CRIATURAS Y MERCADO', 120, 151, '#6a8a80', 'center');
   } else if (m.tab === 3) {
     drawWorldMap();
+  } else if (m.tab === 6) {
+    txt('JEFES DERROTADOS', 8, 21, '#fcd84a', 'left', '#000');
+    drawBossDiplomas();
+    tiny('CADA JEFE VENCIDO ENTREGA UN DIPLOMA CON LACRE · B: VOLVER', 120, 153, '#6a8a80', 'center');
   } else if (m.tab === 5) {
     drawLeagueProgress();
   } else if (m.tab === 4) {
@@ -5976,6 +6458,8 @@ function drawItem(it){
     else if (ic === 'page') { R(x + 1, y + 1, 8, 9, '#1a1020'); R(x + 2, y + 2, 6, 7, '#f4ecd8'); R(x + 3, y + 4, 4, 1, '#8a7a5a'); R(x + 3, y + 6, 3, 1, '#8a7a5a'); }
     else if (ic === 'stone') { R(x + 1, y + 2, 8, 8, '#1a1020'); R(x + 2, y + 3, 6, 6, '#6a6a88'); R(x + 3, y + 4, 2, 2, '#a8a8c8'); R(x + 5, y + 6, 2, 1, '#60c8ff'); }
     else if (ic === 'rune') { R(x + 1, y + 1, 8, 9, '#1a1020'); R(x + 2, y + 2, 6, 7, '#3a2a78'); R(x + 4, y + 3, 1, 5, '#c8a0ff'); R(x + 3, y + 5, 3, 1, '#c8a0ff'); R(x + 6, y + 4, 1, 1, '#ffffff'); }
+    else if (ic === 'egg') { disc(x + 5, y + 6, 4, '#1a1020'); disc(x + 5, y + 6, 3, '#f8f0dc'); R(x + 3, y + 4, 2, 2, '#ffffff'); }
+    else if (ic === 'toy') { R(x + 1, y + 4, 9, 6, '#1a1020'); R(x + 2, y + 5, 7, 4, '#e83040'); R(x + 3, y + 2, 5, 3, '#38a8e8'); disc(x + 3, y + 10, 1, '#1a1020'); disc(x + 8, y + 10, 1, '#1a1020'); }
     else if (ic === 'deck') { R(x + 1, y + 1, 8, 9, '#1a1020'); R(x + 2, y + 2, 6, 7, '#3a2a78'); R(x + 3, y + 3, 4, 2, '#fce060'); }
     else { R(x + 1, y + 4, 8, 5, '#1a1020'); R(x + 2, y + 5, 6, 3, '#e8a040'); R(x + 1, y + 2, 2, 3, '#1a1020'); R(x + 7, y + 2, 2, 3, '#1a1020'); R(x + 2, y + 3, 1, 2, '#e8a040'); R(x + 7, y + 3, 1, 2, '#e8a040'); R(x + 3, y + 5, 1, 1, '#1a1020'); R(x + 6, y + 5, 1, 1, '#1a1020'); R(x + 9, y + 6, 2, 1, '#e8a040'); }
   }
@@ -6216,6 +6700,7 @@ const CARD_POP_LIFE = 250;
 function drawCardPop(){
   if (!G.cardPop && G.cardPopQ && G.cardPopQ.length) G.cardPop = G.cardPopQ.shift();
   const c = G.cardPop; if (!c) return;
+  if(c.kind==='loot'){drawLootPop(c);return;}
   if (++c.t >= CARD_POP_LIFE) { G.cardPop = null; return; }
   const inT = Math.min(1, c.t / 16), outT = Math.max(0, (c.t - (CARD_POP_LIFE - 18)) / 18), fade = 1 - outT;
   const cx = 206 + Math.round((1 - inT) * (1 - inT) * 50 + outT * 50), cy = 74;
@@ -6234,6 +6719,18 @@ function drawCardPop(){
   R(cx - 30, cy - 40, 60, 9, 'rgba(0,0,0,.65)'); tiny(c.legend ? '¡LEGENDARIA!' : '¡NUEVA CARTA!', cx, cy - 38, (c.t >> 3) & 1 ? '#fcd84a' : '#fff4b0', 'center');
   R(cx - 31, cy + 28, 62, 17, 'rgba(0,0,0,.65)'); tiny(name, cx, cy + 30, '#fff', 'center'); tiny(sub, cx, cy + 37, '#fcd84a', 'center');
   ctx.restore();
+}
+function drawLootPop(c){
+  if(++c.t>=CARD_POP_LIFE){G.cardPop=null;return;}
+  const entry=Math.min(1,c.t/16),exit=Math.max(0,(c.t-(CARD_POP_LIFE-18))/18),cx=202+Math.round((1-entry)**2*50+exit*50),cy=75;
+  ctx.save();ctx.globalAlpha=1-exit;
+  const glow=ctx.createRadialGradient(cx,cy,2,cx,cy,30);glow.addColorStop(0,c.epic?'rgba(168,105,255,.4)':'rgba(255,210,70,.4)');glow.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=glow;ctx.fillRect(cx-30,cy-30,60,60);
+  R(cx-33,cy-39,66,83,'rgba(10,8,20,.8)');R(cx-33,cy-39,66,1,c.col);R(cx-33,cy+43,66,1,c.col);
+  tiny(c.epic?'¡OBJETO EPICO!':'¡OBJETO RARO!',cx,cy-35,c.col,'center');
+  ctx.save();ctx.translate(cx,cy-10);ctx.rotate(Math.sin(c.t*.07)*.07);ctx.scale(2,2);drawItem({k:c.objKind,id:c.id,x:-5,y:-5,z:0});ctx.restore();
+  for(let i=0;i<5;i++){const a=c.t*.035+i*Math.PI*2/5;R(Math.round(cx+Math.cos(a)*21),Math.round(cy-9+Math.sin(a)*17),1,1,c.col);}
+  const lines=wrap(c.name.toUpperCase(),15).slice(0,3);lines.forEach((line,i)=>tiny(line,cx,cy+8+i*7,'#fff','center'));
+  tiny(c.sub.toUpperCase().slice(0,16),cx,cy+33,c.col,'center');ctx.restore();
 }
 function drawCardGet(){
   const c = G.cardGet;
@@ -7384,9 +7881,9 @@ const TACTICS = [
 ];
 const BEATS = { agro:'combo', ctrl:'agro', combo:'ctrl' };
 const LOSES_TO = { agro:'ctrl', ctrl:'combo', combo:'agro' };
-const DECK_STYLE = { ...Object.fromEntries(POKEMON_META_DECKS.map(d=>[d.id,d.style])), burn:'agro', goblins:'agro', black:'ctrl', life:'ctrl', replenish:'combo', langostino:'combo', terragedon:'agro', landstill:'ctrl', rock:'ctrl', mud:'combo' };
-const DUELIST_DECK = {mechonaPelluco:'terragedon', luchoBarril:'goblins', durandal:'rock',galindo:'landstill',jorgew:'goblins',cesar:'burn',jgu:'replenish',macias:'mud', fan1:'goblins', fan2:'burn', fan3:'black', fan4:'life', klaus:'black', marinero:'langostino', pescador:'replenish', juez:'replenish', coleccionista:'langostino', cantinero:'burn', ligaVina:'terragedon', ligaCurico:'rock', ligaPmontt:'landstill', ligaUrza:'mud', ligaTempest:'landstill' };
-const FRIEND_DECK = ['goblins','burn','replenish','black','langostino','terragedon','rock','landstill','mud','life','goblins','burn','life','replenish','langostino','burn','mud','rock',null,'rock'];
+const DECK_STYLE = { ...Object.fromEntries(POKEMON_META_DECKS.map(d=>[d.id,d.style])), burn:'agro', goblins:'agro', black:'ctrl', life:'ctrl', replenish:'combo', langostino:'combo', terragedon:'agro', landstill:'ctrl', rock:'ctrl', mud:'combo', elfos:'combo' };
+const DUELIST_DECK = {elfoParroquiano:'elfos', pbJugador:'landstill', mechonaPelluco:'terragedon', luchoBarril:'goblins', durandal:'rock',galindo:'landstill',jorgew:'goblins',cesar:'burn',jgu:'replenish',macias:'mud', fan1:'goblins', fan2:'burn', fan3:'black', fan4:'life', klaus:'black', marinero:'langostino', pescador:'replenish', juez:'replenish', coleccionista:'langostino', cantinero:'burn', ligaVina:'terragedon', ligaCurico:'rock', ligaPmontt:'landstill', ligaUrza:'mud', ligaTempest:'landstill' };
+const FRIEND_DECK = ['goblins','burn','replenish','black','langostino','terragedon','rock','landstill','mud','life','goblins','burn','life','replenish','langostino','burn','mud','rock',null,'rock','langostino'];
 const isDuelist = n => n.id === 'friend' || DUELIST_DECK[n.id] !== undefined;
 function offerDuel(n){
   const name = n.id === 'friend' ? CHARS[n.ch].n : NPCDEF[n.id].n;
@@ -7576,7 +8073,7 @@ function drawDuel(){
 
 /* ============ FINAL ============ */
 const ENDING=['LA CAJA DE URZA ESTA SELLADA','', 'Dominaste todos los mazos.', 'Cada criatura regreso a su carta.', 'La maldicion abandono las ciudades.', 'El mundo vuelve a estar en paz.','', 'En Xcso Club y la Oktoberfest del lago', 'se brindo por el heroe de las cartas.','',...friendCredits(),'','UN JUEGO DE MATIAS GAMES PRODUCTION','¡SALUD!','MAGIC THE BEER QUEST'];
-const CHAMPION_ENDING=['¡CAMPEON ABSOLUTO!','', 'Cinco medallas. Una corona nacional.', 'Tu nombre vive en todas las tiendas.','', 'PARECIA EL FINAL DE TU AVENTURA...','', 'Una luz rompe el cielo de Tolaria.', 'El Santuario del Umbral desperto.', 'Una puerta majestuosa te espera.','', 'Al continuar llegaras al santuario.', 'Acercate al portal y habla con X.', 'Tu sueño de salvar el mundo continua.','¡SALUD!'];
+const CHAMPION_ENDING=['¡CAMPEON ABSOLUTO!','', 'Cinco medallas. Una corona nacional.', 'Tu nombre vive en todas las tiendas.','', 'PARECIA EL FINAL DE TU AVENTURA...','', 'Una luz rompe el cielo de Providencia.', 'El Santuario del Umbral desperto.', 'Una puerta majestuosa te espera.','', 'Al continuar llegaras al santuario.', 'Acercate al portal y habla con X.', 'Tu sueño de salvar el mundo continua.','¡SALUD!'];
 function drawEnding(){
   R(0, 0, W, H, '#0e0a24');
   for (let i = 0; i < 40; i++) R(Math.round(hash(i) * 240), Math.round(hash(i + 40) * 160), 1, 1, (frame + i * 5) % 60 < 4 ? '#6a64a8' : '#fff');
@@ -7942,6 +8439,7 @@ function step(){
     if (G.fade > 0) G.fade--;
     if(G.waking>0){G.waking--;if(G.waking===0)say(['Medianoche. Un zumbido te despierta: sobre el escritorio, tu baraja brilla con una luz que nunca habias visto.','Es el mazo que armaste durante tantas noches. Soñabas con llevarlo a la Liga Nacional... pero ahora las cartas tiemblan, como si algo quisiera salir de ellas.','Pero algo cambio en la Villa. Dicen que la Caja de Urza se abrio... y que las criaturas ya no obedecen a sus cartas.','Guardas tu mazo y respiras hondo. Si las cartas las trajeron a este mundo, quizas tambien puedan devolverlas. Tu aventura comienza al otro lado de esa puerta.']);}
     else if (G.warp) updateWarp();
+    else if (G.bossDiploma) updateBossDiploma();
     else if (G.cardGet) { G.cardGet.t++; if (G.cardGet.t > 30 && (pressed('a') || pressed('b'))) { const done = G.cardGet.done; G.cardGet = G.cardQueue.shift() || null; if (G.cardGet) SFX.card(); else SFX.ok(); if (done) toast('¡MAZO ' + done + ' COMPLETO!', '#fcd84a'); } }
     else if (G.dialog) updateDialog();
     else if (G.ashGuide) updateAshGuide();
@@ -8036,6 +8534,7 @@ function render(){
       if (G.dead) { ctx.fillStyle = `rgba(90,0,0,${Math.min(0.75, G.dead / 60)})`; ctx.fillRect(0, 0, W, H); if (G.dead > 40) txt('TE DESMAYASTE...', 120, 72, '#fff', 'center', '#000'); }
       if (G.cardGet) drawCardGet();
       drawCardPop();
+      if (G.bossDiploma) drawBossDiploma();
       if (G.dialog) drawDialog();
     }
     if (G.fade > 0) { ctx.fillStyle = `rgba(0,0,0,${G.fade / 14})`; ctx.fillRect(0, 0, W, H); }
@@ -8060,6 +8559,13 @@ function loop(now){
     if(location.hash.startsWith('#vista=arcade')&&!G.tested){G.tested=true;G.preview=true;S=newSave(0);G.state='world';loadRoom('arcade',115,116);const game=new URLSearchParams(location.hash.split('&').slice(1).join('&')).get('juego');startArcade(['tenis','dkc2','pelea'].includes(game)?game:'tenis');if(G.arc.tennis){G.arc.tennis.selectCourt=false;G.arc.tennis.court=1;}if(game==='pelea'){G.arc.phase='fight';G.arc.pt=220;}G.fade=0;G.freeze=true;}
     if(location.hash.startsWith('#vista=mazos')&&!G.tested){G.tested=true;G.preview=true;S=newSave(0);if(location.hash.includes('pokemon'))S.realm='pokemon';G.state='world';loadRoom('tienda',115,116);const list=pokemonRealm()?POKEMON_META_DECKS:DECKS,page=location.hash.includes('hoja=2')?1:0;say(['MAZOS META · HOJA '+(page+1)+'/2 · VISTA PREVIA'],deckChoices(list,d=>d.realm==='pokemon'?pokemonDeckInfo(d):say([d.n,...d.cards.map(id=>CARDS[id].n)]),page));G.dialog.ch=999;G.dialog.showChoices=true;}
     if(location.hash.startsWith('#vista=duelo-meta')&&!G.tested){G.tested=true;G.preview=true;S=newSave(0);S.realm='pokemon';S.lvl=100;loadRoom('tienda',115,116);beginDuel({name:'SABRINA',look:NPCDEF.vecina,deck:'pk_gardevoir',level:100},{id:'pk_bolt'},0);if(location.hash.includes('jugada')){G.duel.myT='combo';resolveDuel(G.duel);G.duel.phase='show';G.duel.t=40;G.freeze=true;}}
+    // 3 oct: vistas publicas sin guardar del diploma, la pestaña JEFES, el mapamundi y las cartas del reflejo.
+    if(/^#vista=(diploma|jefes|mapa|cartas)/.test(location.hash)&&!G.tested){G.tested=true;G.preview=true;S=newSave(0);S.lvl=60;G.state='world';const h=location.hash;if(h.includes('pokemon'))S.realm='pokemon';
+     for(const b of ['siege','dread','reyMinas','shivan','terraBoss','sacerdotisa'])S.bosses[b]=true;bossDiplomas();for(const b of ['siege','shivan','sacerdotisa'])S.bossDiplomas[b]={wins:b==='siege'?3:1,date:'03-10-2026',lvl:40};
+     if(h.startsWith('#vista=diploma')){loadRoom('D:arboleda:5',115,116);G.enemies=[];S.bosses.rofellos=true;awardBossDiploma('rofellos');G.bossDiploma.t=60;}
+     else if(h.startsWith('#vista=jefes')){loadRoom('providencia',115,100);G.menu={tab:6,sel:0,deck:null,sub:null};}
+     else if(h.startsWith('#vista=mapa')){for(const id in WORLD)S.visited[id]=true;loadRoom(h.includes('zona=')?h.split('zona=')[1].split('&')[0]:'valdivia',115,84);G.menu={tab:3,sel:0,deck:null,sub:null};}
+     else{const list=activeDecks(),i=Math.max(0,list.findIndex(d=>d.id===(h.split('mazo=')[1]||'').split('&')[0]));list[i].cards.forEach(id=>S.cards[id]=1);loadRoom('tienda',115,116);G.menu={tab:0,sel:i,deck:i,cs:+((h.split('carta=')[1]||'0').split('&')[0]),sub:null};}}
     if(location.hash.startsWith('#vista=campeon')&&!G.tested){G.tested=true;G.preview=true;S=newSave(0);S.lvl=50;G.state='world';loadRoom('cartasCurico',115,116);DECK.burn.cards.forEach(id=>S.cards[id]=1);startTour('burn',{rounds:4,league:'curico',name:'LIGA DE CURICO',champ:25000,perWin:4000});G.tour.wins=4;G.tour.phase='end';finishTour();G.tour.t=50;}
     if(location.hash.startsWith('#vista=liga')&&!G.tested){G.tested=true;G.preview=true;S=newSave(0);if(location.hash.includes('pokemon')){S.realm='pokemon';S.lvl=100;}G.state='world';const id=new URLSearchParams(location.hash.split('&').slice(1).join('&')).get('zona')||'cartasCurico';if(ROOMS[id]&&ROOMS[id].cardTemple)loadRoom(id,115,116);else loadRoom('cartasCurico',115,116);G.fade=0;G.zoneT=0;}
     if(location.hash.startsWith('#vista=pokemon') && !G.tested){G.tested=true;G.preview=true;S=newSave(0);S.realm='pokemon';S.lvl=80;S.maxHp=S.hp=200;S.coins=1000000;S.surf=true;S.pet=24;S.magicPet='shivan';S.visited=Object.fromEntries(Object.keys(WORLD).map(id=>[id,true]));G.state='world';const zone=new URLSearchParams(location.hash.split('&').slice(1).join('&')).get('zona');const room=zone&&(Object.hasOwn(ROOMS,zone)||Object.hasOwn(WILD,zone))?zone:'tienda';loadRoom(room,115,room==='tienda'?116:84);toast('UN ENTE LOS SACO DE LAS CARTAS: AHORA SON SALVAJES','#ffb070');}
@@ -8144,8 +8650,9 @@ function dialogClick(p){
 }
 function menuClick(p){
   const m = G.menu;
-  if (p.y < 16) { const t = Math.floor(p.x / 40); if (t >= 0 && t < 6) { m.tab = t; m.sel = 0; m.deck = null; m.sub = null; SFX.move(); } return; }
+  if (p.y < 16) { const t = Math.floor(p.x / MENU_TAB_W); if (t >= 0 && t < MENU_TABS.length) { m.tab = t; m.sel = 0; m.deck = null; m.sub = null; SFX.move(); } return; }
   if(m.tab===5){if(!pokemonDiscovered()){m.medalRealm='magic';return;}if(p.y>=20&&p.y<=34){m.medalRealm=p.x<120?'magic':'pokemon';SFX.move();}else if(p.y>=145)pulseKey='a';return;}
+  if(m.tab===6)return;
   if (m.tab === 0) {
     if (m.deck === null) { if(p.y>=138&&pokemonRealm()){m.sel=clamp(m.sel+(p.x<120?-1:1),0,activeDecks().length-1);SFX.move();return;}const i = (m.deckScroll||0)+Math.floor((p.y - 18) / 12); if (p.y<128&&i >= 0 && i < activeDecks().length) { m.sel = i; pulseKey = 'a'; } }
     else { for (let i = 0; i <= DECK_SIZE; i++) { const [x, y] = deckCellPos(i); if (inRect(p, [x, y, 24, 34])) { m.cs = i; SFX.move(); return; } } if (p.y > 144) pulseKey = 'b'; }
