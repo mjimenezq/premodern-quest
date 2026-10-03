@@ -403,8 +403,14 @@ g.setS(g.newSave(0));g.G.preview=true;g.getS().st.agi=300;g.loadRoom('valpo',115
 for(const id of ['caballo','mesa','nightmare','charger','mammoth','shivan','crosis','darigaaz']){g.getS().mount=id;assert(g.speed()>previous);assert(g.speed()<=onFoot*1.36+.001);previous=g.speed();}
 assert(g.MOUNTS.caballo.donkey);g.G.preview=false;
 async function main(){
- const beforeIntro=g.getS();for(let ci=0;ci<19;ci++){g.setS(g.newSave(ci,ci===18?g.wizardDefaults():undefined));g.G.state='world';g.loadRoom('pueblo',195,134);const path=g.ashGuidePath();assert(path&&path.length>2,'Ash path for character '+ci);g.offerAshGuide();g.G.dialog=null;g.G.ashGuide.walking=true;for(let tick=0;tick<2000&&!g.getS().ashIntroDone;tick++){g.updateAshGuide();assert(!g.blocked(g.PL.x,g.PL.y,10,8));assert(!g.npcHit({x:g.PL.x,y:g.PL.y,w:10,h:8}));}assert(g.getS().ashIntroDone);assert.equal(g.PL.x,35);assert(g.G.dialog.choices.some(c=>c.t==='ENTRAR AL SAFARI'));g.G.dialog.choices[0].fn();assert.equal(g.G.roomId,'safari');assert.equal(g.getS().safariBalls,15);assert(!g.G.ashGuide);}
- for(const realm of ['magic','pokemon'])for(const region of g.SAFARI_REGIONS){const s=g.newSave(0);s.realm=realm;s.surf=false;g.setS(s);g.G.dialog=null;g.loadRoom(region.from,region.back[0]*16+3,region.back[1]*16+4);assert(!g.blocked(g.PL.x,g.PL.y,10,8));assert(!g.npcHit({x:g.PL.x,y:g.PL.y,w:10,h:8}));g.PL.x=region.gate[0]*16+3;g.PL.y=region.gate[1]*16+4;g.updateWorld();assert.equal(g.G.roomId,region.id);assert.equal(s.safariBalls,15);assert(g.G.wild.length>0);for(const wild of g.G.wild){if(realm==='pokemon'){assert(wild.magic);assert(g.MAGIC_SAFARI_POOLS[region.id].includes(wild.id));}else{assert(!wild.magic);assert(region.pool.some(n=>n.toUpperCase()===g.POKE[wild.id].n));}}g.drawWorld();g.PL.x=115;g.PL.y=132;g.updateWorld();assert.equal(g.G.roomId,region.from);g.updateWorld();assert.equal(g.G.roomId,region.from,'Exit must not enter safari again');}
+ const beforeIntro=g.getS();for(let ci=0;ci<19;ci++){g.setS(g.newSave(ci,ci===18?g.wizardDefaults():undefined));g.G.state='world';g.loadRoom('pueblo',195,134);const path=g.ashGuidePath();assert(path&&path.length>2,'Ash path for character '+ci);g.offerAshGuide();g.G.dialog=null;g.G.ashGuide.walking=true;for(let tick=0;tick<2000&&!g.getS().ashIntroDone;tick++){g.updateAshGuide();assert(!g.blocked(g.PL.x,g.PL.y,10,8));assert(!g.npcHit({x:g.PL.x,y:g.PL.y,w:10,h:8}));}assert(g.getS().ashIntroDone);assert.equal(g.PL.x,35);assert(g.G.dialog.choices.some(c=>c.t==='ENTRAR AL SAFARI'));g.G.dialog.choices[0].fn();assert.equal(g.G.roomId,'safariCasa');assert(!g.G.def.safari);g.loadRoom('safari',115,116);assert.equal(g.getS().safariBalls,15);assert(!g.G.ashGuide);}
+ for(const realm of ['magic','pokemon'])for(const region of g.SAFARI_REGIONS){const s=g.newSave(0);s.realm=realm;s.surf=false;g.setS(s);g.G.dialog=null;g.loadRoom(region.from,region.back[0]*16+3,region.back[1]*16+4);assert(!g.blocked(g.PL.x,g.PL.y,10,8));assert(!g.npcHit({x:g.PL.x,y:g.PL.y,w:10,h:8}));g.PL.x=region.gate[0]*16+3;g.PL.y=region.gate[1]*16+4;g.updateWorld();assert.equal(g.G.roomId,region.id+'Casa');assert(!g.G.def.safari);assert.equal(g.G.enemies.length,0);const professor=g.G.npcs.find(n=>n.id.startsWith('safariProf'));assert(professor);g.talkTo(professor.id,professor);g.G.dialog.choices[1].fn();assert.equal(g.G.roomId,region.id);assert.equal(s.safariBalls,15);assert(g.G.wild.length>0);for(const wild of g.G.wild){if(realm==='pokemon'){assert(wild.magic);assert(g.MAGIC_SAFARI_POOLS[region.id].includes(wild.id));}else{assert(!wild.magic);assert(region.pool.some(n=>n.toUpperCase()===g.POKE[wild.id].n));}}g.drawWorld();g.PL.x=115;g.PL.y=132;g.updateWorld();assert.equal(g.G.roomId,region.id+'Casa');g.PL.x=115;g.PL.y=132;g.updateWorld();assert.equal(g.G.roomId,region.from);g.updateWorld();assert.equal(g.G.roomId,region.from,'Exit must not enter safari again');}
+ for(const realm of ['magic','pokemon']){
+  const s=g.newSave(0);s.realm=realm;s.pet=24;s.dex={24:true,3:true,131:true};s.magicPet='shivan';s.magicDex={birds:true,shivan:true};g.setS(s);g.G.dialog=null;g.loadRoom('safariCasa',115,116);
+  const prof=g.G.npcs.find(n=>n.id.startsWith('safariProf'));g.talkTo(prof.id,prof);g.G.dialog.choices[0].fn();g.G.dialog.choices[realm==='pokemon'?1:0].fn();
+  if(realm==='magic'){assert.equal(s.pet,3);assert.equal(s.magicPet,'shivan');assert.equal(Object.keys(s.dex).length,3);}else{assert.equal(s.pet,24);assert.equal(s.magicPet,'birds');assert(g.G.pet);}
+  g.G.dialog=null;
+ }
  g.G.dialog=null;g.setS(beforeIntro);
  const previous=g.getS();const reflected=g.newSave(0);reflected.lvl=150;reflected.spellXp={bolt:1050};g.setS(reflected);assert.equal(g.spellLvl('bolt'),10);
  assert(!g.shopItems('magia').some(it=>g.REFLECT_SPELLS.some(s=>s[0]===it.id)));assert(!g.shopItems('armas').some(it=>g.ARMOR[it.id]?.realm==='pokemon'));
@@ -547,14 +553,14 @@ async function main(){
   // Every land link on the world map joins drawn neighbours, in both directions.
   for(const id in g.WORLD)for(const [side,to] of Object.entries(g.zoneNeighbors(id))){if(g.SURF_LINKS[id]?.[side])continue;const [x,y]=g.WORLD[id],[a,b]=g.WORLD[to];assert.equal(Math.abs(x-a)+Math.abs(y-b),1,id+' '+side+' '+to+' no es vecino en el mapa');assert(Object.values(g.zoneNeighbors(to)).includes(id),to+' no vuelve a '+id);}
   assert.equal(g.WORLD.pelluco.join(),'4,4');assert.equal(g.zoneNeighbors('pmontt').e,'pelluco');assert.equal(g.zoneNeighbors('lascondes').s,'providencia');assert.equal(g.zoneNeighbors('tolaria').e,'providencia');assert.equal(g.zoneNeighbors('providencia').w,'tolaria');assert.equal(g.zoneNeighbors('providencia').n,'lascondes');assert.equal(g.zoneNeighbors('tempest').n,'providencia');assert.equal(g.WORLD.providencia.join(),'5,2');assert.equal(g.WORLD.lascondes.join(),'5,1');assert.equal(g.zoneNeighbors('puertoOctay').n,'valdivia');
-  // Teno's trail is a walkable gate, with safe arrivals and independent map identity.
-  assert.equal(g.ROOMS.teno.zone,'teno');assert.equal(g.ROOMS.campoFamilia.zone,'campoFamilia');
-  assert(g.ROOMS.valpo.trails['13,3']);assert(!g.ROOMS.valpo.trails['13,1']);
+  // Teno is its own town west of Curico (no town hall); the family farm lies west of Teno.
+  assert.equal(g.ROOMS.teno.zone,'teno');assert.equal(g.ROOMS.campoFamilia.zone,'campoFamilia');assert.equal(g.WORLD.teno.join(),'0,3');assert(!g.ROOMS.municipalidadTeno);
+  assert(!Object.keys(g.ROOMS.valpo.trails||{}).some(k=>g.ROOMS.valpo.trails[k].room==='teno'));assert.equal(g.zoneNeighbors('valpo').w,'teno');assert.equal(JSON.stringify(g.zoneNeighbors('teno')),'{"e":"valpo"}');
   for(const realm of ['magic','pokemon']){
-   s.realm=realm;g.loadRoom('valpo',13*16+3,3*16+4);assert(!g.blocked(g.PL.x,g.PL.y));g.updateWorld();assert.equal(g.G.roomId,'teno');assert(!g.blocked(g.PL.x,g.PL.y));
-   g.PL.x=14*16+3;g.PL.y=4*16+4;g.updateWorld();assert.equal(g.G.roomId,'campoFamilia');assert(!g.blocked(g.PL.x,g.PL.y));
-   g.PL.x=3;g.PL.y=4*16+4;g.updateWorld();assert.equal(g.G.roomId,'teno');
-   g.PL.x=7*16+3;g.PL.y=9*16+4;g.updateWorld();assert.equal(g.G.roomId,'valpo');assert(!g.blocked(g.PL.x,g.PL.y));
+   s.realm=realm;g.loadRoom('valpo',3,4*16+4);g.PL.x=-6;g.updateWorld();assert.equal(g.G.roomId,'teno');assert(!g.blocked(g.PL.x,g.PL.y));
+   g.PL.x=3;g.PL.y=4*16+4;g.updateWorld();assert.equal(g.G.roomId,'campoFamilia');assert(!g.blocked(g.PL.x,g.PL.y));
+   g.PL.x=14*16+3;g.PL.y=4*16+4;g.updateWorld();assert.equal(g.G.roomId,'teno');assert(!g.blocked(g.PL.x,g.PL.y));
+   g.PL.x=236;g.PL.y=4*16+4;g.updateWorld();assert.equal(g.G.roomId,'valpo');assert(!g.blocked(g.PL.x,g.PL.y));
   }
   s.realm='magic';
   // New route works both ways, in either realm, with a safe arrival tile.
@@ -588,9 +594,13 @@ async function main(){
    g.loadRoom('casaDavis',115,100);g.talkTo('friend',g.G.npcs.find(n=>n.ch===1));assert(g.G.dialog.choices.some(c=>c.t==='WORLD OF WARCRAFT'));assert(g.G.dialog.choices.some(c=>c.t==='DIABLO Y LAS CARTAS'));g.G.dialog=null;g.setS(before);
   }
   // Teno: road from Curico, Rai's slide counts for the grandparents' quest.
-  assert.equal(g.getDef('valpo').trails['13,3'].room,'teno');g.loadRoom('teno',115,100);g.drawWorld();g.loadRoom('campoFamilia',115,84);g.drawWorld();
+  assert.equal(g.zoneNeighbors('valpo').w,'teno');g.loadRoom('teno',115,100);g.drawWorld();g.loadRoom('campoFamilia',115,84);g.drawWorld();
   s.quests.q_teno_refalin={st:'active',base:0};const slide=g.getDef('campoFamilia').props.find(p=>p.act==='refalin');g.startRefalin(slide);for(let i=0;i<200&&g.G.refalin;i++)g.updateRefalin();assert.equal(s.refalines,1);assert.equal(g.questProg('q_teno_refalin'),1);
-  g.loadRoom('casaDavis',115,116);assert(g.G.npcs.some(n=>n.id==='friend'&&n.ch===1));g.drawWorld();
+  g.loadRoom('casaDavis',115,116);assert(g.G.npcs.some(n=>n.id==='friend'&&n.ch===1));g.drawWorld();assert(g.getDef('casaDavis').props.filter(p=>p.k==='pcLan').length>=4);
+  // LAN Quest: a short three-monster RPG playable on Davis's PCs.
+  {const xp=s.xp,lvl=s.lvl;g.southPropAction({act:'lanRpg'});g.G.dialog.choices[0].fn();for(let i=0;i<60&&!s.lanWins&&g.G.dialog?.choices;i++){const c=g.G.dialog.choices;(c.find(o=>o.t.startsWith('HECHIZO')&&!o.t.includes('(0'))||c.find(o=>o.t.startsWith('POCION')&&!o.t.includes('(0')&&/TU: [1-9] /.test(JSON.stringify(g.G.dialog.pages)))||c[0]).fn();}assert(s.lanWins>=1||JSON.stringify(g.G.dialog).includes('GAME OVER'));g.G.dialog=null;}
+  // Providencia opens north to Las Condes through a signed castle gate.
+  {const d=g.getDef('providencia');assert.equal(d.exits.n,'lascondes');assert(d.props.some(p=>p.k==='roadGate'&&p.label==='LAS CONDES'));g.loadRoom('providencia',7*16+3,1*16+4);assert(!g.blocked(g.PL.x,g.PL.y));g.PL.y=-6;g.updateWorld();assert.equal(g.G.roomId,'lascondes');}
   // Providencia: Piedra Bruja hosts the national league and the portal sanctuary.
   assert.equal(g.ROOMS.liga.exitTo.room,'providencia');g.loadRoom('providencia',115,100);g.drawWorld();g.loadRoom('liga',115,116);g.drawWorld();
   // Pokemon cards are pixel drawings: every Pokemon has its own species art (Dragapult is not Dreepy).
