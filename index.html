@@ -190,7 +190,7 @@
     </div>
   </div>
   <label class="touch-choice" for="touchControl">Movimiento <select id="touchControl"><option value="stick">Stick</option><option value="dpad">Cruceta</option></select></label>
-  <p class="charge-hint">Mantén ataque para cargar · suelta para girar</p>
+  <p class="charge-hint">Mantén ataque 3 segundos · suelta para girar</p>
   <div class="net">
     <button id="btnTitle" type="button">⌂ Menú principal</button>
     <button id="btnJournal" type="button">📖 Misiones (J)</button>
@@ -1971,7 +1971,7 @@ let S = null;
 const G = { state:'intro', introT:0, t:0, sel:0, titleSel:0, roomId:'pueblo', def:null, map:null, enemies:[], items:[], parts:[], floats:[], npcs:[],
   toasts:[], dialog:null, menu:null, cardGet:null, cardQueue:[], arc:null, shots:[], amb:[], eshots:[], aoes:[], chimneys:[], moveTarget:null, lvlFx:0, shop:null, duel:null, tour:null, dead:0, fade:0, zoneT:0, cacheDirty:true, swing:0, bossBar:null };
 const PL = { x:0, y:0, w:10, h:8, dir:0, walk:0, atk:0, atkCd:0, inv:0, kb:0, kx:0, ky:0 };
-const ATK = 14, SPIN_CHARGE=60, SPIN_DURATION=28, SPIN_RADIUS=30;
+const ATK = 14, SPIN_CHARGE=180, SPIN_DURATION=28, SPIN_RADIUS=30;
 function newSave(ci, custom){
   const ch = ci === CUSTOM_CHAR ? customCharacter(custom) : CHARS[ci];
   return { v:1, ch:ci, ...(ci === CUSTOM_CHAR ? {customChar:normalizeCustom(custom)} : {}), lvl:1, xp:0, st:{...ch.st}, hp:6, maxHp:6, coins:1500, bankCoins:0, potions:{}, econ:2, leagues:{}, cards:{}, swords:['palo'], eq:'palo',

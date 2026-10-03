@@ -431,6 +431,7 @@ async function main(){
  g.G.map=Array.from({length:10},()=>Array(15).fill('.'));g.G.propSolid=new Set();g.G.npcs=[];g.G.enemies=[];g.G.eshots=[];g.G.aoes=[];g.G.menu=g.G.dialog=g.G.shop=null;g.G.dead=0;g.G.waking=0;g.G.warp=null;g.G.moveTarget=null;g.G.fade=0;g.PL.atk=g.PL.atkCd=g.PL.kb=g.PL.spin=0;g.PL.inv=999;
  g.resetHeldInput();emit(padButtons[4],'pointerdown',90);g.step();assert(g.PL.atk>0,'A tap keeps the immediate physical attack');
  emit(padButtons[4],'pointerup',90);g.step();assert(!g.PL.spin,'Short press must not spin');
+ g.PL.atk=g.PL.atkCd=0;emit(padButtons[4],'pointerdown',90);for(let i=0;i<120;i++)g.step();assert(g.PL.attackCharge<g.SPIN_CHARGE,'Two seconds must not finish the charge');emit(padButtons[4],'pointerup',90);g.step();assert(!g.PL.spin,'Releasing early must not spin');
  g.PL.atk=g.PL.atkCd=0;emit(padButtons[4],'pointerdown',90);for(let i=0;i<g.SPIN_CHARGE+5;i++)g.step();assert.equal(g.PL.attackCharge,g.SPIN_CHARGE);assert(!g.PL.spin,'Fully charged attack waits for release');
  const near=[];for(const [dx,dy]of [[24,0],[-24,0],[0,24],[0,-24]]){const e=g.spawnEnemy('gob',100,80);e.x=g.PL.x+5+dx-e.w/2;e.y=g.PL.y-2+dy-e.h/2;e.hp=e.max=200;near.push(e);}
  const far=g.spawnEnemy('gob',190,80);far.hp=far.max=200;g.G.enemies=[...near,far];emit(padButtons[4],'pointerup',90);g.step();assert(g.PL.spin>0);assert(near.every(e=>e.hp<200),'Spin strikes enemies in all directions');assert.equal(far.hp,200,'No damage outside area');
