@@ -8,6 +8,8 @@ El juego abre directamente desde `index.html`; el historial Git del proyecto se 
 
 **3 oct — Giro cargado:** toque corto sigue golpe inmediato; mantener A/Z/Espacio/✕ por 180 cuadros (3 segundos) carga y soltar dispara giro de 28 cuadros, radio 30 px y daño físico ×1,65. Un golpe por enemigo, no atraviesa muros, sin invulnerabilidad ni muerte automática de jefes. Carga ralentiza caminata y se cancela con daño, cambio de zona/menú, blur, pointercancel o pérdida de captura. No aplica en Safari ni al interactuar con NPC. Barra pequeña, botón iluminado, sonido listo y estela de espada. Estado visual spin/charge compartido online; impactos usan protocolo hit existente.
 
+**3 oct — Centrado del stick:** thumb anclado a 50% con translate(-50%,-50%) y border-box; posición analógica suma desplazamiento desde ese centro. Base no se desplaza ni cambia borde al presionarla, a diferencia de los botones de acción.
+
 **3 oct — Elegir controles:** selector «Movimiento: Stick / Cruceta» debajo de los controles móviles. Stick por defecto; elección guardada en pmq_touch_control, separada de las partidas. Cambiar modo libera los dedos y entradas anteriores para evitar movimiento pegado. Ambos admiten ataque simultáneo; cruceta permite diagonales.
 
 **3 oct — Stick y Martín A:** stick táctil circular reemplaza cruceta en celular; movimiento analógico 360° con zona muerta, velocidad proporcional y captura de un dedo, compatible con ataque simultáneo. Reset al soltar/cancelar/perder captura o foco. Mando también usa ejes analógicos. Martín mantiene estilo A y proporciones originales, manos visibles, contornos sutiles y ocho vistas; face8 es visual, dir conserva cuatro direcciones para combate/interacción y se comparte online. No usar el rediseño B por decisión de Matías.
