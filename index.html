@@ -2381,7 +2381,9 @@ const DAY_PHASES=['dawn','day','dusk','night'],DAY_LABELS={dawn:'MAÑANA',day:'M
 function dayPhase(){if(G.forcePhase)return G.forcePhase;return DAY_PHASES[Math.floor(((S && S.worldTicks) || 0)/DAY_PHASE_TICKS)%4];}
 function dayTransition(phase){G.cacheDirty=true;toast('AHORA ES '+DAY_LABELS[phase],'#fcd84a');if(phase==='dawn'){[0,.17,.34,.5].forEach((delay,i)=>{tone(i===3?1250:950,i===3?500:1500,i===3?.65:.14,'sawtooth',.16,delay);tone(i===3?2500:1900,1000,.18,'triangle',.1,delay);});}else if(phase==='night')seq([330,220,330],.2,'sine',.12);else seq([659,784],.13,'sine',.15);}
 function tickDay(){const before=dayPhase();S.worldTicks=(((S.worldTicks || 0)+1)%(DAY_PHASE_TICKS*4));if(dayPhase()!==before)dayTransition(dayPhase());}
-function waitNextPhase(){G.forcePhase=null;const i=DAY_PHASES.indexOf(dayPhase());S.worldTicks=((i+1)%4)*DAY_PHASE_TICKS;dayTransition(dayPhase());saveGame();}
+function waitNextPhase(){G.forcePhase=null;const i=DAY_PHASES.indexOf(dayPhase());S.worldTicks=((i+1)%4)*DAY_PHASE_TICKS;dayTransition(dayPhase());saveGame();if(NET.role==='client'&&NET.host&&NET.host.open)NET.host.send({t:'wt',wt:S.worldTicks});}
+// En una sala online todos comparten la hora del anfitrión.
+function syncDay(wt){if(typeof wt!=='number'||!S)return;const before=dayPhase();S.worldTicks=wt;if(dayPhase()!==before)dayTransition(dayPhase());}
 const OUTDOOR_THEMES = new Set(['town','meadow','forest','dirt','sand','swamp','bog','ice','volcano']);
 function gatherLights(dark){
   const L = [], th = G.def.theme, ph = dayPhase(), night = ph === 'night' && !G.def.interior;
@@ -7453,7 +7455,8 @@ function hostRecv(c, d){
     if (d.room !== G.roomId || G.state !== 'world'||(d.realm||'magic')!==(S.realm||'magic')) return;
     const e = G.enemies.find(o => o.nid === d.id && !o.dead);
     if (e) applyHit(e, d.dmg, d.kx, d.ky);
-  } else if (d.t === 'gift') {
+  } else if (d.t === 'wt') syncDay(d.wt);
+  else if (d.t === 'gift') {
     if (d.to === 'h') receiveGift(d); else sendTo(d.to, d);
   }
 }
@@ -7471,6 +7474,7 @@ function clientRecv(d){
       NET.others[s.pid] = Object.assign(o || { rx:s.x, ry:s.y }, s);
     }
     for (const k in NET.others) if (!seen[k]) delete NET.others[k];
+    syncDay(d.wt);
   }
   else if (d.t === 'en') { if (G.state === 'world' && d.room === G.roomId) applyEnemySnap(d.list); }
   else if (d.t === 'kill') {
@@ -7516,7 +7520,7 @@ function netTick(){
   if (NET.role === 'host') {
     if (!NET.conns.length) return;
     const list = [myState()].concat(Object.values(NET.others).map(o => ({ pid:o.pid, name:o.name, ch:o.ch,customChar:o.customChar||null,realm:o.realm||'magic', room:o.room, x:o.x, y:o.y, dir:o.dir, atk:o.atk, walk:o.walk, hp:o.hp, max:o.max })));
-    sendAll({ t:'pl', list });
+    sendAll({ t:'pl', list, wt:S.worldTicks });
     if (G.state === 'world') sendAll({ t:'en', room:G.roomId, list:G.enemies.filter(e => !e.dead).map(e => [e.nid, e.type, Math.round(e.x), Math.round(e.y), e.hp, e.max, e.flip ? 1 : 0, e.flash > 0 ? 1 : 0]) });
   } else if (NET.host && NET.host.open) {
     NET.host.send(Object.assign({ t:'st' }, myState()));
