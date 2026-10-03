@@ -5620,7 +5620,7 @@ function drawMenu(){
       const id = view[m.cs];
       if (owned(id)) drawCardBig(id, 142, 22);
       else { R(142, 22, 92, 128, '#111'); R(144, 24, 88, 124, '#3a2818'); R(148, 28, 80, 116, '#5a3a20'); disc(188, 86, 20, '#3a2818'); txt('?', 188, 80, '#c8904a', 'center', null, 16); tiny('TE FALTA', 188, 120, '#c8904a', 'center'); tiny(CARDS[id].n, 188, 128, '#e8c898', 'center'); }
-      tiny(d.realm==='pokemon'?'X: VOLVER · A: LISTA 60':Object.keys(NET.others).length ? 'X: VOLVER  A: REGALAR' : 'X: VOLVER', 8, 150, '#6a8a80');
+      tiny(d.realm==='pokemon'?hint('◯: VOLVER · ✕: LISTA 60','B: VOLVER · A: LISTA 60','X: VOLVER · Z: LISTA 60'):Object.keys(NET.others).length ? hint('◯: VOLVER  ✕: REGALAR','B: VOLVER  A: REGALAR','X: VOLVER  Z: REGALAR') : hint('◯: VOLVER','B: VOLVER','X: VOLVER'), 8, 150, '#6a8a80');
     }
   } else if (m.tab === 1) {
     ctx.save(); ctx.translate(176, 26); ctx.scale(3, 3); drawPerson(0, 0, playerLook(), 0, (frame >> 4) & 1); ctx.restore();
