@@ -51,6 +51,7 @@
   .dpad .u{grid-column:2;grid-row:1}.dpad .l{grid-column:1;grid-row:2}.dpad .r{grid-column:3;grid-row:2}.dpad .d{grid-column:2;grid-row:3}
   .dpad button{width:var(--d);height:var(--d)}
   #moveStick[hidden],#moveDpad[hidden]{display:none}
+  .charge-hint{margin:0;color:var(--muted);font-size:7px;text-align:center;line-height:1.6}
   .touch-choice{display:none;align-items:center;gap:12px;font-size:8px;color:var(--muted)}
   .touch-choice select{font:inherit;color:var(--ink);background:var(--panel);border:2px solid var(--line);border-radius:6px;padding:7px 10px;touch-action:manipulation}
   .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
@@ -60,6 +61,8 @@
   .acts .a{background:#b8321a;border-color:#6a1a0a}
   .acts .b{background:#2a6a3a;border-color:#12401e}
   .acts .c{background:#2a4ab0;border-color:#141e6a;width:var(--d);height:var(--d)}
+  .pad button[data-k="a"].charging{box-shadow:0 0 0 2px #80c8ff}
+  .pad button[data-k="a"].charged{border-color:#fcd84a;box-shadow:0 0 12px #fcd84a;color:#fff4b8}
   .acts .m{width:min(78px,19vw);height:34px;font-size:min(9px,2.2vw)}
   .pad button:active,.pad button.on{transform:translateY(3px);border-bottom-width:3px}
   .net{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px 10px;font-size:8px;color:var(--muted);max-width:700px}
@@ -178,7 +181,7 @@
       <div class="row">
         <button class="ab c" data-k="c" aria-label="Magia">✦</button>
         <button class="ab b" data-k="b" aria-label="Hablar">B</button>
-        <button class="ab a" data-k="a" aria-label="Atacar">A</button>
+        <button class="ab a" data-k="a" aria-label="Atacar: mantén para cargar y suelta para un giro">A</button>
       </div>
       <div class="row">
         <button class="m" data-k="v" aria-label="Cambiar hechizo">HECHIZO</button>
@@ -187,6 +190,7 @@
     </div>
   </div>
   <label class="touch-choice" for="touchControl">Movimiento <select id="touchControl"><option value="stick">Stick</option><option value="dpad">Cruceta</option></select></label>
+  <p class="charge-hint">Mantén ataque para cargar · suelta para girar</p>
   <div class="net">
     <button id="btnTitle" type="button">⌂ Menú principal</button>
     <button id="btnJournal" type="button">📖 Misiones (J)</button>
@@ -299,6 +303,7 @@ function movementInput(){
 
 function resetHeldInput(){
   for(const k in kb)kb[k]=0;for(const k in touch)touch[k]=0;for(const k in K){K[k]=0;prevK[k]=0;}
+  cancelAttackCharge();PL.spin=0;
   resetStick();padAxis.x=padAxis.y=0;
   touchPointers.clear();document.querySelectorAll('#pad button').forEach(b=>b.classList.remove('on'));
   mouseHeld=false;selectDrag=null;
@@ -306,7 +311,7 @@ function resetHeldInput(){
 const TOUCH_CONTROL_KEY='pmq_touch_control',touchControlEl=document.getElementById('touchControl'),dpadEl=document.getElementById('moveDpad');
 function readTouchControl(){try{return localStorage.getItem(TOUCH_CONTROL_KEY)==='dpad'?'dpad':'stick';}catch(_){return 'stick';}}
 function setTouchControl(mode,persist=true){
-  mode=mode==='dpad'?'dpad':'stick';resetStick();touchPointers.clear();
+  mode=mode==='dpad'?'dpad':'stick';if(persist)cancelAttackCharge();resetStick();touchPointers.clear();
   for(const k in touch)touch[k]=0;
   for(const k of ['up','down','left','right'])K[k]=prevK[k]=0;
   document.querySelectorAll('#pad button').forEach(b=>b.classList.remove('on'));
@@ -337,7 +342,7 @@ for(const surface of [cvs,document.getElementById('pad')]){
 document.querySelectorAll('#pad button').forEach(b => {
   const k = b.dataset.k;if(!k)return;
   const on = e => { e.preventDefault(); audioInit();const pointers=touchPointers.get(k)||new Set();pointers.add(e.pointerId);touchPointers.set(k,pointers);touch[k]=1;b.classList.add('on');try{b.setPointerCapture(e.pointerId);}catch(_){} };
-  const off = e => { if(e.cancelable)e.preventDefault();const pointers=touchPointers.get(k);if(pointers)pointers.delete(e.pointerId);touch[k]=pointers&&pointers.size?1:0;b.classList.toggle('on',!!touch[k]); };
+  const off = e => { if(e.cancelable)e.preventDefault();const pointers=touchPointers.get(k);if(k==='a'&&(e.type==='pointercancel'||(e.type==='lostpointercapture'&&pointers?.has(e.pointerId))))cancelAttackCharge();if(pointers)pointers.delete(e.pointerId);touch[k]=pointers&&pointers.size?1:0;b.classList.toggle('on',!!touch[k]); };
   b.addEventListener('pointerdown', on); b.addEventListener('pointerup', off);
   b.addEventListener('pointercancel', off); b.addEventListener('lostpointercapture', off);
   b.addEventListener('contextmenu', e => e.preventDefault());
@@ -1179,7 +1184,8 @@ function drawMount(id, x, y, dir, f, layer){
   }
 }
 function drawRider(x, y, P, dir, f){
-  P={...P,face8:visibleFacing(dir,PL.atk>0?dir:PL.face8)};
+  if(PL.spin>0){dir=Math.floor((SPIN_DURATION-PL.spin)/4)%4;P={...P,face8:dir};}
+  P={...P,face8:visibleFacing(dir,PL.atk>0||PL.spin>0?dir:PL.face8)};
   if (G.slide) { outl(x + 1, y + 10, 14, 6, '#b88a4a'); drawPerson(x, y - 2, P, 0, 0); return; }
   const tc = T(Math.floor((PL.x + 5) / TS), Math.floor((PL.y + 4) / TS));
   if (tc === '~' && S && S.surf) { drawSurfBoard(x - 1, y); drawPerson(x, y - 3, P, dir, 0); return; }
@@ -1965,7 +1971,7 @@ let S = null;
 const G = { state:'intro', introT:0, t:0, sel:0, titleSel:0, roomId:'pueblo', def:null, map:null, enemies:[], items:[], parts:[], floats:[], npcs:[],
   toasts:[], dialog:null, menu:null, cardGet:null, cardQueue:[], arc:null, shots:[], amb:[], eshots:[], aoes:[], chimneys:[], moveTarget:null, lvlFx:0, shop:null, duel:null, tour:null, dead:0, fade:0, zoneT:0, cacheDirty:true, swing:0, bossBar:null };
 const PL = { x:0, y:0, w:10, h:8, dir:0, walk:0, atk:0, atkCd:0, inv:0, kb:0, kx:0, ky:0 };
-const ATK = 14;
+const ATK = 14, SPIN_CHARGE=60, SPIN_DURATION=28, SPIN_RADIUS=30;
 function newSave(ci, custom){
   const ch = ci === CUSTOM_CHAR ? customCharacter(custom) : CHARS[ci];
   return { v:1, ch:ci, ...(ci === CUSTOM_CHAR ? {customChar:normalizeCustom(custom)} : {}), lvl:1, xp:0, st:{...ch.st}, hp:6, maxHp:6, coins:1500, bankCoins:0, potions:{}, econ:2, leagues:{}, cards:{}, swords:['palo'], eq:'palo',
@@ -3738,7 +3744,7 @@ function drawRealmTravel(){
 }
 
 function loadRoom(id, px, py){
-  G.ashGuide=null;PL.face8=null;
+  G.ashGuide=null;PL.face8=null;cancelAttackCharge();PL.spin=0;
   if(!pokemonRealm()&&S.lvl>100){S.beyondMagic={lvl:S.lvl,xp:S.xp};S.lvl=100;S.xp=0;}
   if(G.octayRace&&id!=='puertoOctay')endOctayRace();
   if(leaguesDone()>=4)S.finder=true;
@@ -3950,6 +3956,7 @@ function hurtPlayer(dmg, fx, fy, fromBoss){
   const sh = S.gear && S.gear.shield ? ARMOR[S.gear.shield] : null;
   if (sh && Math.random() < Math.min(pokemonRealm()?0.35:0.75,sh.def * 0.05)) { PL.inv = 30; SFX.hit(); floatText('BLOQUEO', PL.x + 5, PL.y - 14, '#c8e0ff'); return; }
   dmg = pokemonRealm() ? Math.max(1,Math.round((18+dmg*3)*reflectedThreat()*(1-Math.min(0.6,defense()/180)))) : Math.max(1, Math.round(dmg * (fromBoss ? 1 : lvlScale())) - Math.floor(defense() / 4));
+  cancelAttackCharge();PL.spin=0;
   G.lastHurtFrame=frame;S.hp -= dmg; PL.inv = 60; PL.kb = 10;
   const dx = PL.x + 5 - fx, dy = PL.y + 4 - fy, d = Math.hypot(dx, dy) || 1;
   PL.kx = dx / d * 2.4; PL.ky = dy / d * 2.4;
@@ -3963,8 +3970,38 @@ function swordPose(){
   return { ang: base - 1.25 + pr * 2.5, cx: PL.x + 5, cy: PL.y - 2 };
 }
 function startAttack(){
-  if (PL.atkCd > 0 || PL.atk > 0) return;
-  PL.atk = ATK; PL.atkCd = Math.max(12, 28 - stats().agi); G.swing++; SFX.swing();
+  if (PL.atkCd > 0 || PL.atk > 0 || PL.spin > 0) return false;
+  PL.atk = ATK; PL.atkCd = Math.max(12, 28 - stats().agi); G.swing++; SFX.swing();return true;
+}
+function cancelAttackCharge(){PL.attackHeld=false;PL.attackCharge=0;document.querySelector('#pad [data-k="a"]')?.classList.remove('charging','charged');}
+function canChargeAttack(){return !!(S&&G.state==='world'&&G.def&&!G.def.safari&&!G.menu&&!G.dialog&&!G.shop&&!G.cardGet&&!G.dead&&!G.warp&&!G.ashGuide&&!G.waking&&PL.kb<=0);}
+function updateAttackCharge(){
+  if(!canChargeAttack()||pressed('b')||pressed('c')||pressed('menu')){cancelAttackCharge();return;}
+  if(!PL.attackHeld)return;
+  if(!K.a){const ready=PL.attackCharge>=SPIN_CHARGE;cancelAttackCharge();if(ready)startSpinAttack();return;}
+  PL.attackCharge=Math.min(SPIN_CHARGE,(PL.attackCharge||0)+1);
+  const button=document.querySelector('#pad [data-k="a"]');button?.classList.add('charging');
+  if(PL.attackCharge===SPIN_CHARGE){button?.classList.add('charged');if(!PL.chargeSound){PL.chargeSound=true;SFX.ok();}}
+}
+function startSpinAttack(){
+  if(!canChargeAttack()||PL.spin>0||PL.atk>0||PL.atkCd>0)return false;
+  PL.spin=SPIN_DURATION;PL.atk=0;PL.atkCd=SPIN_DURATION+18;G.swing++;G.moveTarget=null;SFX.swing();
+  for(let i=0;i<12;i++){const a=i*Math.PI/6;G.parts.push({k:'spark',x:PL.x+5+Math.cos(a)*12,y:PL.y-2+Math.sin(a)*9,vx:Math.cos(a),vy:Math.sin(a),t:0});}
+  return true;
+}
+function spinPathClear(x,y){const cx=PL.x+5,cy=PL.y+4,n=Math.ceil(Math.hypot(x-cx,y-cy)/4);for(let i=1;i<n;i++)if(blocked(cx+(x-cx)*i/n-1,cy+(y-cy)*i/n-1,2,2,false))return false;return true;}
+function updateSpinAttack(){
+  if(!(PL.spin>0))return;
+  const cx=PL.x+5,cy=PL.y-2;
+  for(const e of G.enemies){
+    if(e.dead||e.lastSpin===G.swing)continue;const ex=e.x+e.w/2,ey=e.y+e.h/2,d=Math.hypot(ex-cx,ey-cy);
+    if(d>SPIN_RADIUS+Math.min(12,e.w/2)||!spinPathClear(ex,ey))continue;
+    e.lastSpin=G.swing;const dmg=Math.max(1,Math.round((meleeDamage()+aquaticBonus(e))*1.65)),force=MON[e.type].boss?.65:3,kx=(ex-cx)/(d||1)*force,ky=(ey-cy)/(d||1)*force;
+    floatText(String(dmg),ex,e.y-8,'#ffe080');
+    if(e.remote){e.flash=10;if(NET.host&&NET.host.open)NET.host.send({t:'hit',realm:S.realm||'magic',room:G.roomId,id:e.nid,dmg,kx,ky});}
+    else applyHit(e,dmg,kx,ky);
+  }
+  PL.spin--;
 }
 function interactPoint(dist){ const [dx, dy] = DIRV[PL.dir]; return { x: PL.x + 5 + dx * dist, y: PL.y + 4 + dy * dist }; }
 const TALCA_SPOTS = ['7,4', '4,7', '10,7'];
@@ -4110,6 +4147,7 @@ const spikesUp = (tx, ty) => ((frame + tx * 23 + ty * 11) % 120) < 36;
 function hurtHazard(dmg, why){
   if(!G.enemies.some(e=>!e.dead))return;
   if (PL.inv > 0 || G.dead) return;
+  cancelAttackCharge();PL.spin=0;
   G.lastHurtFrame=frame;S.hp -= pokemonRealm()?Math.round((3+dmg*2)*reflectedThreat()):dmg; PL.inv = 45; SFX.hurt(); floatText(why, PL.x + 5, PL.y - 14, '#ff9060');
   if (S.hp <= 0) { S.hp = 0; G.dead = 1; playMusic(null); SFX.lose(); }
 }
@@ -4388,7 +4426,7 @@ function updateWorld(){
   if (G.zoneT > 0) G.zoneT--;
   if (p.inv > 0) p.inv--; if (p.atkCd > 0) p.atkCd--;
   if (p.kb > 0) { p.kb--; moveBox(p, p.kx, p.ky, false, true); p.kx *= 0.85; p.ky *= 0.85; }
-  else if (p.atk <= 0) {
+  else if (p.atk <= 0 && !(p.spin>0)) {
     const movement=movementInput();let mx=movement.x,my=movement.y;
     if (mx || my) G.moveTarget = null;
     else if (G.moveTarget) {
@@ -4400,7 +4438,7 @@ function updateWorld(){
     const slow = under === 'm' ? 0.6 : under === 'q' ? 0.5 : 1;
     let dx = 0, dy = 0;
     if (mx || my) {
-      const sp = speed() * slow, n = Math.hypot(mx, my);
+      const sp = speed() * slow * (p.attackHeld&&p.attackCharge>10?.7:1), n = Math.hypot(mx, my);
       const strength=Math.min(1,n);dx = mx / n * sp * strength; dy = my / n * sp * strength;
       p.face8=direction8(mx,my);
       if(p.face8<4)p.dir=p.face8;
@@ -4447,8 +4485,9 @@ function updateWorld(){
       }
     }
   }
-  if (pressed('a')) { if (!tryInteract()) { if (G.def.safari) throwBall(); else startAttack(); } }
+  if (pressed('a')) { if (!tryInteract()) { if (G.def.safari) throwBall(); else if(startAttack()){p.attackHeld=true;p.attackCharge=0;p.chargeSound=false;} } }
   else if (pressed('b')) tryInteract();
+  updateAttackCharge();updateSpinAttack();
   if (pressed('c')) castSpell();
   if (pressed('v') && S.spells.length) { S.spellSel = ((S.spellSel || 0) + 1) % S.spells.length; SFX.move(); toast('HECHIZO: ' + SPELLS[S.spells[S.spellSel]].n.toUpperCase() + ' ' + spellXpLine(S.spells[S.spellSel]), '#88e0ff'); }
   if (S.mp < maxMp() && frame % Math.max(30, 80 - stats().int * 3) === 0) S.mp++;
@@ -5677,6 +5716,7 @@ function drawMissions(){
   tiny('ABAJO: VER ENCARGOS (SUBEN TUS ATRIBUTOS)', 120, 152, '#6a8a80', 'center');
 }
 function goToTitle(){
+  cancelAttackCharge();PL.spin=0;
   if(G.preview){G.preview=false;S=null;}
   if (S && G.state === 'world' && !G.dead) { S.x = PL.x; S.y = PL.y; }
   if (S) saveGame();
@@ -5939,6 +5979,16 @@ function drawSword(){
   R(1, -2, 2, 5, '#c89030'); R(3, -1, 2, 3, '#6a4020'); R(5, -2, 12, 4, '#1a1020'); R(5, -1, 11, 2, col); R(5, -1, 11, 1, '#fff');
   ctx.restore();
 }
+function drawAttackPower(px,py,charge,spin,col){
+  const cx=px+5,cy=py-2;
+  if(charge>0&&!spin){const ready=charge>=SPIN_CHARGE;R(cx-9,py-27,18,3,'#1a1020');R(cx-8,py-26,Math.round(16*Math.min(1,charge/SPIN_CHARGE)),1,ready?'#fff2a0':'#80c8ff');
+    if(ready)for(let i=0;i<8;i++){const a=i*Math.PI/4+frame*.06;R(Math.round(cx+Math.cos(a)*12),Math.round(py+5+Math.sin(a)*4),2,1,'#ffe080');}
+  }
+  if(spin>0){const a=(SPIN_DURATION-spin)/SPIN_DURATION*Math.PI*4;
+    for(let i=0;i<26;i++){const ph=a-i*.07;R(Math.round(cx+Math.cos(ph)*SPIN_RADIUS),Math.round(cy+Math.sin(ph)*SPIN_RADIUS),2,2,i<8?'#fff3c0':'#e8b050');}
+    ctx.save();ctx.translate(cx,cy);ctx.rotate(a);R(2,-2,3,5,'#9a6020');R(7,-2,22,4,'#1a1020');R(8,-1,20,2,col||'#f8d878');R(8,-1,20,1,'#fff');ctx.restore();
+  }
+}
 function drawWorld(){
   if (G.cacheDirty) buildCache();
   ctx.drawImage(cache, 0, 0);
@@ -6024,7 +6074,8 @@ function drawWorld(){
   for (const o of othersHere()) list.push({ y:o.ry + 8, f:() => {
     const x = Math.round(o.rx), y = Math.round(o.ry);
     if (o.atk > 0 && o.dir === 1) drawSwordAt(x, y, o.dir, o.atk, '#d8e0e8');
-    drawPerson(x - 3, y - 8, {...remoteCharacter(o),face8:visibleFacing(o.dir,o.face8)}, o.dir, o.walk);
+    drawPerson(x - 3, y - 8, {...remoteCharacter(o),face8:o.spin>0?Math.floor((SPIN_DURATION-o.spin)/4)%4:visibleFacing(o.dir,o.face8)}, o.spin>0?Math.floor((SPIN_DURATION-o.spin)/4)%4:o.dir, o.walk);
+    drawAttackPower(x,y,Math.min(SPIN_CHARGE,Math.max(0,o.charge||0)),Math.min(SPIN_DURATION,Math.max(0,o.spin||0)),'#f8d878');
     if (o.atk > 0 && o.dir !== 1) drawSwordAt(x, y, o.dir, o.atk, '#d8e0e8');
     const nm = norm(o.name), w = nm.length * 4 + 3;
     R(x + 5 - w / 2, y - 22, w, 8, 'rgba(0,0,0,.55)'); tiny(nm, x + 5, y - 20, '#60e070', 'center');
@@ -6033,6 +6084,7 @@ function drawWorld(){
     if (PL.atk > 0 && PL.dir === 1) drawSword();
     if (!(PL.inv > 0 && (PL.inv >> 1) & 1)) { const [wy, wa] = warpPlayer(); if (wa > 0) { ctx.globalAlpha = Math.max(0, Math.min(1, wa)); drawRider(Math.round(PL.x - 3), Math.round(PL.y - 8) + wy, playerLook(), G.warp && G.warp.mode === 'fly' ? 0 : PL.dir, G.warp ? (frame >> 3) & 1 : PL.atk > 0 ? 1 : Math.floor(PL.walk) % 2); ctx.globalAlpha = 1; } }
     if (PL.atk > 0 && PL.dir !== 1) drawSword();
+    drawAttackPower(PL.x,PL.y,PL.attackCharge||0,PL.spin||0,SWORDS[S.eq].col);
   } });
   for (const s of (G.surfers || [])) list.push({ y:s.y + 12, f:() => drawSurfer(s) });
   for (const a of (G.animals || [])) list.push({ y:a.y + 14, f:() => drawAnimal(a) });
@@ -7594,7 +7646,7 @@ function remoteCharacter(o){
   try { return characterOf(o) || CHARS[0]; } catch (_) { return CHARS[0]; }
 }
 function myState(){
-  return { pid:NET.pid, name:CH().n, ch:S.ch, customChar:S.customChar || null, realm:S.realm||'magic', room:G.roomId, x:Math.round(PL.x), y:Math.round(PL.y), dir:PL.dir, face8:visibleFacing(PL.dir,PL.face8), atk:PL.atk, walk:Math.floor(PL.walk) % 2, hp:S.hp, max:S.maxHp };
+  return { pid:NET.pid, name:CH().n, ch:S.ch, customChar:S.customChar || null, realm:S.realm||'magic', room:G.roomId, x:Math.round(PL.x), y:Math.round(PL.y), spin:PL.spin||0,charge:PL.attackCharge||0,dir:PL.dir, face8:visibleFacing(PL.dir,PL.face8), atk:PL.atk, walk:Math.floor(PL.walk) % 2, hp:S.hp, max:S.maxHp };
 }
 const sendAll = m => {if(m.room)m={...m,realm:S.realm||'magic'}; for (const c of NET.conns) if (c.open) c.send(m); };
 function sendTo(pid, m){ if (NET.role === 'host') { const c = NET.conns.find(x => x.pid === pid); if (c && c.open) c.send(m); } }
@@ -7856,6 +7908,7 @@ netEl('netCode').addEventListener('keyup', e => e.stopPropagation());
 /* ============ MAIN LOOP ============ */
 function step(){
   readInput(); frame++; G.t++;
+  if(!canChargeAttack()){cancelAttackCharge();PL.spin=0;}
   if (G.state === 'intro') updateIntro();
   else if (G.state === 'title') updateTitle();
   else if (G.state === 'select') updateSelect();
