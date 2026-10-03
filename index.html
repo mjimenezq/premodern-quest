@@ -1914,21 +1914,21 @@ ROOMS.teno={name:'TENO · TIERRA DE HUERTOS',theme:'town',music:'huaso',chill:tr
  map:['TTTTTTTTTTTTTTT','T.RRRRRTRRRRR.T','T.RRRRRTRRRRR.T','T.WWDWWTWWDWW.T','T......S......=','T..=========..T','T..=...o...=..T','T..=.......=..T','T,.,...=...,.,T','TTTTTTT=TTTTTTT'],
  roof:tx=>tx<7?'blue':'red',doors:{'4,3':'municipalidadTeno','10,3':'casaDavis'},
  trails:{'7,9':{room:'valpo',tx:13,ty:4},'14,4':{room:'campoFamilia',tx:1,ty:4}},
- plaques:[['MUNICIPALIDAD',72,19,'#3a2a58'],['CASA DE DAVIS',168,19,'#5a2a1a']],
+ plaques:[['MUNICIPALIDAD',72,19,'#3a2a58'],['MUNDO DE DAVIS',168,19,'#5a2a1a']],
  signs:{'7,4':'TENO: COMUNA AGRICOLA DE LA PROVINCIA DE CURICO, CON HUERTOS DE MANZANAS Y CEREZAS Y EL RIO TENO BAJANDO DE LA CORDILLERA. AQUI SE VIENE A DESCANSAR: SIN MONSTRUOS. ESTE: EL CAMPO DE LA FAMILIA. SUR: CURICO.'},
  npcs:[{id:'friend',ch:20,role:'mayor',x:2,y:4},{id:'friend',ch:21,role:'agro',x:12,y:5},{id:'huaso',x:12,y:7}],
  props:[{k:'roadGate',x:14,y:4,label:'CAMPO',solid:false},{k:'roadGate',x:7,y:9,label:'CURICO',solid:false},{k:'cerezo',x:1,y:8,solid:false},{k:'cerezo',x:13,y:8,solid:false},{k:'farol',x:1,y:5,solid:false},{k:'farol',x:13,y:5,solid:false}]};
 ROOMS.municipalidadTeno=southInterior('MUNICIPALIDAD DE TENO','teno',{room:'teno',tx:4,ty:4},[{id:'secretariaTeno',x:7,y:2}],
  [{k:'mostrador',x:5,y:3,w:5,label:'OFICINA DEL ALCALDE'},{k:'cartel',x:2,y:1,label:'TENO',txt:'BIENVENIDOS A TENO: CAMPO, RIO, HUERTOS Y BUENOS VECINOS. EL ALCALDE GONZALO ATIENDE EN LA PLAZA.',solid:false},{k:'cartel',x:12,y:1,label:'COUNTERSPELL',txt:'CUADRO EN LA OFICINA: UN COUNTERSPELL FIRMADO. "TODO TRAMITE PUEDE SER CONTRARRESTADO."',solid:false}],{music:'huaso'});
 ROOMS.casaDavis=southInterior('EL MUNDO DE DAVIS','teno',{room:'teno',tx:10,ty:4},[{id:'friend',ch:1,role:'gamer',x:9,y:4}],
- [{k:'pcGamer',x:3,y:1,w:3,act:'pcDavis',solid:false},{k:'cartel',x:7,y:1,label:'BOLT',txt:'POSTER: LIGHTNING BOLT. UN MANA, TRES DE DAÑO. "A LA CARA, SIN MIEDO."',solid:false},{k:'mesaCartas',x:8,y:6,w:3,act:'davisCards'},{k:'retroShelf',x:12,y:6,w:2,solid:false},{k:'huertoMacetas',x:12,y:1,w:2,solid:false},{k:'sofa',x:2,y:6,w:3}],{music:'electro'});
+ [{k:'pcGamer',x:3,y:1,w:3,act:'pcDavis',solid:false},{k:'gamePoster',x:7,y:1,w:2,h:2,game:'wow',solid:false,act:'pcDavis'},{k:'gamePoster',x:10,y:1,w:2,h:2,game:'diablo',solid:false,act:'pcDavis'},{k:'mesaCartas',x:8,y:6,w:3,act:'davisCards'},{k:'retroShelf',x:12,y:6,w:2,solid:false},{k:'huertoMacetas',x:12,y:1,w:2,solid:false},{k:'sofa',x:2,y:6,w:3}],{music:'electro'});
 ROOMS.campoFamilia={name:'EL CAMPO DE LA FAMILIA · TENO',theme:'meadow',music:'huaso',chill:true,zone:'campoFamilia',
  map:['TTTTTTTTTTTTTTT','T.RRRRR...,,,,T','T.RRRRR..,,,,,T','T.WWDWW..,,,,,T','=........=....T','T.........RRR.T','T.........WDW.T','T..,,,...=....T','T,,..,,..=.,,.T','TTTTTTTTTTTTTTT'],
  roof:tx=>tx>=10?'pink':'red',doors:{'4,3':'casaCampo','11,6':'casitaRai'},trails:{'0,4':{room:'teno',tx:13,ty:4}},
- plaques:[['CASA DEL CAMPO',72,19,'#5a3418'],['CASITA DE RAI',184,83,'#c84878']],
- signs:{},npcs:[{id:'tataCampo',x:12,y:8},{id:'friend',ch:12,role:'campo',x:6,y:6}],
+ plaques:[['LOS ABUELOS',72,19,'#5a3418'],['CASITA DE RAI',184,83,'#c84878']],
+ signs:{},npcs:[{id:'tataCampo',x:12,y:4},{id:'friend',ch:12,role:'campo',x:6,y:6}],
  animals:[{k:'vaca',x:11,y:2,box:[10,1,13,3]},{k:'vaca',x:12,y:1,box:[10,1,13,3]},{k:'caballo',x:11,y:8,box:[10,7,13,8]}],
- props:[{k:'refalin',x:1,y:5,w:2,h:3,act:'refalin',solid:false},{k:'columpio',x:4,y:7,w:2,act:'columpio',solid:false},{k:'arenero',x:7,y:7,w:2,act:'arenero',solid:false},{k:'roadGate',x:0,y:4,label:'TENO',solid:false},{k:'fogata',x:8,y:8,act:'waitPhase',solid:false},{k:'huertoMacetas',x:7,y:1,w:2,solid:false},{k:'cartel',x:8,y:4,label:'LA FAMILIA',txt:'EL CAMPO DE LA FAMILIA DE MATIAS: VACAS, HUERTA, LA CASA DE LOS ABUELOS Y LA CASITA DE JUEGOS DE RAI.',solid:false}]};
+ props:[{k:'refalin',x:2,y:4,w:2,h:3,act:'refalin',solid:false},{k:'columpio',x:4,y:6,w:2,act:'columpio',solid:false},{k:'arenero',x:7,y:6,w:2,act:'arenero',solid:false},{k:'roadGate',x:0,y:4,label:'TENO',solid:false},{k:'fogata',x:8,y:8,act:'waitPhase',solid:false},{k:'huertoMacetas',x:7,y:1,w:2,solid:false},{k:'cartel',x:8,y:4,label:'LA FAMILIA',txt:'EL CAMPO DE LA FAMILIA DE MATIAS: VACAS, HUERTA, LA CASA DE LOS ABUELOS Y LA CASITA DE JUEGOS DE RAI.',solid:false}]};
 ROOMS.casaCampo=southInterior('LA CASA DE LOS ABUELOS','campoFamilia',{room:'campoFamilia',tx:4,ty:4},[{id:'abuelaCampo',x:5,y:2}],
  [{k:'homeKitchen',x:9,y:1,w:3,act:'campoFood'},{k:'mesaComida',x:5,y:5,w:3,act:'campoFood'},{k:'fogata',x:1,y:2,solid:false,act:'waitPhase'},{k:'sofa',x:11,y:6,w:2},{k:'cartel',x:2,y:6,label:'FOTOS',txt:'FOTOS DE LA FAMILIA: MATIAS CHICO JUGANDO CARTAS, RAI EN SU AUTITO Y UN ASADO DE CAMPO.',solid:false}],{music:'huaso'});
 ROOMS.casitaRai=southInterior('LA CASITA DE JUEGOS DE RAI','campoFamilia',{room:'campoFamilia',tx:11,ty:7},[],
@@ -2011,12 +2011,29 @@ function cafeElfoMenu(){say(['ELFA: Bienvenido al Cafe del Elfo. Cafe de grano, 
  {t:'CERVEZA VALDIVIANA ($3.500)',fn:()=>{if(S.coins<3500){say(['ELFA: Te faltan monedas.']);return;}S.coins-=3500;S.hp=Math.min(S.maxHp,S.hp+10);S.beerTotal=(S.beerTotal||0)+1;SFX.beer();saveGame();say(['¡Prost! Herencia de los colonos alemanes. +VIDA.']);}},
  {t:'HABLAR DE PREMODERN',fn:()=>premodernFact('ELFA')},{t:'VOLVER',fn:null}]);}
 function carlitosTalk(){const first=!S.carlitosMet;if(first){S.carlitosMet=true;addXP(100);saveGame();}PL.piscola=600;say(['¡Wena! Soy Carlitos Run. A todos los chicos los quiero mucho. ¡Ruuun!' ,'Si te topas elfos en la selva, no te preocupes: yo les gano en la subida. ¡Dale, que la energia se contagia!',(first?'+100 EXP. ':'')+'Te contagia su energia: corres mas rapido un rato.']);}
+function davisHomeTalk(npc){
+  say(['DAVIS: ¡Bienvenido a mi mundo! Entre raids de World of Warcraft, noches de Diablo y partidas con los cabros fui aprendiendo a armar mis mazos. Sientate, que aqui no estamos apurados.'],[
+    {t:'WORLD OF WARCRAFT',fn:()=>say(['DAVIS: En WoW aprendi a mirar lo que necesita el grupo: tanque, sanador y daño. Una baraja tambien necesita que sus cartas trabajen juntas.','Los cabros me ayudaron a bajar la curva y ordenar las tierras. No sirve llenarse de hechizos buenos si no puedes jugarlos.'])},
+    {t:'DIABLO Y LAS CARTAS',fn:()=>say(['DAVIS: En Diablo iba probando equipo hasta encontrar una build que funcionara. Con las cartas hice lo mismo: jugar, perder, ajustar y volver a probar.','Para mi mazo Pokemon me ayudaron a elegir un atacante, sus apoyos y las energias justas. ¡El mazo se construye en equipo!'])},
+    {t:'PROBAR MI BARAJA',fn:()=>davisDuel()},
+    {t:'SEGUIR CONVERSANDO',fn:()=>say(['DAVIS: Afuera esta Gonzalo, haciendo de alcalde. Y por el camino del este llegas al campo de la familia de Matias.','Rai te va a llevar al refalin. Si te pide otra bajada... preparate, porque nunca es la ultima.'])}
+  ]);
+}
+function familyActivity(key){S.familyActions=S.familyActions||{};S.familyActions[key]=(S.familyActions[key]||0)+1;saveGame();}
 function davisDuel(){const n=G.npcs.find(n=>n.id==='friend'&&n.ch===1);if(n)setupDuel(n);else say(['Es tu propia mesa. Invita a un amigo a jugar: aqui se prueba el Burn.']);}
-function startRefalin(p){if(G.refalin)return;PL.x=p.x*TS+8;PL.y=p.y*TS;PL.dir=0;G.moveTarget=null;G.refalin={t:0,y1:(p.y+(p.h||3)-1)*TS+4};SFX.ok();}
-function updateRefalin(){const s=G.refalin;s.t++;PL.y=Math.min(s.y1,PL.y+Math.min(2.8,.3+s.t*.09));PL.dir=0;if(s.t%3===0)G.parts.push({k:'spark',x:PL.x+5,y:PL.y,vx:(Math.random()-.5),vy:-.3,t:0});
- if(PL.y<s.y1)return;G.refalin=null;S.refalines=(S.refalines||0)+1;SFX.win();floatText('¡WIIIII!',PL.x+5,PL.y-14,'#fff8c0');
+function startRefalin(p){
+ if(G.refalin)return;cancelAttackCharge();G.moveTarget=null;PL.dir=0;
+ const x=p.x*TS+10,y=p.y*TS-4;PL.x=x;PL.y=y;
+ G.refalin={t:0,x0:x,y0:y,x1:p.x*TS+25,y1:(p.y+(p.h||3))*TS-12};SFX.ok();
+}
+function updateRefalin(){
+ const s=G.refalin;s.t++;const u=Math.min(1,s.t/54),ease=u*u;
+ PL.x=s.x0+(s.x1-s.x0)*ease;PL.y=s.y0+(s.y1-s.y0)*ease;PL.dir=0;PL.walk+=.2;
+ if(s.t%4===0)G.parts.push({k:'spark',x:PL.x+5,y:PL.y+6,vx:-.3,vy:-.3,t:0});
+ if(u<1)return;G.refalin=null;S.refalines=(S.refalines||0)+1;SFX.win();floatText('¡WIIIII!',PL.x+5,PL.y-14,'#fff8c0');
  const rai=G.npcs.find(n=>n.id==='friend'&&n.ch===12);if(rai)floatText('¡OTRA VEZ!',rai.x+5,rai.y-14,'#ffb0e0');
- toast('REFALIN: '+S.refalines+(S.refalines===1?' BAJADA':' BAJADAS'),'#f8c0e0');if(S.refalines%5===0)addXP(25);saveGame();}
+ toast('REFALIN: '+S.refalines+(S.refalines===1?' BAJADA':' BAJADAS'),'#f8c0e0');if(S.refalines%5===0)addXP(25);saveGame();
+}
 function southPropAction(p){
  const a=p.act;
  if(a==='barcaza'){barcazaOffer();return true;}
@@ -2027,9 +2044,9 @@ function southPropAction(p){
  if(a==='premodernFacts'){premodernFact('CARTEL');return true;}
  if(a==='refalin'){startRefalin(p);return true;}
  if(a==='columpio'){PL.dance=120;S.hp=Math.min(S.maxHp,S.hp+2);say(['Te columpias alto, alto... Rai grita: "¡MAS ALTO! ¡HASTA LAS NUBES!"']);return true;}
- if(a==='arenero'){say(['Construyes un castillo de arena con Rai. Tiene torres, foso y un Mox de mentira en la punta.']);return true;}
- if(a==='casitaToys'){const first=!S.casitaToys;if(first){S.casitaToys=true;addXP(80);saveGame();}say(['Bloques, pelotas, un tren de madera y una pista de autos. Los abuelos pensaron en todo.',first?'Rai te presta sus juguetes favoritos. +80 EXP.':'Ordenas los juguetes antes de salir. ¡La abuela va a estar orgullosa!']);return true;}
- if(a==='ositoTito'){const first=!S.ositoTito;S.hp=S.maxHp;if(first){S.ositoTito=true;S.maxHp+=2;S.hp=S.maxHp;}saveGame();SFX.heal();say(['Lees un cuento de Osito Tito sentado en la casita. Rai se queda dormido abrazando a su peluche.',first?'Tanta ternura te da fuerzas: +1 corazon permanente.':'Vida recuperada.']);return true;}
+ if(a==='arenero'){familyActivity('castle');say(['Construyes un castillo de arena con Rai. Tiene torres, foso y un Mox de mentira en la punta.']);return true;}
+ if(a==='casitaToys'){familyActivity('blocks');const first=!S.casitaToys;if(first){S.casitaToys=true;addXP(80);saveGame();}say(['Bloques, pelotas, un tren de madera y una pista de autos. Los abuelos pensaron en todo.',first?'Rai te presta sus juguetes favoritos. +80 EXP.':'Ordenas los juguetes antes de salir. ¡La abuela va a estar orgullosa!']);return true;}
+ if(a==='ositoTito'){familyActivity('story');const first=!S.ositoTito;S.hp=S.maxHp;if(first){S.ositoTito=true;S.maxHp+=2;S.hp=S.maxHp;}saveGame();SFX.heal();say(['Lees un cuento de Osito Tito sentado en la casita. Rai se queda dormido abrazando a su peluche.',first?'Tanta ternura te da fuerzas: +1 corazon permanente.':'Vida recuperada.']);return true;}
  if(a==='autito'){say(['¡BRRRUM! El autito de Rai da una vuelta completa por la casita. Rai dice que es mas rapido que el Pegasus Charger.']);return true;}
  if(a==='pcDavis'){say(['EL PC DE DAVIS: en una pantalla, una raid de World of Warcraft; en la otra, Diablo con el inventario lleno de botin.','Al lado del teclado hay una libreta: "Rotacion de Burn: Bolt, Chain, Fireblast. Build Pokemon: atacante, soporte y energia justa."']);return true;}
  if(a==='davisCards'){davisDuel();return true;}
@@ -2040,6 +2057,7 @@ function southPropAction(p){
 function drawSouthProp(p){
  const X=p.x*TS,Y=p.y*TS,w=(p.w||1)*TS,h=(p.h||1)*TS,t=frame;
  switch(p.k){
+  case 'gamePoster':{const wow=p.game==='wow';outl(X,Y,w,h,wow?'#b89c50':'#796052');R(X+2,Y+2,w-4,h-4,wow?'#263957':'#261617');if(wow){R(X+4,Y+5,w-8,10,'#59818e');for(let i=0;i<3;i++){R(X+5+i*7,Y+10-i*2,4,11,'#233d37');R(X+6+i*7,Y+7-i*2,2,4,'#a8bdb2');}R(X+12,Y+14,7,8,'#6db64f');R(X+14,Y+15,3,7,'#273342');}else{disc(X+w/2,Y+13,8,'#763b2f');R(X+w/2-4,Y+8,8,9,'#bd7950');R(X+w/2-6,Y+5,3,7,'#ae6346');R(X+w/2+3,Y+5,3,7,'#ae6346');R(X+w/2-3,Y+11,2,1,'#f5b258');R(X+w/2+2,Y+11,2,1,'#f5b258');R(X+w/2-2,Y+16,5,2,'#321b1c');}tiny(wow?'WOW':'DIABLO',X+w/2,Y+h-7,'#f8d989','center');return true;}
   case 'roadGate':R(X+1,Y+2,2,13,'#6a4a2a');R(X+13,Y+2,2,13,'#6a4a2a');R(X,Y+1,16,3,'#c8a060');plaque(p.label,X+8,Y-6,'#4a3018');return true;
   case 'loboMarino':{const b=(t>>4)&1;softShadow(X+8,Y+12,7,2,.3);disc(X+7,Y+9,5,'#5a4a40');disc(X+11,Y+5-b,3,'#6a5a50');R(X+12,Y+4-b,2,1,'#1a1010');R(X+2,Y+11,4,2,'#4a3a30');if(((t+p.x*37)>>5)%7===0)tiny('ARF',X+12,Y-6,'#fff','center');return true;}
   case 'barcazaMuelle':R(X,Y,w,6,'#7a5430');for(let i=0;i<w;i+=8)R(X+i,Y,1,6,'#4a3018');R(X+2,Y+6,2,8,'#4a3018');R(X+w-4,Y+6,2,8,'#4a3018');outl(X+4,Y+8,w-8,7,'#c84030');R(X+6,Y+9,w-12,2,'#f4e8d0');tiny('BARCAZA',X+w/2,Y+16,'#fff','center');return true;
@@ -5346,10 +5364,13 @@ const EXTRA_QUESTS=[
 EXTRA_QUESTS.forEach(([giver,title,type,target,n,itemName,icon],i)=>{QUESTS['q_nueva'+i]={giver,title,type,n,desc:type==='find'?'Recupera '+n+' '+itemName.toLowerCase()+' en '+target.join(', ')+'.':type==='kill'?'Derrota '+n+' '+target.join(' o ')+'.':type==='killAll'?'Derrota '+n+' criaturas desde que aceptes.':type==='decks'?'Completa '+n+' barajas.':type==='cards'?'Colecciona '+n+' cartas distintas.':type==='visit'?'Visita '+n+' zonas.':'Alcanza '+n+' puntos en el arcade.',...(type==='find'?{zones:target,itemName,icon}:type==='kill'?{target}:{}),minLvl:5+i*2,reward:{st:{[i%2?'des':'int']:2},coins:1000+i*100,xp:300+i*50}};});
 // Teno, Valdivia y Providencia (3 oct): misiones del lugar y encargos renovables que escalan hasta el nivel 200.
 Object.assign(QUESTS,{
+ q_teno_casita:{giver:'secretariaTeno',title:'Un refugio para Rai',type:'activity',target:'blocks',n:1,desc:'Visita la casita que los abuelos construyeron en el campo y arma algo con los bloques de Rai. La alcaldia celebra los lugares donde los niños pueden jugar tranquilos.',reward:{coins:30,xp:180}},
+ q_teno_cuento:{giver:'abuelaCampo',title:'Un cuento antes de la once',type:'activity',target:'story',n:1,desc:'Entra a la casita de juegos y lee Osito Tito con Rai. Despues vuelve a contarle a la Abuela como termino la historia.',reward:{coins:35,xp:220}},
+ q_teno_castillo:{giver:'tataCampo',title:'La pequeña Tolaria',type:'activity',target:'castle',n:1,desc:'Construye un castillo con Rai en el arenero del campo. Necesita una torre donde guardar sus cartas y defenderlas del dragon imaginario.',reward:{coins:35,xp:220}},
  q_teno_huevos:{giver:'abuelaCampo',title:'Huevos para el kuchen',type:'find',n:3,zones:['campoFamilia','teno','valpo'],itemName:'HUEVO DE CAMPO',icon:'egg',desc:'La Abuela necesita 3 huevos de campo. Las gallinas los dejaron en el campo, en Teno y en Curico.',reward:{coins:40,xp:250,maxHp:2}},
  q_teno_refalin:{giver:'tataCampo',title:'Cinco bajadas con Rai',type:'refalin',n:5,desc:'Tirate 5 veces por el refalin de la casita de juegos. Rai cuenta cada bajada.',reward:{coins:30,xp:200,st:{agi:1}}},
  q_teno_juguetes:{giver:'tataCampo',title:'Los juguetes perdidos de Rai',type:'find',n:3,zones:['campoFamilia','teno','pueblo'],itemName:'JUGUETE DE RAI',icon:'toy',desc:'Rai dejo juguetes repartidos: en el campo, en la plaza de Teno y en la Villa. Devuelvelos a la casita.',reward:{coins:60,xp:300,st:{des:1}}},
- q_teno_alcalde:{giver:'secretariaTeno',title:'Objecion, su señoria',type:'kill',target:['magoAzul','merfolk'],n:8,desc:'El alcalde Gonzalo pide frenar a los magos del Counterspell y a los merfolk que bloquean los tramites. Derrota 8.',reward:{coins:80,xp:400,st:{int:1}}},
+ q_teno_alcalde:{giver:'secretariaTeno',title:'Objecion, su señoria',type:'kill',target:['magoAzul','merfolk'],n:8,desc:'El alcalde Gonzalo pide despejar los caminos fuera de Teno: derrota 8 magos azules o merfolk. En el pueblo y el campo no hay combates.',reward:{coins:80,xp:400,st:{int:1}}},
  q_valdivia_elfos:{giver:'guardabosque',title:'Elfos en la selva',type:'kill',target:['elfoLlanowar','elfoRanger','elfoLirista','elfoSimbionte','elfoDruida'],n:15,minLvl:15,desc:'Derrota 15 elfos liberados de las cartas en Oncol, la Selva Valdiviana o Niebla.',reward:{coins:90,xp:900,st:{fue:1}}},
  q_valdivia_niebla:{giver:'guardabosque',title:'El polvorin de Niebla',type:'kill',target:['sacerdotisa'],n:1,minLvl:25,desc:'Vence a la Sacerdotisa de Titania en el polvorin del Castillo de Niebla.',reward:{coins:150,xp:1800,maxHp:2}},
  q_valdivia_rofellos:{giver:'guardabosque',title:'El emisario de Llanowar',type:'kill',target:['rofellos'],n:1,minLvl:35,desc:'Entra a la Arboleda de Argoth y derrota a Rofellos, Emisario de Llanowar.',reward:{coins:250,xp:3500,st:{fue:2,des:1}}}
@@ -5393,13 +5414,14 @@ const GIVER_PLACE = {completero:'COMPLETOS (TALCA)',curadoraTalca:'MUSEO (TALCA)
 const STN = { fue:'FUE', des:'DES', agi:'AGI', int:'INT' };
 const rewardText = (r,level=S.lvl) => [Object.entries(r.st || {}).map(([k, v]) => '+' + v + ' ' + STN[k]).join(' '), r.maxHp ? '+' + r.maxHp / 2 + ' CORAZÓN' : '', r.coins ? money(questCoins(r,level)) : '', r.spell ? 'HECHIZO ' + SPELLS[r.spell].n.toUpperCase() : '', r.stone ? STONES[r.stone].n : '','+'+questXP(r,level)+' EXP'].filter(Boolean).join(', ');
 const killsOf = ts => ts.reduce((a, t) => a + ((S.kills || {})[t] || 0), 0);
-function questBase(q){ const Q = QUESTS[q]; return Q.type === 'kill' ? killsOf(Q.target) : Q.type === 'killAll' ? (S.killsTotal || 0) : Q.type === 'beer' ? (S.beerTotal || 0) : Q.type === 'refalin' ? (S.refalines || 0) : 0; }
+function questBase(q){ const Q = QUESTS[q]; return Q.type === 'kill' ? killsOf(Q.target) : Q.type === 'killAll' ? (S.killsTotal || 0) : Q.type === 'beer' ? (S.beerTotal || 0) : Q.type === 'refalin' ? (S.refalines || 0) : Q.type === 'activity' ? (S.familyActions?.[Q.target]||0) : 0; }
 function questProg(q){
   const Q = QUESTS[q], st = S.quests[q], base = st ? st.base : 0;
   switch (Q.type) {
     case 'kill': return killsOf(Q.target) - base;
     case 'killAll': return (S.killsTotal || 0) - base;
     case 'refalin': return (S.refalines || 0) - base;
+    case 'activity': return (S.familyActions?.[Q.target]||0)-base;
     case 'hunt': return st?.count||0;
     case 'beer': return (S.beerTotal || 0) - base;
     case 'visit': return Object.keys(S.visited || {}).length;
@@ -5847,6 +5869,10 @@ function talkTo(id, npc, skipQuest){
   if (id === 'premiador') { say(['JUEZA DE PREMIOS: Premios de verdad de la liga: playmats, deck boxes, fundas... se lucen en tu casa y te dan ventajas.'], null, () => openShop('premios', 'PREMIOS DE LA LIGA')); return; }
   if (id === 'friend') {
     const c = npc && npc.ch !== undefined ? npc.ch : 0, role = npc && npc.role;
+    if(role==='gamer'&&G.roomId==='casaDavis'){davisHomeTalk(npc);return;}
+    if(role==='mayor'&&G.roomId==='teno'){say(['GONZALO: ¡Bienvenido a Teno! Soy el alcalde. Aqui cuidamos a los vecinos, los huertos y esta tranquilidad. Curico esta al lado, por el sendero sur.','La secretaria tiene algunos encargos. Davis vive en la casa de la derecha; mas al este esta el campo de la familia de Matias. Los abuelos hicieron una casita preciosa para Rai.','Si necesitas descansar de la aventura, aqui hay tiempo para conversar y jugar cartas. Hasta mi Counterspell descansa... un ratito.']);return;}
+    if(role==='campo'&&G.roomId==='campoFamilia'){say(['RAI: ¡Me encanta venir al campo de los tatas! Mira la casita que me hicieron. Tiene mis autitos, bloques y un Osito Tito.','¡Vamos al refalin! Despues hacemos un castillo en la arena y la abuela nos llama a comer. ¡Ven conmigo!']);return;}
+
     say([CHARS[c].n + ': ' + pick(FRIEND_LINES[c]), ...(role ? [CHARS[c].n + ': ' + pick(ROLE_LINES[role])] : []), ...(c === 12 ? ['RAI: ¡Estoy con mi papa Matias! Mira mi autito; hagamos una casita para Osito Tito.'] : [CHARS[c].n + ': ' + pick(['Si juntamos a los tres, en línea, no hay guardián que aguante.','La otra semana gané con un Goblin Lackey en el turno uno. Nadie me cree.'])])]);
     return;
   }

@@ -574,6 +574,19 @@ async function main(){
   g.loadRoom('selvaValdiviana',115,84);assert(g.G.enemies.some(e=>e.type.startsWith('elfo')));g.drawWorld();
   g.loadRoom('D:arboleda:5',115,116);const boss=g.G.enemies.find(e=>e.type==='rofellos');assert(boss);g.drawWorld();g.killEnemy(boss);assert(s.bosses.rofellos);assert.equal(g.G.bossDiploma.type,'rofellos');assert(s.bossDiplomas.rofellos.date);g.drawBossDiploma();
   g.G.bossDiploma.t=50;g.K.a=1;g.updateBossDiploma();g.K.a=0;assert.equal(g.G.bossDiploma,null);g.G.menu={tab:6,sel:0,deck:null};g.drawMenu();g.menuClick({x:225,y:7});assert.equal(g.G.menu.tab,6);g.G.menu=null;
+  // Family activities are peaceful, persist, and only count after accepting their mission.
+  {const before=g.getS(),family=g.newSave(0);g.setS(family);g.G.menu=null;g.G.dialog=null;g.loadRoom('campoFamilia',115,68);
+   assert.equal(g.G.enemies.length,0);assert.equal(g.G.def.chill,true);
+   const castle=g.G.def.props.find(p=>p.act==='arenero');g.southPropAction(castle);g.G.dialog=null;
+   assert(g.questHook('tataCampo'));g.G.dialog.choices[0].fn();assert.equal(family.quests.q_teno_castillo.st,'active');assert.equal(g.questProg('q_teno_castillo'),0);
+   g.southPropAction(castle);assert.equal(g.questProg('q_teno_castillo'),1);g.G.dialog=null;
+   g.setS(structuredClone(family));assert.equal(g.questProg('q_teno_castillo'),1);assert(g.questHook('tataCampo'));assert.equal(g.getS().quests.q_teno_castillo.st,'done');g.G.dialog=null;
+   g.loadRoom('casaCampo',115,100);assert.equal(g.G.enemies.length,0);assert(g.questHook('abuelaCampo'));g.G.dialog.choices[0].fn();assert.equal(g.questProg('q_teno_cuento'),0);
+   g.loadRoom('casitaRai',115,100);const story=g.G.def.props.find(p=>p.act==='ositoTito');g.southPropAction(story);assert.equal(g.questProg('q_teno_cuento'),1);g.G.dialog=null;
+   g.loadRoom('campoFamilia',115,68);const slide=g.G.def.props.find(p=>p.act==='refalin');g.startRefalin(slide);const x0=g.PL.x,y0=g.PL.y;for(let i=0;i<20;i++)g.updateRefalin();assert(g.PL.x>x0&&g.PL.y>y0);while(g.G.refalin)g.updateRefalin();assert(!g.blocked(g.PL.x,g.PL.y));assert.equal(g.getS().refalines,1);
+   g.loadRoom('teno',115,68);assert.equal(g.G.enemies.length,0);g.talkTo('friend',g.G.npcs.find(n=>n.ch===20));assert(JSON.stringify(g.G.dialog).includes('GONZALO'));g.G.dialog=null;
+   g.loadRoom('casaDavis',115,100);g.talkTo('friend',g.G.npcs.find(n=>n.ch===1));assert(g.G.dialog.choices.some(c=>c.t==='WORLD OF WARCRAFT'));assert(g.G.dialog.choices.some(c=>c.t==='DIABLO Y LAS CARTAS'));g.G.dialog=null;g.setS(before);
+  }
   // Teno: road from Curico, Rai's slide counts for the grandparents' quest.
   assert.equal(g.getDef('valpo').trails['13,3'].room,'teno');g.loadRoom('teno',115,100);g.drawWorld();g.loadRoom('campoFamilia',115,84);g.drawWorld();
   s.quests.q_teno_refalin={st:'active',base:0};const slide=g.getDef('campoFamilia').props.find(p=>p.act==='refalin');g.startRefalin(slide);for(let i=0;i<200&&g.G.refalin;i++)g.updateRefalin();assert.equal(s.refalines,1);assert.equal(g.questProg('q_teno_refalin'),1);
