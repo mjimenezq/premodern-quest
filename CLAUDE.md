@@ -4,6 +4,8 @@ Proyecto independiente. Hablar con Matías en español de Chile y explicar de fo
 El juego abre directamente desde `index.html`; el historial Git del proyecto se conserva en `.git`.
 
 
+**3 oct — Monturas:** mismas apariencias y nombres en Magic y Pokémon; no convertirlas en Pokémon. Se conservan IDs, compras, velocidad y progreso. drawMount comparte dibujo entre mundos y realmText protege los nombres de monturas.
+
 **3 oct — Martín:** nuevo personaje jugable índice 19 (creador permanece en 18). Gym rat musculoso sin polera, socio de Ingeniería Comercial de Matías, carretero y excoleccionista Pokémon. FUE 6 / DES 3 / AGI 5 / INT 6, mejora FUE y recoge +20% monedas por finanzas. Amigo en Xcso Club, mazo Rock. Selección usa SELECT_CHAR_IDS para mostrar al creador al final sin cambiar índices guardados.
 
 ## premodern-quest/  (el juego se llama **Magic The Beer Quest** desde el 30 sept, antes "Magic Quest"; la carpeta y el repo mantienen el nombre viejo)

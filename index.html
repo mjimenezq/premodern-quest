@@ -1063,7 +1063,6 @@ const MOUNTS = {
 };
 for(const id of ['mesa','nightmare','charger','mammoth'])MOUNTS[id].price=Math.max(300000,MOUNTS[id].price*3);
 const mounted = () => S && S.mount && MOUNTS[S.mount] && G.def && (!G.def.interior || G.roomId==='establo') ? MOUNTS[S.mount] : null;
-function reflectedMount(id){const pid=({caballo:127,mesa:77,nightmare:76,charger:141,mammoth:142,crosis:129,darigaaz:148,shivan:149})[id]??77;return {id:pid,name:POKE[pid].n+(MOUNTS[id]?.boss?' GIGANTE':'')};}
 function giveMount(id){
   S.mounts = S.mounts || []; if (S.mounts.includes(id)) return;
   S.mounts.push(id); S.mount = id; SFX.win();
@@ -1078,10 +1077,6 @@ function toggleMount(){
 }
 // Dibujo de la montura (22 de ancho). layer 'back' va detrás del jinete, 'front' delante
 function drawMount(id, x, y, dir, f, layer){
-  if(pokemonRealm()){
-    if(layer==='back'){const mount=reflectedMount(id);ctx.save();ctx.translate(x+(mount.id===149?8:-2),y-12);ctx.scale(1.5,1.5);drawPoke(mount.id,0,0,frame,dir===2);ctx.restore();}
-    return;
-  }
   const M = MOUNTS[id], side = dir >= 2, flip = dir === 2, O = '#1a1020';
   const p = (rx, ry, w, hh, col) => { ctx.fillStyle = col; ctx.fillRect(flip ? x + 22 - rx - w : x + rx, y + ry, w, hh); };
   const o = (rx, ry, w, hh, col) => { p(rx - 1, ry - 1, w + 2, hh + 2, O); p(rx, ry, w, hh, col); p(rx, ry + hh - 1, w, 1, shadeCol(col, 0.72)); p(rx, ry, w, 1, shadeCol(col, 1.15)); };
@@ -3546,7 +3541,8 @@ function realmText(value){
   for(const [id,name]of Object.entries(POKEMON_DECK_NAMES))words.set(DECK[id].n,name);
   for(const [id,m]of Object.entries(MON))words.set(m.n,pokemonEnemy(id).name);
   for(const [id,c]of Object.entries(CARDS))if(c.n&&c.realm!=='pokemon')words.set(c.n,reflectedCardName(id));
-  for(const [id,m]of Object.entries(MOUNTS))words.set(m.n,reflectedMount(id).name);
+  // Las monturas viajan contigo: conservar sus nombres aun si coinciden con cartas o monstruos.
+  for(const m of Object.values(MOUNTS))words.set(m.n,m.n);
   REALM_WORDS=[...words].sort((a,b)=>b[0].length-a[0].length);REALM_LOOKUP=new Map(REALM_WORDS.map(([a,b])=>[a.toLowerCase(),b]));REALM_PATTERN=new RegExp(REALM_WORDS.map(([a])=>a.replace(/[.*+?^${}()|[\]\\]/g,'\\  REALM_WORDS=[...words].sort((a,b)=>b[0].length-a[0].length);}')).join('|'),'gi');}
  return text.replace(REALM_PATTERN,match=>REALM_LOOKUP.get(match.toLowerCase()));
 }
