@@ -3630,7 +3630,7 @@ function loadRoom(id, px, py){
   PL.lock = Math.floor((px + 5) / TS) + ',' + Math.floor((py + 4) / TS);
   G.map = d.map.map(r => r.split(''));
   for (const k in (d.chests || {})) if (S.chests[id + ':' + k]) { const [x, y] = k.split(',').map(Number); G.map[y][x] = 'C'; }
-  G.enemies = []; G.items = []; G.parts = []; G.floats = []; G.shots = []; G.amb = []; G.moveTarget = null; G.eshots = []; G.aoes = [];
+  G.roomFrame = frame; G.enemies = []; G.items = []; G.parts = []; G.floats = []; G.shots = []; G.amb = []; G.moveTarget = null; G.eshots = []; G.aoes = [];
   // Las criaturas que mataste no vuelven a aparecer hasta que pasen RESPAWN_MS (3 minutos)
   S.killedAt=S.killedAt || {};G.killedAt=S.killedAt;
   let bossResting = false;
@@ -7481,6 +7481,7 @@ function hostRecv(c, d){
     const e = G.enemies.find(o => o.nid === d.id && !o.dead);
     if (e) applyHit(e, d.dmg, d.kx, d.ky);
   } else if (d.t === 'wt') syncDay(d.wt);
+  else if (d.t === 'roomEn') adoptRoomEnemies(d);
   else if (d.t === 'gift') {
     if (d.to === 'h') receiveGift(d); else sendTo(d.to, d);
   }
@@ -7494,7 +7495,7 @@ function clientRecv(d){
     for (const s of d.list) {
       if (s.pid === NET.pid) continue;
       seen[s.pid] = true;
-      if (s.pid === 'h'){NET.hostRoom=s.room;NET.hostRealm=s.realm||'magic';}
+      if (s.pid === 'h'){const was=NET.hostRoom;NET.hostRoom=s.room;NET.hostRealm=s.realm||'magic';if(was!==s.room&&s.room===G.roomId&&G.state==='world')sendRoomEnemies();}
       const o = NET.others[s.pid]; if (!o) toast(s.name + ' ESTA EN LA SALA', '#60e070');
       NET.others[s.pid] = Object.assign(o || { rx:s.x, ry:s.y }, s);
     }
@@ -7510,6 +7511,20 @@ function clientRecv(d){
   }
   else if (d.t === 'gift') receiveGift(d);
   else if (d.t === 'fx') { if (G.state === 'world' && d.room === G.roomId) { if (d.k === 'shot') eshot(d.a[0], d.a[1], d.a[2], d.a[3], d.a[4], d.a[5], d.a[6], true); else aoe(d.a[0], d.a[1], d.a[2], d.a[3], d.a[4], d.a[5], true); } }
+}
+// El que llegó primero a la zona manda: monstruos vivos con su vida y los que ya murieron, para que no reaparezcan.
+function sendRoomEnemies(){
+  if (!NET.host || !NET.host.open || !S) return;
+  const now = Date.now(), killed = Object.keys(S.killedAt || {}).filter(k => k.startsWith(G.roomId + ':') && now - S.killedAt[k] < RESPAWN_MS);
+  NET.host.send({ t:'roomEn', room:G.roomId, realm:S.realm || 'magic', killed, list:G.enemies.filter(e => !e.dead && !e.remote).map(e => [e.type, Math.round(e.x), Math.round(e.y), e.hp, e.max, e.spawnKey || null]) });
+}
+function adoptRoomEnemies(d){
+  if (G.state !== 'world' || d.room !== G.roomId || (d.realm || 'magic') !== (S.realm || 'magic') || frame - (G.roomFrame || 0) > 600) return;
+  const now = Date.now(); S.killedAt = S.killedAt || {}; G.killedAt = S.killedAt;
+  for (const k of d.killed || []) S.killedAt[k] = now;
+  G.enemies = [];
+  for (const [type, x, y, hp, max, key] of d.list || []) { if (!MON[type]) continue; const e = spawnEnemy(type, x - 2, y - 2); e.x = x; e.y = y; e.hp = hp; e.max = max; if (key) e.spawnKey = key; }
+  const boss = G.enemies.find(e => MON[e.type].boss); G.bossBar = boss || null;
 }
 function receiveGift(d){ if (!S || !CARDS[d.card]) return; toast('REGALO DE ' + d.from + '!', '#fcd84a'); addCard(d.card); }
 function sendGift(to, card){
