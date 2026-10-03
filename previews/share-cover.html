@@ -1,0 +1,26 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@900&family=Cinzel:wght@900&display=swap" rel="stylesheet"><style>html,body{margin:0;width:1200px;height:630px;overflow:hidden;background:#10161a}canvas{display:block}</style></head><body><canvas id="cover" width="1200" height="630"></canvas><script>
+const HIRES=6,LOGO_W=200,LOGO_H=62;let LOGO,LOGO_SHINE;
+function buildLogo(){
+  const s = HIRES, c = document.createElement('canvas'); c.width = LOGO_W * s; c.height = LOGO_H * s;
+  const g = c.getContext('2d'); g.scale(s, s); g.textAlign = 'center'; g.textBaseline = 'alphabetic'; g.lineJoin = 'round';
+  g.font = '900 33px "Cinzel Decorative", "Cinzel", Georgia, serif';
+  g.shadowColor = 'rgba(255,160,40,.6)'; g.shadowBlur = 12; g.lineWidth = 5; g.strokeStyle = '#1a0a04'; g.strokeText('MAGIC', 100, 36);
+  g.shadowBlur = 0; g.lineWidth = 2.4; g.strokeStyle = '#6a3208'; g.strokeText('MAGIC', 100, 36);
+  const gold = g.createLinearGradient(0, 11, 0, 37); gold.addColorStop(0, '#fff8d0'); gold.addColorStop(0.42, '#fcd84a'); gold.addColorStop(0.58, '#e89a1c'); gold.addColorStop(1, '#9a520e');
+  g.fillStyle = gold; g.fillText('MAGIC', 100, 36);
+  // cinta ámbar con BEER QUEST
+  const ribbon = (x0, x1, y, hh) => { g.beginPath(); g.moveTo(x0 - 8, y); g.lineTo(x1 + 8, y); g.lineTo(x1 + 4, y + hh / 2); g.lineTo(x1 + 8, y + hh); g.lineTo(x0 - 8, y + hh); g.lineTo(x0 - 4, y + hh / 2); g.closePath(); };
+  ribbon(46, 154, 42, 15);
+  const amber = g.createLinearGradient(0, 42, 0, 57); amber.addColorStop(0, '#7a3a0c'); amber.addColorStop(1, '#3a1404');
+  g.fillStyle = amber; g.fill(); g.lineWidth = 1; g.strokeStyle = '#f0b040'; g.stroke();
+  g.font = '900 10.5px "Cinzel", Georgia, serif'; if ('letterSpacing' in g) g.letterSpacing = '2.5px';
+  g.lineWidth = 2.5; g.strokeStyle = '#1a0804'; g.strokeText('BEER QUEST', 101, 53.5);
+  const cream = g.createLinearGradient(0, 45, 0, 54); cream.addColorStop(0, '#fff4d8'); cream.addColorStop(1, '#f0c070');
+  g.fillStyle = cream; g.fillText('BEER QUEST', 101, 53.5);
+  // destellos en las puntas de la cinta
+  for (const [x, y] of [[44, 49.5], [158, 49.5]]) { g.fillStyle = '#ffe08a'; g.beginPath(); g.moveTo(x, y - 3); g.lineTo(x + 1, y); g.lineTo(x, y + 3); g.lineTo(x - 1, y); g.closePath(); g.fill(); }
+  LOGO = c; LOGO_SHINE = document.createElement('canvas'); LOGO_SHINE.width = c.width; LOGO_SHINE.height = c.height;
+}
+
+async function render(){await Promise.all(['900 33px "Cinzel Decorative"','900 11px "Cinzel"'].map(f=>document.fonts.load(f)));buildLogo();const c=document.getElementById('cover'),g=c.getContext('2d');const bg=g.createRadialGradient(600,250,30,600,300,650);bg.addColorStop(0,'#29372d');bg.addColorStop(1,'#10161a');g.fillStyle=bg;g.fillRect(0,0,1200,630);g.strokeStyle='#b18839';g.lineWidth=2;g.strokeRect(28,28,1144,574);g.drawImage(LOGO,100,70,1000,310);g.fillStyle='#f6e6bd';g.textAlign='center';g.font='bold 30px Georgia,serif';g.fillText('Juego de RPG basado en Dungeons,',600,462);g.fillText('Cartas y Cerveza',600,508);document.title='Portada lista';}render();
+</script></body></html>
