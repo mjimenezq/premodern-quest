@@ -2701,7 +2701,8 @@ function buildCache(){
   const save = ctx; ctx = cctx;
   R(0, 0, W, H, '#000');
   const theme = G.def.theme;
-  for (let ty = 0; ty < 10; ty++) for (let tx = 0; tx < 15; tx++) drawTile(G.map[ty][tx], tx, ty, theme);
+  const chapel=(G.def.props||[]).find(p=>p.k==='temploUmbral');
+  for (let ty = 0; ty < 10; ty++) for (let tx = 0; tx < 15; tx++) drawTile(chapel&&tx>=chapel.x&&tx<chapel.x+chapel.w&&ty>=chapel.y&&ty<chapel.y+chapel.h?'.':G.map[ty][tx], tx, ty, theme);
   // sombras proyectadas (luz desde arriba a la izquierda)
   ctx.fillStyle = 'rgba(0,0,20,.22)';
   for (let ty = 0; ty < 10; ty++) for (let tx = 0; tx < 15; tx++) {
@@ -2760,7 +2761,7 @@ function gatherLights(dark){
     else if ((c === 'U' || c === 'V') && dark) add(x, y, 24, '200,200,255', 0.5);
   }
   for (const p of (G.def.props || [])) { const px = p.x * TS + (p.w || 1) * 8, py = p.y * TS + 8;
-    if(p.k==='antorcha')add(px,py-12,34+Math.sin(frame*.3)*3,'255,170,80',.9);else if(p.k==='ligaNeon')add(px,py,60,hslRgb((frame*3)%360),1);else if(p.k==='farol'&&(ph==='night'||ph==='dusk'))add(px,py-12,38,'255,210,120',.85);else if (p.k === 'fogata') add(px, py, 40 + Math.sin(frame * 0.2) * 3, '255,140,50', 1); else if (p.k === 'dj') add(px, py, 44, hslRgb((frame * 3) % 360), 0.9); else if (p.k === 'neon') add(px, py + 6, 60, hslRgb((frame * 2) % 360), 0.5); else if (p.k === 'parlante') add(px, py, 18, '120,120,255', 0.4); }
+    if(p.k==='temploUmbral'){add(p.x*TS+36,p.y*TS+26,sanctuaryAwake()?35:22,'180,155,255',sanctuaryAwake()?.9:.5);add(p.x*TS+55,p.y*TS+41,20,'255,215,140',.7);}else if(p.k==='antorcha')add(px,py-12,34+Math.sin(frame*.3)*3,'255,170,80',.9);else if(p.k==='ligaNeon')add(px,py,60,hslRgb((frame*3)%360),1);else if(p.k==='farol'&&(ph==='night'||ph==='dusk'))add(px,py-12,38,'255,210,120',.85);else if (p.k === 'fogata') add(px, py, 40 + Math.sin(frame * 0.2) * 3, '255,140,50', 1); else if (p.k === 'dj') add(px, py, 44, hslRgb((frame * 3) % 360), 0.9); else if (p.k === 'neon') add(px, py + 6, 60, hslRgb((frame * 2) % 360), 0.5); else if (p.k === 'parlante') add(px, py, 18, '120,120,255', 0.4); }
   if (G.roomId === 'islote' && (ph === 'night' || ph === 'dusk')) for (const p of G.def.props || []) { if (p.k === 'palafito') add(p.x * TS + 16, p.y * TS - 2, 22, '255,200,110', 0.8); else if (p.k === 'iglesiaChiloe') add(p.x * TS + 24, p.y * TS + 26, 30, '255,210,140', 0.7); else if (p.k === 'caleuche') add(((frame * 0.15) % (W + 80)) - 40 + 15, p.y * TS + 14, 40, '255,220,120', 0.9); }
   // Medianoche en casa: la pantalla, las velas de la mesa y la baraja que brilla sobre el escritorio.
   if (G.roomId === 'hogar' && ph === 'night') { add(95, 36, 44 + Math.sin(frame * 0.3) * 1.5, '110,240,170', 0.9); add(110, 44, 34 + Math.sin(frame * 0.06) * 5, '200,140,255', 1); add(120, 102, 38 + Math.sin(frame * 0.25) * 2, '255,180,90', 0.9); add(184, 40, 24, '255,200,140', 0.5); }
@@ -2833,6 +2834,7 @@ function drawProp(p){
   const X = p.x * TS, Y = p.y * TS, wpx = (p.w || 1) * TS, t = frame;
   if(p.waiting){outl(X+wpx/2-4,Y+18,8,6,'#e8c080');tiny('TU ASIENTO',X+wpx/2,Y+27,'#a0ffb0','center');}
   switch (p.k) {
+    case 'temploUmbral':drawSanctuaryFacade(X,Y);break;
     case 'festivalStand': {const c=p.color||'#77934d';softShadow(X+wpx/2,Y+24,wpx/2,3,.25);R(X+2,Y+3,2,21,'#64462b');R(X+wpx-4,Y+3,2,21,'#64462b');outl(X,Y-7,wpx,12,c);for(let i=2;i<wpx;i+=8)R(X+i,Y-6,4,10,'#f5e7bd');R(X,Y+5,wpx,3,'#503b28');outl(X+1,Y+15,wpx-2,9,'#895333');R(X+2,Y+16,wpx-4,2,'#b58250');for(const dx of [6,19]){R(X+dx,Y+8,5,7,'#b67835');R(X+dx,Y+7,5,2,'#fff1d1');R(X+dx+5,Y+9,2,4,'#f0c98b');}tiny('PROST!',X+wpx/2,Y+19,'#fff0b8','center');break;}
     case 'festivalBunting': {ctx.strokeStyle='#d8bb85';ctx.lineWidth=.6;ctx.beginPath();ctx.moveTo(X,Y+14);ctx.quadraticCurveTo(X+wpx/2,Y+21,X+wpx,Y+14);ctx.stroke();for(let i=0;i<12;i++){const xx=X+5+i*(wpx-10)/11,yy=Y+14+Math.sin(i/11*Math.PI)*3;ctx.fillStyle=i%3===0?'#f5dfaa':i%3===1?p.color:'#c87745';ctx.beginPath();ctx.moveTo(xx-3,yy);ctx.lineTo(xx+3,yy);ctx.lineTo(xx+Math.sin(frame*.035+i),yy+5);ctx.closePath();ctx.fill();}break;}
     case 'festivalLamp': {R(X+7,Y-9,2,25,'#5d4b36');R(X+4,Y-8,8,2,'#5d4b36');outl(X+3,Y-6,10,9,'#6d4f31');R(X+4,Y-5,8,7,dayPhase()==='night'||dayPhase()==='dusk'?'#ffdda2':'#d9b878');R(X+7,Y-5,1,7,'#785738');R(X+3,Y+2,10,2,'#6d4f31');break;}
@@ -2943,6 +2945,34 @@ function drawProp(p){
     case 'hielera': { outl(X + 2, Y + 6, 12, 9, '#2a6ae8'); R(X + 2, Y + 6, 12, 3, '#ffffff'); R(X + 4, Y + 3, 2, 4, '#c8a020'); R(X + 8, Y + 2, 2, 5, '#3a9a3a'); break; }
     case 'sofa': { outl(X + 1, Y + 4, wpx - 2, 11, '#7a1a2a'); R(X + 1, Y + 4, wpx - 2, 4, '#a02a3a'); R(X + 1, Y + 8, 4, 7, '#5a0a1a'); R(X + wpx - 5, Y + 8, 4, 7, '#5a0a1a'); break; }
     case 'neon': { for (let i = 0; i < wpx; i += 2) R(X + i, Y + 13, 2, 1, 'hsl(' + ((t * 2 + i * 3) % 360) + ',100%,62%)'); break; }
+  }
+}
+function sanctuaryAwake(){return !!(S&&(pokemonRealm()||leaguesDone()>=REGIONALS_FOR_NATIONAL&&(S.ligaWins||0)>0));}
+function drawSanctuaryFacade(x,y){
+  const awake=sanctuaryAwake(),glow=awake?'#a8efff':'#c0aad4',stone='#d6d0ba',edge='#5b5868';
+  // Carved stone nave and buttresses; the usable door stays at tile [6,7].
+  outl(x+3,y+17,58,31,edge);R(x+4,y+18,56,29,stone);
+  for(let row=0;row<5;row++){R(x+4,y+19+row*6,56,1,'#b0aa9b');for(let col=0;col<6;col++)R(x+5+col*10+(row%2?4:0),y+20+row*6,1,4,'#b7b1a1');}
+  for(const dx of [3,19,58]){R(x+dx,y+17,3,30,'#9d9b95');R(x+dx,y+18,1,28,'#f1ebd1');R(x+dx-1,y+45,5,3,'#aaa79c');}
+  // Slate pitched roof with a gilded ridge, unlike the arcade's flat tiled roof.
+  for(let i=0;i<18;i++){const half=2+i*1.6;R(Math.round(x+36-half),y+i,Math.round(half*2),1,i%4===0?'#77748c':'#494c68');}
+  R(x+35,y-2,3,4,'#e7ce83');R(x+24,y+17,36,2,'#b6a77e');
+  // Campanile, arched bell opening and sacred star at its spire.
+  outl(x+4,y-5,14,43,edge);R(x+5,y-4,12,41,stone);R(x+5,y+10,12,2,'#b0aa9b');R(x+5,y+32,12,2,'#b0aa9b');
+  for(let i=0;i<15;i++){const half=1+i*.5;R(Math.round(x+11-half),y-20+i,Math.round(half*2),1,i%4===0?'#918ba4':'#555574');}
+  R(x+10,y-27,2,8,'#e7ce83');R(x+7,y-24,8,2,'#e7ce83');disc(x+11,y-23,2,'#fff0b0');
+  outl(x+7,y+1,8,9,'#363545');R(x+8,y+1,6,2,stone);R(x+10,y+3,3,4,'#c4a052');R(x+8,y+7,7,2,'#e3c371');R(x+11,y+9,1,2,'#6b5430');
+  // Rose window uses the colours of mana, with visible lead divisions.
+  disc(x+36,y+26,7,edge);disc(x+36,y+26,5,glow);R(x+32,y+23,4,3,'#c797e4');R(x+37,y+23,3,3,'#74cce0');R(x+33,y+27,3,3,'#e8c774');R(x+37,y+27,3,3,'#82bc8b');R(x+36,y+21,1,11,edge);R(x+31,y+26,11,1,edge);
+  // Pointed entrance, doors and a small plaque integrated into the stonework.
+  for(let i=0;i<8;i++)R(x+55-i,y+29+i,1+i*2,1,edge);R(x+47,y+37,16,11,edge);
+  R(x+49,y+38,12,10,'#5b496c');R(x+50,y+38,4,9,'#88708a');R(x+56,y+38,4,9,'#88708a');R(x+54,y+39,1,9,'#d8c28a');R(x+53,y+43,1,1,'#f5de96');R(x+57,y+43,1,1,'#f5de96');
+  R(x+25,y+7,36,7,'#383442');tiny('SANTUARIO',x+43,y+8,'#f5e5b5','center');
+  for(const dx of [24,43]){R(x+dx,y+36,3,5,'#8c7954');R(x+dx+1,y+34,1,3,'#ffe2a0');}
+  if(awake){
+    for(let i=0;i<5;i++){const a=frame*.025+i*Math.PI*2/5;R(Math.round(x+36+Math.cos(a)*10),Math.round(y+26+Math.sin(a)*8),1,1,['#fff0a0','#7cd8ff','#e8a2ff','#85e8ab','#ffb394'][i]);}
+    const pulse=.18+.08*Math.sin(frame*.06);ctx.save();ctx.globalAlpha=pulse;disc(x+36,y+26,9,'#90dfff');ctx.restore();
+    R(x+50,y+45,10,1,'#b8eaff');R(x+52,y+48,6,1,'#93d6ec');
   }
 }
 function drawProps(top){ for (const p of (G.def.props || [])) if (!!p.top === top) drawProp(p); }
@@ -3925,7 +3955,7 @@ configureTemples();
 ROOMS.tolaria.doors['6,7']='santuarioPortal';ROOMS.tolaria.map[7]=ROOMS.tolaria.map[7].slice(0,6)+'D'+ROOMS.tolaria.map[7].slice(7);
 for(const y of [5,6,7]){const row=ROOMS.tolaria.map[y].split('');for(let x=3;x<=12;x++)row[x]=x===7||x===8?'.':y<7?'R':'W';if(y===7){row[6]='D';row[10]='D';}ROOMS.tolaria.map[y]=row.join('');}
 delete ROOMS.tolaria.doors['9,7'];ROOMS.tolaria.doors['10,7']='arcade';ROOMS.arcade.exitTo={room:'tolaria',tx:10,ty:8};ROOMS.tolaria.plaques[3]=['ARCADE',176,83,'#0a3a2a'];
-ROOMS.tolaria.plaques[2]=['SANTUARIO',80,83,'#3a1a58'];ROOMS.santuarioPortal.zone='tolaria';ROOMS.santuarioPortal.exitTo={room:'tolaria',tx:6,ty:8};
+ROOMS.tolaria.plaques=ROOMS.tolaria.plaques.filter(p=>p[0]!=='ARCHIVO');ROOMS.tolaria.props=(ROOMS.tolaria.props||[]).concat({k:'temploUmbral',x:3,y:5,w:4,h:3,solid:false});ROOMS.santuarioPortal.zone='tolaria';ROOMS.santuarioPortal.exitTo={room:'tolaria',tx:6,ty:8};
 ROOMS.tolaria.signs['8,3']='EL SANTUARIO ESTA AL SUROESTE; EL ARCADE TIENE SU PROPIA ENTRADA AL SURESTE. EL PORTAL DESPIERTA AL CONQUISTAR LAS SEIS MEDALLAS REGIONALES Y LA LIGA NACIONAL DE PIEDRA BRUJA, EN PROVIDENCIA.';
 delete ROOMS.liga.doors['13,5'];ROOMS.liga.map[5]='kFFFFFFFFFFFFFk';ROOMS.liga.props=ROOMS.liga.props.filter(p=>p.k!=='cartel'||p.label!=='UMBRAL');
 ROOMS.cartasValdivia.hudTitle='LIGA ELFICA · VALDIVIA';
