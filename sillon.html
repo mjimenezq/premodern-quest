@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Magic The Beer Quest · Sillón</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+  :root{ color-scheme: dark; --ink:#eef6ee; --muted:#9db8a8; --gold:#fcd84a; --p1:#5aa8ff; --p2:#ff7a5a; }
+  html,body{height:100%;margin:0}
+  body{background:#000;color:var(--ink);font-family:"Press Start 2P",ui-monospace,monospace;overflow:hidden;display:flex;flex-direction:column;justify-content:center;gap:2.4vh;user-select:none}
+  /* Dos mitades 3:2 lado a lado; si la pantalla es baja, se achican para que quepa la leyenda. */
+  .halves{display:flex;justify-content:center;gap:.6vw;--w:min(49.7vw,calc((100dvh - 22vh) * 1.5))}
+  .half{position:relative;width:var(--w);aspect-ratio:3/2}
+  .half iframe{width:100%;height:100%;border:0;display:block;background:#000}
+  .half::after{content:"";position:absolute;inset:0;pointer-events:none;border:.35vh solid var(--c);opacity:.7}
+  .half.p1{--c:var(--p1)} .half.p2{--c:var(--p2)}
+  .tags{display:flex;justify-content:center;gap:.6vw}
+  .tag{width:var(--w);display:flex;align-items:center;gap:1.4vh;font-size:1.7vh;color:var(--c)}
+  .tag small{color:var(--muted);font-size:1.2vh;line-height:1.6}
+  .tag.p1{--c:var(--p1)} .tag.p2{--c:var(--p2)}
+  .tags{--w:min(49.7vw,calc((100dvh - 22vh) * 1.5))}
+  .legend{display:flex;flex-wrap:wrap;justify-content:center;gap:1.6vh 3.2vh;font-size:1.5vh;padding:0 2vw}
+  .legend span{display:flex;align-items:center;gap:1vh;white-space:nowrap}
+  .b{display:grid;place-items:center;min-width:3.8vh;height:3.8vh;border-radius:50%;background:#1a2226;border:.3vh solid #3a4a50;font:bold 2.3vh/1 system-ui,"Segoe UI Symbol",sans-serif;box-sizing:border-box}
+  .b.pill{border-radius:1vh;padding:0 .7vh;font:1vh/1 "Press Start 2P",monospace}
+  .x{color:#7ab4ff}.o{color:#ff6f6f}.s{color:#f59ad8}.t{color:#4fd8a8}
+  .bar{display:flex;justify-content:center;gap:2vh;font-size:1.2vh}
+  .bar a,.bar button{font:inherit;color:var(--ink);background:#1c2a2e;border:.25vh solid #2e4a44;border-radius:.8vh;padding:1vh 1.6vh;text-decoration:none;cursor:pointer}
+  .bar button.go{background:#b8321a;border-color:#6a1a0a}
+  :focus-visible{outline:.3vh solid var(--gold);outline-offset:.3vh}
+  :fullscreen .bar{display:none}
+</style>
+</head>
+<body>
+  <div class="halves">
+    <div class="half p1"><iframe id="p1" src="index.html?jugador=1" title="Jugador 1" allow="gamepad; autoplay; fullscreen"></iframe></div>
+    <div class="half p2"><iframe id="p2" src="index.html?jugador=2" title="Jugador 2" allow="gamepad; autoplay; fullscreen"></iframe></div>
+  </div>
+  <div class="tags">
+    <div class="tag p1"><span>JUGADOR 1</span><small id="pad1">APRIETA UN BOTON EN EL PRIMER MANDO</small></div>
+    <div class="tag p2"><span>JUGADOR 2</span><small id="pad2">APRIETA UN BOTON EN EL SEGUNDO MANDO</small></div>
+  </div>
+  <div class="legend" aria-label="Botones del mando">
+    <span><i class="b">✚</i>MOVER</span>
+    <span><i class="b x">✕</i>ATACAR</span>
+    <span><i class="b o">◯</i>HABLAR</span>
+    <span><i class="b s">▢</i>MAGIA</span>
+    <span><i class="b t">△</i>HECHIZO</span>
+    <span><i class="b pill">L1</i>MONTAR</span>
+    <span><i class="b pill">R1</i>POCIONES</span>
+    <span><i class="b pill">L2</i>VIAJAR</span>
+    <span><i class="b pill">CREATE</i>MAPA</span>
+    <span><i class="b pill">OPTIONS</i>MENU</span>
+  </div>
+  <div class="bar">
+    <button class="go" id="start" type="button">▶ PANTALLA COMPLETA Y SONIDO</button>
+    <a href="index.html">VOLVER A UN JUGADOR</a>
+  </div>
+<script>
+'use strict';
+const frames = [document.getElementById('p1'), document.getElementById('p2')];
+// El jugador 1 abre la sala online; el código se pasa al jugador 2 para que se una solo.
+addEventListener('message', e => {
+  if (e.source === frames[0].contentWindow && e.data?.sillon === 'sala')
+    frames[1].contentWindow.postMessage({ sillon:'unirse', code:e.data.code }, '*');
+});
+document.getElementById('start').addEventListener('click', () => {
+  document.documentElement.requestFullscreen?.().catch(() => {});
+  frames[0].contentWindow.postMessage({ sillon:'audio' }, '*');
+});
+// Muestra qué mando quedó para cada jugador (el navegador los muestra al apretar un botón).
+const label = gp => gp.id.replace(/\s*\(.*$/, '').toUpperCase().slice(0, 40) || 'MANDO';
+setInterval(() => {
+  const pads = [...(navigator.getGamepads?.() || [])].filter(g => g && g.connected);
+  document.getElementById('pad1').textContent = pads[0] ? label(pads[0]) : 'APRIETA UN BOTON EN EL PRIMER MANDO';
+  document.getElementById('pad2').textContent = pads[1] ? label(pads[1]) : 'APRIETA UN BOTON EN EL SEGUNDO MANDO';
+}, 500);
+</script>
+</body>
+</html>

@@ -82,6 +82,13 @@
   .tv-btn{flex:none;display:grid;place-items:center;width:4.6vh;height:4.6vh;border-radius:50%;background:#1a2226;border:.35vh solid #3a4a50;font:bold 2.8vh/1 system-ui,"Segoe UI Symbol",sans-serif;box-sizing:border-box}
   .tv-btn.pill{width:auto;min-width:4.6vh;padding:0 .8vh;border-radius:1.2vh;font:1.05vh/1 "Press Start 2P",monospace}
   .tv-btn.x{color:#7ab4ff}.tv-btn.o{color:#ff6f6f}.tv-btn.s{color:#f59ad8}.tv-btn.t{color:#4fd8a8}
+  /* Sillón: cada mitad muestra solo el juego; la leyenda la dibuja sillon.html. */
+  body.split.tv .tv-side{display:none}
+  body.split.tv .wrap{grid-template-columns:1fr;justify-items:center}
+  body.split.tv canvas{height:min(100dvh,calc(100vw / 1.5))}
+  body.split #btnSillon{display:none}
+  .net a{font-family:inherit;font-size:9px;color:var(--ink);background:#7a3a10;border:2px solid #c8742a;border-bottom-width:4px;border-radius:6px;padding:8px 10px;text-decoration:none}
+  .net a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
   #characterWizard{width:min(650px,calc(100vw - 36px));max-height:85dvh;box-sizing:border-box;overflow:auto;background:var(--panel);color:var(--ink);border:3px solid var(--gold);border-radius:12px;padding:20px;font-family:system-ui,sans-serif;font-size:16px;line-height:1.5}
   #characterWizard::backdrop{background:rgba(0,0,0,.85)}
   #characterWizard h2{font-size:22px;color:var(--gold);margin:0 0 12px}
@@ -121,7 +128,7 @@
     <div class="tv-item"><span class="tv-btn s">▢</span><b>MAGIA</b></div>
     <div class="tv-item"><span class="tv-btn t">△</span><b>HECHIZO</b></div>
     <div class="tv-item"><span class="tv-btn pill">R1</span><b>POCIONES</b></div>
-    <div class="tv-item"><span class="tv-btn pill">OPTIONS</span><b>MENÚ</b></div>
+    <div class="tv-item"><span class="tv-btn pill">OPTIONS</span><b>MENU</b></div>
   </aside>
   <div class="keys">
     <span><kbd>Flechas</kbd>/<kbd>WASD</kbd> moverse</span>
@@ -157,6 +164,7 @@
     <button id="btnJournal" type="button">📖 Misiones (J)</button>
     <button id="btnTravel" type="button">✈ Viajar (T)</button>
     <button id="btnPotions" type="button">🧪 Pociones (H)</button>
+    <a id="btnSillon" href="sillon.html">🎮🎮 Jugar de a dos (sillón)</a>
   </div>
   <section class="online" id="net" aria-label="Jugar en linea">
     <div class="on-head"><span class="dot" id="netDot"></span><strong>JUGAR CON AMIGOS</strong><span class="on-sub">hasta 3, cada uno desde su casa</span></div>
@@ -201,6 +209,15 @@
 <script>
 (() => {
 'use strict';
+// Modo sillón (sillon.html): dos copias del juego en pantalla dividida; ?jugador=1 o 2 elige el mando.
+const SPLIT = +new URLSearchParams(location.search).get('jugador') || 0;
+// El jugador 2 guarda sus partidas aparte para no pisar las del jugador 1.
+const localStorage = SPLIT === 2 ? {
+  getItem: k => window.localStorage.getItem('pmq2:' + k),
+  setItem: (k, v) => window.localStorage.setItem('pmq2:' + k, v),
+  removeItem: k => window.localStorage.removeItem('pmq2:' + k),
+} : window.localStorage;
+if (SPLIT) document.body.classList.add('split');
 const cvs = document.getElementById('game');
 let ctx = cvs.getContext('2d');
 const MAIN = ctx;
@@ -268,12 +285,19 @@ const PAD_BTN = {0:'a',1:'b',2:'c',3:'v',9:'menu',12:'up',13:'down',14:'left',15
 const PAD_ACT = {8:()=>openMapKey(),17:()=>{if(G.menu)G.menu=null;else openQuestJournal();},4:()=>toggleMount(),5:()=>openPotions(),6:()=>openTravel()};
 let padPrev = [], padMode = false;
 // Modo TV: usar el mando lo activa; tocar teclado o mouse lo apaga.
-function setPadMode(on){ if (padMode === on) return; padMode = on; document.body.classList.toggle('tv', on); }
+function setPadMode(on){ if (SPLIT) on = true; if (padMode === on) return; padMode = on; document.body.classList.toggle('tv', on); }
 addEventListener('keydown', () => setPadMode(false), true);
 addEventListener('pointerdown', () => setPadMode(false), true);
+if (SPLIT) setPadMode(true);
+// En el sillón los mandos se leen desde la página principal: el primero es del jugador 1 y el segundo del jugador 2.
+function connectedPads(){
+  let nav = navigator;
+  if (SPLIT) try { nav = parent.navigator; } catch (_) {}
+  return [...(nav.getGamepads?.() || [])].filter(g => g && g.connected);
+}
 function readPad(){
   for (const k in pad) pad[k] = 0;
-  const gp = [...(navigator.getGamepads?.() || [])].find(g => g && g.connected);
+  const gp = connectedPads()[SPLIT ? SPLIT - 1 : 0];
   if (!gp) { padPrev = []; return; }
   if (document.getElementById('characterWizard')?.open) { padPrev = gp.buttons.map(b => b.pressed); return; }
   for (const i in PAD_BTN) if (gp.buttons[i]?.pressed) pad[PAD_BTN[i]] = 1;
@@ -7208,7 +7232,7 @@ function netHost(){
   const code = genCode(), peer = new Peer('pmq-' + code.toLowerCase(), PEER_OPTS);
   Object.assign(NET, { peer, role:'host', code, pid:'h' });
   netStatus('Creando sala...');
-  peer.on('open', () => netStatus('Sala lista. Invita por WhatsApp: tus amigos abren el link y se conectan solos. Deja el juego abierto en pantalla.'));
+  peer.on('open', () => { netStatus('Sala lista. Invita por WhatsApp: tus amigos abren el link y se conectan solos. Deja el juego abierto en pantalla.'); if (SPLIT) parent.postMessage({ sillon:'sala', code }, '*'); });
   peer.on('disconnected', () => { if (NET.peer === peer && !peer.destroyed) { netStatus('Reconectando la sala ' + code + '...'); try { peer.reconnect(); } catch(_) {} } });
   peer.on('connection', c => {
     c.on('open', () => {
@@ -7745,6 +7769,18 @@ cvs.addEventListener('pointercancel',()=>{selectDrag=null;mouseHeld=false;});
 cvs.addEventListener('lostpointercapture',()=>{selectDrag=null;});
 cvs.addEventListener('contextmenu', e => e.preventDefault());
 addEventListener('pagehide', saveGame);
+// Sillón: el jugador 1 abre la sala apenas entra al mundo y el jugador 2 se une solo; si se corta, se reconectan.
+// Solo suena el jugador 1 para no duplicar la música.
+if (SPLIT) {
+  let splitCode = null;
+  addEventListener('message', e => { if (e.source !== parent) return; if (e.data?.sillon === 'unirse') splitCode = e.data.code; if (e.data?.sillon === 'audio') audioInit(); });
+  if (SPLIT === 2) toggleMute();
+  setInterval(() => {
+    if (!S || G.state !== 'world' || NET.role) return;
+    if (SPLIT === 1) netHost();
+    else if (splitCode) { netEl('netCode').value = splitCode; netJoin(); }
+  }, 2000);
+}
 const go = () => requestAnimationFrame(loop);
 if (document.fonts && document.fonts.load) document.fonts.load('8px "Press Start 2P"').then(() => { G.cacheDirty = true; go(); }, go); else go();
 })();
