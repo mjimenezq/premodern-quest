@@ -27,6 +27,7 @@ Klaus, Katy, Pepe, Iván, Tebax, Le Ratui, Rubén, Tomo y Mati Guerra**. Selecci
   mazmorras (40 %). Curan 2 corazones (Tebax 4).
 - `#retrato=N` muestra al personaje N ampliado desde los 4 lados.
 - **Teclas (30 sept):** M abre/cierra el menú en la pestaña MAPA (`openMapKey`), P apaga/prende el sonido (antes era M), T viajar.
+- **Mando PS5/Xbox (2 oct):** `readPad` lee el primer mando (mapeo estándar del navegador) y se suma a teclado/táctil en `readInput`. ✕=a, ◯=b, ▢=c, △=v, Options=menu, L1 montar, R1 pociones, L2 viajar, Create mapa, panel táctil misiones. Usar el mando activa el **modo TV** (`body.tv`: juego a todo el alto, leyenda grande a los costados); teclado o mouse lo apagan. Textos en pantalla con `hint(mando, táctil, teclado)`; la fuente F3 tiene ✕ ◯ ▢ △.
 - **Nunca atascado** (`unstuckPlayer`, en `loadRoom` y cada cuadro en `updateWorld`): si el jugador queda dentro de algo
   sólido lo mueve a la casilla libre más cercana. Pasaba al salir de Viña por la playa (filas 6-7 del borde oeste, que son
   arena caminable) y aparecer dentro de los árboles del Bosque de la Roca. Prueba: `#probar=vina&atascado`.
