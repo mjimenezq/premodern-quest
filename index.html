@@ -1184,8 +1184,8 @@ function drawMount(id, x, y, dir, f, layer){
   }
 }
 function drawRider(x, y, P, dir, f){
-  if(PL.spin>0){dir=Math.floor((SPIN_DURATION-PL.spin)/4)%4;P={...P,face8:dir};}
-  P={...P,face8:visibleFacing(dir,PL.atk>0||PL.spin>0?dir:PL.face8)};
+  if(PL.spin>0){const facing=spinFacing(PL.spin);dir=facing<4?facing:([2,3,2,3][facing-4]);P={...P,face8:facing};}
+  P={...P,face8:visibleFacing(dir,PL.spin>0?spinFacing(PL.spin):PL.atk>0?dir:PL.face8)};
   if (G.slide) { outl(x + 1, y + 10, 14, 6, '#b88a4a'); drawPerson(x, y - 2, P, 0, 0); return; }
   const tc = T(Math.floor((PL.x + 5) / TS), Math.floor((PL.y + 4) / TS));
   if (tc === '~' && S && S.surf) { drawSurfBoard(x - 1, y); drawPerson(x, y - 3, P, dir, 0); return; }
@@ -3964,11 +3964,17 @@ function hurtPlayer(dmg, fx, fy, fromBoss){
   if (S.hp <= 0) { S.hp = 0; G.dead = 1; playMusic(null); SFX.lose(); }
 }
 
-function swordPose(){
-  const pr = 1 - PL.atk / ATK;
-  const base = [Math.PI / 2, -Math.PI / 2, Math.PI, 0][PL.dir];
-  return { ang: base - 1.25 + pr * 2.5, cx: PL.x + 5, cy: PL.y - 2 };
+function attackPose(px,py,dir,atk){
+  const t=Math.max(0,Math.min(1,1-atk/ATK)),sweep=t*t*(3-2*t);
+  const base=[Math.PI/2,-Math.PI/2,Math.PI,0][dir]||0;
+  return {ang:base-1.25+sweep*2.5,cx:px+5,cy:py-2,t};
 }
+function swordPose(){return attackPose(PL.x,PL.y,PL.dir,PL.atk);}
+function spinAngle(spin){
+  const t=Math.max(0,Math.min(1,1-spin/SPIN_DURATION));
+  return (t-Math.sin(t*Math.PI*2)/(Math.PI*2)*.55)*Math.PI*4;
+}
+function spinFacing(spin){const a=spinAngle(spin);return direction8(Math.cos(a),Math.sin(a));}
 function startAttack(){
   if (PL.atkCd > 0 || PL.atk > 0 || PL.spin > 0) return false;
   PL.atk = ATK; PL.atkCd = Math.max(12, 28 - stats().agi); G.swing++; SFX.swing();return true;
@@ -5965,28 +5971,33 @@ function drawItem(it){
     else { R(x + 1, y + 4, 8, 5, '#1a1020'); R(x + 2, y + 5, 6, 3, '#e8a040'); R(x + 1, y + 2, 2, 3, '#1a1020'); R(x + 7, y + 2, 2, 3, '#1a1020'); R(x + 2, y + 3, 1, 2, '#e8a040'); R(x + 7, y + 3, 1, 2, '#e8a040'); R(x + 3, y + 5, 1, 1, '#1a1020'); R(x + 6, y + 5, 1, 1, '#1a1020'); R(x + 9, y + 6, 2, 1, '#e8a040'); }
   }
 }
-function drawSwordAt(px, py, dir, atk, col){
-  const base = [Math.PI / 2, -Math.PI / 2, Math.PI, 0][dir], ang = base - 1.25 + (1 - atk / ATK) * 2.5;
-  ctx.save(); ctx.translate(px + 5, py - 2); ctx.rotate(ang);
-  R(1, -2, 2, 5, '#c89030'); R(5, -2, 12, 4, '#1a1020'); R(5, -1, 11, 2, col); R(5, -1, 11, 1, '#fff');
-  ctx.restore();
+function drawWeaponBlade(col,len=12){
+  // A broad coloured face, dark edge and a thin bevel keep each weapon readable.
+  R(1,-3,2,7,'#1a1020');R(1,-2,2,5,'#c89030');R(3,-1,3,3,'#6a4020');
+  R(6,-3,len-2,5,'#1a1020');R(6,-2,len-2,3,col);R(6,-2,len-3,1,shadeCol(col,1.22));
+  R(len+4,-2,2,3,'#1a1020');R(len+4,-1,1,1,col);
 }
-function drawSword(){
-  const p = PL; if (p.atk <= 0) return;
-  const { ang, cx, cy } = swordPose(), col = SWORDS[S.eq].col;
-  ctx.save(); ctx.strokeStyle = 'rgba(255,255,255,.45)'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(cx, cy, 15, ang - 0.9, ang); ctx.stroke();
-  ctx.translate(cx, cy); ctx.rotate(ang);
-  R(1, -2, 2, 5, '#c89030'); R(3, -1, 2, 3, '#6a4020'); R(5, -2, 12, 4, '#1a1020'); R(5, -1, 11, 2, col); R(5, -1, 11, 1, '#fff');
-  ctx.restore();
-}
-function drawAttackPower(px,py,charge,spin,col){
-  const cx=px+5,cy=py-2;
-  if(charge>0&&!spin){const ready=charge>=SPIN_CHARGE;R(cx-9,py-27,18,3,'#1a1020');R(cx-8,py-26,Math.round(16*Math.min(1,charge/SPIN_CHARGE)),1,ready?'#fff2a0':'#80c8ff');
-    if(ready)for(let i=0;i<8;i++){const a=i*Math.PI/4+frame*.06;R(Math.round(cx+Math.cos(a)*12),Math.round(py+5+Math.sin(a)*4),2,1,'#ffe080');}
+function drawSwordAt(px,py,dir,atk,col){
+  const pose=attackPose(px,py,dir,atk),{ang,cx,cy,t}=pose;
+  ctx.save();
+  // Short fading echoes follow the actual previous blade angles, rather than a fixed arc.
+  for(let i=4;i>=1;i--){const prev=attackPose(px,py,dir,Math.min(ATK,atk+i)),fade=Math.sin(t*Math.PI)*(.24-i*.035);
+    if(fade<=0)continue;ctx.globalAlpha=fade;ctx.strokeStyle=col;ctx.lineWidth=3;
+    ctx.beginPath();ctx.arc(cx,cy,16,Math.min(prev.ang,ang),Math.max(prev.ang,ang));ctx.stroke();
   }
-  if(spin>0){const a=(SPIN_DURATION-spin)/SPIN_DURATION*Math.PI*4;
-    for(let i=0;i<26;i++){const ph=a-i*.07;R(Math.round(cx+Math.cos(ph)*SPIN_RADIUS),Math.round(cy+Math.sin(ph)*SPIN_RADIUS),2,2,i<8?'#fff3c0':'#e8b050');}
-    ctx.save();ctx.translate(cx,cy);ctx.rotate(a);R(2,-2,3,5,'#9a6020');R(7,-2,22,4,'#1a1020');R(8,-1,20,2,col||'#f8d878');R(8,-1,20,1,'#fff');ctx.restore();
+  ctx.globalAlpha=1;ctx.translate(cx,cy);ctx.rotate(ang);drawWeaponBlade(col);
+  ctx.restore();
+}
+function drawSword(){if(PL.atk>0)drawSwordAt(PL.x,PL.y,PL.dir,PL.atk,SWORDS[S.eq].col);}
+function drawAttackPower(px,py,charge,spin,col){
+  col=col||'#d8e0e8';const cx=px+5,cy=py-2;
+  if(charge>0&&!spin){const ready=charge>=SPIN_CHARGE;R(cx-9,py-27,18,3,'#1a1020');R(cx-8,py-26,Math.round(16*Math.min(1,charge/SPIN_CHARGE)),1,ready?shadeCol(col,1.25):col);
+    if(ready)for(let i=0;i<8;i++){const a=i*Math.PI/4+frame*.06;R(Math.round(cx+Math.cos(a)*12),Math.round(py+5+Math.sin(a)*4),2,1,col);}
+  }
+  if(spin>0){const a=spinAngle(spin),fade=Math.min(1,spin/5,(SPIN_DURATION-spin+1)/4);
+    ctx.save();
+    for(let i=0;i<26;i++){const ph=a-i*.07;ctx.globalAlpha=fade*(1-i/28)*.75;R(Math.round(cx+Math.cos(ph)*SPIN_RADIUS),Math.round(cy+Math.sin(ph)*SPIN_RADIUS),2,2,col);}
+    ctx.globalAlpha=1;ctx.translate(cx,cy);ctx.rotate(a);drawWeaponBlade(col,23);ctx.restore();
   }
 }
 function drawWorld(){
@@ -6073,10 +6084,10 @@ function drawWorld(){
   } });
   for (const o of othersHere()) list.push({ y:o.ry + 8, f:() => {
     const x = Math.round(o.rx), y = Math.round(o.ry);
-    if (o.atk > 0 && o.dir === 1) drawSwordAt(x, y, o.dir, o.atk, '#d8e0e8');
-    drawPerson(x - 3, y - 8, {...remoteCharacter(o),face8:o.spin>0?Math.floor((SPIN_DURATION-o.spin)/4)%4:visibleFacing(o.dir,o.face8)}, o.spin>0?Math.floor((SPIN_DURATION-o.spin)/4)%4:o.dir, o.walk);
-    drawAttackPower(x,y,Math.min(SPIN_CHARGE,Math.max(0,o.charge||0)),Math.min(SPIN_DURATION,Math.max(0,o.spin||0)),'#f8d878');
-    if (o.atk > 0 && o.dir !== 1) drawSwordAt(x, y, o.dir, o.atk, '#d8e0e8');
+    if (o.atk > 0 && o.dir === 1) drawSwordAt(x, y, o.dir, o.atk, (SWORDS[o.eq]||SWORDS.hierro).col);
+    drawPerson(x - 3, y - 8, {...remoteCharacter(o),face8:o.spin>0?spinFacing(o.spin):visibleFacing(o.dir,o.face8)}, o.spin>0?(spinFacing(o.spin)<4?spinFacing(o.spin):[2,3,2,3][spinFacing(o.spin)-4]):o.dir, o.walk);
+    drawAttackPower(x,y,Math.min(SPIN_CHARGE,Math.max(0,o.charge||0)),Math.min(SPIN_DURATION,Math.max(0,o.spin||0)),(SWORDS[o.eq]||SWORDS.hierro).col);
+    if (o.atk > 0 && o.dir !== 1) drawSwordAt(x, y, o.dir, o.atk, (SWORDS[o.eq]||SWORDS.hierro).col);
     const nm = norm(o.name), w = nm.length * 4 + 3;
     R(x + 5 - w / 2, y - 22, w, 8, 'rgba(0,0,0,.55)'); tiny(nm, x + 5, y - 20, '#60e070', 'center');
   } });
@@ -7646,7 +7657,7 @@ function remoteCharacter(o){
   try { return characterOf(o) || CHARS[0]; } catch (_) { return CHARS[0]; }
 }
 function myState(){
-  return { pid:NET.pid, name:CH().n, ch:S.ch, customChar:S.customChar || null, realm:S.realm||'magic', room:G.roomId, x:Math.round(PL.x), y:Math.round(PL.y), spin:PL.spin||0,charge:PL.attackCharge||0,dir:PL.dir, face8:visibleFacing(PL.dir,PL.face8), atk:PL.atk, walk:Math.floor(PL.walk) % 2, hp:S.hp, max:S.maxHp };
+  return { pid:NET.pid, name:CH().n, ch:S.ch, customChar:S.customChar || null, realm:S.realm||'magic', room:G.roomId, x:Math.round(PL.x), y:Math.round(PL.y), eq:S.eq,spin:PL.spin||0,charge:PL.attackCharge||0,dir:PL.dir, face8:visibleFacing(PL.dir,PL.face8), atk:PL.atk, walk:Math.floor(PL.walk) % 2, hp:S.hp, max:S.maxHp };
 }
 const sendAll = m => {if(m.room)m={...m,realm:S.realm||'magic'}; for (const c of NET.conns) if (c.open) c.send(m); };
 function sendTo(pid, m){ if (NET.role === 'host') { const c = NET.conns.find(x => x.pid === pid); if (c && c.open) c.send(m); } }
@@ -7735,7 +7746,7 @@ function netTick(){
   if (frame % 4) return;
   if (NET.role === 'host') {
     if (!NET.conns.length) return;
-    const list = [myState()].concat(Object.values(NET.others).map(o => ({ pid:o.pid, name:o.name, ch:o.ch,customChar:o.customChar||null,realm:o.realm||'magic', room:o.room, x:o.x, y:o.y, dir:o.dir, atk:o.atk, walk:o.walk, hp:o.hp, max:o.max })));
+    const list = [myState()].concat(Object.values(NET.others).map(o => ({ pid:o.pid, name:o.name, ch:o.ch,customChar:o.customChar||null,realm:o.realm||'magic', room:o.room, x:o.x, y:o.y, eq:o.eq,spin:o.spin||0,charge:o.charge||0,face8:o.face8,dir:o.dir, atk:o.atk, walk:o.walk, hp:o.hp, max:o.max })));
     sendAll({ t:'pl', list, wt:S.worldTicks });
     if (G.state === 'world') sendAll({ t:'en', room:G.roomId, list:G.enemies.filter(e => !e.dead).map(e => [e.nid, e.type, Math.round(e.x), Math.round(e.y), e.hp, e.max, e.flip ? 1 : 0, e.flash > 0 ? 1 : 0]) });
   } else if (NET.host && NET.host.open) {
