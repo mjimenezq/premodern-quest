@@ -1087,7 +1087,7 @@ function drawRider(x, y, P, dir, f){
   if (tc === '~' && S && S.surf) { drawSurfBoard(x - 1, y); drawPerson(x, y - 3, P, dir, 0); return; }
   const M = mounted();
   const phase=(PL.walk||0)*Math.PI,moving=!!PL.moving,bob=moving?Math.round(Math.abs(Math.sin(phase))*(M?2:1)):0;
-  if (!M || G.warp) { drawPerson(x+(moving&&dir<2?Math.round(Math.sin(phase)*.7):0), y-bob-(PL.dance>0?(frame>>3&1)*2:0), P, dir, moving?f:0); return; }
+  if (!M || G.warp) { drawPerson(x, y-bob-(PL.dance>0?(frame>>3&1)*2:0), P, dir, moving?f:0); return; }
   y-=bob;const walk = moving?Math.floor(PL.walk) % 2:0;
   drawMount(S.mount, x - 3, y, dir, walk, 'back');
   drawPerson(x, y - 10, P, dir, 0);
@@ -4239,7 +4239,7 @@ function updateWorld(){
     } else { p.ivx = dx; p.ivy = dy; if (dx || dy) moveBox(p, dx, dy, false, true); }
   }
   const travelled=Math.hypot(p.x-walkStartX,p.y-walkStartY);p.moving=travelled>.05&&p.kb<=0;
-  if(p.moving){const prevStep=Math.floor(p.walk);p.walk+=travelled*(mounted()?.14:.16);if(Math.floor(p.walk)!==prevStep&&!G.def.interior&&T(Math.floor(p.x/TS),Math.floor(p.y/TS))!=='~')G.parts.push({k:'smoke',x:p.x+5,y:p.y+8,vx:0,vy:-.15,t:5});}
+  if(p.moving){const prevStep=Math.floor(p.walk);p.walk+=travelled*(mounted()?.12:.11);if(Math.floor(p.walk)!==prevStep&&Math.floor(p.walk)%2===0&&!G.def.interior&&T(Math.floor(p.x/TS),Math.floor(p.y/TS))!=='~')G.parts.push({k:'smoke',x:p.x+5,y:p.y+8,vx:0,vy:-.15,t:5});}
   recoverLife();
   if (p.atk > 0) {
     p.atk--;
