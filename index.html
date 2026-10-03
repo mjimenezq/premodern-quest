@@ -1269,6 +1269,8 @@ function drawRider(x, y, P, dir, f){
 const SPELL_LVLS = [0,12,35,75,140,240,380,560,780,1050,1380,1770,2230,2760,3370,4060,4840,5710,6680,7750];
 const spellLvl = id => { const x = (S && S.spellXp && S.spellXp[id]) || 0; let l = 1; for (let i = 1; i < SPELL_LVLS.length; i++) if (x >= SPELL_LVLS[i]) l = i + 1; return l; };
 const spellMp = id => Math.max(1, SPELLS[id].mp - (spellLvl(id) >= 3 ? 1 : 0) - (spellLvl(id) >= 5 ? 1 : 0) - (spellLvl(id)>=8?1:0) - (spellLvl(id)>=10?1:0));
+// 3 oct: las magias subian demasiado rapido (6+2*NV por impacto). Ahora cada impacto o curacion da 3 EXP fijos.
+const SPELL_HIT_XP = 3;
 function gainSpellXp(id, n){
   if (!SPELLS[id] || !Number.isFinite(n) || n <= 0) return;
   S.spellXp = S.spellXp || {}; const before = spellLvl(id); S.spellXp[id] = Math.min(SPELL_LVLS.at(-1), Math.max(0, Number(S.spellXp[id]) || 0) + n);
@@ -1445,7 +1447,7 @@ const ROOMS = {
     map:['rrrrrr...rrrrrr','rss..........sr','rs...........sr','r.............r','...............','...............','s.............s','ss...........ss','~ss.........ss~','~~~~~~~~~~~~~~~'],
     npcs:[{id:'barDuna',x:11,y:1},{id:'veraneante',x:7,y:6}],
     props:[{k:'duna',x:1,y:2,w:3,h:3,solid:false},{k:'saco',x:4,y:2,act:'saco'},{k:'barra',x:10,y:2,w:3},{k:'cartel',x:10,y:1,txt:'BAR LA DUNA',solid:false},
-      {k:'fogata',x:7,y:3},{k:'reposera',x:3,y:6,act:'reposera',c:'#e83040'},{k:'reposera',x:5,y:7,act:'reposera',c:'#3a8ae8'},{k:'reposera',x:9,y:7,act:'reposera',c:'#f0c030'},{k:'reposera',x:11,y:6,act:'reposera',c:'#40c070'},
+      {k:'fogata',x:7,y:3},{k:'reposera',x:3,y:6,act:'reposera',c:'#e83040'},{k:'reposera',x:5,y:7,act:'reposera',c:'#3a8ae8'},{k:'reposera',x:9,y:7,act:'reposera',c:'#f0c030'},{k:'reposera',x:1,y:6,act:'reposera',c:'#40c070'},
       {k:'quitasol',x:4,y:6,solid:false,top:true,c:'#e83040'},{k:'quitasol',x:10,y:6,solid:false,top:true,c:'#3a8ae8'}] },
   talca:{ name:'TALCA', theme:'town', music:'talca',
     map:['TTTTTT...TTTTTT','T.RRRRR.RRRRR.T','T.RRRRR.RRRRR.T','T.WWWWW.WWWWW.T','T......S......T','T.=====.=====.T','T..b...o...b..T','T,..S.....S.,.T','T..b.......b..T','TTTTTTTTTTTTTTT'],
@@ -1745,18 +1747,18 @@ for(const [id,city]of [['cafeVaras','puertoVaras'],['cafeFrutillar','frutillar']
 for(const [y,tiles]of [[4,'RRRR'],[5,'RRRR'],[6,'WWDW']]){const row=ROOMS.puertoVaras.map[y].split('');for(let i=0;i<4;i++)row[9+i]=tiles[i];ROOMS.puertoVaras.map[y]=row.join('');}
 ROOMS.puertoVaras.doors['11,6']='casaVaras';ROOMS.puertoVaras.props.push({k:'casaAlemana',x:9,y:4,w:4,h:3,label:'CASA ALEMANA',solid:false});
 const SAFARI_REGIONS=[
- {id:'safariTalca',from:'talca',gate:[13,5],back:[12,5],name:'SAFARI DEL MAULE',theme:'meadow',music:'talca',pool:['Pidgey','Rattata','Oddish','Bellsprout','Ponyta','Tauros'],map:['TTTTTTTTTTTTTTT','T,,,..,,,..,,,T','T,,TT,.,TT,,.,T','T,,,..,,,.,,,,T','T.,,.....,,...T','T,,,.,,,,.,,,,T','T,,..,,,..,,,,T','T,,,,,,.,,,,,,T','TTTTTTTETTTTTTT','TTTTTTTTTTTTTTT']},
+ {id:'safariTalca',from:'talca',gate:[1,7],back:[2,7],name:'SAFARI DEL MAULE',theme:'meadow',music:'talca',pool:['Pidgey','Rattata','Oddish','Bellsprout','Ponyta','Tauros'],map:['TTTTTTTTTTTTTTT','T,,,..,,,..,,,T','T,,TT,.,TT,,.,T','T,,,..,,,.,,,,T','T.,,.....,,...T','T,,,.,,,,.,,,,T','T,,..,,,..,,,,T','T,,,,,,.,,,,,,T','TTTTTTTETTTTTTT','TTTTTTTTTTTTTTT']},
  {id:'safariCondes',from:'lascondes',gate:[11,7],back:[11,8],name:'SAFARI PRECORDILLERA',theme:'meadow',music:'field',pool:['Nidoran H','Nidoran M','Growlithe','Eevee','Scyther','Dratini'],map:['TTTTTTTTTTTTTTT','T,,..,,,..,,.,T','T,,,rr.,rr,,,,T','T,.,rr.,rr,.,,T','T,,,.......,,,T','T,,.rr...rr,,,T','T,,,..,,,..,,,T','T,,,,,,.,,,,,,T','TTTTTTTETTTTTTT','TTTTTTTTTTTTTTT']},
  {id:'safariVaras',from:'puertoVaras',gate:[2,6],back:[2,7],name:'SAFARI DEL LLANQUIHUE',theme:'forest',music:'field',pool:['Poliwag','Psyduck','Horsea','Tangela','Lapras','Slowpoke'],map:['TTTTTTTTTTTTTTT','T,,.,,,..,,,.,T','T,,~~,...~~,,,T','T,,~~,,,..,,,,T','T,,,..,,,.,,,,T','T,,.,..,,~~,,,T','T,,,..,,,~~,,,T','T,,,,,,.,,,,,,T','TTTTTTTETTTTTTT','TTTTTTTTTTTTTTT']},
- {id:'safariDunas',from:'dunas',gate:[2,4],back:[2,5],name:'SAFARI DE CONCON',theme:'sand',music:'beach',pool:['Sandshrew','Diglett','Cubone','Krabby','Staryu','Omanyte'],map:['rrrrrrrrrrrrrrr','r,,,ss,,,ss,,,r','r,,rr,,,rr,,.,r','r,,rr,.,rr,,,,r','r,,,.......,,,r','r,,.,ss.,ss,,,r','r,,,..,,,..,,,r','r,,,,,,.,,,,,,r','rrrrrrrErrrrrrr','rrrrrrrrrrrrrrr']},
+ {id:'safariDunas',from:'dunas',gate:[12,7],back:[12,6],name:'SAFARI DE CONCON',theme:'sand',music:'beach',pool:['Sandshrew','Diglett','Cubone','Krabby','Staryu','Omanyte'],map:['rrrrrrrrrrrrrrr','r,,,ss,,,ss,,,r','r,,rr,,,rr,,.,r','r,,rr,.,rr,,,,r','r,,,.......,,,r','r,,.,ss.,ss,,,r','r,,,..,,,..,,,r','r,,,,,,.,,,,,,r','rrrrrrrErrrrrrr','rrrrrrrrrrrrrrr']},
 ];
 for(const s of SAFARI_REGIONS){const parent=ROOMS[s.from],key=s.gate.join(',');const row=parent.map[s.gate[1]].split('');row[s.gate[0]]='=';parent.map[s.gate[1]]=row.join('');parent.trails={...(parent.trails||{}),[key]:{room:s.id,tx:7,ty:7}};parent.props=[...(parent.props||[]),{k:'safariGate',x:s.gate[0],y:s.gate[1],solid:false}];ROOMS[s.id]={name:s.name,theme:s.theme,music:s.music,zone:s.from,safari:true,safariPool:s.pool,exitTo:{room:s.from,tx:s.back[0],ty:s.back[1]},map:s.map,props:[{k:'cartel',x:11,y:7,label:'15 BALLS',txt:'QUINCE SAFARI BALLS. A: LANZAR. SALIR POR EL SENDERO SUR.',solid:false}]};}
 const SAFARI_PROFESSORS=[
  {safari:'safari',home:'pueblo',gate:[2,7],back:[2,8],key:'Oak',name:'PROFESOR OAK',color:'#ba594c',hair:'#c9c2ad',line:'Soy Oak. Mi tarea es cuidar el vinculo entre entrenadores y compañeros. Aqui puedes elegir quien sale contigo.'},
- {safari:'safariTalca',home:'talca',gate:[13,5],back:[12,5],key:'Elm',name:'PROFESOR ELM',color:'#5d9770',hair:'#5b4132',line:'¡Hola! Soy Elm. Me interesa como crecen los Pokemon cuando caminan junto a alguien que los cuida.'},
+ {safari:'safariTalca',home:'talca',gate:[1,7],back:[2,7],key:'Elm',name:'PROFESOR ELM',color:'#5d9770',hair:'#5b4132',line:'¡Hola! Soy Elm. Me interesa como crecen los Pokemon cuando caminan junto a alguien que los cuida.'},
  {safari:'safariCondes',home:'lascondes',gate:[11,7],back:[11,8],key:'Rowan',name:'PROFESOR ROWAN',color:'#657a9d',hair:'#dad7c9',line:'Soy Rowan. Evolucionar no es solo hacerse mas fuerte: tambien exige paciencia y un buen compañero.'},
  {safari:'safariVaras',home:'puertoVaras',gate:[2,6],back:[2,7],key:'Birch',name:'PROFESOR BIRCH',color:'#6e9a79',hair:'#6e4b32',line:'Soy Birch. Prefiero estudiar a los Pokemon en su habitat. El sendero de atras lleva a la reserva del lago.'},
- {safari:'safariDunas',home:'dunas',gate:[2,4],back:[2,5],key:'Juniper',name:'PROFESORA JUNIPER',color:'#9b769e',hair:'#9b653f',line:'Soy Juniper. Cada especie tiene una historia. Cuida a tus compañeros y te ayudare a conocerla.'}
+ {safari:'safariDunas',home:'dunas',gate:[12,7],back:[12,6],key:'Juniper',name:'PROFESORA JUNIPER',color:'#9b769e',hair:'#9b653f',line:'Soy Juniper. Cada especie tiene una historia. Cuida a tus compañeros y te ayudare a conocerla.'}
 ];
 for(const p of SAFARI_PROFESSORS){
  const id='safariProf'+p.key,lab=p.safari+'Casa';p.npc=id;p.lab=lab;
@@ -4937,7 +4939,7 @@ function castSpell(ax, ay){
   if ((S.mp || 0) < cost) { toast('NO TE ALCANZA LA MAGIA (' + cost + ' MP)', '#88e0ff'); SFX.back(); return; }
   S.mp -= cost; gainSpellXp(id, 1);
   if (sp.heal) {
-    const healed=Math.min(S.maxHp-S.hp,sp.heal+(lv-1));S.hp += healed;if(healed>0)gainSpellXp(id,6+2*lv);saveGame();SFX.heal();
+    const healed=Math.min(S.maxHp-S.hp,sp.heal+(lv-1));S.hp += healed;if(healed>0)gainSpellXp(id,SPELL_HIT_XP);saveGame();SFX.heal();
     for (let i = 0; i < 10; i++) G.parts.push({ k:'heal', x:PL.x + 5 + (Math.random() - 0.5) * 14, y:PL.y + 4, vx:0, vy:-0.7 - Math.random() * 0.5, t:0 });
     return;
   }
@@ -4963,7 +4965,7 @@ function explodeShot(s){
 function hitWithSpell(e, s, splash){
   if(e.dead)return;
   const sp = SPELLS[s.id], lv = s.lv || 1, dmg = Math.round((sp.dmg + aquaticBonus(e) + Math.floor(stats().int / 3) + Math.floor((lv - 1) * sp.dmg / 2)) * (s.id === 'bolt' && CH().burnLover ? 1.5 : 1));
-  if (!s.xpGiven) { s.xpGiven = true; gainSpellXp(s.id, 6+2*lv);saveGame(); }
+  if (!s.xpGiven) { s.xpGiven = true; gainSpellXp(s.id, SPELL_HIT_XP);saveGame(); }
   const d = Math.hypot(s.vx, s.vy) || 1, kx = s.vx / d * 1.6, ky = s.vy / d * 1.6;
   floatText(String(dmg), e.x + e.w / 2, e.y - 4, sp.col);
   if (sp.slow) e.slow = pokemonRealm()&&MON[e.type].boss?Math.min(90,150+30*(lv-1)):150+30*(lv-1);
@@ -6984,7 +6986,8 @@ function drawHUD(){
   if(G.preview&&!G.def.safari){R(64,148,112,10,'#143858');tiny('VISTA PREVIA · NO SE GUARDA',120,151,'#fff','center');}
   // Si el jugador camina por debajo del panel, el panel se vuelve casi transparente (no tapa entradas ni escaleras)
   const under = (x0, x1, y1) => PL.x + 10 > x0 && PL.x < x1 && PL.y - 8 < y1;
-  const aL = under(0, 72, 38) ? 0.25 : 0.9, aR = under(168, W, 26) ? 0.25 : 0.9;
+  const signBehind = (x0, x1) => !G.def.interior && (G.def.plaques || []).some(p => p[1] > x0 && p[1] < x1 && p[2] < 40);
+  const aL = under(0, 72, 38) ? 0.25 : signBehind(0, 120) ? 0.45 : 0.75, aR = under(168, W, 26) ? 0.25 : signBehind(150, W) ? 0.45 : 0.75;
   ctx.globalAlpha = aL;
   const nh = S.maxHp / 2;
   if (nh <= 10) for (let i = 0; i < nh; i++) heart(4 + i * 9, 4, clamp(S.hp - i * 2, 0, 2));

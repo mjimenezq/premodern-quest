@@ -440,7 +440,7 @@ async function main(){
  const originalRandom=sandbox.Math.random;sandbox.Math.random=()=>.99;
  assert.equal(g.spellLvl('ice'),5);const target=g.spawnEnemy('negator',100,60);
  for(let i=0;i<6;i++){g.castSpell(100,60);const shot=g.G.shots.at(-1);g.hitWithSpell(target,shot,false);const gained=balance.spellXp.ice;g.hitWithSpell(target,shot,true);assert.equal(balance.spellXp.ice,gained,'Splash must not multiply spell XP');}
- assert.equal(g.spellLvl('ice'),6);assert(g.spellProgress('ice')>0);assert.equal(g.loadSave(balance.slot||1).spellXp.ice,balance.spellXp.ice);
+ assert.equal(g.spellLvl('ice'),5,'Six casts no longer jump a level');for(let i=0;i<20;i++){g.castSpell(100,60);g.hitWithSpell(target,g.G.shots.at(-1),false);}assert.equal(g.spellLvl('ice'),6);assert(g.spellProgress('ice')>0);assert.equal(g.loadSave(balance.slot||1).spellXp.ice,balance.spellXp.ice);
  balance.mp=0;const xpBefore=balance.spellXp.ice;g.castSpell();assert.equal(balance.spellXp.ice,xpBefore,'Failed cast grants no experience');g.drawHUD();
  // A champion meets durable enemies; full late-game gear cannot make every hit disappear.
  balance.st={fue:100,des:500,agi:100,int:100};for(const [slot] of g.GEAR_SLOTS)balance.gear[slot]='avance'+slot+'9';
