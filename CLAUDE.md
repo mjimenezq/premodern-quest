@@ -4,6 +4,8 @@ Proyecto independiente. Hablar con Matías en español de Chile y explicar de fo
 El juego abre directamente desde `index.html`; el historial Git del proyecto se conserva en `.git`.
 
 
+**3 oct — Teno visible:** entrada de Curicó movida de casilla de árbol [13,1] a sendero abierto [13,3] junto a la casa de techo verde, bajo el HUD; regreso [13,4]. Teno y Campo tienen identidad propia de zona, incluidos sus interiores. Mapa general muestra recuadro CURICO con TENO/CAMPO, y Teno aparece como destino de vuelo. Se conserva la salida este de Curicó a la costa y los IDs/partidas. Prueba de ida/vuelta por todos los senderos en ambos mundos.
+
 **3 oct — Providencia y cordillera:** Providencia [5,2] al este de Tolaria [4,2], conexión peatonal bidireccional. Las Condes [5,1] al norte hacia la cordillera; Tempest al sur de Providencia. Cambian conexiones y letreros, no IDs ni interiores/guardados. Antorchas de Providencia a 60% de intensidad y menor radio, luz de ventanas reducida y localizada, murales RGB con tonos más profundos y reflejos suaves; decoración importante conservada.
 
 **3 oct — Celular horizontal:** orientación landscape hasta 1100×600 adapta automáticamente el juego: canvas completo 3:2 centrado con carriles laterales fuera del mapa, movimiento/selector a izquierda, A/B/magia/hechizo/menú a derecha, accesos compactos a misiones/viaje/pociones. Safe-area y dvh para barras/muescas. Botón pantalla completa opcional (fallback informativo Safari) y Vista página para acceder al panel online. Resize/orientación/fullscreen liberan entradas y carga para evitar controles pegados. No altera cámara ni guardados; portrait y TV conservados.

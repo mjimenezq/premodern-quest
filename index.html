@@ -1853,7 +1853,7 @@ const guardiansDone = () => GUARDIANS.filter(g => S.bosses[g]).length;
 // columna este (Providencia al este de Tolaria, Las Condes al norte hacia la cordillera); Pelluco queda pegado a Puerto Montt y Valdivia con sus bosques elficos llena los huecos del sur.
 // Los ids de sala no cambian, asi que las partidas guardadas siguen funcionando.
 Object.assign(WORLD,{tempest:[5,3],lascondes:[5,1],providencia:[5,2],pelluco:[4,4],valdivia:[4,5],oncol:[5,4],selvaValdiviana:[5,5],niebla:[5,6]});
-Object.assign(SHORT,{valdivia:'VALDIVIA',oncol:'ONCOL',selvaValdiviana:'S.ELFICA',niebla:'NIEBLA',providencia:'PROVIDENC.',teno:'TENO'});
+Object.assign(SHORT,{valdivia:'VALDIVIA',oncol:'ONCOL',selvaValdiviana:'S.ELFICA',niebla:'NIEBLA',providencia:'PROVIDENC.',teno:'TENO',campoFamilia:'CAMPO TENO'});
 const SOUTH_LINKS={
  valdivia:{w:'puertoVaras',s:'puertoOctay',e:'selvaValdiviana'},selvaValdiviana:{w:'valdivia',n:'oncol',s:'niebla'},oncol:{s:'selvaValdiviana',n:'tempest'},niebla:{n:'selvaValdiviana',w:'puertoOctay'},
  tempest:{w:'mercado',n:'providencia',s:'oncol'},lascondes:{s:'providencia'},providencia:{w:'tolaria',n:'lascondes',s:'tempest'}
@@ -1910,32 +1910,35 @@ ROOMS.rioCalleCalle={name:'BARCAZA · RIO CALLE-CALLE',theme:'town',music:'valdi
   ...[[1,7],[12,1],[6,8]].map(([x,y])=>({k:'loboMarino',x,y,solid:false})),{k:'cartel',x:4,y:4,label:'GUIA',act:'barcazaGuia',solid:false},{k:'cartel',x:10,y:4,label:'MUELLE',act:'barcazaVolver',solid:false}]};
 
 // --- TENO: el pueblo del alcalde Gonzalo, la casa de Davis y el campo de la familia de Matias ---
-ROOMS.teno={name:'TENO · TIERRA DE HUERTOS',theme:'town',music:'huaso',chill:true,zone:'valpo',
+ROOMS.teno={name:'TENO · TIERRA DE HUERTOS',theme:'town',music:'huaso',chill:true,zone:'teno',
  map:['TTTTTTTTTTTTTTT','T.RRRRRTRRRRR.T','T.RRRRRTRRRRR.T','T.WWDWWTWWDWW.T','T......S......=','T..=========..T','T..=...o...=..T','T..=.......=..T','T,.,...=...,.,T','TTTTTTT=TTTTTTT'],
  roof:tx=>tx<7?'blue':'red',doors:{'4,3':'municipalidadTeno','10,3':'casaDavis'},
- trails:{'7,9':{room:'valpo',tx:12,ty:1},'14,4':{room:'campoFamilia',tx:1,ty:4}},
+ trails:{'7,9':{room:'valpo',tx:13,ty:4},'14,4':{room:'campoFamilia',tx:1,ty:4}},
  plaques:[['MUNICIPALIDAD',72,19,'#3a2a58'],['CASA DE DAVIS',168,19,'#5a2a1a']],
  signs:{'7,4':'TENO: COMUNA AGRICOLA DE LA PROVINCIA DE CURICO, CON HUERTOS DE MANZANAS Y CEREZAS Y EL RIO TENO BAJANDO DE LA CORDILLERA. AQUI SE VIENE A DESCANSAR: SIN MONSTRUOS. ESTE: EL CAMPO DE LA FAMILIA. SUR: CURICO.'},
  npcs:[{id:'friend',ch:20,role:'mayor',x:2,y:4},{id:'friend',ch:21,role:'agro',x:12,y:5},{id:'huaso',x:12,y:7}],
  props:[{k:'roadGate',x:14,y:4,label:'CAMPO',solid:false},{k:'roadGate',x:7,y:9,label:'CURICO',solid:false},{k:'cerezo',x:1,y:8,solid:false},{k:'cerezo',x:13,y:8,solid:false},{k:'farol',x:1,y:5,solid:false},{k:'farol',x:13,y:5,solid:false}]};
-ROOMS.municipalidadTeno=southInterior('MUNICIPALIDAD DE TENO','valpo',{room:'teno',tx:4,ty:4},[{id:'secretariaTeno',x:7,y:2}],
+ROOMS.municipalidadTeno=southInterior('MUNICIPALIDAD DE TENO','teno',{room:'teno',tx:4,ty:4},[{id:'secretariaTeno',x:7,y:2}],
  [{k:'mostrador',x:5,y:3,w:5,label:'OFICINA DEL ALCALDE'},{k:'cartel',x:2,y:1,label:'TENO',txt:'BIENVENIDOS A TENO: CAMPO, RIO, HUERTOS Y BUENOS VECINOS. EL ALCALDE GONZALO ATIENDE EN LA PLAZA.',solid:false},{k:'cartel',x:12,y:1,label:'COUNTERSPELL',txt:'CUADRO EN LA OFICINA: UN COUNTERSPELL FIRMADO. "TODO TRAMITE PUEDE SER CONTRARRESTADO."',solid:false}],{music:'huaso'});
-ROOMS.casaDavis=southInterior('EL MUNDO DE DAVIS','valpo',{room:'teno',tx:10,ty:4},[{id:'friend',ch:1,role:'gamer',x:9,y:4}],
+ROOMS.casaDavis=southInterior('EL MUNDO DE DAVIS','teno',{room:'teno',tx:10,ty:4},[{id:'friend',ch:1,role:'gamer',x:9,y:4}],
  [{k:'pcGamer',x:3,y:1,w:3,act:'pcDavis',solid:false},{k:'cartel',x:7,y:1,label:'BOLT',txt:'POSTER: LIGHTNING BOLT. UN MANA, TRES DE DAÑO. "A LA CARA, SIN MIEDO."',solid:false},{k:'mesaCartas',x:8,y:6,w:3,act:'davisCards'},{k:'retroShelf',x:12,y:6,w:2,solid:false},{k:'huertoMacetas',x:12,y:1,w:2,solid:false},{k:'sofa',x:2,y:6,w:3}],{music:'electro'});
-ROOMS.campoFamilia={name:'EL CAMPO DE LA FAMILIA · TENO',theme:'meadow',music:'huaso',chill:true,zone:'valpo',
+ROOMS.campoFamilia={name:'EL CAMPO DE LA FAMILIA · TENO',theme:'meadow',music:'huaso',chill:true,zone:'campoFamilia',
  map:['TTTTTTTTTTTTTTT','T.RRRRR...,,,,T','T.RRRRR..,,,,,T','T.WWDWW..,,,,,T','=........=....T','T.........RRR.T','T.........WDW.T','T..,,,...=....T','T,,..,,..=.,,.T','TTTTTTTTTTTTTTT'],
  roof:tx=>tx>=10?'pink':'red',doors:{'4,3':'casaCampo','11,6':'casitaRai'},trails:{'0,4':{room:'teno',tx:13,ty:4}},
  plaques:[['CASA DEL CAMPO',72,19,'#5a3418'],['CASITA DE RAI',184,83,'#c84878']],
  signs:{},npcs:[{id:'tataCampo',x:12,y:8},{id:'friend',ch:12,role:'campo',x:6,y:6}],
  animals:[{k:'vaca',x:11,y:2,box:[10,1,13,3]},{k:'vaca',x:12,y:1,box:[10,1,13,3]},{k:'caballo',x:11,y:8,box:[10,7,13,8]}],
  props:[{k:'refalin',x:1,y:5,w:2,h:3,act:'refalin',solid:false},{k:'columpio',x:4,y:7,w:2,act:'columpio',solid:false},{k:'arenero',x:7,y:7,w:2,act:'arenero',solid:false},{k:'roadGate',x:0,y:4,label:'TENO',solid:false},{k:'fogata',x:8,y:8,act:'waitPhase',solid:false},{k:'huertoMacetas',x:7,y:1,w:2,solid:false},{k:'cartel',x:8,y:4,label:'LA FAMILIA',txt:'EL CAMPO DE LA FAMILIA DE MATIAS: VACAS, HUERTA, LA CASA DE LOS ABUELOS Y LA CASITA DE JUEGOS DE RAI.',solid:false}]};
-ROOMS.casaCampo=southInterior('LA CASA DE LOS ABUELOS','valpo',{room:'campoFamilia',tx:4,ty:4},[{id:'abuelaCampo',x:5,y:2}],
+ROOMS.casaCampo=southInterior('LA CASA DE LOS ABUELOS','campoFamilia',{room:'campoFamilia',tx:4,ty:4},[{id:'abuelaCampo',x:5,y:2}],
  [{k:'homeKitchen',x:9,y:1,w:3,act:'campoFood'},{k:'mesaComida',x:5,y:5,w:3,act:'campoFood'},{k:'fogata',x:1,y:2,solid:false,act:'waitPhase'},{k:'sofa',x:11,y:6,w:2},{k:'cartel',x:2,y:6,label:'FOTOS',txt:'FOTOS DE LA FAMILIA: MATIAS CHICO JUGANDO CARTAS, RAI EN SU AUTITO Y UN ASADO DE CAMPO.',solid:false}],{music:'huaso'});
-ROOMS.casitaRai=southInterior('LA CASITA DE JUEGOS DE RAI','valpo',{room:'campoFamilia',tx:11,ty:7},[],
+ROOMS.casitaRai=southInterior('LA CASITA DE JUEGOS DE RAI','campoFamilia',{room:'campoFamilia',tx:11,ty:7},[],
  [{k:'juguetes',x:2,y:2,w:2,act:'casitaToys',solid:false},{k:'ositoTito',x:11,y:2,act:'ositoTito',solid:false},{k:'autito',x:5,y:5,act:'autito',solid:false},{k:'sofa',x:9,y:6,w:3},{k:'cartel',x:7,y:1,label:'CASITA DE RAI',txt:'HECHA CON CARIÑO POR LOS ABUELOS: TECHO DE COLORES, VENTANITA Y UN MONTON DE JUGUETES.',solid:false}],{music:'town'});
-// Curico gets a road north to Teno in its free top-right corner.
-ROOMS.valpo.trails={...(ROOMS.valpo.trails||{}),'13,1':{room:'teno',tx:7,ty:8}};ROOMS.valpo.props.push({k:'roadGate',x:13,y:1,label:'TENO',solid:false});
-ROOMS.valpo.signs['6,4']+=' NORTE, POR EL CAMINO DE LA ESQUINA: TENO Y EL CAMPO.';
+// Entrada visible bajo el HUD, junto al costado de la casa de techo verde; no reemplaza la salida a la costa.
+ROOMS.valpo.trails={...(ROOMS.valpo.trails||{}),'13,3':{room:'teno',tx:7,ty:8}};
+for(const y of [3,4,5]){const row=ROOMS.valpo.map[y].split('');row[13]='=';ROOMS.valpo.map[y]=row.join('');}
+ROOMS.valpo.props.push({k:'roadGate',x:13,y:3,label:'TENO',solid:false});
+ROOMS.valpo.signs['6,4']+=' TENO Y EL CAMPO: TOMA EL SENDERO DEL LADO DERECHO DE LA CASA DE TECHO VERDE, BAJO EL LETRERO TENO.';
+
 
 // --- PROVIDENCIA: Piedra Bruja, el gran templo TCG de Santiago y sede de la Liga Nacional ---
 ROOMS.providencia={name:'PROVIDENCIA · PIEDRA BRUJA',theme:'town',music:'piedraBruja',
@@ -5607,8 +5610,8 @@ function sellPacks(who, hello){
 const STONES = { home:{ n:'PIEDRA HOGAR' }, tolaria:{ n:'PIEDRA TOLARIA' } };
 const FLY_DECKS = 6;
 // Donde aterriza uno en cada pueblo (casilla libre cerca del centro)
-const TOWN_SPOTS = { pueblo:[6,5], tolaria:[7,4], valpo:[7,4], vina:[7,4], pmontt:[7,4], mercado:[7,4], tempest:[7,4], valdivia:[7,5], providencia:[7,5] };
-const DEST_NAME = { hogar:'TU CASA', tolaria:'TOLARIA', pueblo:'VILLA PREMODERN', mercado:'MERCADO DE MOX', valpo:'CURICO', vina:'VIÑA DEL MAR', pmontt:'PUERTO MONTT', tempest:'TEMPEST', valdivia:'VALDIVIA', providencia:'PROVIDENCIA' };
+const TOWN_SPOTS = { pueblo:[6,5], tolaria:[7,4], valpo:[7,4], vina:[7,4], pmontt:[7,4], mercado:[7,4], tempest:[7,4], valdivia:[7,5], providencia:[7,5],teno:[7,5],campoFamilia:[6,5] };
+const DEST_NAME = { hogar:'TU CASA', tolaria:'TOLARIA', pueblo:'VILLA PREMODERN', mercado:'MERCADO DE MOX', valpo:'CURICO', vina:'VIÑA DEL MAR', pmontt:'PUERTO MONTT', tempest:'TEMPEST', valdivia:'VALDIVIA', providencia:'PROVIDENCIA',teno:'TENO',campoFamilia:'CAMPO DE TENO' };
 const WARP_T = { stone:{ out:70, in:45 }, fly:{ out:45, sky:120, in:50 } };
 function travelTo(dest, mode){
   G.warp = { dest, mode:mode || 'stone', phase:'out', t:0, name:DEST_NAME[dest] || dest };
@@ -5690,7 +5693,7 @@ function openTravel(){
   const st = S.stones || {}, fly = activeDecks().filter(d => deckDone(d.id)).length >= FLY_DECKS, opts = [];
   if (st.home) opts.push({ t:'MI CASA', fn:() => travelTo('hogar', 'stone') });
   if (st.tolaria || fly) opts.push({ t:'TOLARIA (LIGA Y ARCADE)', fn:() => travelTo('tolaria', st.tolaria ? 'stone' : 'fly') });
-  if (fly) for (const [id, name] of [['pueblo','VILLA PREMODERN'],['mercado','MERCADO DE MOX'],['valpo','CURICO'],['vina','VIÑA DEL MAR'],['pmontt','PUERTO MONTT'],['tempest','TEMPEST'],['valdivia','VALDIVIA'],['providencia','PROVIDENCIA']]) opts.push({ t:name, fn:() => travelTo(id, 'fly') });
+  if (fly) for (const [id, name] of [['pueblo','VILLA PREMODERN'],['mercado','MERCADO DE MOX'],['valpo','CURICO'],['vina','VIÑA DEL MAR'],['pmontt','PUERTO MONTT'],['tempest','TEMPEST'],['valdivia','VALDIVIA'],['providencia','PROVIDENCIA'],['teno','TENO']]) opts.push({ t:name, fn:() => travelTo(id, 'fly') });
   if (!opts.length) {
     say(['Todavia no puedes viajar.', 'La PIEDRA HOGAR te la da el Carpintero y la PIEDRA TOLARIA la Maga, los dos en el Mercado de Mox: hazles su encargo.', 'Y con ' + FLY_DECKS + ' mazos completos podras volar entre todos los pueblos (llevas ' + activeDecks().filter(d => deckDone(d.id)).length + ').']);
     return;
@@ -6274,6 +6277,15 @@ function drawWorldMap(){
       if(vis[id]&&(id==='pueblo'||SAFARI_REGIONS.some(s=>s.from===id))){R(px-2,py-2,6,7,'#1a1020');R(px-1,py-1,4,5,'#8aca60');tiny('S',px+1,py-1,'#1a1020','center');}
       if (id === cur && (frame >> 4) & 1) { ctx.strokeStyle = '#fcd84a'; ctx.lineWidth = 2; ctx.strokeRect(px - 1, py - 1, w + 2, h + 2); }
     } else if (near) { R(px, py, w, h, '#8a7a5a'); tiny('?', px + w / 2, py + h / 2 - 2, '#e8d8a8', 'center'); }
+  }
+  // Recuadro de la ruta local: Teno y el campo son anexos de Curico, con accesos por sendero.
+  if(vis.valpo||vis.teno||vis.campoFamilia||cur==='teno'||cur==='campoFamilia'){
+    const x=ox,y=oy+5*chh+1;
+    R(x,y,36,35,'#253b2d');R(x+1,y+1,34,33,'#d9d2ad');tiny('CURICO',x+18,y+3,'#334934','center');
+    R(x+17,y+13,2,15,'#8a6a40');
+    for(const [id,label,dy]of [['teno','TENO',11],['campoFamilia','CAMPO',24]]){
+      R(x+3,y+dy,30,9,cur===id?'#94792b':'#416747');tiny(label,x+18,y+dy+2,'#fff3ce','center');
+    }
   }
   const floor = G.def.dungeonKey ? ' - ' + DUNGEONS[G.def.dungeonKey].name + (G.def.bossFloor ? ' (GUARDIAN)' : ' PISO ' + G.def.floor) : '';
   tiny((G.preview?'VISTA PREVIA · ':'ESTAS EN: ') + SHORT[cur] + floor, 120, 146, '#fcd84a', 'center');

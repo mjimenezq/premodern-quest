@@ -547,6 +547,16 @@ async function main(){
   // Every land link on the world map joins drawn neighbours, in both directions.
   for(const id in g.WORLD)for(const [side,to] of Object.entries(g.zoneNeighbors(id))){if(g.SURF_LINKS[id]?.[side])continue;const [x,y]=g.WORLD[id],[a,b]=g.WORLD[to];assert.equal(Math.abs(x-a)+Math.abs(y-b),1,id+' '+side+' '+to+' no es vecino en el mapa');assert(Object.values(g.zoneNeighbors(to)).includes(id),to+' no vuelve a '+id);}
   assert.equal(g.WORLD.pelluco.join(),'4,4');assert.equal(g.zoneNeighbors('pmontt').e,'pelluco');assert.equal(g.zoneNeighbors('lascondes').s,'providencia');assert.equal(g.zoneNeighbors('tolaria').e,'providencia');assert.equal(g.zoneNeighbors('providencia').w,'tolaria');assert.equal(g.zoneNeighbors('providencia').n,'lascondes');assert.equal(g.zoneNeighbors('tempest').n,'providencia');assert.equal(g.WORLD.providencia.join(),'5,2');assert.equal(g.WORLD.lascondes.join(),'5,1');assert.equal(g.zoneNeighbors('puertoOctay').n,'valdivia');
+  // Teno's trail is a walkable gate, with safe arrivals and independent map identity.
+  assert.equal(g.ROOMS.teno.zone,'teno');assert.equal(g.ROOMS.campoFamilia.zone,'campoFamilia');
+  assert(g.ROOMS.valpo.trails['13,3']);assert(!g.ROOMS.valpo.trails['13,1']);
+  for(const realm of ['magic','pokemon']){
+   s.realm=realm;g.loadRoom('valpo',13*16+3,3*16+4);assert(!g.blocked(g.PL.x,g.PL.y));g.updateWorld();assert.equal(g.G.roomId,'teno');assert(!g.blocked(g.PL.x,g.PL.y));
+   g.PL.x=14*16+3;g.PL.y=4*16+4;g.updateWorld();assert.equal(g.G.roomId,'campoFamilia');assert(!g.blocked(g.PL.x,g.PL.y));
+   g.PL.x=3;g.PL.y=4*16+4;g.updateWorld();assert.equal(g.G.roomId,'teno');
+   g.PL.x=7*16+3;g.PL.y=9*16+4;g.updateWorld();assert.equal(g.G.roomId,'valpo');assert(!g.blocked(g.PL.x,g.PL.y));
+  }
+  s.realm='magic';
   // New route works both ways, in either realm, with a safe arrival tile.
   for(const realm of ['magic','pokemon']){
    s.realm=realm;g.loadRoom('tolaria',220,68);
@@ -565,7 +575,7 @@ async function main(){
   g.loadRoom('D:arboleda:5',115,116);const boss=g.G.enemies.find(e=>e.type==='rofellos');assert(boss);g.drawWorld();g.killEnemy(boss);assert(s.bosses.rofellos);assert.equal(g.G.bossDiploma.type,'rofellos');assert(s.bossDiplomas.rofellos.date);g.drawBossDiploma();
   g.G.bossDiploma.t=50;g.K.a=1;g.updateBossDiploma();g.K.a=0;assert.equal(g.G.bossDiploma,null);g.G.menu={tab:6,sel:0,deck:null};g.drawMenu();g.menuClick({x:225,y:7});assert.equal(g.G.menu.tab,6);g.G.menu=null;
   // Teno: road from Curico, Rai's slide counts for the grandparents' quest.
-  assert.equal(g.getDef('valpo').trails['13,1'].room,'teno');g.loadRoom('teno',115,100);g.drawWorld();g.loadRoom('campoFamilia',115,84);g.drawWorld();
+  assert.equal(g.getDef('valpo').trails['13,3'].room,'teno');g.loadRoom('teno',115,100);g.drawWorld();g.loadRoom('campoFamilia',115,84);g.drawWorld();
   s.quests.q_teno_refalin={st:'active',base:0};const slide=g.getDef('campoFamilia').props.find(p=>p.act==='refalin');g.startRefalin(slide);for(let i=0;i<200&&g.G.refalin;i++)g.updateRefalin();assert.equal(s.refalines,1);assert.equal(g.questProg('q_teno_refalin'),1);
   g.loadRoom('casaDavis',115,116);assert(g.G.npcs.some(n=>n.id==='friend'&&n.ch===1));g.drawWorld();
   // Providencia: Piedra Bruja hosts the national league and the portal sanctuary.
