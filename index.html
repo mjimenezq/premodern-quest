@@ -1625,7 +1625,7 @@ const ROLE_LINES = {
   gamer:['World of Warcraft me enseñó a planificar la rotación: cada turno, el hechizo justo. Así armé mi Burn: Bolt, Chain y Fireblast en el orden perfecto.','En Diablo farmeaba equipo por horas. Con las cartas es igual: abro sobres, comparo y me quedo con lo mejor. ¡Mi baraja es mi build!','Mi baraja Pokémon la armé como un personaje de Diablo: un atacante principal, soporte y la energía justa. Charizard es mi hechicera de fuego.','En una raid de WoW nadie gana solo: tanque, sanador y daño. En Magic igual: criaturas que presionan, quemadas que rematan y tierras que no fallan.','De Diablo saqué que el daño directo gana partidas. Por eso amo el Lightning Bolt: tres de daño, un maná, ¡y a la cara!'],
   agro:['Estos cerezos de Teno los reviso yo: suelo, riego y paciencia. Igual que un buen mazo rojo: cada carta en su momento.','¿Sabías que el Valle de Curicó es puro huerto? Manzanas, cerezas... y mucho Lightning Bolt los fines de semana.','Si vas a la Selva Valdiviana, lleva quemadas: los elfos crecen rápido, pero un Bolt a tiempo los apaga.'],
   campo:['¡Mi casita! Los tatas me la hicieron con ventanita y techo rosado. ¡Ven a jugar!','¡Tírate por el refalín conmigo! Yo cuento las bajadas: una, dos, ¡MUCHAS!','En el campo hay vacas que dicen muuu y un caballo. Y la abuela hace pan amasado.'],
-  pb:['Piedra Bruja es EL lugar para jugar cartas en Santiago: Pokémon, Magic, torneos y amigos.','Aquí se juega la Liga Nacional de los dos mundos. Si llegas a la final, te gritamos desde la primera fila.','La mensajera siempre tiene misiones. Las tomo antes de jugar: monedas para sobres, experiencia para la liga.'],
+  pb:['¡Aquí se juegan las finales de todo el TCG! El Salón de las Finales está en el ala derecha: Liga Nacional de Magic y de Pokémon.','Piedra Bruja es EL lugar para jugar cartas en Santiago: la tienda a la izquierda, las finales a la derecha.','Aquí se juega la Liga Nacional de los dos mundos. Si llegas a la final, te gritamos desde la primera fila.','La mensajera siempre tiene misiones. Las tomo antes de jugar: monedas para sobres, experiencia para la liga.'],
   rival:['Nos vemos en la liga. Esta vez no te tengo piedad.','Estuve practicando toda la semana. Tu mazo no me asusta... bueno, un poquito.','Si ganas la liga te invito una chela. Si gano yo, me invitas dos.'],
 };
 ROOMS.valpo.npcs.push({ id:'ligaCurico', x:9, y:4 });
@@ -2088,6 +2088,9 @@ function southPropAction(p){
  if(a==='pcDavis'){say(['EL PC DE DAVIS: en una pantalla, una raid de World of Warcraft; en la otra, Diablo con el inventario lleno de botin.','Al lado del teclado hay una libreta: "Rotacion de Burn: Bolt, Chain, Fireblast. Build Pokemon: atacante, soporte y energia justa."']);return true;}
  if(a==='davisCards'){davisDuel();return true;}
  if(a==='lanRpg'){lanRpg();return true;}
+ if(a==='finalTable'){finalTable();return true;}
+ if(a==='pbShop'){openShop('liga','PIEDRA BRUJA · TIENDA');return true;}
+ if(a==='pbCards'){const n=G.npcs.find(n=>n.id==='pbJugador');if(n)setupDuel(n);return true;}
  if(a==='tronoFinal'){tronoFinal();return true;}
  if(a==='campoFood'){const first=!S.campoFood;S.hp=S.maxHp;S.mp=maxMp();if(first){S.campoFood=true;addXP(150);}SFX.heal();saveGame();say(['LA ABUELA: Cazuela, pan amasado y pebre. ¡Come tranquilo, que en el campo no hay apuro!',first?'Primera comida en familia: +150 EXP. Vida y magia recuperadas.':'Vida y magia recuperadas.']);return true;}
  return false;
@@ -2123,6 +2126,13 @@ function drawSouthProp(p){
   case 'sillaGamer':{const c=p.color||'#e83078';softShadow(X+8,Y+14,6,2,.3);outl(X+4,Y-6,8,10,'#1a1a22');R(X+5,Y-5,6,8,'#24242e');R(X+7,Y-5,2,8,c);outl(X+3,Y+4,10,4,'#1a1a22');R(X+4,Y+5,8,2,c);R(X+7,Y+8,2,4,'#3a3a44');R(X+4,Y+12,8,1,'#3a3a44');return true;}
   case 'lanSwitch':{outl(X+1,Y+4,14,7,'#2a2a34');R(X+2,Y+5,12,5,'#3a3a48');for(let i=0;i<5;i++)R(X+3+i*2,Y+7,1,1,((t>>3)+i)%3?'#60f080':'#f0d040');ctx.strokeStyle='#38c8e8';ctx.lineWidth=.6;ctx.beginPath();ctx.moveTo(X+1,Y+8);ctx.lineTo(X-20,Y+12);ctx.moveTo(X+15,Y+8);ctx.lineTo(X+36,Y+12);ctx.stroke();tiny('LAN',X+8,Y-3,'#9cf0ff','center');return true;}
   case 'arcoCastillo':{outl(X,Y-4,w,8,'#3a3a44');R(X+1,Y-3,w-2,6,'#8a8a96');for(let xx=X;xx<X+w;xx+=6)R(xx,Y-8,4,4,'#8a8a96');R(X,Y+4,6,h-4,'#8a8a96');R(X+w-6,Y+4,6,h-4,'#8a8a96');R(X,Y+4,1,h-4,'#3a3a44');R(X+w-1,Y+4,1,h-4,'#3a3a44');return true;}
+  case 'pantallaFinal':{outl(X,Y-2,w,15,'#101018');R(X+1,Y-1,w-2,13,'#141c3a');const hue=(t*2)%360;R(X+2,Y,w-4,1,'hsl('+hue+',80%,60%)');R(X+2,Y+10,w-4,1,'hsl('+((hue+180)%360)+',80%,60%)');tiny('FINAL NACIONAL',X+w/2,Y+1,'#fcd84a','center');tiny('MAGIC · POKEMON',X+w/2,Y+6,'#9cf0ff','center');return true;}
+  case 'escenarioFinal':{R(X,Y,w,h,'#5a2a1a');for(let yy=Y;yy<Y+h;yy+=4)R(X,yy,w,1,'#6e3822');R(X,Y+h-2,w,2,'#e0b040');for(let xx=X+4;xx<X+w;xx+=12)disc(xx,Y+h-1,1,(t>>3)%2?'#fff4b0':'#e0b040');return true;}
+  case 'mesaFinal':{outl(X,Y+2,w,10,'#2a1408');R(X+1,Y+3,w-2,8,'#8a1424');R(X+1,Y+3,w-2,2,'#b02a3a');R(X+w/2-8,Y+5,7,4,'#f4ecd8');R(X+w/2+1,Y+5,7,4,'#f4ecd8');R(X+2,Y+11,w-4,2,'#e0b040');tiny('FINAL',X+w/2,Y+13,'#fcd84a','center');return true;}
+  case 'focoFinal':{R(X+6,Y-12,4,6,'#2a2a34');ctx.save();ctx.globalAlpha=.16+.06*Math.sin(t*.08+p.x);ctx.fillStyle='#fff4c8';ctx.beginPath();ctx.moveTo(X+6,Y-6);ctx.lineTo(X+10,Y-6);ctx.lineTo(p.x<7?X+70:X-54,Y+52);ctx.lineTo(p.x<7?X+40:X-24,Y+52);ctx.fill();ctx.restore();return true;}
+  case 'gradas':{for(let i=0;i<h;i++){R(X,Y+i*TS+6,w,4,'#6a5a4a');R(X,Y+i*TS+10,w,2,'#4a3a2a');}for(let i=0;i<w*2;i++){const hx=X+3+i*8,hy=Y+2+(i%2)*TS,b=(t>>3)+i;disc(hx,hy,3,['#e8b088','#c8946a','#f1c9a0'][i%3]);R(hx-3,hy+3,6,3,['#e83078','#38c8e8','#f0d040','#60e080'][i%4]);if(b%9===0)R(hx-4,hy-6,1,4,'#fff');}return true;}
+  case 'trofeoGigante':{softShadow(X+8,Y+14,7,2,.35);R(X+3,Y-6,10,9,'#fcd84a');R(X+4,Y-5,3,6,'#fff0a0');R(X+1,Y-5,2,5,'#e0b040');R(X+13,Y-5,2,5,'#e0b040');R(X+6,Y+3,4,4,'#e0b040');R(X+3,Y+7,10,4,'#5a3a14');return true;}
+  case 'vitrinaCartas':{outl(X,Y,w,14,'#5a3a20');R(X+1,Y+1,w-2,12,'#cfe8f0');for(let i=0;i<w/6-1;i++){const cx=X+3+i*6;R(cx,Y+3,5,7,['#d8402a','#3a7ae8','#58a830','#f0d040','#a868d0'][i%5]);R(cx+1,Y+4,3,3,'#f4ecd8');}R(X+1,Y+1,w-2,1,'#fff');tiny('CARTAS',X+w/2,Y+16,'#fcd84a','center');return true;}
   case 'muralPB':{const cols=['#a34b91','#388b9e','#ad9442','#4a9667','#af633c'];for(let i=0;i<w;i+=4)R(X+i,Y+2,4,12,cols[((i>>2)+(t>>5))%5]);R(X,Y+6,w,2,'rgba(255,255,255,.18)');return true;}
  }
  return false;
@@ -4206,6 +4216,40 @@ function lanAct(b,act){
  b.log=log;lanTurn(b);
 }
 function lanWin(){const first=!S.lanWins;S.lanWins=(S.lanWins||0)+1;const xp=first?300:60;addXP(xp);saveGame();SFX.win();say(['¡VICTORIA EN LA LAN! El Dragon de 8 bits cae y la pantalla dice: GG WP.','+'+xp+' EXP.'+(first?' Primera victoria: Davis te nombra MVP de la LAN.':'')+' Partidas ganadas: '+S.lanWins+'.']);}
+// 3 oct (noche): Piedra Bruja separa la tienda (ala izquierda) del Salon de las Finales (ala derecha, sala `liga`).
+// La decoracion exterior ya no tapa personas ni puertas: va bajo los personajes y lejos de las entradas.
+{
+ const pr=ROOMS.providencia;
+ pr.doors={'4,3':'piedraBrujaTienda','10,3':'liga'};
+ pr.map[3]='T.WWDW.=.WDWW.T';
+ pr.plaques=[['PIEDRA BRUJA',64,19,'#5a2a78'],['FINALES TCG',176,19,'#8a1424']];
+ pr.signs['6,4']='PROVIDENCIA: A LA IZQUIERDA, PIEDRA BRUJA, LA TIENDA PARA JUGAR POKEMON TCG Y MAGIC. A LA DERECHA, EL SALON DE LAS FINALES: AQUI SE JUEGAN LAS FINALES DE TODO EL TCG Y LA LIGA NACIONAL DE AMBOS MUNDOS. NORTE: LAS CONDES. OESTE: TOLARIA. SUR: TEMPEST.';
+ const banner=(x,y,color)=>({k:'estandarte',x,y,color,solid:false}),torch=(x,y)=>({k:'antorcha',x,y,solid:false,lightScale:.6});
+ pr.props=[{k:'torreMedieval',x:0,y:0,w:2,h:3,color:'#8a2a8a',solid:false,top:true},{k:'torreMedieval',x:13,y:0,w:2,h:3,color:'#8a1424',solid:false,top:true},
+  {k:'muralPB',x:2,y:3,w:2,solid:false},{k:'muralPB',x:5,y:3,w:1,solid:false},banner(2,3,'#8a2a8a'),banner(5,3,'#c8a030'),banner(9,3,'#8a1424'),banner(12,3,'#c8a030'),
+  {k:'arcoCastillo',x:6,y:0,w:3,h:2,solid:false,top:true},{k:'cartel',x:7,y:3,label:'LAS CONDES',txt:'SIGUE EL CAMINO POR EL PORTON DEL NORTE: LAS CONDES, EL BANCO Y LA CASA DE IVAN.',solid:false},
+  {k:'alfombra',x:10,y:4,h:1,solid:false},torch(6,1),torch(8,1),torch(1,8),torch(13,8),{k:'cerezo',x:1,y:7,solid:false},{k:'cerezo',x:13,y:7,solid:false}];
+ pr.npcs=pr.npcs.filter(n=>n.id!=='pbJugador');
+ for(const n of pr.npcs)if(n.id==='mensajeraPB'){n.x=12;n.y=6;}
+ // Tienda Piedra Bruja: cartas, sobres, vitrinas y mesas para jugar casual. Distinta al salon de finales.
+ ROOMS.piedraBrujaTienda=southInterior('PIEDRA BRUJA · TIENDA TCG','providencia',{room:'providencia',tx:4,ty:4},[{id:'pbJugador',x:10,y:4},{id:'mensajeraPB',x:3,y:3}],
+  [{k:'mostrador',x:2,y:4,w:4,label:'PIEDRA BRUJA',act:'pbShop'},{k:'vitrinaCartas',x:7,y:2,w:3,solid:false,act:'pbShop'},{k:'retroShelf',x:11,y:2,w:2,solid:false},
+   {k:'mesaCartas',x:9,y:5,w:3,act:'pbCards'},{k:'mesaCartas',x:2,y:6,w:3,act:'pbCards'},{k:'cartel',x:12,y:7,label:'FINALES',txt:'¿LISTO PARA LAS FINALES? EL SALON DE LAS FINALES ESTA EN EL ALA DERECHA DEL CASTILLO.',solid:false}],{music:'piedraBruja',party:true});
+ // Salon de las Finales (`liga`): escenario, pantalla gigante, focos, mesa de la final, trono, trofeo y gradas con publico.
+ const L=ROOMS.liga,p=TEMPLE_IDENTITIES.liga;
+ L.name='PIEDRA BRUJA · SALON DE LAS FINALES';L.exitTo={room:'providencia',tx:10,ty:4};
+ L.props=[{k:'pantallaFinal',x:3,y:0,w:9,solid:false,top:true},{k:'escenarioFinal',x:3,y:1,w:9,h:3,solid:false},{k:'tronoFinal',x:7,y:1,solid:false,act:'tronoFinal'},
+  {k:'mesaFinal',x:6,y:3,w:3,act:'finalTable'},{k:'trofeoGigante',x:10,y:1,solid:false},{k:'focoFinal',x:2,y:1,solid:false,top:true},{k:'focoFinal',x:12,y:1,solid:false,top:true},
+  {k:'alfombra',x:7,y:4,h:4,solid:false},{k:'gradas',x:1,y:5,w:3,h:2,solid:false},{k:'gradas',x:11,y:5,w:3,h:2,solid:false},
+  {k:'standings',x:1,y:0,w:2,h:1,solid:false,top:true,act:'standings'},{k:'mostrador',x:11,y:3,w:3,label:'ISADORA',act:'localShop'},
+  {k:'armadura',x:1,y:2,solid:false},{k:'armadura',x:13,y:2,solid:false},{k:'antorcha',x:4,y:4,solid:false},{k:'antorcha',x:10,y:4,solid:false}];
+ const place={[p.shopId]:[12,2],[p.judgeId]:[9,2],ligaOrg:[5,2]},seats=[[1,5],[3,6],[11,5],[13,6],[2,6],[12,6]];let seat=0;
+ for(const n of L.npcs){if(place[n.id])[n.x,n.y]=place[n.id];else if(p.roster.includes(n.id)){[n.x,n.y]=seats[seat++%seats.length];n.dir=0;}}
+}
+function finalTable(){
+ if(G.def.gym){const id=G.def.gym.ids[3];pokemonGymTalk(id,G.npcs.find(n=>n.id===id));return;}
+ say(['LA MESA DE LA FINAL: aqui, bajo los focos de Piedra Bruja, se juegan las finales de todo el TCG. La Liga Nacional de Magic y la de Pokemon se definen en esta mesa.'],[{t:'INSCRIBIRME EN LA NACIONAL',fn:()=>talkTo('ligaOrg',G.npcs.find(n=>n.id==='ligaOrg'))},{t:'MIRAR EL SALON',fn:()=>say(['La pantalla gigante anuncia la FINAL NACIONAL. El publico en las gradas espera al proximo campeon. El trono detras de la mesa es para quien gane.'])},{t:'VOLVER',fn:null}]);
+}
 // An accessible bank replaces the decorative towers in Las Condes.
 ROOMS.lascondes.props=ROOMS.lascondes.props.filter(p=>p.k!=='torre');
 for(const y of [1,2,3]){const row=ROOMS.lascondes.map[y].split('');for(let i=0;i<4;i++)row[9+i]=y<3?'R':i===2?'D':'W';ROOMS.lascondes.map[y]=row.join('');}
