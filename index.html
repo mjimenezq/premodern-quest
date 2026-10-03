@@ -3752,7 +3752,8 @@ function addCard(id){
     for (const d of activeDecks()) if (d.cards.includes(id) && deckDone(d.id) && !S.complete[d.id]) {
       S.complete[d.id] = true; cg.done = d.n;
     }
-    SFX.card();lootNotice('CARTA: '+CARDS[id].n+(cg.done?' · MAZO COMPLETO':''),'#fcd84a');
+    SFX.card(); (G.cardPopQ = G.cardPopQ || []).push({ id, t:0, done:cg.done, legend:id === LEGEND });
+    if (cg.done) toast('¡MAZO ' + cg.done + ' COMPLETO!', '#fcd84a');
   } else { SFX.coin(); lootNotice('REPETIDA: ' + CARDS[id].n + ' (X' + (was + 1) + ')', '#c8d8e8'); }
   saveGame();
 }
@@ -6016,6 +6017,30 @@ function drawHUD(){
 }
 
 /* ============ CARD GET / DEATH ============ */
+// Carta nueva: entra girando por el costado derecho con brillo y se va sola, sin pausar el combate.
+const CARD_POP_LIFE = 250;
+function drawCardPop(){
+  if (!G.cardPop && G.cardPopQ && G.cardPopQ.length) G.cardPop = G.cardPopQ.shift();
+  const c = G.cardPop; if (!c) return;
+  if (++c.t >= CARD_POP_LIFE) { G.cardPop = null; return; }
+  const inT = Math.min(1, c.t / 16), outT = Math.max(0, (c.t - (CARD_POP_LIFE - 18)) / 18), fade = 1 - outT;
+  const cx = 206 + Math.round((1 - inT) * (1 - inT) * 50 + outT * 50), cy = 74;
+  ctx.save(); ctx.globalAlpha = fade; ctx.globalCompositeOperation = 'lighter';
+  const pulse = 0.5 + 0.5 * Math.sin(c.t * 0.15), gold = c.legend ? '255,150,255' : '255,214,90', g = ctx.createRadialGradient(cx, cy, 0, cx, cy, 36);
+  g.addColorStop(0, 'rgba(' + gold + ',' + (0.3 + 0.25 * pulse) + ')'); g.addColorStop(1, 'rgba(' + gold + ',0)');
+  ctx.fillStyle = g; ctx.fillRect(cx - 36, cy - 36, 72, 72);
+  for (let i = 0; i < 6; i++) { const a = c.t * 0.04 + i * 1.047, tw = 0.5 + 0.5 * Math.sin(c.t * 0.2 + i * 2); ctx.fillStyle = 'rgba(255,250,220,' + tw + ')'; ctx.fillRect(cx + Math.cos(a) * 25 - 0.5, cy + Math.sin(a) * 31 - 0.5, 1.2, 1.2); }
+  ctx.restore();
+  ctx.save(); ctx.globalAlpha = fade; ctx.translate(cx, cy);
+  const flip = Math.min(1, c.t / 14); ctx.scale(1.5 * Math.max(0.06, Math.abs(Math.cos((1 - flip) * Math.PI / 2))), 1.5); ctx.rotate(Math.sin(c.t * 0.05) * 0.04);
+  drawCardSmall(c.id, -12, -17, true, 0); ctx.restore();
+  ctx.save(); ctx.globalAlpha = fade;
+  const d = activeDecks().find(k => k.cards.includes(c.id)), name = CARDS[c.id].n.toUpperCase().slice(0, 15);
+  const sub = c.done ? '¡MAZO COMPLETO!' : d ? d.n.toUpperCase().slice(0, 9) + ' ' + deckCount(d.id) + '/' + DECK_SIZE : 'SIRVE EN TODO';
+  R(cx - 30, cy - 40, 60, 9, 'rgba(0,0,0,.65)'); tiny(c.legend ? '¡LEGENDARIA!' : '¡NUEVA CARTA!', cx, cy - 38, (c.t >> 3) & 1 ? '#fcd84a' : '#fff4b0', 'center');
+  R(cx - 31, cy + 28, 62, 17, 'rgba(0,0,0,.65)'); tiny(name, cx, cy + 30, '#fff', 'center'); tiny(sub, cx, cy + 37, '#fcd84a', 'center');
+  ctx.restore();
+}
 function drawCardGet(){
   const c = G.cardGet;
   ctx.fillStyle = 'rgba(0,0,0,.72)'; ctx.fillRect(0, 0, W, H);
@@ -7798,6 +7823,7 @@ function render(){
       if (G.warp) drawWarp();
       if (G.dead) { ctx.fillStyle = `rgba(90,0,0,${Math.min(0.75, G.dead / 60)})`; ctx.fillRect(0, 0, W, H); if (G.dead > 40) txt('TE DESMAYASTE...', 120, 72, '#fff', 'center', '#000'); }
       if (G.cardGet) drawCardGet();
+      drawCardPop();
       if (G.dialog) drawDialog();
     }
     if (G.fade > 0) { ctx.fillStyle = `rgba(0,0,0,${G.fade / 14})`; ctx.fillRect(0, 0, W, H); }
