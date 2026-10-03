@@ -191,7 +191,7 @@
     </div>
   </div>
   <label class="touch-choice" for="touchControl">Movimiento <select id="touchControl"><option value="stick">Stick</option><option value="dpad">Cruceta</option></select></label>
-  <p class="charge-hint">Mantén ataque 3 segundos · suelta para girar</p>
+  <p class="charge-hint" id="chargeHint">Mantén ataque · carga más rápido al subir de nivel</p>
   <div class="net">
     <button id="btnTitle" type="button">⌂ Menú principal</button>
     <button id="btnJournal" type="button">📖 Misiones (J)</button>
@@ -3982,11 +3982,19 @@ function startAttack(){
 }
 function cancelAttackCharge(){PL.attackHeld=false;PL.attackCharge=0;document.querySelector('#pad [data-k="a"]')?.classList.remove('charging','charged');}
 function canChargeAttack(){return !!(S&&G.state==='world'&&G.def&&!G.def.safari&&!G.menu&&!G.dialog&&!G.shop&&!G.cardGet&&!G.dead&&!G.warp&&!G.ashGuide&&!G.waking&&PL.kb<=0);}
+function spinChargeFrames(lvl=S?.lvl||1){
+  lvl=Math.max(1,Number(lvl)||1);const stages=[[1,180],[25,120],[50,72],[75,54]];
+  for(let i=1;i<stages.length;i++){const [end,time]=stages[i],[start,prev]=stages[i-1];if(lvl<=end)return Math.round(prev+(time-prev)*(lvl-start)/(end-start));}
+  return 54;
+}
 function updateAttackCharge(){
+  const chargeFrames=spinChargeFrames(),label=document.getElementById('chargeHint');
+  if(S&&label){const text='Mantén ataque '+(chargeFrames/60).toFixed(1).replace('.',',')+' s · suelta cuando brille';if(label.textContent!==text)label.textContent=text;}
+
   if(!canChargeAttack()||pressed('b')||pressed('c')||pressed('menu')){cancelAttackCharge();return;}
   if(!PL.attackHeld)return;
   if(!K.a){const ready=PL.attackCharge>=SPIN_CHARGE;cancelAttackCharge();if(ready)startSpinAttack();return;}
-  PL.attackCharge=Math.min(SPIN_CHARGE,(PL.attackCharge||0)+1);
+  PL.attackCharge=Math.min(SPIN_CHARGE,(PL.attackCharge||0)+SPIN_CHARGE/chargeFrames+1e-9);
   const button=document.querySelector('#pad [data-k="a"]');button?.classList.add('charging');
   if(PL.attackCharge===SPIN_CHARGE){button?.classList.add('charged');if(!PL.chargeSound){PL.chargeSound=true;SFX.ok();}}
 }
