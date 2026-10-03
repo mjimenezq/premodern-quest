@@ -21,8 +21,8 @@ Klaus, Katy, Pepe, Iván, Tebax, Le Ratui, Rubén, Tomo y Mati Guerra**. Selecci
   (rebota, sin daño, "¡DEVOLUCIÓN!"). Aspecto de ambos inventado: confirmar con Matías.
 **Tanda del 30 sept (tarde):**
 - **Intro** (`G.state = 'intro'` al abrir, `updateIntro`/`drawIntro`, `INTRO_LEN` 820 cuadros, se salta con A/B/menú o clic):
-  logo "MATÍAS GAMES PRODUCTION" con la cara de Matías en un círculo dorado (no la jarra, pedido de Matías), y 3 escenas estilo Game Boy (Matías contra el Langostino con cartas volando,
-  los 10 amigos marchando con jarras, Klaus y Tebax brindando). Título con jarras (`drawMug`). Prueba: `#intro=300`.
+  logo de estudio **GeekyBox Games** (2 oct, `drawGeekyBox`, `SPLASH` cuadros antes de las escenas): G pixelada naranja que se arma al estilo PlayStation 1 sobre fondo blanco, con barrido y acorde; luego 3 escenas estilo Game Boy (Matías contra el Langostino con cartas volando,
+  los 10 amigos marchando con jarras, Klaus y Tebax brindando). Portada (2 oct): **Magic Beer Quest**, logo `buildLogo`/`drawLogo` (Cinzel Decorative dorado + cinta ámbar, brillo que cruza), Villa de noche (`titleNight`) y chispas desde las cartas (`titleSparks`). La partida nueva empieza a medianoche (`worldTicks` en noche): casa oscura con luces, baraja que brilla (`homeDeck`) y partículas `magic`. Prueba: `#intro=300`.
 - **Jarras de cerveza** (`it.k === 'beer'`): caen de criaturas (9 %) y jefes (2), y aparecen tiradas en zonas salvajes y
   mazmorras (40 %). Curan 2 corazones (Tebax 4).
 - `#retrato=N` muestra al personaje N ampliado desde los 4 lados.
