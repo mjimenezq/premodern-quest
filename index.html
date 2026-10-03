@@ -4,6 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Magic Beer Quest</title>
+<meta name="description" content="Juego de RPG basado en Dungeons, Cartas y Cerveza">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_CL">
+<meta property="og:site_name" content="Magic Beer Quest">
+<meta property="og:title" content="Magic Beer Quest">
+<meta property="og:description" content="Juego de RPG basado en Dungeons, Cartas y Cerveza">
+<meta property="og:url" content="https://mjimenezq.github.io/premodern-quest/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Magic Beer Quest">
+<meta name="twitter:description" content="Juego de RPG basado en Dungeons, Cartas y Cerveza">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Cinzel+Decorative:wght@900&family=Cinzel:wght@700;900&display=swap" rel="stylesheet">
@@ -7731,7 +7741,7 @@ const INVITE_BASE = 'https://mjimenezq.github.io/premodern-quest/';
 let pendingRoom = null;
 try { const q = new URLSearchParams(location.search).get('sala'); if (q && /^[A-Za-z]{4}$/.test(q)) pendingRoom = q.toUpperCase(); } catch(_) {}
 const inviteUrl = code => INVITE_BASE + '?sala=' + code;
-const inviteText = code => '¡Juguemos Magic Beer Quest juntos! Entra a mi sala ' + code + ': ' + inviteUrl(code);
+const inviteText = code => '¡Juguemos Magic Beer Quest juntos! Juego de RPG basado en Dungeons, Cartas y Cerveza. Entra a mi sala ' + code + ': ' + inviteUrl(code);
 if (pendingRoom) { const b = netEl('inviteBanner'); b.hidden = false; b.textContent = 'Te invitaron a la sala ' + pendingRoom + '. Elige o crea tu personaje y te conectas solo.'; }
 function netUI(){
   const inRoom = !!NET.role, code = NET.code || '';
