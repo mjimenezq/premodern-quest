@@ -3686,7 +3686,6 @@ function drawMon(type, x, y, t, flip, forceMagic=false){
 const CCOL = { R:{fr:'#c83a24',bg:'#f0a070'}, B:{fr:'#3a2a48',bg:'#7a6a8a'}, U:{fr:'#2a5ac8',bg:'#90c0f0'}, W:{fr:'#e0d6b8',bg:'#f8f0d8'}, A:{fr:'#8a9098',bg:'#c8ccd0'}, G:{fr:'#2a7a3a',bg:'#98d088'}, L:{fr:'#e8b820',bg:'#fff4c0'} };
 const MANA = { R:'#e05030', B:'#2a2030', U:'#3a7ae8', W:'#f8f0d0', G:'#2a9a4a' };
 const POKEMON_CARD_STATS={"pkc_asc_160":{"hp":320,"prizes":2},"pkc_asc_158":{"hp":70,"prizes":1},"pkc_asc_159":{"hp":90,"prizes":1},"pkc_asc_99":{"hp":110,"prizes":1},"pkc_por_62":{"hp":170,"prizes":2},"pkc_asc_142":{"hp":210,"prizes":2},"pkc_tef_123":{"hp":240,"prizes":2},"pkc_meg_104":{"hp":300,"prizes":3},"pkc_twm_25":{"hp":210,"prizes":2},"pkc_ssp_76":{"hp":210,"prizes":2},"pkc_asc_76":{"hp":190,"prizes":2},"pkc_scr_128":{"hp":230,"prizes":2},"pkc_scr_114":{"hp":70,"prizes":1},"pkc_scr_115":{"hp":100,"prizes":1},"pkc_scr_118":{"hp":70,"prizes":1},"pkc_svi_86":{"hp":310,"prizes":2},"pkc_meg_58":{"hp":70,"prizes":1},"pkc_meg_59":{"hp":100,"prizes":1},"pkc_twm_95":{"hp":110,"prizes":1},"pkc_wht_44":{"hp":80,"prizes":1},"pkc_pbl_65":{"hp":340,"prizes":3},"pkc_cri_59":{"hp":70,"prizes":1},"pkc_tef_114":{"hp":100,"prizes":1},"pkc_cri_61":{"hp":180,"prizes":1},"pkc_pbl_46":{"hp":70,"prizes":1},"pkc_blk_67":{"hp":220,"prizes":2},"pkc_meg_77":{"hp":340,"prizes":3},"pkc_pre_50":{"hp":70,"prizes":1},"pkc_jtg_120":{"hp":70,"prizes":1},"pkc_pre_80":{"hp":140,"prizes":1},"pkc_jtg_121":{"hp":270,"prizes":2},"pkc_meg_75":{"hp":110,"prizes":1},"pkc_por_21":{"hp":330,"prizes":3},"pkc_por_20":{"hp":70,"prizes":1},"pkc_asc_171":{"hp":70,"prizes":1},"pkc_cri_22":{"hp":350,"prizes":3},"pkc_cri_20":{"hp":70,"prizes":1},"pkc_cri_21":{"hp":100,"prizes":1},"pkc_twm_106":{"hp":310,"prizes":2},"pkc_twm_128":{"hp":70,"prizes":1},"pkc_twm_129":{"hp":90,"prizes":1},"pkc_asc_79":{"hp":280,"prizes":2},"pkc_asc_18":{"hp":50,"prizes":1},"pkc_asc_19":{"hp":130,"prizes":1},"pkc_asc_97":{"hp":60,"prizes":1},"pkc_dri_51":{"hp":120,"prizes":1},"pkc_asc_162":{"hp":230,"prizes":2},"pkc_meg_86":{"hp":280,"prizes":3},"pkc_meg_88":{"hp":110,"prizes":1},"pkc_sfa_39":{"hp":190,"prizes":2}};
-const POKEMON_CARD_IMAGES={};
 /* ============ CARTAS POKEMON DIBUJADAS A MANO (3 oct) ============ */
 // El reflejo ya no muestra escaneos de cartas oficiales: cada carta lleva un dibujo pixel propio, al estilo de las
 // cartas de Magic del juego. Se parece a la especie, pero es arte original. Cada nombre usa su propia especie
@@ -3777,14 +3776,7 @@ function drawPokeCardArt(id,x,y,px){
  }
  ctx.restore();
 }
-// 3 oct: las cartas del reflejo se dibujan en pixel (drawPokeCardArt); ya no se muestran escaneos oficiales.
-function originalPokemonCard(id,x,y,w,h){
- return false;
- if(CARDS[id]?.realm!=='pokemon'||typeof Image==='undefined')return false;
- let img=POKEMON_CARD_IMAGES[id];if(!img){img=new Image();img.src='assets/pokemon-cards/'+id+'.png';POKEMON_CARD_IMAGES[id]=img;}
- if(!img.complete||!img.naturalWidth)return false;
- ctx.save();ctx.imageSmoothingEnabled=true;ctx.drawImage(img,x,y,w,h);ctx.restore();return true;
-}
+// 3 oct: las cartas del reflejo se dibujan en pixel (drawPokeCardArt); no hay imagenes de cartas oficiales.
 function drawMetaArt(id,x,y,px,kind='POKEMON',name=null){
  const card=DECK[id].cards.find(cid=>CARDS[cid].n===(name||DECK[id].star));if(card){drawPokeCardArt(card,x,y,px);return;}
  const d=DECK[id];ctx.save();ctx.translate(x,y);ctx.scale(px/16,px/16);
@@ -3819,7 +3811,6 @@ function drawArt(id, x, y, px){
   } else drawIcon(c.art, x + Math.round(px / 16 * 2), y + Math.round(px / 16 * 2), Math.max(1, Math.round(px / 16)));
 }
 function drawCardSmall(id, x, y, have, count){
-  if(have&&originalPokemonCard(id,x,y,24,34)){if(count>1){R(x+13,y+26,11,7,'#171421');tiny('X'+count,x+18,y+27,'#fff','center');}return;}
   R(x, y, 24, 34, '#111');
   if (!have) { R(x + 1, y + 1, 22, 32, '#3a2818'); R(x + 3, y + 3, 18, 28, '#5a3a20'); disc(x + 12, y + 17, 6, '#3a2818'); tiny('?', x + 12, y + 15, '#c8904a', 'center'); return; }
   const c = CARDS[id], k = CCOL[c.c];
@@ -3829,7 +3820,6 @@ function drawCardSmall(id, x, y, have, count){
   if (count > 1) tiny('X' + count, x + 12, y + 25, '#1a1020', 'center'); else tiny(c.t[0], x + 12, y + 25, '#6a5a4a', 'center');
 }
 function drawCardBig(id, x, y){
-  if(originalPokemonCard(id,x,y,92,128))return;
   const c = CARDS[id], k = CCOL[c.c];
   R(x, y, 92, 128, '#111'); R(x + 2, y + 2, 88, 124, k.fr);
   R(x + 4, y + 4, 84, 11, '#f4ecd8'); tiny(realmText(c.n).slice(0,20), x + 6, y + 7, '#1a1020');
