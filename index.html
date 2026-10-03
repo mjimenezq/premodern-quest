@@ -1544,9 +1544,10 @@ ROOMS.anexoTCG=makeCardTemple('CENTRO TCG DEL SUR · SALON DE EVENTOS',{room:'ca
 ROOMS.anexoTCG.props.push({k:'mesaCartas',x:1,y:6,w:3,act:'playCards',waiting:true,opponent:'durandal'});
 ROOMS.pmontt.plaques.find(p=>p[0]==='TIENDA TCG')[0]='CENTRO TCG';
 ROOMS.pmontt.signs['3,5']='PUERTO MONTT: EL GRAN CENTRO TCG DEL SUR TIENE TIENDA, SALON DE EVENTOS, STANDINGS Y LIGA NOCTURNA. AL SUR, EL CAMINO A PUERTO VARAS, FRUTILLAR, PUERTO OCTAY Y LAS CONDES. EL BARQUERO DEL MUELLE TE LLEVA GRATIS A VIÑA O PICHILEMU.';
-ROOMS.puertoVaras={name:'PUERTO VARAS · LAGO LLANQUIHUE',theme:'town',music:'town',rain:true,zone:'puertoVaras',
- map:['TTTTTTT=TTTTTTT','T.RRRR.=......T','T.RRRR.=......T','T.WWDW.=......T','T......=......T','T..S...=......T','T......=......T','T......=......T','~~~~~~~=~~~~~~~','~~~~~~~=~~~~~~~'],doors:{'4,3':'cafeVaras'},npcs:[{id:'turista',x:3,y:5}],signs:{'3,5':'PUERTO VARAS: CASAS DE TRADICION ALEMANA, EL LAGO LLANQUIHUE Y EL VOLCAN OSORNO. NORTE: PUERTO MONTT. SUR: COSTANERA HACIA FRUTILLAR.'},
- props:[{k:'casaAlemana',x:2,y:1,w:4,h:3,solid:false},{k:'volcanOsorno',x:10,y:1,w:4,h:3,solid:false},{k:'cartel',x:10,y:7,label:'LLANQUIHUE',txt:'COSTANERA DEL LAGO LLANQUIHUE. EL CAMINO CENTRAL PERMITE RECORRER LAS CIUDADES SIN SURF.',solid:false},{k:'farol',x:1,y:4,solid:false},{k:'farol',x:13,y:5,solid:false}]};
+ROOMS.puertoVaras={name:'PUERTO VARAS · BALNEARIO DEL LLANQUIHUE',theme:'town',music:'town',rain:true,zone:'puertoVaras',
+ map:['TTTTTTT=TTTTTTT','T.RRRR.=.TTTTTT','T.RRRR.=.TTTTTT','T.WWDW.=..TTTTT','T......=......T','T..S...=......T','T......=......T','sssssss=sssssss','~~~~~~~=~~~~~~~','~~~~~~~=~~~~~~~'],doors:{'4,3':'cafeVaras'},npcs:[{id:'turista',x:3,y:5}],signs:{'3,5':'PUERTO VARAS: BALNEARIO DEL LAGO LLANQUIHUE CON EL VOLCAN OSORNO AL FONDO. OESTE: PARQUE PHILIPPI. NORTE: PUERTO MONTT. SUR: COSTANERA HACIA FRUTILLAR.'},
+ props:[{k:'volcanOsorno',x:8,y:0,w:7,h:4,solid:false,top:true},{k:'casaAlemana',x:2,y:1,w:4,h:3,solid:false},{k:'cartel',x:10,y:7,label:'LLANQUIHUE',txt:'BALNEARIO DEL LAGO LLANQUIHUE. EL CAMINO CENTRAL PERMITE RECORRER LAS CIUDADES SIN SURF.',solid:false},{k:'cartel',x:1,y:3,label:'P. PHILIPPI',txt:'AL OESTE: PARQUE PHILIPPI. CUIDADO, LAS CRIATURAS DE LAS CARTAS SE ESCONDEN ENTRE LOS ARBOLES.',solid:false},{k:'farol',x:1,y:4,solid:false},{k:'farol',x:13,y:5,solid:false},
+  {k:'quitasol',x:3,y:7,solid:false,top:true,c:'#e83040'},{k:'reposera',x:4,y:7,act:'reposera',c:'#f0c030',solid:false},{k:'quitasol',x:12,y:7,solid:false,top:true,c:'#3a8ae8'},{k:'reposera',x:13,y:7,act:'reposera',c:'#40c070',solid:false},{k:'lakeReeds',x:1,y:8,solid:false},{k:'lakeReeds',x:13,y:8,solid:false}]};
 ROOMS.frutillar={name:'FRUTILLAR · TEATRO DEL LAGO',theme:'town',music:'town',rain:true,zone:'frutillar',
  map:['TTTTTTT=TTTTTTT','T.RRRR.=......T','T.RRRR.=......T','T.WWDW.=......T','T......=......T','T..S...=......T','T......=.RRRRTT','T......=.WWDWTT','~~~~~~~======~~','~~~~~~~~~~~~~~~'],doors:{'4,3':'cafeFrutillar','11,7':'teatroLago'},npcs:[{id:'sureno',x:5,y:5}],signs:{'3,5':'FRUTILLAR: PASEA POR LA COSTANERA, PRUEBA KUCHEN Y VISITA EL TEATRO DEL LAGO A LA DERECHA. NORTE: PUERTO VARAS. EL LAGO AL FRENTE.'},
  props:[{k:'casaAlemana',x:2,y:1,w:4,h:3,solid:false},{k:'teatroLago',x:9,y:6,w:4,h:2,solid:false},{k:'cartel',x:10,y:5,label:'TEATRO DEL LAGO',txt:'TEATRO DEL LAGO: FUNCIONES, MUSICA Y CULTURA EN LA COSTANERA.',solid:false},{k:'farol',x:1,y:4,solid:false},{k:'farol',x:13,y:5,solid:false}]};
@@ -1607,6 +1608,8 @@ const WILD = {
 };
 WORLD.puertoOctay=[4,6];SHORT.puertoOctay='P.OCTAY';
 WORLD.pelluco=[5,4];SHORT.pelluco='PELLUCO';
+WORLD.parquePhilippi=[2,6];SHORT.parquePhilippi='P.PHILIPPI';
+WILD.parquePhilippi={name:'PARQUE PHILIPPI · CERRO DE PUERTO VARAS',theme:'forest',music:'field',rain:true,walls:['T','T','b','r'],decks:['rock','terragedon'],enemies:['elf','squirrel','mongrel','birds'],n:5,chest:'hierro'};
 const OCTAY_CHECKPOINTS=[[3,2],[11,2],[11,7],[3,7],[3,5]];
 WILD.puertoOctay={name:'PUERTO OCTAY · HUMEDAL DEL LLANQUIHUE',theme:'meadow',music:'field',rain:true,walls:['T','b','r'],decks:['terragedon','rock','langostino'],enemies:['mongrelOctay','balothOctay','looterOctay'],fixedRoster:true,n:4,chest:'hierro',
  map:['TTTTTTTTTTTTTTT','T.............T','T.............T','T.............T','..............T','...====.......T','T.............T','T.............T','~~~~~~===~~~~~~','~~~~~~~~~~~~~~~'],
@@ -1679,7 +1682,7 @@ function genMaze(seed, braid, openP){
 const CELLS = []; for (let j = 0; j < 4; j++) for (let i = 0; i < 7; i++) CELLS.push([1 + 2 * i, 1 + 2 * j]);
 const OPEN_TILES = { n:[[6,0],[7,0],[8,0],[6,1],[7,1],[8,1]], s:[[6,8],[7,8],[8,8],[6,9],[7,9],[8,9]], w:[[0,4],[1,4],[0,5],[1,5]], e:[[13,4],[14,4],[13,5],[14,5]] };
 function zoneNeighbors(id){
-  if(id==='puertoVaras')return {n:'pmontt',s:'frutillar'};if(id==='frutillar')return {n:'puertoVaras',e:'puertoOctay'};if(id==='puertoOctay')return {w:'frutillar',n:'lascondes'};
+  if(id==='puertoVaras')return {n:'pmontt',s:'frutillar',w:'parquePhilippi'};if(id==='parquePhilippi')return {e:'puertoVaras'};if(id==='frutillar')return {n:'puertoVaras',e:'puertoOctay'};if(id==='puertoOctay')return {w:'frutillar',n:'lascondes'};
   if(id==='pelluco')return {w:'pmontt'};
   const p = WORLD[id]; if (!p) return {};
   const at = (x, y) => Object.keys(WORLD).find(k => WORLD[k][0] === x && WORLD[k][1] === y);
@@ -2472,7 +2475,19 @@ function drawProp(p){
     case 'mesaComida': {outl(X,Y+3,wpx,12,'#9a6030');R(X+2,Y+4,wpx-4,8,'#d8b888');for(const dx of [7,wpx-17]){disc(X+dx+4,Y+8,5,'#f4f4e8');R(X+dx,Y+5,9,5,'#dc9848');R(X+dx+1,Y+6,7,2,'#b84830');R(X+dx+1,Y+7,7,1,'#68b850');R(X+dx+3,Y+5,2,5,'#f8f0c0');}break;}
     case 'farol': {const c=['puertoVaras','frutillar','pmontt'].includes(G.roomId)?'#244238':'#243448';R(X+6,Y+1,3,14,c);R(X+3,Y+13,9,2,c);R(X+4,Y+11,7,2,'#53666a');R(X+5,Y-2,5,4,c);outl(X+3,Y-10,9,8,c);R(X+4,Y-9,7,6,dayPhase()==='night'||dayPhase()==='dusk'?'#ffe5a0':'#c1d5df');R(X+7,Y-9,1,7,c);R(X+3,Y-12,9,2,c);R(X+5,Y-14,5,2,c);R(X+7,Y-16,1,2,c);break;}
     case 'casaAlemana': {outl(X,Y+24,wpx,24,'#f3ead2');for(let dx=0;dx<wpx;dx+=16){R(X+dx,Y+24,2,24,'#5a3825');R(X+dx+2,Y+26,11,2,'#5a3825');R(X+dx+3,Y+29,8,9,'#6497ad');R(X+dx+7,Y+29,1,9,'#f8edd4');}for(let j=0;j<24;j++)R(X+24-j,Y+j,Math.max(1,wpx-48+j*2),1,'#7e3535');R(X+TS*2+2,Y+34,12,14,'#573725');tiny(p.label||'CAFE · KUCHEN',X+wpx/2,Y+19,'#fff','center');break;}
-    case 'volcanOsorno': {for(let j=0;j<40;j++){const half=3+j*.7;R(X+wpx/2-half,Y+j,half*2,1,j<15?'#f3f5ff':'#819b9d');}tiny('OSORNO',X+wpx/2,Y+42,'#fff','center');break;}
+    case 'volcanOsorno': {
+      const cx = Math.round(X + wpx / 2), top = Y + 1, hgt = 50;
+      for (let j = 0; j < hgt; j++) {
+        const half = Math.round(3 + j * 1.15), snow = j < 19, fade = j > 38 ? Math.max(0, 1 - (j - 38) / 12) : 1;
+        ctx.globalAlpha = fade;
+        R(cx - half, top + j, half, 1, snow ? '#f6f8ff' : '#6f86a8'); R(cx, top + j, half, 1, snow ? '#c4d0ea' : '#526a8e');
+      }
+      ctx.globalAlpha = 1;
+      for (const [dx, len] of [[-18, 8], [-13, 12], [-7, 7], [-2, 13], [4, 8], [9, 12], [15, 6], [20, 4]]) R(cx + dx, top + 19, 1, len, dx < 0 ? '#e8eef8' : '#b8c4de');
+      R(cx - 3, top, 6, 1, '#9aa8b8');
+      for (let i = 0; i < 3; i++) { const k = (frame * 0.25 + i * 40) % 120; ctx.globalAlpha = 0.35 * (1 - k / 120); disc(cx + 1 + k * 0.18, top - 3 - k * 0.12, 1.5 + k * 0.03, '#e6e8ee'); }
+      ctx.globalAlpha = 1;
+      break; }
     case 'teatroLago': {outl(X,Y,wpx,28,'#6b2e26');for(let dx=3;dx<wpx;dx+=8){R(X+dx,Y+5,5,16,'#6796a2');R(X+dx,Y+4,5,2,'#d7af78');}R(X,Y-3,wpx,3,'#a24c31');R(X+TS*2+2,Y+17,12,11,'#452c24');tiny('TEATRO DEL LAGO',X+wpx/2,Y-11,'#fff','center');break;}
     case 'escenarioLago': {outl(X,Y,wpx,28,'#623f2c');R(X,Y,wpx,3,'#b52949');for(const dx of [0,wpx-12])R(X+dx,Y,12,26,'#94213e');tiny('CONCIERTO DEL LAGO',X+wpx/2,Y+7,'#ffe090','center');for(const dx of [36,70,110]){R(X+dx,Y+16,2,10,'#181828');disc(X+dx+1,Y+15,3,'#e8c18d');}break;}
     case 'pesca': {ctx.strokeStyle='#b08040';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(X+10,Y+7);ctx.lineTo(X+16,Y+18);ctx.stroke();ctx.strokeStyle='#c8d8e8';ctx.lineWidth=.4;ctx.beginPath();ctx.moveTo(X+16,Y+18);ctx.lineTo(X+10,Y+26);ctx.stroke();disc(X+10,Y+26,1,'#e83040');break;}
@@ -3610,7 +3625,7 @@ function spawnEnemy(type, x, y){
   G.enemies.push(e); return e;
 }
 // Regional difficulty is fixed: earning levels and equipment still helps.
-function reflectedTier(){return Math.max(Math.min(4,zoneTier()),({puertoVaras:2,frutillar:2,puertoOctay:3,pelluco:2}[zoneOf(G.roomId)]||1));}
+function reflectedTier(){return Math.max(Math.min(4,zoneTier()),({puertoVaras:2,frutillar:2,puertoOctay:3,pelluco:2,parquePhilippi:2}[zoneOf(G.roomId)]||1));}
 function reflectedThreat(){return 1+0.18*(reflectedTier()-1);}
 function monsterCardChance(){return pokemonRealm()?Math.min(0.24,0.10+stats().des*0.001+houseBonus('cardPct')/500):0.12+stats().des*0.006+houseBonus('cardPct')/200;}
 function reflectedDropCards(){const tier=reflectedTier(), indices=tier===1?[0,1,3]:tier===2?[2,4,5]:tier===3?[6,7]:[8,9];return [...new Set(indices.flatMap(i=>POKEMON_META_DECKS[i].cards))];}
@@ -5927,9 +5942,11 @@ function drawHUD(){
   ctx.globalAlpha = 1;
   if (G.zoneT > 0) {
     const a = Math.min(1, G.zoneT / 20);
-    const nm = G.def.name, bw = Math.min(236, nm.length * 8 + 12);
-    ctx.globalAlpha = a; R(120 - bw / 2, 22, bw, 16, '#000');
-    if (nm.length * 8 <= 228) txt(nm, 120, 26, '#fcd84a', 'center', null); else tiny(nm, 120, 27, '#fcd84a', 'center');
+    const [nm, sub = ''] = G.def.name.split(' · '), big = nm.length * 16 <= 224, tw = big ? nm.length * 16 : nm.length * 8, bw = Math.min(236, Math.max(tw, sub.length * 4) + 20), bh = (big ? 22 : 14) + (sub ? 8 : 0);
+    ctx.globalAlpha = a * 0.8; R(120 - bw / 2, 24, bw, bh, '#000'); ctx.globalAlpha = a;
+    R(120 - bw / 2 + 4, 24 + bh - 2, bw - 8, 1, '#fcd84a');
+    if (nm.length * 8 <= 228) txt(nm, 120, 27, '#fcd84a', 'center', '#5a2a08', big ? 16 : 8); else tiny(nm, 120, 28, '#fcd84a', 'center');
+    if (sub) tiny(sub, 120, 24 + (big ? 21 : 13), '#e8dcc0', 'center');
     ctx.globalAlpha = 1;
   }
   if (G.bossBar && !G.bossBar.dead) {
