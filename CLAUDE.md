@@ -4,6 +4,8 @@ Proyecto independiente. Hablar con Matías en español de Chile y explicar de fo
 El juego abre directamente desde `index.html`; el historial Git del proyecto se conserva en `.git`.
 
 
+**3 oct — Providencia y cordillera:** Providencia [5,2] al este de Tolaria [4,2], conexión peatonal bidireccional. Las Condes [5,1] al norte hacia la cordillera; Tempest al sur de Providencia. Cambian conexiones y letreros, no IDs ni interiores/guardados. Antorchas de Providencia a 60% de intensidad y menor radio, luz de ventanas reducida y localizada, murales RGB con tonos más profundos y reflejos suaves; decoración importante conservada.
+
 **3 oct — Celular horizontal:** orientación landscape hasta 1100×600 adapta automáticamente el juego: canvas completo 3:2 centrado con carriles laterales fuera del mapa, movimiento/selector a izquierda, A/B/magia/hechizo/menú a derecha, accesos compactos a misiones/viaje/pociones. Safe-area y dvh para barras/muescas. Botón pantalla completa opcional (fallback informativo Safari) y Vista página para acceder al panel online. Resize/orientación/fullscreen liberan entradas y carga para evitar controles pegados. No altera cámara ni guardados; portrait y TV conservados.
 
 **3 oct — Vegetación regional:** árboles con siluetas de palmera, álamo, frutal, ciprés, conífera nevada, araucaria, sauce, acacia y copa irregular. Costa, valle central, jardines urbanos, sur, humedales y terrenos secos usan mezclas propias, con helechos/hongos, juncos, pastos de duna y arbustos floridos en b. Selección determinista por zona y casilla, compartida entre mundos. Solo dibujo: no cambia mapas, colisiones, guardados ni accesos.

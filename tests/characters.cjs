@@ -546,7 +546,15 @@ async function main(){
   assert.equal(g.deckPerkBonus('landstill'),1);assert.equal(g.deckPerkBonus('burn'),0);assert.equal(g.FRIEND_DECK[20],'langostino');
   // Every land link on the world map joins drawn neighbours, in both directions.
   for(const id in g.WORLD)for(const [side,to] of Object.entries(g.zoneNeighbors(id))){if(g.SURF_LINKS[id]?.[side])continue;const [x,y]=g.WORLD[id],[a,b]=g.WORLD[to];assert.equal(Math.abs(x-a)+Math.abs(y-b),1,id+' '+side+' '+to+' no es vecino en el mapa');assert(Object.values(g.zoneNeighbors(to)).includes(id),to+' no vuelve a '+id);}
-  assert.equal(g.WORLD.pelluco.join(),'4,4');assert.equal(g.zoneNeighbors('pmontt').e,'pelluco');assert.equal(g.zoneNeighbors('lascondes').n,'providencia');assert.equal(g.zoneNeighbors('puertoOctay').n,'valdivia');
+  assert.equal(g.WORLD.pelluco.join(),'4,4');assert.equal(g.zoneNeighbors('pmontt').e,'pelluco');assert.equal(g.zoneNeighbors('lascondes').s,'providencia');assert.equal(g.zoneNeighbors('tolaria').e,'providencia');assert.equal(g.zoneNeighbors('providencia').w,'tolaria');assert.equal(g.zoneNeighbors('providencia').n,'lascondes');assert.equal(g.zoneNeighbors('tempest').n,'providencia');assert.equal(g.WORLD.providencia.join(),'5,2');assert.equal(g.WORLD.lascondes.join(),'5,1');assert.equal(g.zoneNeighbors('puertoOctay').n,'valdivia');
+  // New route works both ways, in either realm, with a safe arrival tile.
+  for(const realm of ['magic','pokemon']){
+   s.realm=realm;g.loadRoom('tolaria',220,68);
+   for(const [side,room] of [['e','providencia'],['n','lascondes'],['s','providencia'],['s','tempest'],['n','providencia'],['w','tolaria']]){
+    assert(g.changeRoom(side));assert.equal(g.G.roomId,room);assert(!g.blocked(g.PL.x,g.PL.y),'Llegada bloqueada en '+room+' '+realm);
+   }
+  }
+  s.realm='magic';
   // Valdivia: Carlitos Run, barge ride and the elf temple.
   g.loadRoom('valdivia',115,84);const rider=g.G.animals.find(a=>a.k==='ciclista');assert(rider);g.drawWorld();g.PL.x=rider.x+3;g.PL.y=rider.y+4;g.tryInteract();assert(s.carlitosMet);g.G.dialog=null;
   s.coins=10000;g.southPropAction({act:'barcaza'});g.G.dialog.choices[0].fn();assert.equal(g.G.state,'barcazaTravel');assert.equal(s.coins,5000);g.drawBarcaza();g.G.barcazaTravel.t=479;g.updateBarcaza();assert.equal(g.G.roomId,'valdivia');g.G.dialog=null;

@@ -1461,7 +1461,7 @@ const ROOMS = {
     roof:() => 'blue',
     plaques:[['CASA DE IVAN',80,19,'#1a1a3a']],
     doors:{'5,3':'casaIvan'},
-    signs:{'6,4':'LAS CONDES. Aqui vive IVAN, experto en IA y sistemas. Su casa es la mejor de Santiago para carretear: musica, pool, ping pong, taca-taca y salita gamer.'},
+    signs:{'6,4':'LAS CONDES. Aqui vive IVAN, experto en IA y sistemas. Su casa es la mejor de Santiago para carretear: musica, pool, ping pong, taca-taca y salita gamer. SUR: PROVIDENCIA. HACIA EL NORTE SE LEVANTA LA CORDILLERA.'},
     npcs:[{id:'cuico',x:9,y:6},{id:'conserje',x:4,y:4}],
     props:[{k:'torre',x:9,y:1,w:2,h:3},{k:'torre',x:12,y:1,w:2,h:3,c:'#5a8ab8'}] },
   casaIvan:{ name:'CASA DE IVAN', theme:'inside', music:'reggaeton', interior:true, party:true, exitTo:{room:'lascondes',tx:5,ty:4},
@@ -1488,7 +1488,7 @@ const ROOMS = {
     roof:(tx, ty) => ty >= 5 ? (tx < 7 ? 'purple' : 'green') : tx < 7 ? 'red' : 'blue',
     plaques:[['CARTAS',48,19,'#5a3418'],['POSADA',192,19,'#1a2a58'],['LIGA',80,83,'#3a1a58'],['ARCADE',144,83,'#0a3a2a']],
     doors:{'3,2':'tienda','11,2':'posada','6,7':'liga','9,7':'arcade'},
-    signs:{'6,3':'TIENDA DE CARTAS ARRIBA A LA IZQUIERDA: CARTAS Y TORNEOS DE LA LIGA URZA SAGA. OESTE: PANTANO NEGRO. NORTE: MINAS DE MISHRA.','8,3':'TOLARIA: CAPITAL DEL PREMODERN CHILENO. AQUÍ SE JUEGA LA LIGA NACIONAL.'},
+    signs:{'6,3':'TIENDA DE CARTAS ARRIBA A LA IZQUIERDA: CARTAS Y TORNEOS DE LA LIGA URZA SAGA. OESTE: PANTANO NEGRO. NORTE: MINAS DE MISHRA. ESTE: PROVIDENCIA Y PIEDRA BRUJA.','8,3':'TOLARIA: CAPITAL DEL PREMODERN CHILENO. LA LIGA NACIONAL TE ESPERA EN PIEDRA BRUJA, EN PROVIDENCIA, AL ESTE.'},
     npcs:[{id:'juez',x:12,y:3},{id:'fan1',x:2,y:8},{id:'fan2',x:12,y:8}] },
   valpo:{ name:'CURICÓ', theme:'town', music:'huaso',
     map:['TTTTTT===TTTTTT','T,.RRRRR.=..,.T','T..RRRRR..RRRRT','T..WWDWW..WWDWT','T.....S........','T..=========..=','T,.....=.RRRR.T','~~.....=.WDWW.T','~L~....=......T','~~~TTT.=.TTTTTT'],
@@ -1850,13 +1850,13 @@ const leaguesDone = () => Object.keys(LEAGUES).filter(k => S.leagues && S.league
 const guardiansDone = () => GUARDIANS.filter(g => S.bosses[g]).length;
 /* ============ 3 OCT: SUR ORDENADO, VALDIVIA Y LOS ELFOS, TENO Y PROVIDENCIA ============ */
 // El mapamundi dibuja cada lugar junto a los lugares con que conecta. Tempest, Las Condes y Providencia forman la
-// columna este; Pelluco queda pegado a Puerto Montt y Valdivia con sus bosques elficos llena los huecos del sur.
+// columna este (Providencia al este de Tolaria, Las Condes al norte hacia la cordillera); Pelluco queda pegado a Puerto Montt y Valdivia con sus bosques elficos llena los huecos del sur.
 // Los ids de sala no cambian, asi que las partidas guardadas siguen funcionando.
-Object.assign(WORLD,{tempest:[5,3],lascondes:[5,2],providencia:[5,1],pelluco:[4,4],valdivia:[4,5],oncol:[5,4],selvaValdiviana:[5,5],niebla:[5,6]});
+Object.assign(WORLD,{tempest:[5,3],lascondes:[5,1],providencia:[5,2],pelluco:[4,4],valdivia:[4,5],oncol:[5,4],selvaValdiviana:[5,5],niebla:[5,6]});
 Object.assign(SHORT,{valdivia:'VALDIVIA',oncol:'ONCOL',selvaValdiviana:'S.ELFICA',niebla:'NIEBLA',providencia:'PROVIDENC.',teno:'TENO'});
 const SOUTH_LINKS={
  valdivia:{w:'puertoVaras',s:'puertoOctay',e:'selvaValdiviana'},selvaValdiviana:{w:'valdivia',n:'oncol',s:'niebla'},oncol:{s:'selvaValdiviana',n:'tempest'},niebla:{n:'selvaValdiviana',w:'puertoOctay'},
- tempest:{w:'mercado',n:'lascondes',s:'oncol'},lascondes:{s:'tempest',n:'providencia'},providencia:{s:'lascondes'}
+ tempest:{w:'mercado',n:'providencia',s:'oncol'},lascondes:{s:'providencia'},providencia:{w:'tolaria',n:'lascondes',s:'tempest'}
 };
 Object.assign(ZONE_TIER,{valdivia:2,oncol:3,selvaValdiviana:4,niebla:4,teno:1,campoFamilia:1,providencia:1});
 WILD.oncol={name:'PARQUE ONCOL · BOSQUE VALDIVIANO',theme:'forest',music:'field3',rain:true,walls:['T','T','b','T'],decks:['elfos'],enemies:['elfoLlanowar','elfoRanger','birds','elfoLlanowar','elfoSimbionte'],n:6,chest:'hierro',
@@ -1942,7 +1942,7 @@ ROOMS.providencia={name:'PROVIDENCIA · PIEDRA BRUJA',theme:'town',music:'piedra
  map:['TTTTTTTTTTTTTTT','T.RRRRRRRRRRR.T','T.RRRRRRRRRRR.T','T.WWWWWDWWWWW.T','T.....S=......T','T.===========.T','T.=.,.,.,.,.=.T','T.=.,.,.,.,.=.T','T.....===.....T','TTTTTT===TTTTTT'],
  roof:tx=>['purple','blue','red','green'][Math.floor(tx/4)%4],doors:{'7,3':'liga'},
  plaques:[['PIEDRA BRUJA',120,19,'#5a2a78']],
- signs:{'6,4':'PROVIDENCIA: PIEDRA BRUJA, EL LUGAR DE SANTIAGO Y DE LA REGION PARA JUGAR POKEMON TCG Y MAGIC. AQUI SE JUEGA LA LIGA NACIONAL DE AMBOS MUNDOS. MISIONES CON LA MENSAJERA. SUR: LAS CONDES.'},
+ signs:{'6,4':'PROVIDENCIA: PIEDRA BRUJA, EL LUGAR DE SANTIAGO Y DE LA REGION PARA JUGAR POKEMON TCG Y MAGIC. AQUI SE JUEGA LA LIGA NACIONAL DE AMBOS MUNDOS. MISIONES CON LA MENSAJERA. OESTE: TOLARIA. NORTE: LAS CONDES Y LA CORDILLERA. SUR: TEMPEST.'},
  npcs:[{id:'mensajeraPB',x:10,y:4},{id:'pbJugador',x:5,y:7},{id:'friend',ch:0,role:'pb',x:3,y:6},{id:'friend',ch:2,role:'pb',x:11,y:6}],
  props:[{k:'muralPB',x:2,y:3,w:5,solid:false,top:true},{k:'muralPB',x:8,y:3,w:5,solid:false,top:true},{k:'festivalBunting',x:3,y:4,w:9,color:'#e858c8',solid:false,top:true},{k:'cerezo',x:1,y:7,solid:false},{k:'cerezo',x:13,y:7,solid:false},{k:'farol',x:1,y:4,solid:false},{k:'farol',x:13,y:5,solid:false}]};
 // The national temple keeps its room id (saves, portal and records stay intact) and now opens in Providencia.
@@ -2057,7 +2057,7 @@ function drawSouthProp(p){
   case 'torreMedieval':{const c=p.color||'#8a2a2a',fl=Math.round(Math.sin(t*.08)*2);outl(X+3,Y+2,w-6,h-4,'#2a2a34');R(X+4,Y+3,w-8,h-6,'#8a8a96');for(let yy=Y+6;yy<Y+h-4;yy+=5)R(X+4,yy,w-8,1,'#6a6a76');for(let xx=X+3;xx<X+w-4;xx+=5)R(xx,Y-1,3,4,'#8a8a96');R(X+w/2-1,Y+12,3,7,'#1a1a24');R(X+w/2,Y-12,1,12,'#5a3a1a');R(X+w/2+1,Y-12+fl/2,7,5,c);disc(X+w/2+4,Y-10+fl/2,1,'#e8c048');return true;}
   case 'alfombra':R(X+3,Y,10,h,'#8a1424');R(X+3,Y,1,h,'#e0b040');R(X+12,Y,1,h,'#e0b040');for(let yy=Y+6;yy<Y+h;yy+=12)R(X+6,yy,4,2,'#e0b040');return true;
   case 'tronoFinal':{outl(X+1,Y-14,14,26,'#3a2410');R(X+2,Y-13,12,24,'#e0b040');R(X+4,Y-11,8,12,'#8a1424');R(X+3,Y+2,10,4,'#8a1424');for(const xx of [X+2,X+7,X+12])R(xx,Y-17,2,4,'#e0b040');disc(X+8,Y-8,2,'#60c0f0');tiny('FINALES',X+8,Y-24,'#fcd84a','center');return true;}
-  case 'muralPB':{const cols=['#e858c8','#38c8e8','#f0d040','#60e080','#f07838'];for(let i=0;i<w;i+=4)R(X+i,Y+2,4,12,cols[((i>>2)+(t>>5))%5]);R(X,Y+6,w,2,'rgba(255,255,255,.35)');return true;}
+  case 'muralPB':{const cols=['#a34b91','#388b9e','#ad9442','#4a9667','#af633c'];for(let i=0;i<w;i+=4)R(X+i,Y+2,4,12,cols[((i>>2)+(t>>5))%5]);R(X,Y+6,w,2,'rgba(255,255,255,.18)');return true;}
  }
  return false;
 }
@@ -2104,7 +2104,7 @@ function zoneNeighbors(id){
   const atOk = (x, y) => { const k = at0(x, y); return k && !BOAT_ONLY.has(k) && !BOAT_ONLY.has(id) ? k : undefined; };
   const out = {}, n = atOk(p[0], p[1] - 1), s = atOk(p[0], p[1] + 1), w = atOk(p[0] - 1, p[1]), e = atOk(p[0] + 1, p[1]);
   if (n) out.n = n; if (s) out.s = s; if (w) out.w = w; if (e) out.e = e;
-  Object.assign(out,SURF_LINKS[id] || {});if(id==='pmontt'){out.s='puertoVaras';out.e='pelluco';}if(id==='mercado')delete out.s;if(id==='tolaria'||id==='minas')delete out.e;
+  Object.assign(out,SURF_LINKS[id] || {});if(id==='pmontt'){out.s='puertoVaras';out.e='pelluco';}if(id==='mercado')delete out.s;if(id==='minas')delete out.e;
   return out;
 }
 function farCell(m, from){
@@ -2847,11 +2847,11 @@ function gatherLights(dark){
     else if (c === 'O') add(x, y, 34, '170,110,255', 0.9);
     else if (c === 'Z') add(x, y, 26, ['255,64,192','64,240,255','252,224,64','96,255,128','176,96,255'][(tx * 3 + ty) % 5], 0.7);
     else if (c === 'o' && (night || dark)) add(x, y, 28, '120,200,255', 0.6);
-    else if (c === 'W' && night) { const lw = G.map[ty][tx - 1], rw = G.map[ty][tx + 1]; if (lw === 'W' || rw === 'W') add(x, y - 1, 26 + Math.sin(frame * 0.05 + tx * 2) * 1.5, '255,190,90', 0.9); }
+    else if (c === 'W' && night) { const lw = G.map[ty][tx - 1], rw = G.map[ty][tx + 1]; if (lw === 'W' || rw === 'W') {const subdued=G.roomId==='providencia';add(x,y-1,(subdued?18:26)+Math.sin(frame*.05+tx*2)*1.5,'255,190,90',subdued?.55:.9);} }
     else if ((c === 'U' || c === 'V') && dark) add(x, y, 24, '200,200,255', 0.5);
   }
   for (const p of (G.def.props || [])) { const px = p.x * TS + (p.w || 1) * 8, py = p.y * TS + 8;
-    if(p.k==='temploUmbral'){add(p.x*TS+36,p.y*TS+26,sanctuaryAwake()?35:22,'180,155,255',sanctuaryAwake()?.9:.5);add(p.x*TS+55,p.y*TS+41,20,'255,215,140',.7);}else if(p.k==='antorcha')add(px,py-12,34+Math.sin(frame*.3)*3,'255,170,80',.9);else if(p.k==='ligaNeon')add(px,py,60,hslRgb((frame*3)%360),1);else if(p.k==='farol'&&(ph==='night'||ph==='dusk'))add(px,py-12,38,'255,210,120',.85);else if (p.k === 'fogata') add(px, py, 40 + Math.sin(frame * 0.2) * 3, '255,140,50', 1); else if (p.k === 'dj') add(px, py, 44, hslRgb((frame * 3) % 360), 0.9); else if (p.k === 'neon') add(px, py + 6, 60, hslRgb((frame * 2) % 360), 0.5); else if (p.k === 'parlante') add(px, py, 18, '120,120,255', 0.4); }
+    if(p.k==='temploUmbral'){add(p.x*TS+36,p.y*TS+26,sanctuaryAwake()?35:22,'180,155,255',sanctuaryAwake()?.9:.5);add(p.x*TS+55,p.y*TS+41,20,'255,215,140',.7);}else if(p.k==='antorcha'){const scale=p.lightScale||1;add(px,py-12,(34+Math.sin(frame*.3)*3)*Math.sqrt(scale),'255,170,80',.9*scale);}else if(p.k==='ligaNeon')add(px,py,60,hslRgb((frame*3)%360),1);else if(p.k==='farol'&&(ph==='night'||ph==='dusk'))add(px,py-12,38,'255,210,120',.85);else if (p.k === 'fogata') add(px, py, 40 + Math.sin(frame * 0.2) * 3, '255,140,50', 1); else if (p.k === 'dj') add(px, py, 44, hslRgb((frame * 3) % 360), 0.9); else if (p.k === 'neon') add(px, py + 6, 60, hslRgb((frame * 2) % 360), 0.5); else if (p.k === 'parlante') add(px, py, 18, '120,120,255', 0.4); }
   if (G.roomId === 'islote' && (ph === 'night' || ph === 'dusk')) for (const p of G.def.props || []) { if (p.k === 'palafito') add(p.x * TS + 16, p.y * TS - 2, 22, '255,200,110', 0.8); else if (p.k === 'iglesiaChiloe') add(p.x * TS + 24, p.y * TS + 26, 30, '255,210,140', 0.7); else if (p.k === 'caleuche') add(((frame * 0.15) % (W + 80)) - 40 + 15, p.y * TS + 14, 40, '255,220,120', 0.9); }
   // Medianoche en casa: la pantalla, las velas de la mesa y la baraja que brilla sobre el escritorio.
   if (G.roomId === 'hogar' && ph === 'night') { add(95, 36, 44 + Math.sin(frame * 0.3) * 1.5, '110,240,170', 0.9); add(110, 44, 34 + Math.sin(frame * 0.06) * 5, '200,140,255', 1); add(120, 102, 38 + Math.sin(frame * 0.25) * 2, '255,180,90', 0.9); add(184, 40, 24, '255,200,140', 0.5); }
@@ -4060,6 +4060,7 @@ ROOMS.cartasValdivia.hudTitle='LIGA ELFICA · VALDIVIA';
   banner(2,3,'#2a6a3a'),banner(5,3,'#2a6a3a'),banner(9,3,'#6a2a5a'),banner(12,3,'#6a2a5a'),torch(1,5),torch(6,6),torch(13,6),torch(5,4),torch(9,4));
  ROOMS.providencia.props.push({k:'torreMedieval',x:0,y:0,w:2,h:3,color:'#8a2a8a',solid:false,top:true},{k:'torreMedieval',x:13,y:0,w:2,h:3,color:'#2a5a9a',solid:false,top:true},
   banner(3,3,'#8a2a8a'),banner(5,3,'#c8a030'),banner(9,3,'#2a5a9a'),banner(11,3,'#c8a030'),{k:'alfombra',x:7,y:4,h:5,solid:false},torch(1,4),torch(13,4),torch(4,8),torch(10,8));
+ for(const p of ROOMS.providencia.props)if(p.k==='antorcha')p.lightScale=.6;
  ROOMS.providencia.signs['6,4']+=' AQUI SE DISPUTAN LAS FINALES DE TODO EL TCG: EL TRONO DE LOS CAMPEONES ESPERA AL GANADOR.';
  for(const [id,color] of [['cartasValdivia','#2a6a3a'],['cafeElfo','#2a6a3a'],['torreonValdivia','#6a2a5a']]){
   const d=ROOMS[id];d.props=(d.props||[]).concat(banner(5,0,color),banner(10,0,color),torch(2,0,true),torch(12,0,true));
