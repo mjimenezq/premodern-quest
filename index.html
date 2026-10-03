@@ -47,6 +47,12 @@
   #moveStick .stick-ring{position:absolute;inset:20%;border:1px solid #607e70;border-radius:50%;pointer-events:none}
   #stickThumb{position:absolute;left:28%;top:28%;width:44%;height:44%;border-radius:50%;border:2px solid #91aa9b;background:radial-gradient(circle at 35% 25%,#628174,#304d42 65%,#1a322a);box-shadow:0 5px 7px #0008,inset 0 0 0 4px #3f6052;pointer-events:none;will-change:transform}
   #moveStick.active{border-color:#fcd84a}#moveStick.active #stickThumb{border-color:#fcd84a}
+  .dpad{display:grid;grid-template-columns:repeat(3,var(--d));grid-template-rows:repeat(3,var(--d));gap:2px;flex-shrink:0}
+  .dpad .u{grid-column:2;grid-row:1}.dpad .l{grid-column:1;grid-row:2}.dpad .r{grid-column:3;grid-row:2}.dpad .d{grid-column:2;grid-row:3}
+  .dpad button{width:var(--d);height:var(--d)}
+  #moveStick[hidden],#moveDpad[hidden]{display:none}
+  .touch-choice{display:none;align-items:center;gap:12px;font-size:8px;color:var(--muted)}
+  .touch-choice select{font:inherit;color:var(--ink);background:var(--panel);border:2px solid var(--line);border-radius:6px;padding:7px 10px;touch-action:manipulation}
   .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
   .acts{display:flex;flex-direction:column;align-items:flex-end;gap:10px;min-width:0}
   .acts .row{display:flex;gap:min(12px,2.2vw);align-items:center}
@@ -86,7 +92,7 @@
   .on-players li{background:#0e1618;border:2px solid var(--line);border-radius:14px;padding:5px 10px;color:#90f0b0}
   #netStatus{margin:0;color:var(--gold);line-height:1.7}
   .invite-banner{width:100%;max-width:560px;box-sizing:border-box;background:#1f5e3a;border:3px solid #50e080;border-radius:10px;padding:10px 14px;font-size:9px;line-height:1.7;color:#e8fff0}
-  @media (pointer:coarse),(max-width:600px){ .pad{display:flex} .keys{display:none} .screen{width:min(100%, calc((100dvh - 250px) * 1.5))} }
+  @media (pointer:coarse),(max-width:600px){ .pad{display:flex} .touch-choice{display:flex} .keys{display:none} .screen{width:min(100%, calc((100dvh - 250px) * 1.5))} }
   /* Modo TV: se activa solo al usar un mando; el juego llena el alto y la leyenda va a los costados. */
   .tv-side{display:none}
   body.tv{background:#000;padding-inline:0;overflow:hidden}
@@ -161,6 +167,12 @@
   </div>
   <div class="pad" id="pad">
     <button id="moveStick" type="button" aria-label="Stick de movimiento: arrastra para caminar en cualquier dirección" aria-describedby="stickHint"><span class="stick-ring" aria-hidden="true"></span><span id="stickThumb" aria-hidden="true"></span></button>
+    <div id="moveDpad" class="dpad" hidden aria-label="Cruceta de movimiento">
+      <button class="u" type="button" data-k="up" aria-label="Arriba">▲</button>
+      <button class="l" type="button" data-k="left" aria-label="Izquierda">◀</button>
+      <button class="r" type="button" data-k="right" aria-label="Derecha">▶</button>
+      <button class="d" type="button" data-k="down" aria-label="Abajo">▼</button>
+    </div>
     <span id="stickHint" class="sr-only">Arrastra con el pulgar para moverte. Suelta para detenerte.</span>
     <div class="acts">
       <div class="row">
@@ -174,6 +186,7 @@
       </div>
     </div>
   </div>
+  <label class="touch-choice" for="touchControl">Movimiento <select id="touchControl"><option value="stick">Stick</option><option value="dpad">Cruceta</option></select></label>
   <div class="net">
     <button id="btnTitle" type="button">⌂ Menú principal</button>
     <button id="btnJournal" type="button">📖 Misiones (J)</button>
@@ -273,7 +286,7 @@ function positionStick(event){
   stickThumb.style.transform='translate('+x+'px,'+y+'px)';
   touch.left=v.x<-.22?1:0;touch.right=v.x>.22?1:0;touch.up=v.y<-.22?1:0;touch.down=v.y>.22?1:0;
 }
-stickEl.addEventListener('pointerdown',event=>{event.preventDefault();if(stick.pointer!==null)return;audioInit();stick.pointer=event.pointerId;stickEl.classList.add('active');try{stickEl.setPointerCapture(event.pointerId);}catch(_){}positionStick(event);});
+stickEl.addEventListener('pointerdown',event=>{event.preventDefault();if(stickEl.hidden||stick.pointer!==null)return;audioInit();stick.pointer=event.pointerId;stickEl.classList.add('active');try{stickEl.setPointerCapture(event.pointerId);}catch(_){}positionStick(event);});
 stickEl.addEventListener('pointermove',event=>{if(event.pointerId!==stick.pointer)return;event.preventDefault();positionStick(event);});
 for(const type of ['pointerup','pointercancel','lostpointercapture'])stickEl.addEventListener(type,event=>{if(event.pointerId!==stick.pointer)return;if(event.cancelable)event.preventDefault();resetStick();});
 function movementInput(){
@@ -290,6 +303,18 @@ function resetHeldInput(){
   touchPointers.clear();document.querySelectorAll('#pad button').forEach(b=>b.classList.remove('on'));
   mouseHeld=false;selectDrag=null;
 }
+const TOUCH_CONTROL_KEY='pmq_touch_control',touchControlEl=document.getElementById('touchControl'),dpadEl=document.getElementById('moveDpad');
+function readTouchControl(){try{return localStorage.getItem(TOUCH_CONTROL_KEY)==='dpad'?'dpad':'stick';}catch(_){return 'stick';}}
+function setTouchControl(mode,persist=true){
+  mode=mode==='dpad'?'dpad':'stick';resetStick();touchPointers.clear();
+  for(const k in touch)touch[k]=0;
+  for(const k of ['up','down','left','right'])K[k]=prevK[k]=0;
+  document.querySelectorAll('#pad button').forEach(b=>b.classList.remove('on'));
+  stickEl.hidden=mode!=='stick';dpadEl.hidden=mode!=='dpad';touchControlEl.value=mode;
+  if(persist)try{localStorage.setItem(TOUCH_CONTROL_KEY,mode);}catch(_){}
+}
+touchControlEl.addEventListener('change',()=>setTouchControl(touchControlEl.value));
+setTouchControl(readTouchControl(),false);
 addEventListener('blur',resetHeldInput);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)resetHeldInput();});
 
@@ -310,7 +335,7 @@ for(const surface of [cvs,document.getElementById('pad')]){
   for(const event of ['touchstart','touchmove','contextmenu','selectstart','dragstart'])surface.addEventListener(event,blockPlayGesture,{passive:false});
 }
 document.querySelectorAll('#pad button').forEach(b => {
-  const k = b.dataset.k;
+  const k = b.dataset.k;if(!k)return;
   const on = e => { e.preventDefault(); audioInit();const pointers=touchPointers.get(k)||new Set();pointers.add(e.pointerId);touchPointers.set(k,pointers);touch[k]=1;b.classList.add('on');try{b.setPointerCapture(e.pointerId);}catch(_){} };
   const off = e => { if(e.cancelable)e.preventDefault();const pointers=touchPointers.get(k);if(pointers)pointers.delete(e.pointerId);touch[k]=pointers&&pointers.size?1:0;b.classList.toggle('on',!!touch[k]); };
   b.addEventListener('pointerdown', on); b.addEventListener('pointerup', off);

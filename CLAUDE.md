@@ -4,6 +4,8 @@ Proyecto independiente. Hablar con Matías en español de Chile y explicar de fo
 El juego abre directamente desde `index.html`; el historial Git del proyecto se conserva en `.git`.
 
 
+**3 oct — Elegir controles:** selector «Movimiento: Stick / Cruceta» debajo de los controles móviles. Stick por defecto; elección guardada en pmq_touch_control, separada de las partidas. Cambiar modo libera los dedos y entradas anteriores para evitar movimiento pegado. Ambos admiten ataque simultáneo; cruceta permite diagonales.
+
 **3 oct — Stick y Martín A:** stick táctil circular reemplaza cruceta en celular; movimiento analógico 360° con zona muerta, velocidad proporcional y captura de un dedo, compatible con ataque simultáneo. Reset al soltar/cancelar/perder captura o foco. Mando también usa ejes analógicos. Martín mantiene estilo A y proporciones originales, manos visibles, contornos sutiles y ocho vistas; face8 es visual, dir conserva cuatro direcciones para combate/interacción y se comparte online. No usar el rediseño B por decisión de Matías.
 
 **3 oct — Monturas:** mismas apariencias y nombres en Magic y Pokémon; no convertirlas en Pokémon. Se conservan IDs, compras, velocidad y progreso. drawMount comparte dibujo entre mundos y realmText protege los nombres de monturas.
