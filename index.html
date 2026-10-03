@@ -42,10 +42,12 @@
   .keys span{white-space:nowrap}
   kbd{font-family:inherit;color:var(--ink);background:var(--panel);border:2px solid var(--line);border-bottom-width:4px;padding:2px 5px;border-radius:3px}
    .pad{--d:min(54px,12.5vw);--ab:min(64px,14.5vw);display:none;width:100%;max-width:520px;box-sizing:border-box;justify-content:space-between;align-items:center;gap:min(10px,2vw);user-select:none;-webkit-user-select:none}
-  .dpad{display:grid;grid-template-columns:repeat(3,var(--d));grid-template-rows:repeat(3,var(--d));gap:2px;flex-shrink:0}
   .pad button{font-family:inherit;color:var(--ink);background:var(--panel);border:3px solid var(--line);border-bottom-width:6px;border-radius:10px;font-size:14px;touch-action:none;padding:0}
-  .dpad button{width:var(--d);height:var(--d)}
-  .dpad .u{grid-column:2;grid-row:1}.dpad .l{grid-column:1;grid-row:2}.dpad .r{grid-column:3;grid-row:2}.dpad .d{grid-column:2;grid-row:3}
+  #moveStick{position:relative;width:calc(var(--d)*2.6);height:calc(var(--d)*2.6);flex-shrink:0;border-radius:50%;border:3px solid #52736a;background:radial-gradient(circle,#253d37 0%,#142723 68%,#0b1917 70%);box-shadow:inset 0 0 0 7px #1e342e,0 5px 0 #071411;touch-action:none;transform:none}
+  #moveStick .stick-ring{position:absolute;inset:20%;border:1px solid #607e70;border-radius:50%;pointer-events:none}
+  #stickThumb{position:absolute;left:28%;top:28%;width:44%;height:44%;border-radius:50%;border:2px solid #91aa9b;background:radial-gradient(circle at 35% 25%,#628174,#304d42 65%,#1a322a);box-shadow:0 5px 7px #0008,inset 0 0 0 4px #3f6052;pointer-events:none;will-change:transform}
+  #moveStick.active{border-color:#fcd84a}#moveStick.active #stickThumb{border-color:#fcd84a}
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
   .acts{display:flex;flex-direction:column;align-items:flex-end;gap:10px;min-width:0}
   .acts .row{display:flex;gap:min(12px,2.2vw);align-items:center}
   .acts .ab{width:var(--ab);height:var(--ab);border-radius:50%}
@@ -158,12 +160,8 @@
     <span>Mouse: clic caminar/atacar/hablar · clic derecho magia</span>
   </div>
   <div class="pad" id="pad">
-    <div class="dpad">
-      <button class="u" data-k="up" aria-label="Arriba">▲</button>
-      <button class="l" data-k="left" aria-label="Izquierda">◀</button>
-      <button class="r" data-k="right" aria-label="Derecha">▶</button>
-      <button class="d" data-k="down" aria-label="Abajo">▼</button>
-    </div>
+    <button id="moveStick" type="button" aria-label="Stick de movimiento: arrastra para caminar en cualquier dirección" aria-describedby="stickHint"><span class="stick-ring" aria-hidden="true"></span><span id="stickThumb" aria-hidden="true"></span></button>
+    <span id="stickHint" class="sr-only">Arrastra con el pulgar para moverte. Suelta para detenerte.</span>
     <div class="acts">
       <div class="row">
         <button class="ab c" data-k="c" aria-label="Magia">✦</button>
@@ -264,8 +262,31 @@ addEventListener('keydown', e => {
 });
 addEventListener('keyup', e => { const k = keyMap[e.code]; if (k) { kb[k] = 0; e.preventDefault(); } });
 const touchPointers = new Map();
+const stick={pointer:null,x:0,y:0},padAxis={x:0,y:0};
+const stickEl=document.getElementById('moveStick'),stickThumb=document.getElementById('stickThumb');
+function analogVector(x,y){const n=Math.hypot(x,y);if(!Number.isFinite(n)||n<=.16)return{x:0,y:0};const amount=Math.min(1,(n-.16)/.84);return{x:x/n*amount,y:y/n*amount};}
+function resetStick(){stick.pointer=null;stick.x=stick.y=0;for(const k of ['up','down','left','right'])touch[k]=0;stickThumb.style.transform='translate(0px,0px)';stickEl.classList.remove('active');}
+function positionStick(event){
+  const b=stickEl.getBoundingClientRect(),radius=Math.min(b.width,b.height)*.29;
+  if(!radius)return;const dx=event.clientX-b.left-b.width/2,dy=event.clientY-b.top-b.height/2,n=Math.hypot(dx,dy),factor=n>radius?radius/n:1;
+  const x=dx*factor,y=dy*factor,v=analogVector(x/radius,y/radius);stick.x=v.x;stick.y=v.y;
+  stickThumb.style.transform='translate('+x+'px,'+y+'px)';
+  touch.left=v.x<-.22?1:0;touch.right=v.x>.22?1:0;touch.up=v.y<-.22?1:0;touch.down=v.y>.22?1:0;
+}
+stickEl.addEventListener('pointerdown',event=>{event.preventDefault();if(stick.pointer!==null)return;audioInit();stick.pointer=event.pointerId;stickEl.classList.add('active');try{stickEl.setPointerCapture(event.pointerId);}catch(_){}positionStick(event);});
+stickEl.addEventListener('pointermove',event=>{if(event.pointerId!==stick.pointer)return;event.preventDefault();positionStick(event);});
+for(const type of ['pointerup','pointercancel','lostpointercapture'])stickEl.addEventListener(type,event=>{if(event.pointerId!==stick.pointer)return;if(event.cancelable)event.preventDefault();resetStick();});
+function movementInput(){
+  const x=(kb.right||pad.right?1:0)-(kb.left||pad.left?1:0),y=(kb.down||pad.down?1:0)-(kb.up||pad.up?1:0);
+  if(x||y){const n=Math.hypot(x,y);return{x:x/n,y:y/n};}
+  if(stick.pointer!==null)return{x:stick.x,y:stick.y};
+  if(padAxis.x||padAxis.y)return{...padAxis};
+  const kx=(K.right?1:0)-(K.left?1:0),ky=(K.down?1:0)-(K.up?1:0),n=Math.hypot(kx,ky)||1;return{x:kx/n,y:ky/n};
+}
+
 function resetHeldInput(){
   for(const k in kb)kb[k]=0;for(const k in touch)touch[k]=0;for(const k in K){K[k]=0;prevK[k]=0;}
+  resetStick();padAxis.x=padAxis.y=0;
   touchPointers.clear();document.querySelectorAll('#pad button').forEach(b=>b.classList.remove('on'));
   mouseHeld=false;selectDrag=null;
 }
@@ -313,13 +334,13 @@ function connectedPads(){
   return [...(nav.getGamepads?.() || [])].filter(g => g && g.connected);
 }
 function readPad(){
-  for (const k in pad) pad[k] = 0;
+  for (const k in pad) pad[k] = 0;padAxis.x=padAxis.y=0;
   const gp = connectedPads()[SPLIT ? SPLIT - 1 : 0];
   if (!gp) { padPrev = []; return; }
   if (document.getElementById('characterWizard')?.open) { padPrev = gp.buttons.map(b => b.pressed); return; }
   for (const i in PAD_BTN) if (gp.buttons[i]?.pressed) pad[PAD_BTN[i]] = 1;
   const x = gp.axes[0] || 0, y = gp.axes[1] || 0;
-  if (x < -.5) pad.left = 1; if (x > .5) pad.right = 1; if (y < -.5) pad.up = 1; if (y > .5) pad.down = 1;
+  Object.assign(padAxis,analogVector(x,y));
   gp.buttons.forEach((b, i) => { if (b.pressed && !padPrev[i]) { audioInit(); setPadMode(true); PAD_ACT[i]?.(); } });
   if (Math.abs(x) > .5 || Math.abs(y) > .5) setPadMode(true);
   padPrev = gp.buttons.map(b => b.pressed);
@@ -328,7 +349,7 @@ addEventListener('gamepadconnected', () => toast('MANDO CONECTADO', '#c8e8d8'));
 // Textos dentro del juego según cómo se está jugando: mando, táctil o teclado.
 const hint = (pad, touch, keys) => padMode ? pad : TOUCH ? touch : keys;
 let pulseKey = null;
-function readInput(){ readPad(); Object.assign(prevK, K); for (const k in K) K[k] = (kb[k] || touch[k] || pad[k]) ? 1 : 0; if (pulseKey) { K[pulseKey] = 1; prevK[pulseKey] = 0; pulseKey = null; } }
+function readInput(){ readPad(); Object.assign(prevK, K); for (const k in K) K[k] = (kb[k] || touch[k] || pad[k] || (k==='left'&&padAxis.x<-.22) || (k==='right'&&padAxis.x>.22) || (k==='up'&&padAxis.y<-.22) || (k==='down'&&padAxis.y>.22)) ? 1 : 0; if (pulseKey) { K[pulseKey] = 1; prevK[pulseKey] = 0; pulseKey = null; } }
 const pressed = k => K[k] && !prevK[k];
 
 /* ============ AUDIO ============ */
@@ -1133,6 +1154,7 @@ function drawMount(id, x, y, dir, f, layer){
   }
 }
 function drawRider(x, y, P, dir, f){
+  P={...P,face8:visibleFacing(dir,PL.atk>0?dir:PL.face8)};
   if (G.slide) { outl(x + 1, y + 10, 14, 6, '#b88a4a'); drawPerson(x, y - 2, P, 0, 0); return; }
   const tc = T(Math.floor((PL.x + 5) / TS), Math.floor((PL.y + 4) / TS));
   if (tc === '~' && S && S.surf) { drawSurfBoard(x - 1, y); drawPerson(x, y - 3, P, dir, 0); return; }
@@ -1208,7 +1230,7 @@ function playerLook(){
   if (g.body) { c.shirt = ARMOR[g.body].col; c.shirtD = shadeCol(ARMOR[g.body].col, 0.65); c.sleeve = ARMOR[g.body].col; c.emblem = null; }
   if (g.legs) c.pants = ARMOR[g.legs].col;
   if (g.feet) c.shoe = ARMOR[g.feet].col;
-  return Object.assign({}, base, { c, helm:g.head ? ARMOR[g.head] : null, shield:g.shield ? ARMOR[g.shield] : null });
+  return Object.assign({}, base, { c, helm:g.head ? ARMOR[g.head] : null, shield:g.shield ? ARMOR[g.shield] : null, bodyArmor:!!g.body });
 }
 function addGear(id){
   const A = ARMOR[id];
@@ -2755,12 +2777,17 @@ function drawLighting(){
 }
 
 /* ============ PEOPLE ============ */
+const FACE_COMPONENTS=[[0,1],[0,-1],[-1,0],[1,0],[-1,1],[1,1],[-1,-1],[1,-1]];
+function direction8(x,y){const a=Math.atan2(y,x),sector=(Math.round(a/(Math.PI/4))+8)%8;return[3,5,0,4,2,6,1,7][sector];}
+function visibleFacing(dir,face){if(!Number.isInteger(face)||!FACE_COMPONENTS[face])return dir;const c=FACE_COMPONENTS[face],d=FACE_COMPONENTS[dir];return d&&((d[0]&&c[0]===d[0])||(d[1]&&c[1]===d[1]))?face:dir;}
 function drawPerson(x, y, P, dir, f){
+  const face=visibleFacing(dir,P.face8),diagonal=P.id==='martin'&&face>=4;
+  if(diagonal)dir=face>=6?1:0;
   if (P.baby && !P.babyDrawing) {
     ctx.save(); ctx.translate(x + 2, y + 4); ctx.scale(0.75,0.75);
     drawPerson(0,0,{...P,babyDrawing:true},dir,f); ctx.restore(); return;
   }
-  const C = P.c, O = '#1a1020', tall = P.tall ? 2 : 0, side = dir >= 2, flip = dir === 3;
+  const C = P.c, O = '#1a1020', tall = P.tall ? 2 : 0, side = dir >= 2, flip = dir === 3 || (diagonal&&(face===5||face===7));
   const eye = C.eye || '#101018';
   const p = (rx, ry, w, h, col) => { ctx.fillStyle = col; ctx.fillRect(flip ? x + 16 - rx - w : x + rx, y + ry - tall, w, h); };
   softShadow(x + 8, y + 15, 7, 2.4, 0.42);
@@ -2811,8 +2838,13 @@ function drawPerson(x, y, P, dir, f){
     p(side ? 5 : 4,9,side ? 6 : 8,1,'#581020');
     p(side ? 5 : 4,12,side ? 6 : 8,1,'#581020');
   }
+  if(P.id==='martin'){
+    const palm=shadeCol(C.skin,1.1),shade=shadeCol(C.skin,.72);
+    if(!side){for(const hx of [0,13]){p(hx,11,3,3,O);p(hx+1,11,1,1,C.skin);p(hx+1,12,2,1,palm);p(hx+1,13,1,1,shade);}}
+    else{const arm=st?-1:1;p(7+arm,11,4,3,O);p(8+arm,11,2,2,palm);p(9+arm,13,1,1,shade);}
+  }
   // head
-  p(2, 0, 12, 9, O);
+  if(P.id==='martin'){p(3,0,10,1,O);p(2,1,12,6,O);p(3,7,10,1,O);p(4,8,8,1,O);}else p(2, 0, 12, 9, O);
   if (dir === 1) {
     p(3, 1, 10, 7, C.hair);
   } else {
@@ -2901,6 +2933,11 @@ function drawPerson(x, y, P, dir, f){
     p(5, -4, 6, 4, O); p(6, -3, 4, 3, C.hair);
     if (dir === 1) { p(2, -1, 12, 9, O); p(3, 0, 10, 8, C.hair); }
     else { p(2, -1, 12, 5, O); p(3, 0, 10, 4, C.hair); p(3, 4, 1, 4, C.hair); if (!side) p(12, 4, 1, 4, C.hair); else p(9, 4, 4, 4, C.hair); }
+  }
+  if(diagonal){
+    if(face>=6){p(3,4,2,3,C.skin);p(4,4,1,2,shadeCol(C.skin,.75));p(5,4,1,3,C.hair);}
+    else{p(9,4,3,2,C.skin);p(9,4,1,2,eye);p(9,4,1,1,'#fff');p(11,5,1,2,shadeCol(C.skin,.75));p(10,7,2,1,C.hair);}
+    p(3,12,1,1,C.pants);p(12,11,1,2,shadeCol(C.skin,.75));
   }
   if (P.mug && dir !== 1) { p(12, 8, 4, 5, O); p(12, 9, 3, 3, '#fce060'); p(12, 9, 3, 1, '#fff'); p(15, 10, 1, 2, '#fce060'); }
   if (P.glasses && dir !== 1) {
@@ -3676,7 +3713,7 @@ function drawRealmTravel(){
 }
 
 function loadRoom(id, px, py){
-  G.ashGuide=null;
+  G.ashGuide=null;PL.face8=null;
   if(!pokemonRealm()&&S.lvl>100){S.beyondMagic={lvl:S.lvl,xp:S.xp};S.lvl=100;S.xp=0;}
   if(G.octayRace&&id!=='puertoOctay')endOctayRace();
   if(leaguesDone()>=4)S.finder=true;
@@ -4327,7 +4364,7 @@ function updateWorld(){
   if (p.inv > 0) p.inv--; if (p.atkCd > 0) p.atkCd--;
   if (p.kb > 0) { p.kb--; moveBox(p, p.kx, p.ky, false, true); p.kx *= 0.85; p.ky *= 0.85; }
   else if (p.atk <= 0) {
-    let mx = (K.right ? 1 : 0) - (K.left ? 1 : 0), my = (K.down ? 1 : 0) - (K.up ? 1 : 0);
+    const movement=movementInput();let mx=movement.x,my=movement.y;
     if (mx || my) G.moveTarget = null;
     else if (G.moveTarget) {
       const tdx = G.moveTarget.x - (p.x + 5), tdy = G.moveTarget.y - (p.y + 4);
@@ -4339,10 +4376,12 @@ function updateWorld(){
     let dx = 0, dy = 0;
     if (mx || my) {
       const sp = speed() * slow, n = Math.hypot(mx, my);
-      dx = mx / n * sp; dy = my / n * sp;
-      if (mx && !my) p.dir = mx < 0 ? 2 : 3;
+      const strength=Math.min(1,n);dx = mx / n * sp * strength; dy = my / n * sp * strength;
+      p.face8=direction8(mx,my);
+      if(p.face8<4)p.dir=p.face8;
+      else if (mx && !my) p.dir = mx < 0 ? 2 : 3;
       else if (my && !mx) p.dir = my < 0 ? 1 : 0;
-      else { const cur = DIRV[p.dir]; if (!((cur[0] && cur[0] === mx) || (cur[1] && cur[1] === my))) p.dir = my < 0 ? 1 : 0; }
+      else { const cur = DIRV[p.dir]; if (!((cur[0] && cur[0] === Math.sign(mx)) || (cur[1] && cur[1] === Math.sign(my)))) p.dir = my < 0 ? 1 : 0; }
     }
     if (under === 'i') {
       p.ivx = (p.ivx || 0) + (dx - (p.ivx || 0)) * 0.045; p.ivy = (p.ivy || 0) + (dy - (p.ivy || 0)) * 0.045;
@@ -5960,7 +5999,7 @@ function drawWorld(){
   for (const o of othersHere()) list.push({ y:o.ry + 8, f:() => {
     const x = Math.round(o.rx), y = Math.round(o.ry);
     if (o.atk > 0 && o.dir === 1) drawSwordAt(x, y, o.dir, o.atk, '#d8e0e8');
-    drawPerson(x - 3, y - 8, remoteCharacter(o), o.dir, o.walk);
+    drawPerson(x - 3, y - 8, {...remoteCharacter(o),face8:visibleFacing(o.dir,o.face8)}, o.dir, o.walk);
     if (o.atk > 0 && o.dir !== 1) drawSwordAt(x, y, o.dir, o.atk, '#d8e0e8');
     const nm = norm(o.name), w = nm.length * 4 + 3;
     R(x + 5 - w / 2, y - 22, w, 8, 'rgba(0,0,0,.55)'); tiny(nm, x + 5, y - 20, '#60e070', 'center');
@@ -7530,7 +7569,7 @@ function remoteCharacter(o){
   try { return characterOf(o) || CHARS[0]; } catch (_) { return CHARS[0]; }
 }
 function myState(){
-  return { pid:NET.pid, name:CH().n, ch:S.ch, customChar:S.customChar || null, realm:S.realm||'magic', room:G.roomId, x:Math.round(PL.x), y:Math.round(PL.y), dir:PL.dir, atk:PL.atk, walk:Math.floor(PL.walk) % 2, hp:S.hp, max:S.maxHp };
+  return { pid:NET.pid, name:CH().n, ch:S.ch, customChar:S.customChar || null, realm:S.realm||'magic', room:G.roomId, x:Math.round(PL.x), y:Math.round(PL.y), dir:PL.dir, face8:visibleFacing(PL.dir,PL.face8), atk:PL.atk, walk:Math.floor(PL.walk) % 2, hp:S.hp, max:S.maxHp };
 }
 const sendAll = m => {if(m.room)m={...m,realm:S.realm||'magic'}; for (const c of NET.conns) if (c.open) c.send(m); };
 function sendTo(pid, m){ if (NET.role === 'host') { const c = NET.conns.find(x => x.pid === pid); if (c && c.open) c.send(m); } }

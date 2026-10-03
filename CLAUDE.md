@@ -4,6 +4,8 @@ Proyecto independiente. Hablar con Matías en español de Chile y explicar de fo
 El juego abre directamente desde `index.html`; el historial Git del proyecto se conserva en `.git`.
 
 
+**3 oct — Stick y Martín A:** stick táctil circular reemplaza cruceta en celular; movimiento analógico 360° con zona muerta, velocidad proporcional y captura de un dedo, compatible con ataque simultáneo. Reset al soltar/cancelar/perder captura o foco. Mando también usa ejes analógicos. Martín mantiene estilo A y proporciones originales, manos visibles, contornos sutiles y ocho vistas; face8 es visual, dir conserva cuatro direcciones para combate/interacción y se comparte online. No usar el rediseño B por decisión de Matías.
+
 **3 oct — Monturas:** mismas apariencias y nombres en Magic y Pokémon; no convertirlas en Pokémon. Se conservan IDs, compras, velocidad y progreso. drawMount comparte dibujo entre mundos y realmText protege los nombres de monturas.
 
 **3 oct — Martín:** nuevo personaje jugable índice 19 (creador permanece en 18). Gym rat musculoso sin polera, socio de Ingeniería Comercial de Matías, carretero y excoleccionista Pokémon. FUE 6 / DES 3 / AGI 5 / INT 6, mejora FUE y recoge +20% monedas por finanzas. Amigo en Xcso Club, mazo Rock. Selección usa SELECT_CHAR_IDS para mostrar al creador al final sin cambiar índices guardados.

@@ -13,7 +13,7 @@ sandbox.window=sandbox;sandbox.document.listeners=new Map();sandbox.document.add
 source=source.replace(/\}\)\(\);\s*$/, `globalThis.gameTest={medalProgress,festivalTasting,festivalBeer,sealReady,closeUrzaBox,DECKS,GUARDIANS,dropLoot,questCoins,levelCoins,itemLevel,usableDrop,POKEMON_GYMS,gymRun,beginPokemonGymMatch,finishPokemonGymMatch,reputationTitle,updateTrainerSight,drawTrainerMarkers,homeOracle,beginAdventure,TEMPLE_IDENTITIES,MAGIC_COMPANIONS,companionInfo,drawCompanion,updatePet,portalUnlocked,switchRealm,startRealmTravel,updateRealmTravel,drawRealmTravel,realmDefinition,realmText,talkTo,localPlayerDeck,addCard,CHARS,CUSTOM_CHAR,normalizeCustom,customCharacter,characterOf,newSave,loadSave,saveGame,slotKey,speed,defense,aquaticBonus,loadRoom,checkConnectivity,drawSelect,drawPerson,drawDuel,drawTour,POKE,pokemonEnemy,enemyName,pokemonRealm,SONGS,roomMusic,tryInteract,meleeMissChance,meleeOutcome,beginDuel,updateDuel,resolveDuel,duelOptions,cardPower,rivalPower,drawMenu,menuClick,updateTour,oppPick,startTour,prepRound,updateItems,step,encodeSave,decodeSave,myState,remoteCharacter,FRIEND_LINES,FRIEND_DECK,FRIENDS_ON_MAP,getDef,SOLID,ROOMS,MOUNTS,shopItems,buyItem,mounted,goTo,friendCast,friendCredits,propSolidSet,K,updateWorld,blocked,npcHit,SLOTS,drawSlots,leagueMapMarks,drawWorldMap,BOAT_ROUTES,QUESTS,questHook,questProg,ensureContract,journalEntries,openQuestJournal,drawQuests,ARMOR,SWORDS,HOUSE,PRIZES,GEAR_SLOTS,dayPhase,DAY_PHASE_TICKS,SPELL_LVLS,spellLvl,petLevel,cardMatchXP,tournamentXP,RESPAWN_MS,killEnemy,hiddenSpot,searchHidden,MON,WORLD,DUNGEONS,startArcade,updateArcade,drawArcade,tennisPoint,requestArcadeExit,cancelArcade,drawWorld,drawHUD,changeRoom,setSelectScroll,selectMaxScroll,revealSelected,selectAt,G,PL,zoneNeighbors,SURF_LINKS,clientRecv,hostRecv,wizardDefaults,setS(value){S=value;},getS(){return S;},setFrame(value){frame=value;}};})();`);
 source=source.replace('gameTest={medalProgress,','gameTest={leagueTalk,pokemonGymTalk,POKEMON_META_DECKS,POKEMON_MATCHUPS,POKEMON_GYM_DECKS,activeDecks,realmCards,pokemonMatchup,magicBestiary,chooseMagicPet,updateSafari,throwBall,MAGIC_SAFARI_POOLS,drawCardBig,drawMetaArt,SAFARI_REGIONS,ashGuidePath,offerAshGuide,updateAshGuide,finishAshGuide,spawnWildPoke,deckLabel,deckChoices,CARDS,SPELLS,REFLECT_SPELLS,REFLECT_GEAR,drawDialog,addXP,levelCap,LEAGUES,finishTour,genDuel,OKTOBER_REGION,festivalStops,stampFestival,regionalFestival,endOctayRace,pokemonDiscovered,portalTalk,pellucoBeer,pellucoDJ,propAction,startOctayRace,updateOctayRace,OCTAY_CHECKPOINTS,medalProgress,');
 source=source.replace("function tiny(s, x, y, col='#fff', al='left', raw=false){","function tiny(s, x, y, col='#fff', al='left', raw=false){(globalThis.renderLabels ||= []).push(String(s));");
-source=source.replace('gameTest={leagueTalk,','gameTest={newPokemonBattle,pokemonStrike,genPokemonReplay,POKEMON_CARD_STATS,bankTransfer,bankTalk,recoverLife,usePotion,POTIONS,questsOf,questMarker,openPotions,setupDuel,startFree,updateTennis,TENNIS_COURTS,drawMount,drawRider,spawnEnemy,hurtPlayer,hurtHazard,castSpell,hitWithSpell,gainSpellXp,spellProgress,monsterCardChance,reflectedDropCards,meleeDamage,leagueTalk,');
+source=source.replace('gameTest={leagueTalk,','gameTest={analogVector,movementInput,stick,padAxis,resetStick,resetHeldInput,direction8,visibleFacing,readInput,newPokemonBattle,pokemonStrike,genPokemonReplay,POKEMON_CARD_STATS,bankTransfer,bankTalk,recoverLife,usePotion,POTIONS,questsOf,questMarker,openPotions,setupDuel,startFree,updateTennis,TENNIS_COURTS,drawMount,drawRider,spawnEnemy,hurtPlayer,hurtHazard,castSpell,hitWithSpell,gainSpellXp,spellProgress,monsterCardChance,reflectedDropCards,meleeDamage,leagueTalk,');
 vm.runInNewContext(source,sandbox,{timeout:5000});
 const g=sandbox.gameTest;
 function fullDeck(id){for(const cid of g.DECKS.find(d=>d.id===id).cards)g.getS().cards[cid]=1;}
@@ -31,6 +31,21 @@ sandbox.document.activeElement={closest:()=>({tagName:'INPUT'})};sandbox.documen
 emit(padButtons[0],'pointerdown',1);emit(padButtons[4],'pointerdown',2);g.step();assert.equal(g.K.up,1);assert.equal(g.K.a,1);
 emit(padButtons[0],'pointerdown',3);emit(padButtons[0],'pointerup',1);g.step();assert.equal(g.K.up,1);
 emit(padButtons[0],'pointercancel',3);emit(padButtons[4],'lostpointercapture',2);g.step();assert.equal(g.K.up,0);assert.equal(g.K.a,0);
+// Virtual stick replaces the touch arrows, captures one finger, supports simultaneous actions and resets safely.
+assert(html.includes('id="moveStick"'));assert(!html.includes('<div class="dpad">'));
+const stickControl=elements.get('moveStick');
+function stickEvent(type,id,x,y){let prevented=false;for(const fn of stickControl.listeners.get(type)||[])fn({pointerId:id,clientX:x,clientY:y,cancelable:true,preventDefault(){prevented=true;}});return prevented;}
+assert.deepEqual(JSON.parse(JSON.stringify(g.analogVector(.1,.1))),{x:0,y:0});
+assert(Math.hypot(...Object.values(g.analogVector(1,1)))<=1.00001);
+assert(stickEvent('pointerdown',71,590,380));assert.equal(g.stick.pointer,71);assert(g.stick.x>0&&g.stick.y>0);
+const first=[g.stick.x,g.stick.y];stickEvent('pointerdown',72,0,0);assert.deepEqual([g.stick.x,g.stick.y],first);
+emit(padButtons[4],'pointerdown',74);g.readInput();assert(g.K.a);assert(g.movementInput().x>0&&g.movementInput().y>0);
+assert.equal(g.direction8(1,.4),3);assert.equal(g.direction8(1,1),5);assert.equal(g.direction8(-1,-1),6);
+for(const type of ['pointerup','pointercancel','lostpointercapture']){
+ stickEvent(type,72,0,0);assert.equal(g.stick.pointer,71);stickEvent(type,71,0,0);assert.equal(g.stick.pointer,null);assert.equal(g.stick.x,0);assert.equal(g.stick.y,0);
+ if(type!=='lostpointercapture')stickEvent('pointerdown',71,590,380);
+}
+emit(padButtons[4],'pointerup',74);stickEvent('pointerdown',71,590,380);g.resetHeldInput();assert.equal(g.stick.pointer,null);g.readInput();assert.equal(g.K.right,0);assert.equal(g.K.a,0);
 assert(g,'Test interface initialized');
 assert.equal(g.slotKey(1),'pmq_save_1');assert.equal(g.slotKey(2),'pmq_save_2');assert.equal(g.slotKey(3),'pmq_save_3');
 // Existing players retain their character, progression and inventory in the original slots.
@@ -397,6 +412,19 @@ async function main(){
  g.loadRoom('volcan',115,84);assert(g.reflectedDropCards().some(id=>!firstPool.has(id)),'Advanced regions offer new cards');
  balance.realm='magic';g.loadRoom('bosque',115,84);const magicFoe=g.spawnEnemy('gob',100,60);assert(magicFoe.hp<foe.hp);balance.realm='pokemon';balance.spellXp.ice=999999;g.gainSpellXp('ice',20);assert.equal(g.spellLvl('ice'),20);assert.equal(g.spellProgress('ice'),1);
  sandbox.Math.random=originalRandom;g.setS(previous);console.log('PASS: spell impacts/persistence, level-five ice progresses, champion combat and shield limits, regional card pools and bounded drops.');
+ // Movement follows the exact stick angle and magnitude, with no diagonal speed boost.
+ const analogSave=g.newSave(19);g.setS(analogSave);g.G.state='world';g.G.preview=true;g.loadRoom('pueblo',100,80);g.G.dialog=null;g.G.enemies=[];g.G.eshots=[];g.G.aoes=[];g.G.map=Array.from({length:10},()=>Array(15).fill('.'));g.G.npcs=[];g.G.solidProps=new Set();g.PL.atk=g.PL.kb=0;
+ for(const k in g.K)g.K[k]=0;
+ for(const [x,y]of [[1,0],[.8,.3],[-.4,-.8],[.1,.05]]){
+   g.PL.x=100;g.PL.y=80;g.stick.pointer=1;g.stick.x=x;g.stick.y=y;
+   g.updateWorld();const dx=g.PL.x-100,dy=g.PL.y-80;
+   assert(Math.hypot(dx,dy)<=g.speed()+1e-8,'Diagonal movement must not boost speed');assert(Math.abs(dx*y-dy*x)<1e-7,'Movement must preserve the stick angle');
+ }
+ g.resetStick();g.PL.x=100;g.PL.y=80;g.updateWorld();assert.equal(g.PL.x,100);assert.equal(g.PL.y,80);
+ const oldPixels=drawing.fillRect,headings=new Set();let spritePixels=[];drawing.fillRect=(...args)=>spritePixels.push([drawing.fillStyle,...args]);
+ for(let face=0;face<8;face++){spritePixels=[];const dir=face<4?face:face<6?0:1;g.drawPerson(0,0,{...g.CHARS[19],face8:face},dir,0);headings.add(JSON.stringify(spritePixels));for(const pose of [0,1])g.drawPerson(0,0,{...g.CHARS[19],face8:face},dir,pose);}
+ assert.equal(headings.size,8,'Martin must have eight distinct views');drawing.fillRect=oldPixels;
+ g.PL.face8=6;g.PL.dir=1;assert.equal(g.myState().face8,6);g.G.preview=false;g.setS(previous);
  const rider=g.newSave(0);rider.realm='pokemon';rider.mounts=['shivan'];g.setS(rider);g.loadRoom('establo',115,100);g.G.dialog=null;g.talkTo('caballerizo',null,true);const mountChoice=g.G.dialog.choices.find(c=>c.t.startsWith('MONTAR '));assert(mountChoice);assert.equal(g.realmText(mountChoice.t).toUpperCase(),'MONTAR SHIVAN DRAGON');mountChoice.fn();assert.equal(rider.mount,'shivan');assert(g.mounted(),'Selecting a mount must show it inside the stable');assert.equal(g.mounted(),g.MOUNTS.shivan);
  // Cada montura tiene exactamente el mismo dibujo y nombre en ambos mundos.
  const mountedIds=Array.from(rider.mounts);const oldFill=drawing.fillRect;let pixels=[];
