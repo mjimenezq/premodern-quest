@@ -707,10 +707,9 @@ const CHARS = [
   { id:'matias', n:'MATÍAS', tag:'EL PROTAGONISTA', style:'cap', st:{fue:5,des:5,agi:5,int:5}, main:'fue',
     c:{ hat:'#c8281c', hatD:'#7a1410', mark:'#f4e8c0', feather:'#f4f1e8', hair:'#9a4422', skin:'#f1b98a', shirt:'#1a8a78', shirtD:'#0e5a4e',
         cape:'#8a1a14', capeD:'#5a0e0a', belt:'#4a2a14', pants:'#5a3a24', shoe:'#3a2414', sleeve:'#1a8a78' } },
-  // Davis (3 oct): colorín, agrónomo y fanático del Burn; ama el Lightning Bolt para ganar rápido.
-  { id:'davis', n:'DAVIS', tag:'EL AGRÓNOMO COLORÍN', style:'spiky', tall:true, freckles:true, plaid:true, burnLover:true, st:{fue:4,des:6,agi:7,int:3}, main:'agi',
-    c:{ hair:'#d8562a', hairD:'#9a3418', hairL:'#f08048', skin:'#fbdcc4', eye:'#3a8a3a', shirt:'#5a8a3a', shirtD:'#36602a', emblem:'#e8e0c8',
-        cape:'#c84a20', capeD:'#8a2a10', belt:'#4a2a14', pants:'#6a5a3a', shoe:'#4a3018', sleeve:'#5a8a3a' } },
+  { id:'davis', n:'DAVIS', tag:'RÁPIDO Y CERTERO', style:'spiky', tall:true, st:{fue:4,des:6,agi:7,int:3}, main:'agi',
+    c:{ hair:'#f0d070', hairD:'#c8a040', skin:'#fbdcc4', eye:'#2a6ad8', shirt:'#2a4ab0', shirtD:'#18307a', emblem:'#e8e0c8',
+        cape:'#e8e0c8', capeD:'#b8ae98', belt:'#4a2a14', pants:'#4a3a2a', shoe:'#2a1a10', sleeve:'#9aa4b4' } },
   { id:'gucho', n:'GUCHO', tag:'PURA FUERZA', style:'beanie', st:{fue:7,des:4,agi:4,int:5}, main:'fue',
     c:{ hat:'#3f6a2a', hatD:'#243f18', hood:true, hair:'#6a4020', skin:'#e8a878', shirt:'#8a5a30', shirtD:'#5a3418',
         cape:'#3f6a2a', capeD:'#243f18', belt:'#2a1a0c', pants:'#4a3a2a', shoe:'#2a1a0c', sleeve:'#8a5a30' } },
@@ -760,6 +759,8 @@ CHARS.push(friendCharacter('custom','CREAR MI PERSONAJE', 'CREA TU PROPIO PERSON
 CHARS.push(friendCharacter('martin','MARTÍN','GYM RAT Y SOCIO COMERCIAL','upspike',{fue:6,des:3,agi:5,int:6},'fue',{muscular:true,shirtless:true,finance:true},{hair:'#30241c',hairD:'#1c1814',skin:'#e6ad82',shirt:'#e6ad82',shirtD:'#ad7658',sleeve:'#e6ad82',pants:'#252d42',shoe:'#f4f4f8',belt:'#252d42',eye:'#65472e'}));
 // Gonzalo (3 oct): "el Alcalde", abogado y maestro de los mazos azules. Indice 20, solo se agrega al final.
 CHARS.push(friendCharacter('gonzalo','GONZALO','EL ALCALDE · ABOGADO','curly',{fue:4,des:5,agi:4,int:7},'int',{blueMaster:true,mayor:true,suit:true},{hair:'#2a2020',hairD:'#141010',skin:'#efc29a',eye:'#3a4a7a',shirt:'#283a68',shirtD:'#18244a',sleeve:'#283a68',emblem:'#c83040',pants:'#202a48',shoe:'#141418',belt:'#141418'}));
+// Divs (3 oct): colorín, agrónomo y fanático del mazo rojo; ama el Lightning Bolt para ganar rápido. Indice 21.
+CHARS.push(friendCharacter('divs','DIVS','EL AGRÓNOMO COLORÍN','spiky',{fue:4,des:6,agi:6,int:4},'des',{freckles:true,plaid:true,burnLover:true},{hair:'#d8562a',hairD:'#9a3418',hairL:'#f08048',skin:'#fbdcc4',eye:'#3a8a3a',shirt:'#5a8a3a',shirtD:'#36602a',sleeve:'#5a8a3a',pants:'#6a5a3a',shoe:'#4a3018',belt:'#4a2a14'}));
 // Mazos con azul: el Alcalde los domina en ligas y duelos.
 const BLUE_DECKS = new Set(['langostino','landstill','replenish']);
 function deckPerkBonus(deck){ if (pokemonRealm()) return 0; const ch = CH(); return (ch.blueMaster && BLUE_DECKS.has(deck)) || (ch.burnLover && deck === 'burn') ? 1 : 0; }
@@ -1582,6 +1583,7 @@ const ROLE_LINES = {
   cheer:['¡Vamos, tú puedes! Yo te apoyo desde aquí... bien lejos de los monstruos.','Si derrotas a todos los jefes, en la Liga Nacional te voy a gritar más fuerte que en el Estadio Nacional.','Llévate una jarra de cerveza pa\' las mazmorras. Cura más que cualquier poción.'],
   mayor:['Como alcalde de Teno decreto que hoy se juega una partida en la plaza. Con mazo azul, obviamente.','Abogado de día, contrarrestador de noche. Si traes combo, tengo un Counterspell con tu nombre.','Pasa al campo de la familia de Matías: los abuelos hicieron una casita de juegos para Rai. ¡Es patrimonio municipal!'],
   gamer:['World of Warcraft me enseñó a planificar la rotación: cada turno, el hechizo justo. Así armé mi Burn: Bolt, Chain y Fireblast en el orden perfecto.','En Diablo farmeaba equipo por horas. Con las cartas es igual: abro sobres, comparo y me quedo con lo mejor. ¡Mi baraja es mi build!','Mi baraja Pokémon la armé como un personaje de Diablo: un atacante principal, soporte y la energía justa. Charizard es mi hechicera de fuego.','En una raid de WoW nadie gana solo: tanque, sanador y daño. En Magic igual: criaturas que presionan, quemadas que rematan y tierras que no fallan.','De Diablo saqué que el daño directo gana partidas. Por eso amo el Lightning Bolt: tres de daño, un maná, ¡y a la cara!'],
+  agro:['Estos cerezos de Teno los reviso yo: suelo, riego y paciencia. Igual que un buen mazo rojo: cada carta en su momento.','¿Sabías que el Valle de Curicó es puro huerto? Manzanas, cerezas... y mucho Lightning Bolt los fines de semana.','Si vas a la Selva Valdiviana, lleva quemadas: los elfos crecen rápido, pero un Bolt a tiempo los apaga.'],
   campo:['¡Mi casita! Los tatas me la hicieron con ventanita y techo rosado. ¡Ven a jugar!','¡Tírate por el refalín conmigo! Yo cuento las bajadas: una, dos, ¡MUCHAS!','En el campo hay vacas que dicen muuu y un caballo. Y la abuela hace pan amasado.'],
   pb:['Piedra Bruja es EL lugar para jugar cartas en Santiago: Pokémon, Magic, torneos y amigos.','Aquí se juega la Liga Nacional de los dos mundos. Si llegas a la final, te gritamos desde la primera fila.','La mensajera siempre tiene misiones. Las tomo antes de jugar: monedas para sobres, experiencia para la liga.'],
   rival:['Nos vemos en la liga. Esta vez no te tengo piedad.','Estuve practicando toda la semana. Tu mazo no me asusta... bueno, un poquito.','Si ganas la liga te invito una chela. Si gano yo, me invitas dos.'],
@@ -1874,7 +1876,7 @@ ROOMS.teno={name:'TENO · TIERRA DE HUERTOS',theme:'town',music:'huaso',chill:tr
  trails:{'7,9':{room:'valpo',tx:12,ty:1},'14,4':{room:'campoFamilia',tx:1,ty:4}},
  plaques:[['MUNICIPALIDAD',72,19,'#3a2a58'],['CASA DE DAVIS',168,19,'#5a2a1a']],
  signs:{'7,4':'TENO: COMUNA AGRICOLA DE LA PROVINCIA DE CURICO, CON HUERTOS DE MANZANAS Y CEREZAS Y EL RIO TENO BAJANDO DE LA CORDILLERA. AQUI SE VIENE A DESCANSAR: SIN MONSTRUOS. ESTE: EL CAMPO DE LA FAMILIA. SUR: CURICO.'},
- npcs:[{id:'friend',ch:20,role:'mayor',x:2,y:4},{id:'huaso',x:12,y:7}],
+ npcs:[{id:'friend',ch:20,role:'mayor',x:2,y:4},{id:'friend',ch:21,role:'agro',x:12,y:5},{id:'huaso',x:12,y:7}],
  props:[{k:'roadGate',x:14,y:4,label:'CAMPO',solid:false},{k:'roadGate',x:7,y:9,label:'CURICO',solid:false},{k:'cerezo',x:1,y:8,solid:false},{k:'cerezo',x:13,y:8,solid:false},{k:'farol',x:1,y:5,solid:false},{k:'farol',x:13,y:5,solid:false}]};
 ROOMS.municipalidadTeno=southInterior('MUNICIPALIDAD DE TENO','valpo',{room:'teno',tx:4,ty:4},[{id:'secretariaTeno',x:7,y:2}],
  [{k:'mostrador',x:5,y:3,w:5,label:'OFICINA DEL ALCALDE'},{k:'cartel',x:2,y:1,label:'TENO',txt:'BIENVENIDOS A TENO: CAMPO, RIO, HUERTOS Y BUENOS VECINOS. EL ALCALDE GONZALO ATIENDE EN LA PLAZA.',solid:false},{k:'cartel',x:12,y:1,label:'COUNTERSPELL',txt:'CUADRO EN LA OFICINA: UN COUNTERSPELL FIRMADO. "TODO TRAMITE PUEDE SER CONTRARRESTADO."',solid:false}],{music:'huaso'});
@@ -1909,7 +1911,7 @@ delete ROOMS.tolaria.doors['6,7'];ROOMS.tolaria.map[7]=ROOMS.tolaria.map[7].slic
 ROOMS.tolaria.signs['8,3']='TOLARIA: CAPITAL DEL PREMODERN CHILENO. LA LIGA NACIONAL SE MUDO A PIEDRA BRUJA, EN PROVIDENCIA (AL NORTE DE LAS CONDES).';
 for(const id of ['valdivia','teno','campoFamilia','providencia'])ROOMS[id].socialHub=true;
 // Friends placed above are also listed in FRIENDS_ON_MAP (their rooms already include them).
-FRIENDS_ON_MAP.push({ch:20,room:'teno',x:2,y:4,role:'mayor'},{ch:1,room:'casaDavis',x:9,y:4,role:'gamer'},{ch:12,room:'campoFamilia',x:6,y:6,role:'campo'},{ch:0,room:'providencia',x:3,y:6,role:'pb'},{ch:2,room:'providencia',x:11,y:6,role:'pb'});
+FRIENDS_ON_MAP.push({ch:20,room:'teno',x:2,y:4,role:'mayor'},{ch:21,room:'teno',x:12,y:5,role:'agro'},{ch:1,room:'casaDavis',x:9,y:4,role:'gamer'},{ch:12,room:'campoFamilia',x:6,y:6,role:'campo'},{ch:0,room:'providencia',x:3,y:6,role:'pb'},{ch:2,room:'providencia',x:11,y:6,role:'pb'});
 
 /* ---- Conversaciones y acciones de los lugares nuevos ---- */
 const PREMODERN_FACTS=['Premodern se juega con cartas impresas entre Cuarta Edicion (1995) y Scourge (2003), con su propia lista de cartas prohibidas.','Es un formato hecho por la comunidad: mazos clasicos como Goblins, Burn, Replenish, Landstill, The Rock y, claro, Elfos.','Los Elfos de Premodern generan mucho mana: Priest of Titania y Gaea\'s Cradle, y reciclan criaturas con Wirewood Symbiote y Quirion Ranger.','En Premodern no hay planeswalkers ni cartas modernas: cada partida se siente como jugar en el colegio a fines de los noventa.','Burn gana rapido con Lightning Bolt, Chain Lightning y Fireblast; Landstill espera con Standstill y Mishra\'s Factory.'];
@@ -5304,7 +5306,8 @@ const FRIEND_LINES = {
   17:['Cahe, Matías y yo: trabajos de la U de día, Tibia de noche.','Diversifica: un buen mazo, una buena armadura y monedas para el próximo viaje.'],
   0:['Wena. Yo ando buscando un Force of Will hace años. Si te sale uno, avísame, cachai.','¿Vamos a la Torre de Serra? Dicen que la Ángel Ascendida invoca Soul Wardens sin parar.'],
   20:['Bienvenido a Teno. Como alcalde te digo: aquí se vive tranquilo, entre huertos, el río y buenas partidas.','Soy abogado: leo la letra chica igual que un Counterspell. ¡Objeción a tu combo!','Los mazos azules son como un buen alegato: Force of Will, Counterspell y paciencia. El que apura la jugada, pierde el juicio.'],
-  1:['Soy agrónomo y colorín: de día reviso cultivos, de noche reviso mi Burn. Las dos cosas necesitan buen clima y paciencia.','Lightning Bolt: un maná, tres de daño y a la cara. Para ganar rápido no hay nada mejor.','Oe, si vas a la Cripta de Tourach lleva harta vida. El Negator Ancestral pega como camión.','Yo juego Burn: Bolt, Chain, Fireblast y a la cara. Sin miedo.'],
+  21:['Soy agrónomo y colorín: de día reviso cultivos, de noche reviso mi Burn. Las dos cosas necesitan buen clima y paciencia.','Lightning Bolt: un maná, tres de daño y a la cara. Para ganar rápido no hay nada mejor.','Mazo rojo siempre: Chain Lightning, Fireblast y quemar al rival antes de que robe su tercera carta.'],
+  1:['Oe, si vas a la Cripta de Tourach lleva harta vida. El Negator Ancestral pega como camión.','Yo juego Burn: Bolt, Chain, Fireblast y a la cara. Sin miedo.'],
   4:['¿Trampa? Yo no hago trampa... solo tengo mucha suerte con los dados. Mucha.','Si juegas conmigo, mírame las manos. O no, mejor mírame a los ojos.'],
   3:['Yo no juego rápido, juego bien. Por eso gano los torneos... a veces.','Tip de Klaus: la cerveza sube la INT para el torneo. Es ciencia, cachai.'],
   2:['¿Una partida? Te juego mi Replenish contra lo que traigas. Pierde el que paga la ronda.','En las Minas de Mishra hay un Rey Goblin con corona. Me pegó tan fuerte que volví a pie a Tolaria.'],
@@ -7873,7 +7876,7 @@ const BEATS = { agro:'combo', ctrl:'agro', combo:'ctrl' };
 const LOSES_TO = { agro:'ctrl', ctrl:'combo', combo:'agro' };
 const DECK_STYLE = { ...Object.fromEntries(POKEMON_META_DECKS.map(d=>[d.id,d.style])), burn:'agro', goblins:'agro', black:'ctrl', life:'ctrl', replenish:'combo', langostino:'combo', terragedon:'agro', landstill:'ctrl', rock:'ctrl', mud:'combo', elfos:'combo' };
 const DUELIST_DECK = {elfoParroquiano:'elfos', pbJugador:'landstill', mechonaPelluco:'terragedon', luchoBarril:'goblins', durandal:'rock',galindo:'landstill',jorgew:'goblins',cesar:'burn',jgu:'replenish',macias:'mud', fan1:'goblins', fan2:'burn', fan3:'black', fan4:'life', klaus:'black', marinero:'langostino', pescador:'replenish', juez:'replenish', coleccionista:'langostino', cantinero:'burn', ligaVina:'terragedon', ligaCurico:'rock', ligaPmontt:'landstill', ligaUrza:'mud', ligaTempest:'landstill' };
-const FRIEND_DECK = ['goblins','burn','replenish','black','langostino','terragedon','rock','landstill','mud','life','goblins','burn','life','replenish','langostino','burn','mud','rock',null,'rock','langostino'];
+const FRIEND_DECK = ['goblins','burn','replenish','black','langostino','terragedon','rock','landstill','mud','life','goblins','burn','life','replenish','langostino','burn','mud','rock',null,'rock','langostino','burn'];
 const isDuelist = n => n.id === 'friend' || DUELIST_DECK[n.id] !== undefined;
 function offerDuel(n){
   const name = n.id === 'friend' ? CHARS[n.ch].n : NPCDEF[n.id].n;

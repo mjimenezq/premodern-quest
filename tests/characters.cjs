@@ -129,7 +129,7 @@ for(const id of Object.keys(g.WORLD))for(const [side,to] of Object.entries(g.zon
 {const seen=new Set(['pmontt']),q=['pmontt'];while(q.length){const id=q.shift();for(const [side,to] of Object.entries(g.zoneNeighbors(id))){if(g.SURF_LINKS[id]?.[side]||seen.has(to))continue;seen.add(to);q.push(to);}}assert(seen.has('pueblo'),'Puerto Montt queda aislado a pie');}
 assert.equal(g.remoteCharacter({ch:g.CUSTOM_CHAR,customChar:spec}).n,'MI PERSONAJE');
 assert.equal(g.remoteCharacter({ch:g.CUSTOM_CHAR,customChar:{}}).id,'matias');
-assert.equal(g.friendCast().length,20);assert(!g.friendCast().some(c=>c.id==='custom'));assert(g.friendCredits().join(' ').includes('RAI'));assert(g.friendCredits().join(' ').includes('PABLOT'));
+assert.equal(g.friendCast().length,21);assert(!g.friendCast().some(c=>c.id==='custom'));assert(g.friendCredits().join(' ').includes('RAI'));assert(g.friendCredits().join(' ').includes('PABLOT'));
 assert.equal(g.ROOMS.valpo.doors['10,7'],'cartasCurico');assert.equal(g.ROOMS.mercado.doors['11,7'],'bovedaMox');
 assert(!g.ROOMS.mercado.npcs.some(n=>n.id==='caballerizo'||n.id==='marchante'));
 for(const [id,npcId] of [['establo','caballerizo'],['bovedaMox','marchante']]) {
@@ -534,7 +534,7 @@ async function main(){
  // 3 oct: Valdivia y los elfos, Teno, Providencia, Davis y Gonzalo, diplomas de jefes y cartas Pokemon en pixel.
  {
   const prev=g.getS(),s=g.newSave(20);g.setS(s);g.G.preview=true;g.G.state='world';g.G.dialog=null;g.G.menu=null;
-  assert.equal(g.CHARS[20].id,'gonzalo');assert(g.CHARS[1].burnLover&&g.CHARS[1].c.hair==='#d8562a');assert(g.newSave(1).spells.includes('bolt'));
+  assert.equal(g.CHARS[20].id,'gonzalo');assert.equal(g.CHARS[21].id,'divs');assert(g.CHARS[21].burnLover&&g.CHARS[21].c.hair==='#d8562a'&&!g.CHARS[1].burnLover);assert(g.newSave(21).spells.includes('bolt'));assert.equal(g.FRIEND_DECK[21],'burn');
   assert.equal(g.deckPerkBonus('landstill'),1);assert.equal(g.deckPerkBonus('burn'),0);assert.equal(g.FRIEND_DECK[20],'langostino');
   // Every land link on the world map joins drawn neighbours, in both directions.
   for(const id in g.WORLD)for(const [side,to] of Object.entries(g.zoneNeighbors(id))){if(g.SURF_LINKS[id]?.[side])continue;const [x,y]=g.WORLD[id],[a,b]=g.WORLD[to];assert.equal(Math.abs(x-a)+Math.abs(y-b),1,id+' '+side+' '+to+' no es vecino en el mapa');assert(Object.values(g.zoneNeighbors(to)).includes(id),to+' no vuelve a '+id);}
