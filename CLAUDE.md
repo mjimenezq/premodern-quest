@@ -4,6 +4,8 @@ Proyecto independiente. Hablar con Matías en español de Chile y explicar de fo
 El juego abre directamente desde `index.html`; el historial Git del proyecto se conserva en `.git`.
 
 
+**3 oct — Celular horizontal:** orientación landscape hasta 1100×600 adapta automáticamente el juego: canvas completo 3:2 centrado con carriles laterales fuera del mapa, movimiento/selector a izquierda, A/B/magia/hechizo/menú a derecha, accesos compactos a misiones/viaje/pociones. Safe-area y dvh para barras/muescas. Botón pantalla completa opcional (fallback informativo Safari) y Vista página para acceder al panel online. Resize/orientación/fullscreen liberan entradas y carga para evitar controles pegados. No altera cámara ni guardados; portrait y TV conservados.
+
 **3 oct — Vegetación regional:** árboles con siluetas de palmera, álamo, frutal, ciprés, conífera nevada, araucaria, sauce, acacia y copa irregular. Costa, valle central, jardines urbanos, sur, humedales y terrenos secos usan mezclas propias, con helechos/hongos, juncos, pastos de duna y arbustos floridos en b. Selección determinista por zona y casilla, compartida entre mundos. Solo dibujo: no cambia mapas, colisiones, guardados ni accesos.
 
 **3 oct — Fachada del santuario:** templo de piedra clara con nave, contrafuertes, cubierta a dos aguas, campanario con estrella sagrada, rosetón de los colores de mana y arco de entrada. Prop temploUmbral sobre la misma huella [3..6,5..7]; el caché omite el dibujo de casa, conserva colisiones y puerta [6,7]. Se retira placa duplicada del archivo. Vitrales y velas iluminan de noche; al obtener seis medallas y corona Nacional aparecen partículas y resplandor. Arcade separado intacto.

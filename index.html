@@ -137,6 +137,41 @@
   #wizardError{color:#ffb4b4}
   #wizardBudget{color:var(--gold)}
   #characterWizard :focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+
+  .mobile-tools{display:none;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
+  .mobile-tools button{font:8px "Press Start 2P",monospace;color:var(--ink);background:var(--panel);border:2px solid var(--line);border-radius:7px;min-height:36px;padding:8px;touch-action:manipulation}
+  #mobileViewHint{font-size:7px;color:var(--muted);line-height:1.6;text-align:center;flex-basis:100%}
+  @media (pointer:coarse),(max-width:600px){.mobile-tools{display:flex}}
+  /* Horizontal: mapa completo al centro y controles fuera del campo de juego. */
+  @media (orientation:landscape) and (max-height:600px) and (max-width:1100px){
+    body:not(.tv):not(.pageView){--rail:clamp(104px,17vw,144px);--left: max(8px,env(safe-area-inset-left));--right:max(8px,env(safe-area-inset-right));padding:0;overflow:hidden;background:#080f12}
+    body:not(.tv):not(.pageView) .wrap{height:100dvh;max-width:none;padding:0;gap:0;justify-content:center}
+    body:not(.tv):not(.pageView) .wrap>:not(.screen):not(.pad):not(.touch-choice):not(.net):not(.mobile-tools){display:none!important}
+    body:not(.tv):not(.pageView) .screen{min-width:0;max-width:none;width:min(calc((100dvh - 16px) * 1.5),calc(100vw - var(--rail) * 2 - var(--left) - var(--right) - 16px))}
+    body:not(.tv):not(.pageView) canvas{border:2px solid #000;box-shadow:0 0 0 2px var(--line)}
+    body:not(.tv):not(.pageView) .pad{display:contents;--d:clamp(30px,9dvh,42px);--ab:clamp(44px,14dvh,60px)}
+    body:not(.tv):not(.pageView) #moveStick,body:not(.tv):not(.pageView) #moveDpad{position:fixed;left:calc(var(--left) + (var(--rail) - var(--d) * 2.6)/2);top:calc(50dvh - var(--d) * 1.3)}
+    body:not(.tv):not(.pageView) #moveDpad{left:calc(var(--left) + (var(--rail) - var(--d) * 3 - 4px)/2);top:calc(50dvh - var(--d) * 1.5)}
+    body:not(.tv):not(.pageView) .acts{position:fixed;right:var(--right);top:calc(50dvh - 64px);width:var(--rail);gap:8px;align-items:center}
+    body:not(.tv):not(.pageView) .acts .row:first-child{display:grid;grid-template-columns:repeat(2,var(--ab));gap:6px;justify-items:center}
+    body:not(.tv):not(.pageView) .acts .c{grid-column:1 / 3;width:var(--d);height:var(--d)}
+    body:not(.tv):not(.pageView) .acts .row:last-child{gap:4px}
+    body:not(.tv):not(.pageView) .acts .m{width:calc((var(--rail) - 4px)/2);height:32px;font-size:7px}
+    body:not(.tv):not(.pageView) .touch-choice{display:flex;position:fixed;left:var(--left);top:max(8px,env(safe-area-inset-top));width:var(--rail);flex-direction:column;gap:5px;font-size:7px}
+    body:not(.tv):not(.pageView) .touch-choice select{max-width:100%;padding:6px;font-size:8px}
+    body:not(.tv):not(.pageView) .net{position:fixed;left:var(--left);bottom:max(8px,env(safe-area-inset-bottom));width:var(--rail);display:grid;grid-template-columns:1fr 1fr;gap:5px}
+    body:not(.tv):not(.pageView) .net button{padding:6px 2px;min-height:34px;font-size:0;border-bottom-width:2px}
+    body:not(.tv):not(.pageView) .net button::after{font-size:7px}
+    body:not(.tv):not(.pageView) #btnTitle::after{content:'INICIO'}
+    body:not(.tv):not(.pageView) #btnJournal::after{content:'MISIONES'}
+    body:not(.tv):not(.pageView) #btnTravel::after{content:'VIAJAR'}
+    body:not(.tv):not(.pageView) #btnPotions::after{content:'POCIONES'}
+    body:not(.tv):not(.pageView) #btnSillon{display:none}
+    body:not(.tv) .mobile-tools{display:flex}
+    body:not(.tv):not(.pageView) .mobile-tools{position:fixed;right:var(--right);top:max(8px,env(safe-area-inset-top));width:var(--rail);gap:4px}
+    body:not(.tv):not(.pageView) .mobile-tools button{width:100%;font-size:7px;min-height:30px;padding:5px}
+    body:not(.tv):not(.pageView) #mobileViewHint{position:fixed;bottom:8px;right:var(--right);width:var(--rail);font-size:6px}
+  }
 </style>
 </head>
 <body>
@@ -191,6 +226,11 @@
     </div>
   </div>
   <label class="touch-choice" for="touchControl">Movimiento <select id="touchControl"><option value="stick">Stick</option><option value="dpad">Cruceta</option></select></label>
+  <div class="mobile-tools" aria-label="Vista del celular">
+    <button id="btnFullscreen" type="button">Pantalla completa</button>
+    <button id="btnPageView" type="button" aria-pressed="false">Vista página</button>
+    <span id="mobileViewHint" role="status">Gira el celular para jugar en horizontal</span>
+  </div>
   <p class="charge-hint" id="chargeHint">Mantén ataque · carga más rápido al subir de nivel</p>
   <div class="net">
     <button id="btnTitle" type="button">⌂ Menú principal</button>
@@ -8528,6 +8568,27 @@ netEl('netCopy').addEventListener('click', async () => {
   try { await navigator.clipboard.writeText(inviteUrl(code)); netStatus('Link copiado. Pegalo en WhatsApp o donde quieras.'); }
   catch(_) { netStatus('Copia este link: ' + inviteUrl(code)); }
 });
+
+// Cambiar orientacion libera los controles para evitar ataques o movimiento pegados.
+addEventListener('resize',()=>resetHeldInput());
+addEventListener('orientationchange',()=>resetHeldInput());
+document.getElementById('btnPageView').addEventListener('click',()=>{
+  resetHeldInput();const on=document.body.classList.toggle('pageView');
+  const b=document.getElementById('btnPageView');b.textContent=on?'Volver al juego':'Vista página';b.setAttribute('aria-pressed',String(on));
+});
+document.getElementById('btnFullscreen').addEventListener('click',async()=>{
+  resetHeldInput();const hintEl=document.getElementById('mobileViewHint');
+  try{
+    if(document.fullscreenElement){await document.exitFullscreen();}
+    else if(document.documentElement.requestFullscreen){await document.documentElement.requestFullscreen();}
+    else{hintEl.textContent='Gira el celular; oculta la barra del navegador para ampliar';return;}
+    hintEl.textContent='Gira el celular para jugar en horizontal';
+  }catch(_){hintEl.textContent='El modo horizontal funciona también sin pantalla completa';}
+});
+document.addEventListener('fullscreenchange',()=>{
+  resetHeldInput();document.getElementById('btnFullscreen').textContent=document.fullscreenElement?'Salir de pantalla completa':'Pantalla completa';
+});
+
 netEl('btnTitle').addEventListener('click', () => { audioInit(); if(G.state==='arcade')requestArcadeExit();else if (G.state !== 'title') goToTitle(); cvs.focus(); });
 netEl('btnJournal').addEventListener('click',()=>{audioInit();if(G.menu&&G.menu.tab===4)G.menu=null;else openQuestJournal();cvs.focus();});
 netEl('btnTravel').addEventListener('click', () => { audioInit(); openTravel(); cvs.focus(); });
