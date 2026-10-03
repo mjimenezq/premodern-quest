@@ -2359,7 +2359,60 @@ function ground(x, y, tx, ty, theme){
 }
 const T = (tx, ty) => (tx < 0 || ty < 0 || tx > 14 || ty > 9) ? null : G.map[ty][tx];
 const TALL = new Set(['R','W','D','Q','P','x','B','Z','k','K']);
+// Vegetacion regional: cambia el dibujo, nunca las casillas ni sus colisiones.
+function vegetationRegion(theme){
+  const z=G.def?.zone||zoneOf(G.roomId||'pueblo');
+  if(theme==='ice')return 'snow';
+  if(theme==='swamp'||theme==='bog'||['pantano','pantanoProf','puertoOctay'].includes(z))return 'wetland';
+  if(['costa','vina','dunas','pelluco'].includes(z))return 'coast';
+  if(['pmontt','puertoVaras','frutillar','parquePhilippi','islote','valdivia','selvaValdiviana','oncol','niebla'].includes(z))return 'south';
+  if(['valpo','talca','teno','campoFamilia'].includes(z))return 'orchard';
+  if(['lascondes','providencia','tolaria','mercado'].includes(z))return 'garden';
+  if(theme==='dirt'||theme==='sand'||theme==='volcano')return 'dry';
+  return 'woodland';
+}
+function regionalTree(x,y,tx,ty,theme){
+  const region=vegetationRegion(theme),h=h2(tx+37,ty+19);
+  const kind=region==='coast'?'palm':region==='south'?(h<.4?'araucaria':h<.75?'pine':'broadleaf'):region==='snow'?'pine':region==='wetland'?'willow':region==='orchard'?(h<.38?'poplar':'fruit'):region==='garden'?(h<.55?'cypress':'broadleaf'):region==='dry'?'acacia':h<.3?'pine':h<.55?'broadleaf':'round';
+  if(kind==='round')return false;
+  ground(x,y,tx,ty,theme);
+  R(x+3,y+14,11,2,'#29402b');R(x+7,y+7,3,9,'#67432d');R(x+7,y+9,1,6,'#ad8250');
+  const dark=region==='snow'?'#334c56':'#193e32',mid=region==='south'?'#347c60':'#4b8844',light=region==='south'?'#78b58b':'#9ecb68';
+  const branch=(a,b,c,d,col)=>{ctx.strokeStyle=col;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x+a,y+b);ctx.lineTo(x+c,y+d);ctx.stroke();};
+  if(kind==='palm'){
+    R(x+8,y+7,2,8,'#aa8050');for(let i=0;i<3;i++)R(x+8,y+9+i*2,2,1,'#64462f');
+    for(const [a,b,c,d] of [[8,4,1,8],[8,4,2,2],[8,4,13,1],[8,4,15,7],[8,4,6,0]]){branch(a,b,c,d,dark);branch(a,b-1,c,d-1,'#5caa67');}R(x+7,y+5,3,2,'#805232');
+  }else if(kind==='pine'||kind==='cypress'||kind==='poplar'){
+    const col=kind==='poplar'?'#87a548':mid;
+    for(let i=0;i<6;i++){const w=kind==='cypress'?Math.min(7,3+i):kind==='poplar'?Math.min(9,3+i*2):3+i*2;R(x+8-Math.floor(w/2),y+1+i*2,w,2,dark);R(x+8-Math.floor(w/2),y+i*2,w-1,2,col);}
+    R(x+7,y+2,1,8,light);if(region==='snow')for(const [a,b,w] of [[7,2,3],[5,6,6],[3,10,10]])R(x+a,y+b,w,1,'#e7f4fa');
+  }else if(kind==='araucaria'){
+    R(x+7,y+1,2,13,'#6c5d43');for(let i=0;i<4;i++){const yy=2+i*3,w=3+i*3;R(x+8-Math.floor(w/2),y+yy,w,2,dark);R(x+8-Math.floor(w/2),y+yy-1,w,1,light);R(x+8-Math.floor(w/2),y+yy-2,1,2,mid);R(x+8+Math.floor(w/2),y+yy-2,1,2,mid);}
+  }else if(kind==='willow'){
+    disc(x+8,y+5,7,dark);disc(x+7,y+4,5,'#789551');for(let i=0;i<6;i++){const xx=2+i*2;R(x+xx,y+5+(i%2),1,6+(i%3),'#47663d');R(x+xx,y+5,1,3,'#a7b86a');}
+  }else if(kind==='acacia'){
+    R(x+6,y+8,2,7,'#72523d');branch(7,10,3,6,'#72523d');branch(7,10,12,6,'#72523d');R(x+1,y+4,14,3,dark);R(x+3,y+2,10,3,'#83914d');R(x+3,y+2,7,1,'#bbc282');
+  }else{
+    disc(x+5,y+6,5,dark);disc(x+10,y+5,5,dark);disc(x+7,y+4,5,mid);disc(x+5,y+3,3,light);R(x+10,y+3,3,2,mid);
+    if(kind==='fruit')for(const [a,b] of [[4,6],[10,4],[9,9]]){R(x+a,y+b,2,2,'#dc6548');R(x+a,y+b,1,1,'#ffd288');}
+  }
+  return true;
+}
+function regionalUnderstory(x,y,tx,ty,theme){
+  const region=vegetationRegion(theme),h=h2(tx+91,ty+27);
+  if(region==='south'||region==='woodland'){
+    R(x+7,y+7,1,7,'#477247');for(let i=0;i<4;i++){R(x+6-i,y+8+i,2,1,'#69a676');R(x+8+i,y+8+i,2,1,'#8ac18b');}
+    if(h<.35){R(x+3,y+12,2,3,'#ddc2a3');R(x+2,y+11,4,2,'#b96c51');}
+  }else if(region==='wetland'){
+    for(let i=0;i<4;i++){const xx=3+i*3;R(x+xx,y+5+(i%2)*2,1,9-(i%2)*2,'#648759');R(x+xx,y+3+(i%2)*2,2,3,'#97704a');}
+  }else if(region==='coast'||region==='dry'){
+    for(let i=0;i<5;i++){R(x+3+i*2,y+9-Math.abs(i-2)*2,1,5+Math.abs(i-2)*2,'#899658');R(x+3+i*2,y+8-Math.abs(i-2)*2,1,2,'#d4c98b');}
+  }else{
+    disc(x+8,y+10,5,'#315d37');disc(x+7,y+8,4,'#6ba54f');for(const [a,b] of [[5,8],[9,7],[10,10]])R(x+a,y+b,2,1,region==='garden'?'#dc9bca':'#ecbd70');
+  }
+}
 function treeTile(x, y, tx, ty, theme){
+  if(regionalTree(x,y,tx,ty,theme))return;
   const pal = TREEPAL[theme] || TREEPAL.def, h = h2(tx, ty), ox = h < 0.5 ? 0 : 1;
   ctx.fillStyle = 'rgba(0,0,0,.28)'; for (let i = 0; i < 4; i++) ctx.fillRect(x + 3 - i + 1, y + 12 + i, 12 + i * 2 - 2, 1);
   R(x + 6, y + 10, 5, 6, '#2a160a'); R(x + 7, y + 10, 3, 6, '#6a4020'); R(x + 7, y + 11, 1, 4, '#8a5a30'); R(x + 5, y + 15, 2, 1, '#4a2a14'); R(x + 10, y + 15, 2, 1, '#4a2a14');
@@ -2395,11 +2448,8 @@ function drawTile(c, tx, ty, theme){
       break; }
     case 'T': treeTile(x, y, tx, ty, theme === 'town' || theme === 'forest' ? 'def' : theme); break;
     case 'b': {
-      ground(x, y, tx, ty, theme);
-      ctx.fillStyle = 'rgba(0,0,0,.25)'; ctx.fillRect(x + 3, y + 13, 11, 2);
-      disc(x + 8, y + 9, 6, '#143a14'); disc(x + 8, y + 9, 5, '#2e7e2a'); disc(x + 7, y + 8, 4, '#48a83a'); disc(x + 6, y + 7, 2, '#8ad660');
-      R(x + 10, y + 11, 1, 1, '#1c5a1c'); R(x + 4, y + 10, 1, 1, '#1c5a1c'); if (h < 0.35) { R(x + 9, y + 8, 1, 1, '#e83040'); R(x + 6, y + 11, 1, 1, '#e83040'); }
-      break; }
+      ground(x, y, tx, ty, theme); regionalUnderstory(x,y,tx,ty,theme); break;
+    }
     case 'r': {
       ground(x, y, tx, ty, theme);
       ctx.fillStyle = 'rgba(0,0,0,.28)'; ctx.fillRect(x + 3, y + 13, 12, 2);
