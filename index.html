@@ -682,6 +682,8 @@ CHARS.push(
 );
 const CUSTOM_CHAR = CHARS.length;
 CHARS.push(friendCharacter('custom','CREAR MI PERSONAJE', 'CREA TU PROPIO PERSONAJE','spiky',{fue:5,des:5,agi:5,int:5},'fue',{},{}));
+// El creador conserva el indice 18; los nuevos amigos se agregan despues.
+CHARS.push(friendCharacter('martin','MARTÍN','GYM RAT Y SOCIO COMERCIAL','upspike',{fue:6,des:3,agi:5,int:6},'fue',{muscular:true,shirtless:true,finance:true},{hair:'#30241c',hairD:'#1c1814',skin:'#e6ad82',shirt:'#e6ad82',shirtD:'#ad7658',sleeve:'#e6ad82',pants:'#252d42',shoe:'#f4f4f8',belt:'#252d42',eye:'#65472e'}));
 const CUSTOM_STATS = ['fue','des','agi','int'], CUSTOM_STAT_BUDGET = 20, CUSTOM_SKILL_BUDGET = 6;
 const CUSTOM_STYLES = { spiky:'Pelo en punta', curly:'Rulos', upspike:'Pelo levantado', ponytail:'Pelo largo', bun:'Moño', cap:'Jockey', beanie:'Gorro', tennis:'Cintillo', wizard:'Sombrero de mago', baby:'Bebé' };
 const CUSTOM_SKILLS = {
@@ -1457,6 +1459,7 @@ const FRIENDS_ON_MAP = [
   { ch:15, room:'pmontt', x:11, y:6, role:'engineer' },
   { ch:16, room:'mercado', x:6, y:7, role:'finance' },
   { ch:17, room:'mercado', x:8, y:7, role:'finance' },
+  { ch:19, room:'bar', x:8, y:6, role:'cheer' },
   { ch:0, room:'pueblo', x:11, y:5, role:'cheer' },
   { ch:1, room:'arena', x:10, y:6, role:'rival' },
   { ch:2, room:'bar', x:3, y:4, role:'beer' },
@@ -2774,6 +2777,22 @@ function drawPerson(x, y, P, dir, f){
     p(4, 8, 8, 6, O); p(5, 8, 6, 5, C.shirt); p(5, 11, 6, 1, belt);
     const ao = st ? -1 : 1;
     p(7 + ao, 9, 3, 4, O); p(8 + ao, 9, 1, 3, slv); p(8 + ao, 12, 1, 1, C.skin);
+  }
+  // Torso sin polera, hombros anchos y musculatura visible desde los cuatro lados.
+  if (P.shirtless && P.muscular) {
+    const dark=shadeCol(C.skin,.72), light=shadeCol(C.skin,1.12);
+    if (!side) {
+      p(1,8,14,5,O);p(2,8,12,4,C.skin);
+      p(2,9,2,3,dark);p(12,9,2,3,dark);
+      p(4,8,3,2,light);p(9,8,3,2,light);
+      p(7,8,2,3,dark);p(5,10,2,1,dark);p(9,10,2,1,dark);
+      if(dir===0){p(7,11,2,1,dark);p(5,11,2,1,light);p(9,11,2,1,light);}
+      p(3,12,10,2,C.pants);
+    } else {
+      p(3,8,10,5,O);p(4,8,8,4,C.skin);p(4,8,2,2,light);p(10,9,2,3,dark);
+      const arm=st?-1:1;p(6+arm,8,4,5,O);p(7+arm,8,2,4,C.skin);p(7+arm,9,2,1,light);
+      p(4,12,8,2,C.pants);
+    }
   }
   if (P.plaid) {
     for (let xx = side ? 5 : 4; xx < 12; xx += 3) p(xx,8,1,3,'#f8c0a8');
@@ -4739,6 +4758,7 @@ function questKill(type){
 }
 
 const FRIEND_LINES = {
+  19:['¡Wena, amigo! Del gym al carrete, pero primero te acompaño a salvar el mundo. Ningún socio se queda atrás.','Con Matías estudiamos Ingeniería Comercial. Una buena inversión y una buena jugada tienen algo en común: pensar antes de actuar.','Antes coleccionaba cartas Pokémon. También sé jugarlas: no basta con pegar fuerte, hay que leer al rival.'],
   12:['¡Autito! ¡Brrrum! Después hacemos una casita y leemos Osito Tito.','¡Te quiero mucho! Mi superpoder es darte un abrazo gigante y construir cosas lindas.'],
   13:['Jue, soy la tía de Rai y la hermana de Katy. ¡Puerto Montt tiene su magia!','Ven, te leo las cartas. Veo un viaje al sur y una victoria si eliges bien tu estrategia.'],
   14:['Diseño sistemas de peces. El agua, el oxígeno y los flujos tienen que trabajar juntos.','Con Rodolfo somos inseparables desde Ingeniería. Katy conoce todas nuestras historias de la U.'],
@@ -6343,11 +6363,13 @@ function updateSlots(){
   }
 }
 const SEL_COLS = 3, SEL_TOP = 22, SEL_BOTTOM = 103, SEL_ROW_H = 44;
-const selectContentHeight = () => (Math.ceil(CUSTOM_CHAR / SEL_COLS) + 1) * SEL_ROW_H;
+const SELECT_CHAR_IDS = CHARS.map((_,i)=>i).filter(i=>i!==CUSTOM_CHAR).concat(CUSTOM_CHAR);
+const selectRow = id => id===CUSTOM_CHAR ? Math.ceil((CHARS.length-1)/SEL_COLS) : Math.floor(SELECT_CHAR_IDS.indexOf(id)/SEL_COLS);
+const selectContentHeight = () => (Math.ceil((CHARS.length-1) / SEL_COLS) + 1) * SEL_ROW_H;
 const selectMaxScroll = () => Math.max(0, selectContentHeight() - (SEL_BOTTOM - SEL_TOP));
 function setSelectScroll(value){ G.selectScroll = clamp(value,0,selectMaxScroll()); }
 function revealSelected(){
-  const row = G.sel === CUSTOM_CHAR ? Math.ceil(CUSTOM_CHAR / SEL_COLS) : Math.floor(G.sel / SEL_COLS);
+  const row = selectRow(G.sel);
   const top = row * SEL_ROW_H, bottom = top + SEL_ROW_H;
   if (!Number.isFinite(G.selectScroll)) G.selectScroll=0;
   if (top < G.selectScroll) setSelectScroll(top);
@@ -6356,9 +6378,9 @@ function revealSelected(){
 function selectAt(p){
   if (p.y < SEL_TOP || p.y >= SEL_BOTTOM || p.x < 0 || p.x >= 232) return -1;
   const row = Math.floor((p.y - SEL_TOP + (G.selectScroll || 0)) / SEL_ROW_H);
-  if (row === Math.ceil(CUSTOM_CHAR / SEL_COLS)) return CUSTOM_CHAR;
+  if (row === Math.ceil((CHARS.length-1) / SEL_COLS)) return CUSTOM_CHAR;
   const i = row * SEL_COLS + Math.floor(p.x / 78);
-  return i >= 0 && i < CUSTOM_CHAR ? i : -1;
+  return i >= 0 && i < CHARS.length-1 ? SELECT_CHAR_IDS[i] : -1;
 }
 function drawSelect(){
   if (!Number.isFinite(G.selectScroll)) revealSelected();
@@ -6368,7 +6390,7 @@ function drawSelect(){
   tiny('DESLIZA PARA VER A TODOS',120,15,'#9db8a8','center');
   ctx.save();ctx.beginPath();ctx.rect(0,SEL_TOP,232,SEL_BOTTOM-SEL_TOP);ctx.clip();
   CHARS.forEach((c,i)=>{
-    const row=i===CUSTOM_CHAR?Math.ceil(CUSTOM_CHAR/SEL_COLS):Math.floor(i/SEL_COLS);
+    const row=selectRow(i);
     const y=SEL_TOP+row*SEL_ROW_H-G.selectScroll, sel=i===G.sel;
     if(y+SEL_ROW_H<SEL_TOP || y>SEL_BOTTOM)return;
     if(i===CUSTOM_CHAR){
@@ -6378,7 +6400,7 @@ function drawSelect(){
       tiny('ROPA, PELO, OJOS Y HABILIDADES',124,y+24,'#d8e8dc','center');
       return;
     }
-    const cx=39+(i%SEL_COLS)*78;
+    const cx=39+(SELECT_CHAR_IDS.indexOf(i)%SEL_COLS)*78;
     if(sel)R(cx-36,y+1,72,42,'#30443d');
     ctx.save();ctx.translate(cx-10,y+5);ctx.scale(1.2,1.2);drawPerson(0,0,c,0,sel?(frame>>4)&1:0);ctx.restore();
     tiny(c.short||c.n,cx,y+29,sel?'#fcd84a':'#fff','center');
@@ -6397,7 +6419,7 @@ function updateSelect(){
   let delta=0;
   if(pressed('left'))delta=-1;if(pressed('right'))delta=1;
   if(pressed('up'))delta=-SEL_COLS;if(pressed('down'))delta=SEL_COLS;
-  if(delta){G.sel=clamp(G.sel+delta,0,CHARS.length-1);revealSelected();SFX.move();}
+  if(delta){G.sel=SELECT_CHAR_IDS[clamp(SELECT_CHAR_IDS.indexOf(G.sel)+delta,0,SELECT_CHAR_IDS.length-1)];revealSelected();SFX.move();}
   if(pressed('b')){G.state='slots';SFX.back();}
   if(pressed('a')||pressed('menu')){SFX.ok();if(G.sel===CUSTOM_CHAR){openCharacterWizard();return;}beginAdventure(G.sel);}
 }
@@ -7215,7 +7237,7 @@ const BEATS = { agro:'combo', ctrl:'agro', combo:'ctrl' };
 const LOSES_TO = { agro:'ctrl', ctrl:'combo', combo:'agro' };
 const DECK_STYLE = { ...Object.fromEntries(POKEMON_META_DECKS.map(d=>[d.id,d.style])), burn:'agro', goblins:'agro', black:'ctrl', life:'ctrl', replenish:'combo', langostino:'combo', terragedon:'agro', landstill:'ctrl', rock:'ctrl', mud:'combo' };
 const DUELIST_DECK = {mechonaPelluco:'terragedon', luchoBarril:'goblins', durandal:'rock',galindo:'landstill',jorgew:'goblins',cesar:'burn',jgu:'replenish',macias:'mud', fan1:'goblins', fan2:'burn', fan3:'black', fan4:'life', klaus:'black', marinero:'langostino', pescador:'replenish', juez:'replenish', coleccionista:'langostino', cantinero:'burn', ligaVina:'terragedon', ligaCurico:'rock', ligaPmontt:'landstill', ligaUrza:'mud', ligaTempest:'landstill' };
-const FRIEND_DECK = ['goblins','burn','replenish','black','langostino','terragedon','rock','landstill','mud','life','goblins','burn','life','replenish','langostino','burn','mud','rock'];
+const FRIEND_DECK = ['goblins','burn','replenish','black','langostino','terragedon','rock','landstill','mud','life','goblins','burn','life','replenish','langostino','burn','mud','rock',null,'rock'];
 const isDuelist = n => n.id === 'friend' || DUELIST_DECK[n.id] !== undefined;
 function offerDuel(n){
   const name = n.id === 'friend' ? CHARS[n.ch].n : NPCDEF[n.id].n;

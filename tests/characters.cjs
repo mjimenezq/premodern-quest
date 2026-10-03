@@ -55,6 +55,18 @@ for(const fr of g.FRIENDS_ON_MAP.filter(fr=>fr.ch>=12)) {
  const def=g.getDef(fr.room);assert(!g.SOLID.has(def.map[fr.y][fr.x]),fr.room+' NPC on solid tile '+fr.ch);
  assert.equal(def.npcs.filter(n=>n.x===fr.x && n.y===fr.y).length,1);
 }
+assert.equal(g.CUSTOM_CHAR,18,'El creador conserva el indice de las partidas existentes');
+assert.equal(g.CHARS[19].id,'martin');
+const martinSave=g.newSave(19);martinSave.slot=3;g.setS(martinSave);g.saveGame();
+assert.equal(g.characterOf(g.loadSave(3)).id,'martin');
+assert(g.CHARS[19].shirtless && g.CHARS[19].muscular && g.CHARS[19].finance);
+assert.equal(Object.values(martinSave.st).reduce((a,b)=>a+b,0),20);
+for(const dir of [0,1,2,3])for(const f of [0,1])g.drawPerson(0,0,g.CHARS[19],dir,f);
+assert(g.FRIEND_LINES[19].join(' ').includes('Pokémon'));assert(g.FRIEND_DECK[19]);
+g.G.sel=19;g.G.selectScroll=0;g.revealSelected();g.drawSelect();
+assert.equal(g.selectAt({x:39,y:90}),19,'Martin es seleccionable al deslizar');
+g.loadRoom('bar',115,100);assert(!g.G.npcs.some(n=>n.id==='friend'&&n.ch===19),'No duplicar al personaje jugable');
+g.setS(g.newSave(0));g.loadRoom('bar',115,100);assert(g.G.npcs.some(n=>n.id==='friend'&&n.ch===19));
 g.G.sel=g.CUSTOM_CHAR;g.G.selectScroll=0;g.revealSelected();assert(g.G.selectScroll>0);
 assert.equal(g.selectAt({x:120,y:90}),g.CUSTOM_CHAR);
 g.setSelectScroll(-100);assert.equal(g.G.selectScroll,0);
@@ -92,7 +104,7 @@ for(const id of Object.keys(g.WORLD))for(const [side,to] of Object.entries(g.zon
 {const seen=new Set(['pmontt']),q=['pmontt'];while(q.length){const id=q.shift();for(const [side,to] of Object.entries(g.zoneNeighbors(id))){if(g.SURF_LINKS[id]?.[side]||seen.has(to))continue;seen.add(to);q.push(to);}}assert(seen.has('pueblo'),'Puerto Montt queda aislado a pie');}
 assert.equal(g.remoteCharacter({ch:g.CUSTOM_CHAR,customChar:spec}).n,'MI PERSONAJE');
 assert.equal(g.remoteCharacter({ch:g.CUSTOM_CHAR,customChar:{}}).id,'matias');
-assert.equal(g.friendCast().length,18);assert(!g.friendCast().some(c=>c.id==='custom'));assert(g.friendCredits().join(' ').includes('RAI'));assert(g.friendCredits().join(' ').includes('PABLOT'));
+assert.equal(g.friendCast().length,19);assert(!g.friendCast().some(c=>c.id==='custom'));assert(g.friendCredits().join(' ').includes('RAI'));assert(g.friendCredits().join(' ').includes('PABLOT'));
 assert.equal(g.ROOMS.valpo.doors['10,7'],'cartasCurico');assert.equal(g.ROOMS.mercado.doors['11,7'],'bovedaMox');
 assert(!g.ROOMS.mercado.npcs.some(n=>n.id==='caballerizo'||n.id==='marchante'));
 for(const [id,npcId] of [['establo','caballerizo'],['bovedaMox','marchante']]) {
