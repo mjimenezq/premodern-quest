@@ -240,7 +240,7 @@
     <a id="btnSillon" href="sillon.html">🎮🎮 Jugar de a dos (sillón)</a>
   </div>
   <section class="online" id="net" aria-label="Jugar en linea">
-    <div class="on-head"><span class="dot" id="netDot"></span><strong>JUGAR CON AMIGOS</strong><span class="on-sub">hasta 3, cada uno desde su casa</span></div>
+    <div class="on-head"><span class="dot" id="netDot"></span><strong>JUGAR CON AMIGOS</strong><span class="on-sub">hasta 4, cada uno desde su casa</span></div>
     <div class="on-row" id="netIdle">
       <button id="netHost" type="button" class="btn-main">Invitar amigos</button>
       <details class="on-join"><summary>Tengo un código</summary>
@@ -8452,6 +8452,7 @@ function netErrorText(e, code){
   if (t === 'disconnected') return 'Se perdio la conexion con el servidor. Crea o unete a la sala de nuevo.';
   return 'Error online (' + (t || 'desconocido') + '). Vuelve a intentarlo; si sigue, avisame con este texto.';
 }
+const MAX_PLAYERS = 4; // jugadores por sala online, contando al anfitrion
 function netReady(){
   if (IN_CLAUDE) { netStatus('El online no funciona dentro del link de Claude. Abre mjimenezq.github.io/premodern-quest para jugar en linea.'); return false; }
   if (!window.Peer) { netStatus('No se pudo cargar el modo online (revisa tu internet).'); return false; }
@@ -8474,7 +8475,7 @@ function netHost(){
   peer.on('disconnected', () => { if (NET.peer === peer && !peer.destroyed) { netStatus('Reconectando la sala ' + code + '...'); try { peer.reconnect(); } catch(_) {} } });
   peer.on('connection', c => {
     c.on('open', () => {
-      if (NET.conns.length >= 2) { c.send({ t:'full' }); setTimeout(() => c.close(), 300); return; }
+      if (NET.conns.length >= MAX_PLAYERS - 1) { c.send({ t:'full' }); setTimeout(() => c.close(), 300); return; }
       c.pid = 'p' + (++NID); NET.conns.push(c); c.send({ t:'hello', pid:c.pid });
       SFX.ok(); netStatus('SALA ' + code + ' · ' + (NET.conns.length + 1) + ' jugadores.');
     });
@@ -8528,7 +8529,7 @@ function hostRecv(c, d){
 function clientRecv(d){
   if(['en','kill','fx'].includes(d.t)&&(d.realm||'magic')!==(S.realm||'magic'))return;
   if (d.t === 'hello') NET.pid = d.pid;
-  else if (d.t === 'full') { netStatus('La sala está llena (máximo 3).'); netLeave(true); }
+  else if (d.t === 'full') { netStatus('La sala está llena (máximo ' + MAX_PLAYERS + ').'); netLeave(true); }
   else if (d.t === 'pl') {
     const seen = {};
     for (const s of d.list) {

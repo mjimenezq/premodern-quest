@@ -113,7 +113,7 @@ probabilidad de carta), AGI (velocidad), INT (torneos); espadas con bonos (cofre
   repetidas por 1 que falte, o vender a $4) y Klaus (cambios al azar).
 - **Torneo:** mazo completo + $10; 3 rondas simuladas con animación carta por carta; la probabilidad sale
   de la tabla de enfrentamientos `MU`, INT y cerveza.
-- **Online cooperativo (hasta 3):** PeerJS (WebRTC, servidor público gratuito de PeerJS, sin cuentas).
+- **Online cooperativo (hasta 4, `MAX_PLAYERS`; subido de 3 el 10 oct):** PeerJS (WebRTC, servidor público gratuito de PeerJS, sin cuentas).
   "Crear sala" da un código de 4 letras; el anfitrión simula las criaturas de su zona y los demás las
   ven sincronizadas cuando están en la misma zona (golpes van al anfitrión, cada uno recibe su propio
   botín al morir la criatura). En otras zonas cada uno juega solo. Se pueden regalar cartas repetidas
