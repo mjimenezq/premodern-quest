@@ -6925,7 +6925,7 @@ function drawWorld(){
     drawPerson(x - 3, y - 8, {...remoteCharacter(o),face8:o.spin>0?spinFacing(o.spin):visibleFacing(o.dir,o.face8)}, o.spin>0?(spinFacing(o.spin)<4?spinFacing(o.spin):[2,3,2,3][spinFacing(o.spin)-4]):o.dir, o.walk);
     drawAttackPower(x,y,Math.min(SPIN_CHARGE,Math.max(0,o.charge||0)),Math.min(SPIN_DURATION,Math.max(0,o.spin||0)),(SWORDS[o.eq]||SWORDS.hierro).col);
     if (o.atk > 0 && o.dir !== 1) drawSwordAt(x, y, o.dir, o.atk, (SWORDS[o.eq]||SWORDS.hierro).col);
-    const nm = norm(o.name), w = nm.length * 4 + 3;
+    const nm = norm(o.name + netLvl(o)), w = nm.length * 4 + 3;
     R(x + 5 - w / 2, y - 22, w, 8, 'rgba(0,0,0,.55)'); tiny(nm, x + 5, y - 20, '#60e070', 'center');
   } });
   if(!G.waking)list.push({ y:PL.y + PL.h, f:() => {
@@ -7014,7 +7014,7 @@ function drawHUD(){
     tiny((NET.role === 'host' ? 'SALA ' : 'EN SALA ') + (NET.code || ''), 4, py0, '#fcd84a');
     party.forEach((o, i) => {
       const where = o.room === G.roomId ? '' : ' - ' + (ROOMS[o.room] ? ROOMS[o.room].name : '');
-      tiny(o.name + ' ' + Math.ceil(o.hp / 2) + '/' + Math.ceil(o.max / 2) + where, 4, py0 + 7 + i * 7, o.room === G.roomId ? '#60e070' : '#9db8a8');
+      tiny(o.name + netLvl(o) + ' ' + Math.ceil(o.hp / 2) + '/' + Math.ceil(o.max / 2) + where, 4, py0 + 7 + i * 7, o.room === G.roomId ? '#60e070' : '#9db8a8');
     });
   }
   // plata y cartas en una sola línea arriba a la derecha
@@ -8510,8 +8510,10 @@ function remoteCharacter(o){
   try { return characterOf(o) || CHARS[0]; } catch (_) { return CHARS[0]; }
 }
 function myState(){
-  return { pid:NET.pid, name:CH().n, ch:S.ch, customChar:S.customChar || null, realm:S.realm||'magic', room:G.roomId, x:Math.round(PL.x), y:Math.round(PL.y), eq:S.eq,spin:PL.spin||0,charge:PL.attackCharge||0,dir:PL.dir, face8:visibleFacing(PL.dir,PL.face8), atk:PL.atk, walk:Math.floor(PL.walk) % 2, hp:S.hp, max:S.maxHp };
+  return { pid:NET.pid, name:CH().n, ch:S.ch, customChar:S.customChar || null, realm:S.realm||'magic', room:G.roomId, x:Math.round(PL.x), y:Math.round(PL.y), eq:S.eq,spin:PL.spin||0,charge:PL.attackCharge||0,dir:PL.dir, face8:visibleFacing(PL.dir,PL.face8), atk:PL.atk, walk:Math.floor(PL.walk) % 2, hp:S.hp, max:S.maxHp, lvl:S.lvl || 1 };
 }
+// Nivel de un companero online (las versiones antiguas del juego no lo mandan)
+const netLvl = o => { const n = Math.floor(+o.lvl); return n >= 1 && n <= 999 ? ' NV' + n : ''; };
 const sendAll = m => {if(m.room)m={...m,realm:S.realm||'magic'}; for (const c of NET.conns) if (c.open) c.send(m); };
 function sendTo(pid, m){ if (NET.role === 'host') { const c = NET.conns.find(x => x.pid === pid); if (c && c.open) c.send(m); } }
 function hostRecv(c, d){
@@ -8599,7 +8601,7 @@ function netTick(){
   if (frame % 4) return;
   if (NET.role === 'host') {
     if (!NET.conns.length) return;
-    const list = [myState()].concat(Object.values(NET.others).map(o => ({ pid:o.pid, name:o.name, ch:o.ch,customChar:o.customChar||null,realm:o.realm||'magic', room:o.room, x:o.x, y:o.y, eq:o.eq,spin:o.spin||0,charge:o.charge||0,face8:o.face8,dir:o.dir, atk:o.atk, walk:o.walk, hp:o.hp, max:o.max })));
+    const list = [myState()].concat(Object.values(NET.others).map(o => ({ pid:o.pid, name:o.name, ch:o.ch,customChar:o.customChar||null,realm:o.realm||'magic', room:o.room, x:o.x, y:o.y, eq:o.eq,spin:o.spin||0,charge:o.charge||0,face8:o.face8,dir:o.dir, atk:o.atk, walk:o.walk, hp:o.hp, max:o.max, lvl:o.lvl })));
     sendAll({ t:'pl', list, wt:S.worldTicks });
     if (G.state === 'world') sendAll({ t:'en', room:G.roomId, list:G.enemies.filter(e => !e.dead).map(e => [e.nid, e.type, Math.round(e.x), Math.round(e.y), e.hp, e.max, e.flip ? 1 : 0, e.flash > 0 ? 1 : 0]) });
   } else if (NET.host && NET.host.open) {
@@ -8737,7 +8739,7 @@ function netUI(){
   if (inRoom) {
     netEl('netCodeBig').textContent = code;
     netEl('netWa').href = 'https://wa.me/?text=' + encodeURIComponent(inviteText(code));
-    const names = [S ? CH().n + ' (TU)' : 'TU'].concat(Object.values(NET.others).map(o => o.name + (o.pid === 'h' ? ' (ANFITRION)' : '')));
+    const names = [S ? CH().n + ' · nivel ' + (S.lvl || 1) + ' (TU)' : 'TU'].concat(Object.values(NET.others).map(o => o.name + (netLvl(o) ? ' · nivel ' + Math.floor(+o.lvl) : '') + (o.pid === 'h' ? ' (ANFITRION)' : '')));
     const ul = netEl('netPlayers'), html = names.map(n => '<li>' + n.replace(/[<>&]/g, '') + '</li>').join('');
     if (ul.innerHTML !== html) ul.innerHTML = html;
   }
