@@ -10,3 +10,4 @@
 - El proyecto usa GitHub Pages; revisa `git status` antes de preparar una publicación.
 - Por decisión explícita de Matías (1 oct 2026), este vuelve a ser el proyecto principal de Codex y se publica en el enlace original para conservar las partidas de sus amigos. Mantener claves pmq_save_1..3, pmq_last, pmq_trash y salas pmq-. No cambiar su namespace ni los índices de personajes.
 - Nuevos índices: 12 Rai, 13 Tía Coco, 14 Javier, 15 Rodolfo, 16 Cahe, 17 PabloT y 18 creador. Mantenerlos fijos; characterOf(save) resuelve personajes creados por partida.
+- Al publicar, sube el numero BUILD de index.html (AAAAMMDDnn): con eso el juego avisa a los jugadores que hay version nueva y la sala online marca a quien sigue con la antigua.

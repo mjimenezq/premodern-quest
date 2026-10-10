@@ -1152,6 +1152,7 @@ const LUXURY = [
   { kind:'armor', id:'yelmoPhyrexia', price:10000000, req:{ lvl:52, trophies:1 } },
   { kind:'armor', id:'egidaSerra', price:12000000, req:{ lvl:55, trophies:2 } },
   { kind:'sword', id:'masticoreBlade', price:15000000, req:{ lvl:55, trophies:2 } },
+  { kind:'mount', id:'shivan', price:12000000, req:{ lvl:50, trophies:1, boss:'shivan' } }, // 10 oct: ya no se regala al vencer al jefe
   { kind:'mount', id:'crosis', price:20000000, req:{ lvl:58, trophies:2 } },
   { kind:'armor', id:'corazaMox', price:25000000, req:{ lvl:60, trophies:3 } },
   { kind:'house', id:'castillo', price:30000000, req:{ lvl:60, trophies:3 } },
@@ -1169,8 +1170,8 @@ for(let i=0;i<10;i++){
  for(const [slot,label]of GEAR_SLOTS){const aid='avance'+slot+i;ARMOR[aid]={n:label+' '+ADVANCED_NAMES[i],slot,def:(slot==='body'?14:8)+i*2,st:slot==='feet'?{agi:4+i}:slot==='head'?{int:3+i}:{fue:2+i,des:2+i},tier:6+Math.floor(i/3),col};LUXURY.push({kind:'armor',id:aid,price:900000+i*i*450000,req:{lvl}});}
 }
 
-const reqOk = r => !r || ((S.lvl || 1) >= (r.lvl || 0) && (S.trophies || 0) >= (r.trophies || 0));
-const reqText = r => !r ? '' : 'REQUIERE NV ' + r.lvl + (r.trophies ? ' Y ' + r.trophies + ' TROFEO' + (r.trophies > 1 ? 'S' : '') : '');
+const reqOk = r => !r || ((S.lvl || 1) >= (r.lvl || 0) && (S.trophies || 0) >= (r.trophies || 0) && (!r.boss || !!(S.bosses && S.bosses[r.boss])));
+const reqText = r => !r ? '' : 'REQUIERE NV ' + r.lvl + (r.trophies ? ' Y ' + r.trophies + ' TROFEO' + (r.trophies > 1 ? 'S' : '') : '') + (r.boss ? ' Y VENCER A ' + MON[r.boss].n.toUpperCase() : '');
 const BOSS_GEAR = { siege:'yelmoGuardian', dread:'grebasLangostino', reyMinas:'escudoCampeon', negAnc:'botasMox', serraAsc:'armaduraSerra', shivan:'coronaShivan', kjeldor:'armaduraHielo', pit:'escudoAbismo',
   terraBoss:'botasTierra', conclaveQ:'coronaHada', mongerAnc:'corazaRoca', masticore:'escudoMox' };
 const SPELLS = {
@@ -1195,7 +1196,7 @@ const MOUNTS = {
   caballo:{ n:'Burro de Curico', price:300000, spd:0.08, kind:'horse', donkey:true, body:'#99918a', mane:'#494544', desc:'Burro manso del establo. +8% velocidad: ideal para empezar.' },
   crosis:{ n:'Crosis, the Purger', spd:0.32, def:4, kind:'dragon', body:'#2a3a7a', mane:'#80c0ff', boss:true, desc:'Dragon legendario de Invasion. +32% velocidad y +4 DEF.' },
   darigaaz:{ n:'Darigaaz, the Igniter', spd:0.36, def:6, kind:'dragon', body:'#6a1010', mane:'#60c040', boss:true, desc:'El dragon mas temido de Dominaria. +36% velocidad y +6 DEF.' },
-  shivan:{ n:'Shivan Dragon', spd:0.28, def:2, kind:'dragon', body:'#d83020', mane:'#f8c030', boss:true, desc:'Se gana venciendo al Shivan Dragon. +28% velocidad.' },
+  shivan:{ n:'Shivan Dragon', spd:0.28, def:2, kind:'dragon', body:'#d83020', mane:'#f8c030', boss:true, desc:'Hay que vencer al Shivan Dragon y despues comprarlo donde El Marchante. +28% velocidad.' },
 };
 for(const id of ['mesa','nightmare','charger','mammoth'])MOUNTS[id].price=Math.max(300000,MOUNTS[id].price*3);
 // 10 oct: las monturas basicas piden nivel (antes se compraban apenas alcanzaba la plata). Quien ya tiene una la conserva.
@@ -4614,7 +4615,7 @@ function dropLoot(e){
     S.bosses[e.type] = true; G.bossBar = null; playMusic(roomMusic()); awardBossDiploma(e.type);
     if (G.def.bossFloor) { G.map[4][7] = 'O'; G.cacheDirty = true; }
     if (GUARDIANS.includes(e.type)) toast('GUARDIANES DERROTADOS: ' + guardiansDone() + '/5', '#fcd84a');
-    drop('card', m.cards[0]); drop('sword', m.sword); if (BOSS_GEAR[e.type]) drop('gear', BOSS_GEAR[e.type]); if (e.type === 'shivan' && !(S.mounts || []).includes('shivan')) setTimeout(() => giveMount('shivan'), 600);
+    drop('card', m.cards[0]); drop('sword', m.sword); if (BOSS_GEAR[e.type]) drop('gear', BOSS_GEAR[e.type]); if (e.type === 'shivan' && !(S.mounts || []).includes('shivan')) toast('VENCISTE AL SHIVAN: EL MARCHANTE YA PUEDE VENDERTE SU MONTURA', '#fcd84a');
     for (let i = 0; i < 6; i++) drop('coin', null, 500);
     if (Math.random() < (m.raid ? 0.05 : 0.02)) drop('card', LEGEND);
     if (m.raid) {
@@ -6025,7 +6026,7 @@ function talkTo(id, npc, skipQuest){
     for (const m of own) ch.push({ t:'MONTAR ' + MOUNTS[m].n.toUpperCase(), fn:() => { S.mount = m; saveGame(); toast('MONTADO EN ' + MOUNTS[m].n.toUpperCase(), '#fcd84a'); } });
     if (S.mount) ch.push({ t:'IR A PIE', fn:() => { S.lastMount = S.mount; S.mount = null; saveGame(); } });
     ch.push({ t:'NADA', fn:null });
-    say(['CABALLERIZO: ¡Bienvenido al establo de Curico, patron! El burro cuesta $300.000 y pide nivel ' + FIRST_MOUNT_LVL + ': es manso y te lleva un 8% mas rapido. Despues vienen Mesa Pegasus (NV 20), Nightmare (NV 25), Pegasus Charger (NV 30) y War Mammoth (NV 35), cada uno un poco mas veloz.', 'Los dragones se ganan venciendo a sus guardianes. Son la ultima mejora: rapidos, pero controlables. Con R te subes y te bajas.'], ch.slice(0, 6));
+    say(['CABALLERIZO: ¡Bienvenido al establo de Curico, patron! El burro cuesta $300.000 y pide nivel ' + FIRST_MOUNT_LVL + ': es manso y te lleva un 8% mas rapido. Despues vienen Mesa Pegasus (NV 20), Nightmare (NV 25), Pegasus Charger (NV 30) y War Mammoth (NV 35), cada uno un poco mas veloz.', 'Los dragones no los vendo yo: los tiene El Marchante en el Mercado de Mox, son carisimos y el Shivan solo te lo vende si ya venciste al dragon. Con R te subes y te bajas.'], ch.slice(0, 6));
     return;
   }
   if (id === 'mago') { say(['MAGA: Para salir de aventura hay que ir preparado. Tengo libros de hechizos y pociones para recuperar fuerzas.'], [{t:'APRENDER MAGIA',fn:()=>openShop('magia','LIBROS DE MAGIA')},{t:'COMPRAR POCIONES',fn:()=>openShop('pociones','BOTICA DE LA MAGA')},{t:'VOLVER',fn:null}]); return; }
@@ -8460,6 +8461,22 @@ function netErrorText(e, code){
   if (t === 'disconnected') return 'Se perdio la conexion con el servidor. Crea o unete a la sala de nuevo.';
   return 'Error online (' + (t || 'desconocido') + '). Vuelve a intentarlo; si sigue, avisame con este texto.';
 }
+const BUILD = 2026101001; // AAAAMMDDnn: subir en cada publicacion
+// Aviso de version nueva: compara este BUILD con el del archivo publicado y ofrece recargar
+function checkForUpdate(){
+  if (IN_CLAUDE || !/^https?:$/.test(location.protocol) || document.getElementById('updateBar')) return;
+  fetch(location.pathname + '?v=' + Date.now(), { cache:'no-store' }).then(r => r.ok ? r.text() : '').then(t => {
+    const m = /const BUILD = (\d+);/.exec(t); if (!m || +m[1] <= BUILD || document.getElementById('updateBar')) return;
+    const b = document.createElement('button'); b.id = 'updateBar'; b.type = 'button'; b.textContent = 'Hay una version nueva del juego · toca aqui para actualizar';
+    b.style.cssText = 'position:fixed;left:50%;top:8px;transform:translateX(-50%);z-index:9998;font:12px monospace;padding:8px 14px;background:#fcd84a;color:#1a1020;border:2px solid #1a1020;border-radius:8px;cursor:pointer;max-width:92vw';
+    b.onclick = () => { saveGame && S && saveGame(); location.reload(); };
+    document.body.append(b);
+  }).catch(() => {});
+}
+setTimeout(checkForUpdate, 4000); setInterval(checkForUpdate, 10 * 60 * 1000);
+// Nota de version de un companero online (para saber quien tiene que recargar)
+const netVersionNote = o => !(+o.v >= BUILD) ? ' · VERSION ANTIGUA: DEBE RECARGAR LA PAGINA' : +o.v > BUILD ? ' · TIENE UNA VERSION MAS NUEVA: RECARGA TU' : '';
+function netVersionWarn(o){ if (o.vWarned) return; o.vWarned = true; if (!(+o.v >= BUILD)) toast(o.name + ' TIENE UNA VERSION ANTIGUA: QUE RECARGUE LA PAGINA', '#ff9080'); else if (+o.v > BUILD) toast('TU JUEGO ESTA ANTIGUO: RECARGA LA PAGINA', '#ff9080'); }
 const MAX_PLAYERS = 4; // jugadores por sala online, contando al anfitrion
 function netReady(){
   if (IN_CLAUDE) { netStatus('El online no funciona dentro del link de Claude. Abre mjimenezq.github.io/premodern-quest para jugar en linea.'); return false; }
@@ -8518,7 +8535,7 @@ function remoteCharacter(o){
   try { return characterOf(o) || CHARS[0]; } catch (_) { return CHARS[0]; }
 }
 function myState(){
-  return { pid:NET.pid, name:CH().n, ch:S.ch, customChar:S.customChar || null, realm:S.realm||'magic', room:G.roomId, x:Math.round(PL.x), y:Math.round(PL.y), eq:S.eq,spin:PL.spin||0,charge:PL.attackCharge||0,dir:PL.dir, face8:visibleFacing(PL.dir,PL.face8), atk:PL.atk, walk:Math.floor(PL.walk) % 2, hp:S.hp, max:S.maxHp, lvl:S.lvl || 1, mount:mounted() ? S.mount : null, pet:G.pet && companionInfo() ? (pokemonRealm() ? (S.magicPet || 'shivan') : S.pet) : null };
+  return { pid:NET.pid, name:CH().n, ch:S.ch, customChar:S.customChar || null, realm:S.realm||'magic', room:G.roomId, x:Math.round(PL.x), y:Math.round(PL.y), eq:S.eq,spin:PL.spin||0,charge:PL.attackCharge||0,dir:PL.dir, face8:visibleFacing(PL.dir,PL.face8), atk:PL.atk, walk:Math.floor(PL.walk) % 2, hp:S.hp, max:S.maxHp, lvl:S.lvl || 1, v:BUILD, mount:mounted() ? S.mount : null, pet:G.pet && companionInfo() ? (pokemonRealm() ? (S.magicPet || 'shivan') : S.pet) : null };
 }
 // Nivel de un companero online (las versiones antiguas del juego no lo mandan)
 // Montura y mascota de un companero: solo se aceptan valores que este juego conoce
@@ -8549,7 +8566,7 @@ const netLvl = o => { const n = Math.floor(+o.lvl); return n >= 1 && n <= 999 ? 
 const sendAll = m => {if(m.room)m={...m,realm:S.realm||'magic'}; for (const c of NET.conns) if (c.open) c.send(m); };
 function sendTo(pid, m){ if (NET.role === 'host') { const c = NET.conns.find(x => x.pid === pid); if (c && c.open) c.send(m); } }
 function hostRecv(c, d){
-  if (d.t === 'st') { d.pid = c.pid; const o = NET.others[c.pid]; if (!o) toast(d.name + ' SE UNIO', '#60e070'); NET.others[c.pid] = Object.assign(o || { rx:d.x, ry:d.y }, d); }
+  if (d.t === 'st') { d.pid = c.pid; const o = NET.others[c.pid]; if (!o) toast(d.name + ' SE UNIO', '#60e070'); NET.others[c.pid] = Object.assign(o || { rx:d.x, ry:d.y }, d); netVersionWarn(NET.others[c.pid]); }
   else if (d.t === 'hit') {
     if (d.room !== G.roomId || G.state !== 'world'||(d.realm||'magic')!==(S.realm||'magic')) return;
     const e = G.enemies.find(o => o.nid === d.id && !o.dead);
@@ -8571,7 +8588,7 @@ function clientRecv(d){
       seen[s.pid] = true;
       if (s.pid === 'h'){const was=NET.hostRoom;NET.hostRoom=s.room;NET.hostRealm=s.realm||'magic';if(was!==s.room&&s.room===G.roomId&&G.state==='world')sendRoomEnemies();}
       const o = NET.others[s.pid]; if (!o) toast(s.name + ' ESTA EN LA SALA', '#60e070');
-      NET.others[s.pid] = Object.assign(o || { rx:s.x, ry:s.y }, s);
+      NET.others[s.pid] = Object.assign(o || { rx:s.x, ry:s.y }, s); netVersionWarn(NET.others[s.pid]);
     }
     for (const k in NET.others) if (!seen[k]) delete NET.others[k];
     syncDay(d.wt);
@@ -8634,7 +8651,7 @@ function netTick(){
   if (frame % 4) return;
   if (NET.role === 'host') {
     if (!NET.conns.length) return;
-    const list = [myState()].concat(Object.values(NET.others).map(o => ({ pid:o.pid, name:o.name, ch:o.ch,customChar:o.customChar||null,realm:o.realm||'magic', room:o.room, x:o.x, y:o.y, eq:o.eq,spin:o.spin||0,charge:o.charge||0,face8:o.face8,dir:o.dir, atk:o.atk, walk:o.walk, hp:o.hp, max:o.max, lvl:o.lvl, mount:o.mount, pet:o.pet })));
+    const list = [myState()].concat(Object.values(NET.others).map(o => ({ pid:o.pid, name:o.name, ch:o.ch,customChar:o.customChar||null,realm:o.realm||'magic', room:o.room, x:o.x, y:o.y, eq:o.eq,spin:o.spin||0,charge:o.charge||0,face8:o.face8,dir:o.dir, atk:o.atk, walk:o.walk, hp:o.hp, max:o.max, lvl:o.lvl, v:o.v, mount:o.mount, pet:o.pet })));
     sendAll({ t:'pl', list, wt:S.worldTicks });
     if (G.state === 'world') sendAll({ t:'en', room:G.roomId, list:G.enemies.filter(e => !e.dead).map(e => [e.nid, e.type, Math.round(e.x), Math.round(e.y), e.hp, e.max, e.flip ? 1 : 0, e.flash > 0 ? 1 : 0]) });
   } else if (NET.host && NET.host.open) {
@@ -8772,7 +8789,7 @@ function netUI(){
   if (inRoom) {
     netEl('netCodeBig').textContent = code;
     netEl('netWa').href = 'https://wa.me/?text=' + encodeURIComponent(inviteText(code));
-    const names = [S ? CH().n + ' · nivel ' + (S.lvl || 1) + ' (TU)' : 'TU'].concat(Object.values(NET.others).map(o => o.name + (netLvl(o) ? ' · nivel ' + Math.floor(+o.lvl) : '') + (o.pid === 'h' ? ' (ANFITRION)' : '')));
+    const names = [S ? CH().n + ' · nivel ' + (S.lvl || 1) + ' (TU)' : 'TU'].concat(Object.values(NET.others).map(o => o.name + (netLvl(o) ? ' · nivel ' + Math.floor(+o.lvl) : '') + (o.pid === 'h' ? ' (ANFITRION)' : '') + netVersionNote(o)));
     const ul = netEl('netPlayers'), html = names.map(n => '<li>' + n.replace(/[<>&]/g, '') + '</li>').join('');
     if (ul.innerHTML !== html) ul.innerHTML = html;
   }
