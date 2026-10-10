@@ -1330,13 +1330,17 @@ const zoneTier = () => G.def && G.def.dungeonKey ? 3 + (G.def.floor >= 3 ? 1 : 0
 function defense(){ let d = (mounted() ? (mounted().def || 0) : 0) + (CH().builder ? 2 : 0) + (CH().tibia ? 2 : 0); for (const [slot] of GEAR_SLOTS) { const id = S.gear && S.gear[slot]; if (id) d += ARMOR[id].def; } return d; }
 const maxMp = () => 4 + stats().int + (S.house && S.house.biblioteca ? 2 : 0) + houseBonus('mp');
 const shadeCol = (hex, f) => { const n = parseInt(hex.slice(1), 16); const c = [n >> 16, (n >> 8) & 255, n & 255].map(v => Math.max(0, Math.min(255, Math.round(v * f)))); return '#' + c.map(v => v.toString(16).padStart(2, '0')).join(''); };
-function playerLook(){
-  const base = CH(), c = Object.assign({}, base.c), g = S.gear || {};
-  if (g.body) { c.shirt = ARMOR[g.body].col; c.shirtD = shadeCol(ARMOR[g.body].col, 0.65); c.sleeve = ARMOR[g.body].col; c.emblem = null; }
-  if (g.legs) c.pants = ARMOR[g.legs].col;
-  if (g.feet) c.shoe = ARMOR[g.feet].col;
-  return Object.assign({}, base, { c, helm:g.head ? ARMOR[g.head] : null, shield:g.shield ? ARMOR[g.shield] : null, bodyArmor:!!g.body });
+// Viste a un personaje con su armadura; solo acepta piezas que existen y van en ese espacio
+function gearLook(base, gear){
+  const c = Object.assign({}, base.c), g = gear && typeof gear === 'object' ? gear : {};
+  const piece = slot => { const id = g[slot]; return typeof id === 'string' && Object.prototype.hasOwnProperty.call(ARMOR, id) && ARMOR[id].slot === slot ? ARMOR[id] : null; };
+  const body = piece('body'), legs = piece('legs'), feet = piece('feet');
+  if (body) { c.shirt = body.col; c.shirtD = shadeCol(body.col, 0.65); c.sleeve = body.col; c.emblem = null; }
+  if (legs) c.pants = legs.col;
+  if (feet) c.shoe = feet.col;
+  return Object.assign({}, base, { c, helm:piece('head'), shield:piece('shield'), bodyArmor:!!body });
 }
+function playerLook(){ return gearLook(CH(), S.gear); }
 function addGear(id){
   const A = ARMOR[id];
   S.armor = S.armor || [];
@@ -4723,9 +4727,10 @@ function cutBush(hx, hy){
   if (r < 0.25) G.items.push({ k:'coin', v:1, x:tx * TS + 4, y:ty * TS + 4, z:0, vz:-2, t:0 });
   else if (r < 0.35) G.items.push({ k:'heart', x:tx * TS + 4, y:ty * TS + 4, z:0, vz:-2, t:0 });
 }
-function throwWeapon(kind, ang, mult){
-  const sp = kind === 'boom' ? 3.2 : 3.6;
-  (G.wshots || (G.wshots = [])).push({ k:kind, x:PL.x + 5 + Math.cos(ang) * 8, y:PL.y - 2 + Math.sin(ang) * 8, vx:Math.cos(ang) * sp, vy:Math.sin(ang) * sp, t:0, life:kind === 'boom' ? 90 : 24, back:false, hits:{}, mult, col:weaponCol(), fin:!!PL.finisher });
+function throwWeapon(kind, ang, mult, owner){
+  const sp = kind === 'boom' ? 3.2 : 3.6, ox = owner ? owner.rx : PL.x, oy = owner ? owner.ry : PL.y;
+  (G.wshots || (G.wshots = [])).push({ k:kind, x:ox + 5 + Math.cos(ang) * 8, y:oy - 2 + Math.sin(ang) * 8, vx:Math.cos(ang) * sp, vy:Math.sin(ang) * sp, t:0, life:kind === 'boom' ? 90 : 24, back:false, hits:{}, mult,
+    col:owner ? (SWORDS[owner.eq] || SWORDS.hierro).col : weaponCol(), fin:!owner && !!PL.finisher, vis:!!owner, owner:owner || null });
 }
 const boomOut = () => (G.wshots || []).some(s => s.k === 'boom' && !s.dead);
 // Puntos del arma en este cuadro, segun como pega
@@ -4766,6 +4771,7 @@ function startSpecial(){
   if (sp === 'giro') return startSpinAttack();
   if (!canChargeAttack() || PL.spin > 0 || PL.atk > 0 || PL.atkCd > 0 || PL.dash) return false;
   const base = dirAngle(PL.dir), cx = PL.x + 5, cy = PL.y - 2; G.swing++; G.moveTarget = null; PL.finisher = false; SFX.swing();
+  PL.spn = (PL.spn || 0) % 9999 + 1; PL.spk = sp; // para que los companeros vean el especial
   if (sp === 'embestida') { const [dx, dy] = DIRV[PL.dir]; PL.dash = { t:12, dx, dy, swing:G.swing }; PL.atkCd = 30; }
   else if (sp === 'terremoto') {
     PL.atkCd = 40; tone(90, 40, 0.25, 'sawtooth', 0.5);
@@ -4791,9 +4797,10 @@ function updateWeaponExtras(){
     s.t++;
     if (s.k === 'boom') {
       if (!s.back && (s.t > 16 || solidPoint(s.x + s.vx, s.y + s.vy))) s.back = true;
-      if (s.back) { const dx = PL.x + 5 - s.x, dy = PL.y - 2 - s.y, d = Math.hypot(dx, dy) || 1; s.vx = dx / d * 3.6; s.vy = dy / d * 3.6; if (d < 8 || s.t > s.life) { s.dead = true; continue; } }
+      if (s.back) { const hx = s.owner ? s.owner.rx : PL.x, hy = s.owner ? s.owner.ry : PL.y, dx = hx + 5 - s.x, dy = hy - 2 - s.y, d = Math.hypot(dx, dy) || 1; s.vx = dx / d * 3.6; s.vy = dy / d * 3.6; if (d < 8 || s.t > s.life) { s.dead = true; continue; } }
     } else if (s.t > s.life || solidPoint(s.x + s.vx, s.y + s.vy)) { s.dead = true; continue; }
     s.x += s.vx; s.y += s.vy;
+    if (s.vis) continue; // las armas de los companeros solo se ven: el daño lo calcula su propio juego
     const pass = s.back ? 2 : 1;
     for (const e of G.enemies) {
       if (e.dead || s.hits[e.nid] === pass) continue; const ex = e.x + e.w / 2, ey = e.y + e.h / 2;
@@ -6985,13 +6992,12 @@ function drawSwordAt(px,py,dir,atk,col,span=1.25,len=12){
   ctx.globalAlpha=1;ctx.translate(cx,cy);ctx.rotate(ang);drawWeaponBlade(col,len);
   ctx.restore();
 }
-// El arma del jugador se dibuja segun como pega (los companeros online se ven con el tajo clasico)
-function drawSword(){
-  if(PL.atk<=0)return;
-  const col=SWORDS[S.eq].col,sk=PL.swingStyle||'tajo',big=PL.finisher?3:0,base=dirAngle(PL.dir),cx=PL.x+5,cy=PL.y-2,t=Math.max(0,Math.min(1,1-PL.atk/ATK));
+// El arma se dibuja segun como pega; sirve para el jugador y para los companeros online
+function drawWeaponSwing(px,py,dir,atk,col,sk,second,big){
+  const base=dirAngle(dir),cx=px+5,cy=py-2,t=Math.max(0,Math.min(1,1-atk/ATK));
   if(sk==='boomerang')return;
-  if(sk==='amplio'){drawSwordAt(PL.x,PL.y,PL.dir,PL.atk,col,1.9,16+big);return;}
-  if(sk==='doble'){drawSwordAt(PL.x,PL.y,PL.dir,PL.atk,col,PL.second?-1.25:1.25,11+big);return;}
+  if(sk==='amplio'){drawSwordAt(px,py,dir,atk,col,1.9,16+big);return;}
+  if(sk==='doble'){drawSwordAt(px,py,dir,atk,col,second?-1.25:1.25,11+big);return;}
   if(sk==='estocada'){
     const ext=Math.sin(t*Math.PI)*14;ctx.save();ctx.translate(cx,cy);ctx.rotate(base);
     ctx.globalAlpha=Math.sin(t*Math.PI)*.5;ctx.fillStyle=col;ctx.fillRect(4,-1,ext+18,2);ctx.globalAlpha=1;
@@ -7006,8 +7012,9 @@ function drawSword(){
     for(let i=1;i<=10;i++){const ph=a-i*.22;ctx.globalAlpha=(1-i/11)*.6;R(Math.round(cx+Math.cos(ph)*20),Math.round(cy+Math.sin(ph)*20),2,2,col);R(Math.round(cx-Math.cos(ph)*20),Math.round(cy-Math.sin(ph)*20),2,2,col);}
     ctx.globalAlpha=1;ctx.translate(cx,cy);ctx.rotate(a);drawWeaponBlade(col,15+big);ctx.rotate(Math.PI);drawWeaponBlade(col,15+big);ctx.restore();return;
   }
-  drawSwordAt(PL.x,PL.y,PL.dir,PL.atk,col,1.25,12+big);
+  drawSwordAt(px,py,dir,atk,col,1.25,12+big);
 }
+function drawSword(){ if(PL.atk>0)drawWeaponSwing(PL.x,PL.y,PL.dir,PL.atk,SWORDS[S.eq].col,PL.swingStyle||'tajo',!!PL.second,PL.finisher?3:0); }
 function drawAttackPower(px,py,charge,spin,col){
   col=col||'#d8e0e8';const cx=px+5,cy=py-2;
   if(charge>0&&!spin){const ready=charge>=SPIN_CHARGE;R(cx-9,py-27,18,3,'#1a1020');R(cx-8,py-26,Math.round(16*Math.min(1,charge/SPIN_CHARGE)),1,ready?shadeCol(col,1.25):col);
@@ -7104,12 +7111,13 @@ function drawWorld(){
   for (const o of othersHere()) if (o.petPos && netPetKind(o)) list.push({ y:o.petPos.y + 10, f:() => drawNetPet(o) });
   for (const o of othersHere()) list.push({ y:o.ry + 8, f:() => {
     const x = Math.round(o.rx), y = Math.round(o.ry);
-    if (o.atk > 0 && o.dir === 1) drawSwordAt(x, y, o.dir, o.atk, (SWORDS[o.eq]||SWORDS.hierro).col);
-    const oDir = o.spin>0?(spinFacing(o.spin)<4?spinFacing(o.spin):[2,3,2,3][spinFacing(o.spin)-4]):o.dir, oMount = netMount(o), oLook = {...remoteCharacter(o),face8:o.spin>0?spinFacing(o.spin):visibleFacing(o.dir,o.face8)};
+    const oCol = (SWORDS[o.eq]||SWORDS.hierro).col, oSwing = () => drawWeaponSwing(x, y, o.dir, o.atk, oCol, netStyle(o), !!o.s2, o.fin ? 3 : 0);
+    if (o.atk > 0 && o.dir === 1) oSwing();
+    const oDir = o.spin>0?(spinFacing(o.spin)<4?spinFacing(o.spin):[2,3,2,3][spinFacing(o.spin)-4]):o.dir, oMount = netMount(o), oLook = {...gearLook(remoteCharacter(o), o.gear),face8:o.spin>0?spinFacing(o.spin):visibleFacing(o.dir,o.face8)};
     if (oMount) { drawMount(oMount, x - 6, y - 8, oDir, o.walk, 'back'); drawPerson(x - 3, y - 18, oLook, oDir, 0); drawMount(oMount, x - 6, y - 8, oDir, o.walk, 'front'); }
     else drawPerson(x - 3, y - 8, oLook, oDir, o.walk);
     drawAttackPower(x,y,Math.min(SPIN_CHARGE,Math.max(0,o.charge||0)),Math.min(SPIN_DURATION,Math.max(0,o.spin||0)),(SWORDS[o.eq]||SWORDS.hierro).col);
-    if (o.atk > 0 && o.dir !== 1) drawSwordAt(x, y, o.dir, o.atk, (SWORDS[o.eq]||SWORDS.hierro).col);
+    if (o.atk > 0 && o.dir !== 1) oSwing();
     const nm = norm(o.name + netLvl(o)), w = nm.length * 4 + 3, ty = netMount(o) ? y - 32 : y - 22;
     R(x + 5 - w / 2, ty, w, 8, 'rgba(0,0,0,.55)'); tiny(nm, x + 5, ty + 2, '#60e070', 'center');
   } });
@@ -8638,7 +8646,7 @@ function netErrorText(e, code){
   if (t === 'disconnected') return 'Se perdio la conexion con el servidor. Crea o unete a la sala de nuevo.';
   return 'Error online (' + (t || 'desconocido') + '). Vuelve a intentarlo; si sigue, avisame con este texto.';
 }
-const BUILD = 2026101002; // AAAAMMDDnn: subir en cada publicacion
+const BUILD = 2026101003; // AAAAMMDDnn: subir en cada publicacion
 // Aviso de version nueva: compara este BUILD con el del archivo publicado y ofrece recargar
 function checkForUpdate(){
   if (IN_CLAUDE || !/^https?:$/.test(location.protocol) || document.getElementById('updateBar')) return;
@@ -8712,10 +8720,27 @@ function remoteCharacter(o){
   try { return characterOf(o) || CHARS[0]; } catch (_) { return CHARS[0]; }
 }
 function myState(){
-  return { pid:NET.pid, name:CH().n, ch:S.ch, customChar:S.customChar || null, realm:S.realm||'magic', room:G.roomId, x:Math.round(PL.x), y:Math.round(PL.y), eq:S.eq,spin:PL.spin||0,charge:PL.attackCharge||0,dir:PL.dir, face8:visibleFacing(PL.dir,PL.face8), atk:PL.atk, walk:Math.floor(PL.walk) % 2, hp:S.hp, max:S.maxHp, lvl:S.lvl || 1, v:BUILD, mount:mounted() ? S.mount : null, pet:G.pet && companionInfo() ? (pokemonRealm() ? (S.magicPet || 'shivan') : S.pet) : null };
+  return { pid:NET.pid, name:CH().n, ch:S.ch, customChar:S.customChar || null, realm:S.realm||'magic', room:G.roomId, x:Math.round(PL.x), y:Math.round(PL.y), eq:S.eq,spin:PL.spin||0,charge:PL.attackCharge||0,dir:PL.dir, face8:visibleFacing(PL.dir,PL.face8), atk:PL.atk, walk:Math.floor(PL.walk) % 2, hp:S.hp, max:S.maxHp, lvl:S.lvl || 1, v:BUILD, gear:S.gear || null, ws:PL.atk > 0 ? (PL.swingStyle || 'tajo') : null, s2:!!PL.second, fin:!!PL.finisher, spn:PL.spn || 0, spk:PL.spk || null, mount:mounted() ? S.mount : null, pet:G.pet && companionInfo() ? (pokemonRealm() ? (S.magicPet || 'shivan') : S.pet) : null };
 }
 // Nivel de un companero online (las versiones antiguas del juego no lo mandan)
 // Montura y mascota de un companero: solo se aceptan valores que este juego conoce
+const netStyle = o => typeof o.ws === 'string' && Object.prototype.hasOwnProperty.call(WSTYLES, o.ws) ? o.ws : 'tajo';
+// Efectos visibles del arma de un companero: boomerang, onda, golpe de tierra y especiales (sin daño)
+function updateNetFx(o){
+  const atk = +o.atk || 0, here = o.room === G.roomId && (o.realm || 'magic') === (S.realm || 'magic');
+  if (here && atk > (o.prevAtk || 0) && !o.s2) { const sk = netStyle(o), a = dirAngle(o.dir);
+    if (sk === 'boomerang') throwWeapon('boom', a, 0, o); else if (sk === 'onda') throwWeapon('wave', a, 0, o); else if (sk === 'martillo') o.slamAt = frame + 8; }
+  o.prevAtk = atk;
+  if (o.slamAt && frame >= o.slamAt) { o.slamAt = 0; if (here) { const a = dirAngle(o.dir); (G.rings || (G.rings = [])).push({ x:o.rx + 5 + Math.cos(a) * 15, y:o.ry - 2 + Math.sin(a) * 15, r:4, max:24, col:(SWORDS[o.eq] || SWORDS.hierro).col }); } }
+  const spn = +o.spn || 0;
+  if (o.prevSpn !== undefined && spn !== o.prevSpn && here) { const a = dirAngle(o.dir), cx = o.rx + 5, cy = o.ry - 2, col = (SWORDS[o.eq] || SWORDS.hierro).col;
+    if (o.spk === 'terremoto') for (const max of [46, 34, 22]) (G.rings || (G.rings = [])).push({ x:cx, y:cy + 6, r:4, max, col });
+    else if (o.spk === 'triple') for (const d of [-0.4, 0, 0.4]) throwWeapon('boom', a + d, 0, o);
+    else if (o.spk === 'nova') for (let i = 0; i < 8; i++) throwWeapon('wave', i * Math.PI / 4, 0, o);
+    for (let i = 0; i < 10; i++) { const b = i * Math.PI / 5; G.parts.push({ k:'spark', x:cx + Math.cos(b) * 10, y:cy + Math.sin(b) * 8, vx:Math.cos(b), vy:Math.sin(b), t:0 }); }
+  }
+  o.prevSpn = spn;
+}
 const netMount = o => typeof o.mount === 'string' && Object.prototype.hasOwnProperty.call(MOUNTS, o.mount) ? o.mount : null;
 function netPetKind(o){
   if ((o.realm || 'magic') === 'pokemon') return typeof o.pet === 'string' && Object.prototype.hasOwnProperty.call(MAGIC_COMPANIONS, o.pet) && MON[o.pet] ? 'magic' : null;
@@ -8723,7 +8748,7 @@ function netPetKind(o){
 }
 // La mascota del companero lo sigue un paso atras (se calcula en cada pantalla, no viaja por la red)
 function updateNetPets(){
-  for (const k in NET.others) { const o = NET.others[k];
+  for (const k in NET.others) { const o = NET.others[k]; updateNetFx(o);
     if (!netPetKind(o)) { o.petPos = null; continue; }
     const [dx, dy] = DIRV[o.dir] || DIRV[0], tx = o.rx - dx * 14, ty = o.ry - dy * 12 + 2;
     const p = o.petPos || (o.petPos = { x:tx, y:ty, t:0, flip:false });
@@ -8828,7 +8853,7 @@ function netTick(){
   if (frame % 4) return;
   if (NET.role === 'host') {
     if (!NET.conns.length) return;
-    const list = [myState()].concat(Object.values(NET.others).map(o => ({ pid:o.pid, name:o.name, ch:o.ch,customChar:o.customChar||null,realm:o.realm||'magic', room:o.room, x:o.x, y:o.y, eq:o.eq,spin:o.spin||0,charge:o.charge||0,face8:o.face8,dir:o.dir, atk:o.atk, walk:o.walk, hp:o.hp, max:o.max, lvl:o.lvl, v:o.v, mount:o.mount, pet:o.pet })));
+    const list = [myState()].concat(Object.values(NET.others).map(o => ({ pid:o.pid, name:o.name, ch:o.ch,customChar:o.customChar||null,realm:o.realm||'magic', room:o.room, x:o.x, y:o.y, eq:o.eq,spin:o.spin||0,charge:o.charge||0,face8:o.face8,dir:o.dir, atk:o.atk, walk:o.walk, hp:o.hp, max:o.max, lvl:o.lvl, v:o.v, gear:o.gear, ws:o.ws, s2:o.s2, fin:o.fin, spn:o.spn, spk:o.spk, mount:o.mount, pet:o.pet })));
     sendAll({ t:'pl', list, wt:S.worldTicks });
     if (G.state === 'world') sendAll({ t:'en', room:G.roomId, list:G.enemies.filter(e => !e.dead).map(e => [e.nid, e.type, Math.round(e.x), Math.round(e.y), e.hp, e.max, e.flip ? 1 : 0, e.flash > 0 ? 1 : 0]) });
   } else if (NET.host && NET.host.open) {
