@@ -4695,8 +4695,9 @@ function updateAttackCharge(){
 
   if(!canChargeAttack()||pressed('b')||pressed('c')||pressed('menu')){cancelAttackCharge();return;}
   if(!PL.attackHeld)return;
-  if(!K.a){const ready=PL.attackCharge>=SPIN_CHARGE;cancelAttackCharge();if(ready)startSpinAttack();return;}
+  if(!K.a){const ready=PL.attackCharge>=SPIN_CHARGE;cancelAttackCharge();if(ready){PL.atk=0;PL.atkCd=0;startSpinAttack();}return;}
   PL.attackCharge=Math.min(SPIN_CHARGE,(PL.attackCharge||0)+SPIN_CHARGE/chargeFrames+1e-9);
+  startAttack(); // mantener el ataque: sigue dando golpes mientras carga el giro (cada golpe respeta su espera normal)
   const button=document.querySelector('#pad [data-k="a"]');button?.classList.add('charging');
   if(PL.attackCharge===SPIN_CHARGE){button?.classList.add('charged');if(!PL.chargeSound){PL.chargeSound=true;SFX.ok();}}
 }
