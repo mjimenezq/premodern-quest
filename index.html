@@ -1198,6 +1198,9 @@ const MOUNTS = {
   shivan:{ n:'Shivan Dragon', spd:0.28, def:2, kind:'dragon', body:'#d83020', mane:'#f8c030', boss:true, desc:'Se gana venciendo al Shivan Dragon. +28% velocidad.' },
 };
 for(const id of ['mesa','nightmare','charger','mammoth'])MOUNTS[id].price=Math.max(300000,MOUNTS[id].price*3);
+// 10 oct: las monturas basicas piden nivel (antes se compraban apenas alcanzaba la plata). Quien ya tiene una la conserva.
+const FIRST_MOUNT_LVL = 15;
+Object.entries({ caballo:FIRST_MOUNT_LVL, mesa:20, nightmare:25, charger:30, mammoth:35 }).forEach(([id, lvl]) => { MOUNTS[id].req = { lvl }; });
 const mounted = () => S && S.mount && MOUNTS[S.mount] && G.def && (!G.def.interior || G.roomId==='establo') ? MOUNTS[S.mount] : null;
 function giveMount(id){
   S.mounts = S.mounts || []; if (S.mounts.includes(id)) return;
@@ -6017,11 +6020,12 @@ function talkTo(id, npc, skipQuest){
   if (id === 'conserje') { say(['CONSERJE: ' + pick(['Buenas. ¿Viene donde don Ivan? Pase no mas, ya la tiene prendida.', 'Si se cura mucho en el carrete, aqui tiene un vaso de agua. Gratis.'])]); return; }
   if (id === 'caballerizo') {
     const own = (S.mounts || []);
+    if (!own.length && (S.lvl || 1) < FIRST_MOUNT_LVL) { say(['CABALLERIZO: ¡Bienvenido al establo de Curico, patron! Todavia estas muy nuevo para montar: mis animales no se van con cualquiera.', 'Vuelve cuando seas NIVEL ' + FIRST_MOUNT_LVL + ' y te vendo el burro ($300.000). Los demas piden nivel 20, 25, 30 y 35. Vas en nivel ' + (S.lvl || 1) + '.']); return; }
     const ch = [{ t:'COMPRAR MONTURA', fn:() => openShop('monturas', 'ESTABLO DE CURICO') }];
     for (const m of own) ch.push({ t:'MONTAR ' + MOUNTS[m].n.toUpperCase(), fn:() => { S.mount = m; saveGame(); toast('MONTADO EN ' + MOUNTS[m].n.toUpperCase(), '#fcd84a'); } });
     if (S.mount) ch.push({ t:'IR A PIE', fn:() => { S.lastMount = S.mount; S.mount = null; saveGame(); } });
     ch.push({ t:'NADA', fn:null });
-    say(['CABALLERIZO: ¡Bienvenido al establo de Curico, patron! El burro cuesta $300.000: es manso y te lleva un 8% mas rapido. Despues vienen Mesa Pegasus, Nightmare, Pegasus Charger y War Mammoth, cada uno un poco mas veloz.', 'Los dragones se ganan venciendo a sus guardianes. Son la ultima mejora: rapidos, pero controlables. Con R te subes y te bajas.'], ch.slice(0, 6));
+    say(['CABALLERIZO: ¡Bienvenido al establo de Curico, patron! El burro cuesta $300.000 y pide nivel ' + FIRST_MOUNT_LVL + ': es manso y te lleva un 8% mas rapido. Despues vienen Mesa Pegasus (NV 20), Nightmare (NV 25), Pegasus Charger (NV 30) y War Mammoth (NV 35), cada uno un poco mas veloz.', 'Los dragones se ganan venciendo a sus guardianes. Son la ultima mejora: rapidos, pero controlables. Con R te subes y te bajas.'], ch.slice(0, 6));
     return;
   }
   if (id === 'mago') { say(['MAGA: Para salir de aventura hay que ir preparado. Tengo libros de hechizos y pociones para recuperar fuerzas.'], [{t:'APRENDER MAGIA',fn:()=>openShop('magia','LIBROS DE MAGIA')},{t:'COMPRAR POCIONES',fn:()=>openShop('pociones','BOTICA DE LA MAGA')},{t:'VOLVER',fn:null}]); return; }
@@ -6920,14 +6924,17 @@ function drawWorld(){
     tiny(nm, cx, ly, m.boss ? '#ffb040' : '#f4f0ff', 'center');
     if (!m.boss && e.hp < e.max) { R(cx - 6, ly + 6, 12, 2, '#3a1010'); R(cx - 6, ly + 6, Math.round(12 * e.hp / e.max), 2, '#e83040'); }
   } });
+  for (const o of othersHere()) if (o.petPos && netPetKind(o)) list.push({ y:o.petPos.y + 10, f:() => drawNetPet(o) });
   for (const o of othersHere()) list.push({ y:o.ry + 8, f:() => {
     const x = Math.round(o.rx), y = Math.round(o.ry);
     if (o.atk > 0 && o.dir === 1) drawSwordAt(x, y, o.dir, o.atk, (SWORDS[o.eq]||SWORDS.hierro).col);
-    drawPerson(x - 3, y - 8, {...remoteCharacter(o),face8:o.spin>0?spinFacing(o.spin):visibleFacing(o.dir,o.face8)}, o.spin>0?(spinFacing(o.spin)<4?spinFacing(o.spin):[2,3,2,3][spinFacing(o.spin)-4]):o.dir, o.walk);
+    const oDir = o.spin>0?(spinFacing(o.spin)<4?spinFacing(o.spin):[2,3,2,3][spinFacing(o.spin)-4]):o.dir, oMount = netMount(o), oLook = {...remoteCharacter(o),face8:o.spin>0?spinFacing(o.spin):visibleFacing(o.dir,o.face8)};
+    if (oMount) { drawMount(oMount, x - 6, y - 8, oDir, o.walk, 'back'); drawPerson(x - 3, y - 18, oLook, oDir, 0); drawMount(oMount, x - 6, y - 8, oDir, o.walk, 'front'); }
+    else drawPerson(x - 3, y - 8, oLook, oDir, o.walk);
     drawAttackPower(x,y,Math.min(SPIN_CHARGE,Math.max(0,o.charge||0)),Math.min(SPIN_DURATION,Math.max(0,o.spin||0)),(SWORDS[o.eq]||SWORDS.hierro).col);
     if (o.atk > 0 && o.dir !== 1) drawSwordAt(x, y, o.dir, o.atk, (SWORDS[o.eq]||SWORDS.hierro).col);
-    const nm = norm(o.name + netLvl(o)), w = nm.length * 4 + 3;
-    R(x + 5 - w / 2, y - 22, w, 8, 'rgba(0,0,0,.55)'); tiny(nm, x + 5, y - 20, '#60e070', 'center');
+    const nm = norm(o.name + netLvl(o)), w = nm.length * 4 + 3, ty = netMount(o) ? y - 32 : y - 22;
+    R(x + 5 - w / 2, ty, w, 8, 'rgba(0,0,0,.55)'); tiny(nm, x + 5, ty + 2, '#60e070', 'center');
   } });
   if(!G.waking)list.push({ y:PL.y + PL.h, f:() => {
     if (PL.atk > 0 && PL.dir === 1) drawSword();
@@ -8511,9 +8518,33 @@ function remoteCharacter(o){
   try { return characterOf(o) || CHARS[0]; } catch (_) { return CHARS[0]; }
 }
 function myState(){
-  return { pid:NET.pid, name:CH().n, ch:S.ch, customChar:S.customChar || null, realm:S.realm||'magic', room:G.roomId, x:Math.round(PL.x), y:Math.round(PL.y), eq:S.eq,spin:PL.spin||0,charge:PL.attackCharge||0,dir:PL.dir, face8:visibleFacing(PL.dir,PL.face8), atk:PL.atk, walk:Math.floor(PL.walk) % 2, hp:S.hp, max:S.maxHp, lvl:S.lvl || 1 };
+  return { pid:NET.pid, name:CH().n, ch:S.ch, customChar:S.customChar || null, realm:S.realm||'magic', room:G.roomId, x:Math.round(PL.x), y:Math.round(PL.y), eq:S.eq,spin:PL.spin||0,charge:PL.attackCharge||0,dir:PL.dir, face8:visibleFacing(PL.dir,PL.face8), atk:PL.atk, walk:Math.floor(PL.walk) % 2, hp:S.hp, max:S.maxHp, lvl:S.lvl || 1, mount:mounted() ? S.mount : null, pet:G.pet && companionInfo() ? (pokemonRealm() ? (S.magicPet || 'shivan') : S.pet) : null };
 }
 // Nivel de un companero online (las versiones antiguas del juego no lo mandan)
+// Montura y mascota de un companero: solo se aceptan valores que este juego conoce
+const netMount = o => typeof o.mount === 'string' && Object.prototype.hasOwnProperty.call(MOUNTS, o.mount) ? o.mount : null;
+function netPetKind(o){
+  if ((o.realm || 'magic') === 'pokemon') return typeof o.pet === 'string' && Object.prototype.hasOwnProperty.call(MAGIC_COMPANIONS, o.pet) && MON[o.pet] ? 'magic' : null;
+  return Number.isInteger(o.pet) && POKE[o.pet] ? 'poke' : null;
+}
+// La mascota del companero lo sigue un paso atras (se calcula en cada pantalla, no viaja por la red)
+function updateNetPets(){
+  for (const k in NET.others) { const o = NET.others[k];
+    if (!netPetKind(o)) { o.petPos = null; continue; }
+    const [dx, dy] = DIRV[o.dir] || DIRV[0], tx = o.rx - dx * 14, ty = o.ry - dy * 12 + 2;
+    const p = o.petPos || (o.petPos = { x:tx, y:ty, t:0, flip:false });
+    if (Math.hypot(tx - p.x, ty - p.y) > 90) { p.x = tx; p.y = ty; }
+    const mx = (tx - p.x) * 0.14, my = (ty - p.y) * 0.14; if (Math.abs(mx) > 0.15) p.flip = mx < 0;
+    p.x += mx; p.y += my; p.t++;
+  }
+}
+function drawNetPet(o){
+  const p = o.petPos, kind = netPetKind(o); if (!p || !kind) return;
+  const px = Math.round(p.x - 3), py = Math.round(p.y - 6);
+  rgbAura(px, py, false, true);
+  if (kind === 'poke') drawPoke(o.pet, px, py, p.t, p.flip);
+  else { const sz = MON[o.pet].size; ctx.save(); ctx.translate(px, py); ctx.scale(16 / sz, 16 / sz); drawMon(o.pet, 0, 0, p.t, p.flip, true); ctx.restore(); }
+}
 const netLvl = o => { const n = Math.floor(+o.lvl); return n >= 1 && n <= 999 ? ' NV' + n : ''; };
 const sendAll = m => {if(m.room)m={...m,realm:S.realm||'magic'}; for (const c of NET.conns) if (c.open) c.send(m); };
 function sendTo(pid, m){ if (NET.role === 'host') { const c = NET.conns.find(x => x.pid === pid); if (c && c.open) c.send(m); } }
@@ -8599,10 +8630,11 @@ function netTick(){
   if (frame % 30 === 0) { tryAutoJoin(); netUI(); }
   if (!NET.role || !S || G.state === 'title' || G.state === 'select') return;
   for (const k in NET.others) { const o = NET.others[k]; o.rx += (o.x - o.rx) * 0.35; o.ry += (o.y - o.ry) * 0.35; }
+  updateNetPets();
   if (frame % 4) return;
   if (NET.role === 'host') {
     if (!NET.conns.length) return;
-    const list = [myState()].concat(Object.values(NET.others).map(o => ({ pid:o.pid, name:o.name, ch:o.ch,customChar:o.customChar||null,realm:o.realm||'magic', room:o.room, x:o.x, y:o.y, eq:o.eq,spin:o.spin||0,charge:o.charge||0,face8:o.face8,dir:o.dir, atk:o.atk, walk:o.walk, hp:o.hp, max:o.max, lvl:o.lvl })));
+    const list = [myState()].concat(Object.values(NET.others).map(o => ({ pid:o.pid, name:o.name, ch:o.ch,customChar:o.customChar||null,realm:o.realm||'magic', room:o.room, x:o.x, y:o.y, eq:o.eq,spin:o.spin||0,charge:o.charge||0,face8:o.face8,dir:o.dir, atk:o.atk, walk:o.walk, hp:o.hp, max:o.max, lvl:o.lvl, mount:o.mount, pet:o.pet })));
     sendAll({ t:'pl', list, wt:S.worldTicks });
     if (G.state === 'world') sendAll({ t:'en', room:G.roomId, list:G.enemies.filter(e => !e.dead).map(e => [e.nid, e.type, Math.round(e.x), Math.round(e.y), e.hp, e.max, e.flip ? 1 : 0, e.flash > 0 ? 1 : 0]) });
   } else if (NET.host && NET.host.open) {

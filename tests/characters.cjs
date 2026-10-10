@@ -15,6 +15,7 @@ source=source.replace(/\}\)\(\);\s*$/, `globalThis.gameTest={medalProgress,festi
 source=source.replace('gameTest={medalProgress,','gameTest={leagueTalk,pokemonGymTalk,POKEMON_META_DECKS,POKEMON_MATCHUPS,POKEMON_GYM_DECKS,activeDecks,realmCards,pokemonMatchup,magicBestiary,chooseMagicPet,updateSafari,throwBall,MAGIC_SAFARI_POOLS,drawCardBig,drawMetaArt,SAFARI_REGIONS,ashGuidePath,offerAshGuide,updateAshGuide,finishAshGuide,spawnWildPoke,deckLabel,deckChoices,CARDS,SPELLS,REFLECT_SPELLS,REFLECT_GEAR,drawDialog,addXP,levelCap,LEAGUES,finishTour,genDuel,OKTOBER_REGION,festivalStops,stampFestival,regionalFestival,endOctayRace,pokemonDiscovered,portalTalk,pellucoBeer,pellucoDJ,propAction,startOctayRace,updateOctayRace,OCTAY_CHECKPOINTS,medalProgress,');
 source=source.replace("function tiny(s, x, y, col='#fff', al='left', raw=false){","function tiny(s, x, y, col='#fff', al='left', raw=false){(globalThis.renderLabels ||= []).push(String(s));");
 source=source.replace('gameTest={leagueTalk,','gameTest={startBarcaza,updateBarcaza,drawBarcaza,carlitosTalk,drawCyclist,REGIONALS_FOR_NATIONAL,ensureContracts,buildContract,questXP,questKill,spawnQuestItems,addSword,addGear,rareLootNotice,drawCardPop,drawLootPop,RELICS,spinChargeFrames,attackPose,spinAngle,drawSwordAt,drawSword,NET,SPIN_CHARGE,SPIN_DURATION,startAttack,cancelAttackCharge,canChargeAttack,updateAttackCharge,startSpinAttack,updateSpinAttack,drawAttackPower,spinPathClear,setTouchControl,readTouchControl,analogVector,movementInput,stick,padAxis,resetStick,resetHeldInput,direction8,visibleFacing,readInput,newPokemonBattle,pokemonStrike,genPokemonReplay,POKEMON_CARD_STATS,bankTransfer,bankTalk,recoverLife,usePotion,POTIONS,questsOf,questMarker,openPotions,setupDuel,startFree,updateTennis,TENNIS_COURTS,drawMount,drawRider,spawnEnemy,hurtPlayer,hurtHazard,castSpell,hitWithSpell,gainSpellXp,spellProgress,monsterCardChance,reflectedDropCards,meleeDamage,leagueTalk,');
+source=source.replace('gameTest={','gameTest={updateNetPets,netMount,netPetKind,');
 source=source.replace('gameTest={','gameTest={deckPerkBonus,southPropAction,startRefalin,updateRefalin,awardBossDiploma,updateBossDiploma,drawBossDiploma,drawBossDiplomas,ALL_BOSSES,drawPokeCardArt,PK_SPRITES,pokeCardSpecies,');
 vm.runInNewContext(source,sandbox,{timeout:5000});
 const g=sandbox.gameTest;
@@ -138,7 +139,7 @@ for(const [id,npcId] of [['establo','caballerizo'],['bovedaMox','marchante']]) {
  while(q.length){const [x,y]=q.shift();for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]) {const nx=x+dx,ny=y+dy,key=nx+','+ny;if(nx<0||ny<0||nx>=15||ny>=10||seen.has(key)||g.SOLID.has(def.map[ny][nx])||solid.has(nx+ny*15))continue;seen.add(key);q.push([nx,ny]);}}
  assert(seen.has('7,8'),'Exit inaccessible '+id);for(const npc of def.npcs)assert(seen.has(npc.x+','+npc.y),'NPC inaccessible '+id);
 }
-g.setS(g.newSave(0));g.getS().coins=400000;g.loadRoom('establo',115,116);
+g.setS(g.newSave(0));g.getS().coins=400000;g.loadRoom('establo',115,116);assert(!g.shopItems('monturas').some(it=>it.id==='caballo'),'First mount needs level 15');g.getS().lvl=15;
 const horse=g.shopItems('monturas').find(it=>it.id==='caballo');assert(horse);assert.equal(horse.price,300000);g.G.shop={kind:'monturas',sel:0,scroll:0,items:g.shopItems('monturas')};g.buyItem(horse);
 assert.equal(g.getS().coins,100000);assert(g.getS().mounts.includes('caballo'));assert.equal(g.getS().mount,'caballo');assert.equal(g.mounted(),g.MOUNTS.caballo);assert(g.loadSave(1).mounts.includes('caballo'));
 g.loadRoom('valpo',163,134);assert.equal(g.mounted().n,'Burro de Curico');
@@ -155,7 +156,7 @@ assert.equal(g.SLOTS,5);
 for(let slot=1;slot<=5;slot++){const save=g.newSave(slot+11);save.slot=slot;save.coins=slot*12345;g.setS(save);g.saveGame();assert.equal(g.loadSave(slot).coins,slot*12345);}
 g.G.slotSel=4;g.drawSlots();
 assert(!g.ROOMS.valpo.trails['9,1']);assert.equal(g.ROOMS.valpo.doors['4,6'],'establo');assert(g.ROOMS.establo.npcs.some(n=>n.id==='caballerizo'));assert.equal(g.ROOMS.establo.props.filter(p=>p.k==='montura'&&p.compact).length,5);
-assert.equal(Math.min(...g.shopItems('monturas').map(it=>it.price)),300000);
+{const lvl0=g.getS().lvl;g.getS().lvl=15;assert.equal(Math.min(...g.shopItems('monturas').map(it=>it.price)),300000);g.getS().lvl=lvl0;}
 for(const routes of Object.values(g.BOAT_ROUTES))for(const [dest,fee] of routes)if(dest==='pmontt'||dest==='islote')assert.equal(fee,3000);
 g.setS(g.newSave(1));g.loadRoom('pueblo',115,84);
 const rai=g.G.npcs.find(n=>n.ch===12),papa=g.G.npcs.find(n=>n.ch===0);assert(rai&&papa);assert(Math.abs(rai.x-papa.x)<=16);
@@ -608,6 +609,9 @@ async function main(){
   assert.notDeepEqual(g.PK_SPRITES[g.pokeCardSpecies('Dragapult ex')],g.PK_SPRITES[g.pokeCardSpecies('Dreepy')]);
   g.G.preview=false;g.G.dialog=null;g.setS(prev);
  }
+{const prevS=g.getS(),s=g.newSave(0);s.mounts=['caballo'];s.mount='caballo';s.pet=24;g.setS(s);g.loadRoom('pueblo',100,80);g.G.pet={x:90,y:80,t:0,cd:0};const mine=g.myState();assert.equal(mine.mount,'caballo','Own mount is shared online');assert.equal(mine.pet,24,'Own pet is shared online');assert.equal(mine.lvl,1);
+ const o={pid:'p9',name:'DAVIS',ch:1,realm:'magic',room:g.G.roomId,x:120,y:80,rx:120,ry:80,dir:3,walk:0,atk:0,hp:10,max:10,eq:'hierro',lvl:12,mount:'caballo',pet:24};g.NET.others={p9:o};assert.equal(g.netMount(o),'caballo');assert.equal(g.netPetKind(o),'poke');g.updateNetPets();assert(o.petPos,'Friend pet follows');g.drawWorld();
+ o.mount='__proto__';o.pet='x';assert.equal(g.netMount(o),null,'Unknown mounts are ignored');assert.equal(g.netPetKind(o),null);g.updateNetPets();assert.equal(o.petPos,null);g.drawWorld();delete o.mount;delete o.pet;delete o.lvl;g.updateNetPets();g.drawWorld();g.NET.others={};g.G.pet=null;g.setS(prevS);}
 console.log('PASS: portal reversible, sello de Urza y paz, seis gimnasios con cuatro rivales, reputacion, economia por nivel, botin utilizable, casa inicial y Oktoberfest; partidas antiguas y cinco espacios, personajes, misiones y patrullas, equipo avanzado, fases del dia, magia 20, exclusivos del reflejo, seleccion de mazos paginada, ceremonia nacional, mascotas, experiencia de ligas, Surf, peligros y pausa de tres minutos, buscaobjetos, siete arcades, vista Pokemon sin guardar; acceso a NPC y puertas en '+auditRooms.length+' mapas.');
 }
 main().catch(e=>{console.error(e);process.exitCode=1;});
