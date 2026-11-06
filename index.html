@@ -343,6 +343,7 @@ function movementInput(){
 }
 
 function resetHeldInput(){
+  releaseTennisPointer();
   for(const k in kb)kb[k]=0;for(const k in touch)touch[k]=0;for(const k in K){K[k]=0;prevK[k]=0;}
   cancelAttackCharge();PL.spin=0;
   resetStick();padAxis.x=padAxis.y=0;
@@ -1777,7 +1778,7 @@ for(const p of SAFARI_PROFESSORS){
  const reserve=ROOMS[p.safari];reserve.exitTo={room:lab,tx:7,ty:2};reserve.npcs=(reserve.npcs||[]).filter(n=>n.id!=='profesor');
  ROOMS[lab]={name:'CASA SAFARI · '+p.name,theme:'inside',music:'town',interior:true,zone:p.home,safariLab:p.safari,exitTo:{room:p.home,tx:p.back[0],ty:p.back[1]},
   map:['kkkkkkkkkkkkkkk','kFFFFFFDFFFFFFk',...Array(6).fill('kFFFFFFFFFFFFFk'),'kkkkkkkEkkkkkkk','kkkkkkkkkkkkkkk'],doors:{'7,1':p.safari},npcs:[{id,x:5,y:3}],
-  props:[{k:'mostrador',x:2,y:2,w:4,label:p.key.toUpperCase()},{k:'pcGamer',x:10,y:2,w:2,act:'safariCompanion',solid:false},{k:'retroShelf',x:1,y:5,w:2,solid:false},{k:'huertoMacetas',x:11,y:5,w:2,solid:false},{k:'sofa',x:3,y:6,w:3},
+  props:[{k:'mostrador',x:2,y:2,w:4,label:p.key.toUpperCase()},{k:'safariPC',x:10,y:2,w:2,act:'safariCompanion',solid:false},{k:'researchShelf',x:1,y:5,w:2,solid:false},{k:'huertoMacetas',x:11,y:5,w:2,solid:false},{k:'sofa',x:3,y:6,w:3},
    {k:'cartel',x:9,y:1,label:'RESERVA',txt:'PUERTA DEL FONDO: ENTRAR AL SAFARI. SALIDA SUR: VOLVER A LA CIUDAD.',solid:false}]};
 }
 function chooseSafariCompanion(page=0){
@@ -1808,6 +1809,9 @@ function museumPuzzle(step=0){const pattern=['SOL','RIO','BOSQUE','SOL'];if(step
 ROOMS.pelluco={name:'BALNEARIO PELLUCO',theme:'sand',music:'pelluco',zone:'pelluco',chill:true,
  map:['TTTTTTTTTTTTTTT','T.RRRR...RRRRTT','T.RRRR...RRRRTT','T.WWDW...WDWWTT','==============T','ssssssssssssssT','TsssssssssssssT','TsssssssssssssT','~~~~~~~~~~~~~~~','~~~~~~~~~~~~~~~'],doors:{'4,3':'uachPelluco','10,3':'quinchoPelluco'},roof:tx=>tx<7?'green':'red',plaques:[['UACh',64,19,'#1c4838'],['QUINCHO',168,19,'#683028']],npcs:[{id:'alePelluco',x:11,y:5},{id:'mechonaPelluco',x:6,y:5}],
  signs:{'1,4':'OESTE: PUERTO MONTT. NORTE DE LA PLAYA: CAMPUS UACh Y QUINCHO UNIVERSITARIO.'},props:[{k:'cartel',x:1,y:4,label:'P.MONTT',txt:'COSTANERA A PUERTO MONTT: CAMINA AL OESTE SIN NECESITAR SURF.',solid:false},{k:'aleRoja',x:12,y:5,act:'pellucoBeer',solid:false},...[3,7,11].flatMap(x=>[{k:'quitasolPelluco',x,y:6,solid:false},{k:'reposera',x,y:7,c:x===7?'#3e98b8':'#dd6848',act:'reposera',solid:false}]),{k:'farol',x:13,y:4,solid:false}]};
+// Franja verde y arbustos costeros con claros para bajar a la playa.
+ROOMS.pelluco.map[5]='..............T';
+ROOMS.pelluco.props.push(...[1,5,9,13].map(x=>({k:'pellucoShrub',x,y:7,solid:false})));
 ROOMS.uachPelluco={name:'UACh · CAMPUS PELLUCO',theme:'inside',music:'pelluco',zone:'pelluco',interior:true,exitTo:{room:'pelluco',tx:4,ty:4},map:['kkkkkkkkkkkkkkk',...Array(7).fill('kFFFFFFFFFFFFFk'),'kkkkkkkEkkkkkkk','kkkkkkkkkkkkkkk'],npcs:[{id:'mechonaPelluco',x:3,y:3},{id:'profePelluco',x:11,y:5}],props:[{k:'mostrador',x:8,y:2,w:4,label:'FERIA DE BIENVENIDA',solid:true},{k:'cartel',x:2,y:1,label:'VIDA UNIVERSITARIA',txt:'INTEGRACION, TALLERES, DANZA Y MUSICA. LA CASA DE LAS ARTES INVITA A LA COMUNIDAD.',solid:false},{k:'mesaCartas',x:2,y:5,w:3,waiting:true,act:'campusCards'},{k:'cartel',x:9,y:6,label:'SEMANA CULTURAL',act:'campusConcert',solid:false}]};
 ROOMS.quinchoPelluco={name:'QUINCHO PELLUCO · LA ULTIMA DIAPO',theme:'inside',music:'mechones',zone:'pelluco',interior:true,party:true,exitTo:{room:'pelluco',tx:10,ty:4},map:['kkkkkkkkkkkkkkk',...Array(7).fill('kFFFFFFFFFFFFFk'),'kkkkkkkEkkkkkkk','kkkkkkkkkkkkkkk'],npcs:[{id:'djPelluco',x:10,y:2},{id:'alePelluco',x:3,y:2},{id:'mechonaPelluco',x:11,y:6}],props:[{k:'mostrador',x:2,y:3,w:4,label:'ALE ROJA',act:'pellucoBeer'},{k:'pool',x:2,y:5,w:2,act:'pool'},{k:'tacataca',x:10,y:4,w:2,act:'taca'},{k:'dj',x:10,y:1,act:'pellucoDJ'},{k:'parlante',x:8,y:1},{k:'parlante',x:12,y:1},{k:'cartel',x:6,y:1,label:'ULTIMA DIAPO',txt:'MANANA HAY CERTAMEN, PERO ESTA NOCHE HAY CARTAS. ¡NO DEJES EL INFORME PARA LA IA!',solid:false},{k:'mesaCartas',x:8,y:6,w:2,act:'campusCards',waiting:true},{k:'cartel',x:6,y:5,label:'PISTA',act:'pellucoDance',solid:false}]};
 NPCDEF.mechonaPelluco={...NPCDEF.vecina,n:'TRINI LA MECHONA'};NPCDEF.profePelluco={...NPCDEF.juez,n:'PROFE SIMON'};NPCDEF.alePelluco={...NPCDEF.huaso,n:'DON ROJO'};NPCDEF.djPelluco={...NPCDEF.festivalero,n:'NACHO DEL CASSETTE'};
@@ -1983,7 +1987,7 @@ ROOMS.casitaRai=southInterior('LA CASITA DE JUEGOS DE RAI','campoFamilia',{room:
 ROOMS.valpo.trails={...(ROOMS.valpo.trails||{}),'13,3':{room:'teno',tx:7,ty:8}};
 for(const y of [3,4,5]){const row=ROOMS.valpo.map[y].split('');row[13]='=';ROOMS.valpo.map[y]=row.join('');}
 ROOMS.valpo.props.push({k:'roadGate',x:13,y:3,label:'TENO',solid:false});
-ROOMS.valpo.signs['6,4']+=' TENO Y EL CAMPO: TOMA EL SENDERO DEL LADO DERECHO DE LA CASA DE TECHO VERDE, BAJO EL LETRERO TENO.';
+ROOMS.valpo.signs['6,4']+=' TENO Y EL CAMPO: SAL POR EL OESTE DE CURICO.';
 
 
 // --- PROVIDENCIA: Piedra Bruja, el gran templo TCG de Santiago y sede de la Liga Nacional ---
@@ -2010,7 +2014,7 @@ function southTalk(id,npc){
  if(id==='capitanBarcaza'){barcazaOffer();return true;}
  if(id==='elfaCafe'){cafeElfoMenu();return true;}
  if(id==='historiadoraValdivia'){const first=!S.valdiviaHistory;say(['HISTORIADORA: Valdivia fue fundada en 1552 por Pedro de Valdivia. Los fuertes de Niebla, Corral y Mancera defendian la bahia de corsarios y expediciones holandesas.','En el siglo XIX llegaron colonos alemanes: casas de madera, industria y cerveceria. Por eso aqui el kuchen y la cerveza son casi patrimonio.','En 1960 el terremoto mas grande registrado cambio el rio y la ciudad. Valdivia se levanto otra vez, como un buen mazo despues de un Armageddon.',first?'¡Gracias por escuchar! +200 EXP y +1 INT por aprender la historia de Valdivia.':'Vuelve cuando quieras: la historia tambien es estrategia.'],null,()=>{if(first&&!S.valdiviaHistory){S.valdiviaHistory=true;S.st.int+=1;addXP(200);saveGame();}});return true;}
- if(id==='secretariaTeno'){say(['SECRETARIA: Bienvenido a la Municipalidad de Teno. El alcalde Gonzalo esta en la plaza saludando a los vecinos.','Es abogado y juega mazos azules: dice que un Counterspell bien puesto es como una buena objecion en un juicio.']);return true;}
+ if(id==='secretariaTeno'){say(['VECINA: ¡Bienvenido a Teno! Aqui nos juntamos en la plaza. El alcalde Gonzalo esta en la plaza saludando a los vecinos.','Es abogado y juega mazos azules: dice que un Counterspell bien puesto es como una buena objecion en un juicio.']);return true;}
  if(id==='tataCampo'){say(['EL TATA: ¡Llegaste al campo! Aqui no hay monstruos: hay vacas, huerta, asado y la casita de juegos que le hicimos a Rai.','Rai se tira por el refalin una y otra vez. Si lo acompañas, mas contento se pone.']);return true;}
  if(id==='abuelaCampo'){say(['LA ABUELA: ¡Pasa, mijo! Hay cazuela y pan amasado en la cocina. Sientate a la mesa y recupera fuerzas.','Matias de chico jugaba cartas en esta misma mesa. Ahora Rai juega con su autito en la casita.']);return true;}
  if(id==='mensajeraPB'){say(['MENSAJERA: ¡Bienvenido a Piedra Bruja! Aqui se juega la Liga Nacional de Magic y de Pokemon, y siempre hay misiones nuevas en mi tablon.','Termina tu encargo y vuelve: cada mision que entregas abre otra un poco mas dificil, hasta el nivel 200 y mas alla.']);return true;}
@@ -2062,7 +2066,7 @@ function davisHomeTalk(npc){
     {t:'WORLD OF WARCRAFT',fn:()=>say(['DAVIS: En WoW aprendi a mirar lo que necesita el grupo: tanque, sanador y daño. Una baraja tambien necesita que sus cartas trabajen juntas.','Los cabros me ayudaron a bajar la curva y ordenar las tierras. No sirve llenarse de hechizos buenos si no puedes jugarlos.'])},
     {t:'DIABLO Y LAS CARTAS',fn:()=>say(['DAVIS: En Diablo iba probando equipo hasta encontrar una build que funcionara. Con las cartas hice lo mismo: jugar, perder, ajustar y volver a probar.','Para mi mazo Pokemon me ayudaron a elegir un atacante, sus apoyos y las energias justas. ¡El mazo se construye en equipo!'])},
     {t:'PROBAR MI BARAJA',fn:()=>davisDuel()},
-    {t:'SEGUIR CONVERSANDO',fn:()=>say(['DAVIS: Afuera esta Gonzalo, haciendo de alcalde. Y por el camino del este llegas al campo de la familia de Matias.','Rai te va a llevar al refalin. Si te pide otra bajada... preparate, porque nunca es la ultima.'])}
+    {t:'SEGUIR CONVERSANDO',fn:()=>say(['DAVIS: Afuera esta Gonzalo, haciendo de alcalde. Y por el camino del oeste llegas al campo de la familia de Matias.','Rai te va a llevar al refalin. Si te pide otra bajada... preparate, porque nunca es la ultima.'])}
   ]);
 }
 function familyActivity(key){S.familyActions=S.familyActions||{};S.familyActions[key]=(S.familyActions[key]||0)+1;saveGame();}
@@ -2455,6 +2459,7 @@ function grassTile(x, y, tx, ty, pal){
   for (let i = 0; i < 3; i++) R(x + Math.floor(r() * 15), y + Math.floor(r() * 15), 1, 1, pal[3]);
 }
 function ground(x, y, tx, ty, theme){
+  if(theme==='sand'&&G.def?.zone==='pelluco'){grassTile(x,y,tx,ty,GRASS.forest);return;}
   const h = h2(tx, ty), r = rng(h + 0.11), hb = h2(tx >> 1, ty >> 1) < 0.5;
   const speck = (n, c, w = 1, hh = 1) => { for (let i = 0; i < n; i++) R(x + Math.floor(r() * (16 - w)), y + Math.floor(r() * (16 - hh)), w, hh, c); };
   switch (theme) {
@@ -2490,18 +2495,25 @@ function vegetationRegion(theme){
   const z=G.def?.zone||zoneOf(G.roomId||'pueblo');
   if(theme==='ice')return 'snow';
   if(theme==='swamp'||theme==='bog'||['pantano','pantanoProf','puertoOctay'].includes(z))return 'wetland';
-  if(['costa','vina','dunas','pelluco'].includes(z))return 'coast';
+  if(z==='pelluco')return 'pelluco';
+  if(['costa','vina','dunas'].includes(z))return 'coast';
   if(['pmontt','puertoVaras','frutillar','parquePhilippi','islote','valdivia','selvaValdiviana','oncol','niebla'].includes(z))return 'south';
   if(['valpo','talca','teno','campoFamilia'].includes(z))return 'orchard';
   if(['lascondes','providencia','tolaria','mercado'].includes(z))return 'garden';
   if(theme==='dirt'||theme==='sand'||theme==='volcano')return 'dry';
   return 'woodland';
 }
+function drawPellucoShrub(x,y){
+ R(x+1,y+13,15,2,'#19392d');
+ for(const [a,b,r]of [[4,8,5],[10,7,6],[14,10,4]]){disc(x+a,y+b,r,'#1e4d3b');disc(x+a-1,y+b-1,r-1,'#35785b');disc(x+a-2,y+b-3,Math.max(1,r-3),'#68aa7a');}
+ R(x+3,y+7,2,1,'#a0c998');R(x+10,y+3,2,1,'#9bc78f');R(x+13,y+9,2,1,'#74af81');
+}
 function regionalTree(x,y,tx,ty,theme){
   const region=vegetationRegion(theme),h=h2(tx+37,ty+19);
-  const kind=region==='coast'?'palm':region==='south'?(h<.4?'araucaria':h<.75?'pine':'broadleaf'):region==='snow'?'pine':region==='wetland'?'willow':region==='orchard'?(h<.38?'poplar':'fruit'):region==='garden'?(h<.55?'cypress':'broadleaf'):region==='dry'?'acacia':h<.3?'pine':h<.55?'broadleaf':'round';
+  const kind=region==='pelluco'?'coastalShrub':region==='coast'?'palm':region==='south'?(h<.4?'araucaria':h<.75?'pine':'broadleaf'):region==='snow'?'pine':region==='wetland'?'willow':region==='orchard'?(h<.38?'poplar':'fruit'):region==='garden'?(h<.55?'cypress':'broadleaf'):region==='dry'?'acacia':h<.3?'pine':h<.55?'broadleaf':'round';
   if(kind==='round')return false;
-  ground(x,y,tx,ty,theme);
+  ground(x,y,tx,ty,region==='pelluco'?'town':theme);
+  if(kind==='coastalShrub'){drawPellucoShrub(x,y);return true;}
   R(x+3,y+14,11,2,'#29402b');R(x+7,y+7,3,9,'#67432d');R(x+7,y+9,1,6,'#ad8250');
   const dark=region==='snow'?'#334c56':'#193e32',mid=region==='south'?'#347c60':'#4b8844',light=region==='south'?'#78b58b':'#9ecb68';
   const branch=(a,b,c,d,col)=>{ctx.strokeStyle=col;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x+a,y+b);ctx.lineTo(x+c,y+d);ctx.stroke();};
@@ -2526,7 +2538,7 @@ function regionalTree(x,y,tx,ty,theme){
 }
 function regionalUnderstory(x,y,tx,ty,theme){
   const region=vegetationRegion(theme),h=h2(tx+91,ty+27);
-  if(region==='south'||region==='woodland'){
+  if(region==='south'||region==='woodland'||region==='pelluco'){
     R(x+7,y+7,1,7,'#477247');for(let i=0;i<4;i++){R(x+6-i,y+8+i,2,1,'#69a676');R(x+8+i,y+8+i,2,1,'#8ac18b');}
     if(h<.35){R(x+3,y+12,2,3,'#ddc2a3');R(x+2,y+11,4,2,'#b96c51');}
   }else if(region==='wetland'){
@@ -3021,6 +3033,9 @@ function drawProp(p){
     case 'homePoster':{outl(X,Y-2,wpx,22,'#584030');R(X+2,Y,wpx-4,17,pokemonRealm()?'#304870':'#302848');ctx.save();ctx.translate(X+wpx/2-8,Y+1);if(pokemonRealm())drawPoke(p.id||24,0,0,frame,false);else{ctx.scale(16/MON[p.mon||'angel'].size,16/MON[p.mon||'angel'].size);drawMon(p.mon||'angel',0,0,0,false,true);}ctx.restore();tiny(pokemonRealm()?'MAESTRO POKEMON':'CAMPEON MAGIC',X+wpx/2,Y+22,'#f0d898','center');break;}
     case 'homeKitchen':{outl(X,Y,wpx,15,'#784c30');R(X+1,Y+1,wpx-2,4,'#e4d8bc');R(X+2,Y+6,13,8,'#444856');disc(X+6,Y+9,2,'#1c2030');disc(X+12,Y+9,2,'#1c2030');R(X+20,Y+7,10,5,'#b0c8d0');R(X+24,Y+3,2,5,'#e8f0f4');tiny('COCINA',X+wpx/2,Y+18,'#d8e0c8','center');break;}
     case 'retroStreet':{outl(X,Y,16,13,'#ead8a8');tiny('TCG',X+8,Y+2,'#584030','center');R(X+2,Y+9,12,1,'#a87850');break;}
+    case 'pellucoShrub':drawPellucoShrub(X,Y);break;
+    case 'safariPC':{outl(X,Y+8,wpx,8,'#75614b');outl(X+5,Y-6,20,15,'#b8c4c0');R(X+7,Y-4,16,10,'#264e51');for(let i=0;i<6;i++)R(X+9+i%3*4,Y-2+Math.floor(i/3)*4,2,2,'#8bd6a0');R(X+12,Y+10,13,2,'#c8d8cc');tiny('COMPAÑEROS',X+wpx/2,Y+19,'#b8e6c8','center');break;}
+    case 'researchShelf':{outl(X,Y,wpx,16,'#805838');for(let i=0;i<6;i++)R(X+3+i*4,Y+2,3,11,['#5e8994','#ad704c','#759661'][i%3]);tiny('ESTUDIOS',X+wpx/2,Y+18,'#d0c098','center');break;}
     case 'retroShelf':{outl(X,Y,wpx,16,'#805838');for(let i=0;i<4;i++){R(X+3+i*7,Y+2,5,10,['#9c789c','#7898b0','#b89c58','#78a080'][i]);R(X+4+i*7,Y+3,3,2,'#ece0c8');}tiny('VHS · CASETES',X+wpx/2,Y+18,'#d0c098','center');break;}
     case 'homeComputer':{outl(X,Y+9,32,8,'#7c5030');R(X+3,Y-4,24,16,'#252838');R(X+5,Y-2,20,11,'#163a28');tiny('IA',X+15,Y+1,'#98f0a8','center');R(X+6,Y+7,5+(frame>>4)%8,1,'#70c878');R(X+7,Y+13,18,2,'#c8c8cc');R(X+14,Y+10,3,3,'#565868');break;}
     case 'urzaBox':{outl(X+1,Y+4,14,10,'#887050');R(X+2,Y+5,12,3,'#d0ac68');R(X+7,Y+8,2,4,S.boxClosed?'#80c8a0':'#c888f0');if(!S.boxClosed)disc(X+8,Y+2,3,'rgba(160,128,255,.5)');break;}
@@ -4954,7 +4969,7 @@ function propAction(p){
     if (G.hielera) { say(['La hielera ya esta vacia. Ivan dice que la proxima la traes tu.']); return; }
     G.hielera = true; S.hp = Math.min(S.maxHp, S.hp + 8); SFX.beer(); say(['Sacas una chela helada de la hielera de Ivan. ¡Salud!']);
   } else if (p.act === 'pool' || p.act === 'pong' || p.act === 'taca') {
-    const nm = { pool:'POOL', pong:'SUPER TENIS', taca:'TACA-TACA' }[p.act], help = { pool:'Embocar las 6 bolas en 14 tiros o menos. Flechas apuntan, A carga la fuerza y A de nuevo tira.', pong:'Elige Wimbledon, Roland Garros, US Open o Australia. Flechas mueven, A golpea, B globo, C fuerte. Set corto a 3 juegos.', taca:'Primero a 3 goles. Arriba y abajo mueven tus palos, A le pega fuerte.' }[p.act];
+    const nm = { pool:'POOL', pong:'SUPER TENIS', taca:'TACA-TACA' }[p.act], help = { pool:'Embocar las 6 bolas en 14 tiros o menos. Flechas apuntan, A carga la fuerza y A de nuevo tira.', pong:'Elige Wimbledon, Roland Garros, US Open o Australia. Arrastra para moverte o usa stick/flechas. Acercate a la pelota: golpes y saques automaticos. Set de 3 juegos.', taca:'Primero a 3 goles. Arriba y abajo mueven tus palos, A le pega fuerte.' }[p.act];
     say([nm + ': ' + help], [{ t:'JUGAR', fn:() => startFree(p.act) }, { t:'NO', fn:null }]);
   }
 }
@@ -5731,7 +5746,7 @@ function questXP(reward,level=S.lvl){const raw=reward.xp||100;return reward.cont
 
 const GIVER_PLACE = {completero:'COMPLETOS (TALCA)',curadoraTalca:'MUSEO (TALCA)',vinero:'TALCA',talquino:'TALCA',caballerizo:'ESTABLO (CURICO)',azul:'TIENDA DE CARTAS',diegoG:'TIENDA DE CARTAS',galindo:'TIENDA DE CARTAS', vecina:'VILLA', cronista:'VILLA', cantinero:'TABERNA DE LA VILLA', klaus:'TABERNA DE LA VILLA', coleccionista:'TABERNA DE LA VILLA',
   organizador:'ARENA DE LA VILLA', pescador:'CURICO', marinero:'CURICO', viejo:'CASA DEL VIEJO (CURICO)', juez:'TOLARIA', fan2:'TOLARIA',
-  tendero:'TIENDA (TOLARIA)', posadera:'POSADA (TOLARIA)', arcadeOrg:'ARCADE (TOLARIA)', mueblero:'MERCADO DE MOX', mago:'MERCADO DE MOX',mechonaPelluco:'CAMPUS/PLAYA PELLUCO',abuelaCampo:'CAMPO (TENO)',tataCampo:'CAMPO (TENO)',secretariaTeno:'MUNICIPALIDAD DE TENO',guardabosque:'VALDIVIA',mensajeraPB:'PIEDRA BRUJA (PROVIDENCIA)' };
+  tendero:'TIENDA (TOLARIA)', posadera:'POSADA (TOLARIA)', arcadeOrg:'ARCADE (TOLARIA)', mueblero:'MERCADO DE MOX', mago:'MERCADO DE MOX',mechonaPelluco:'CAMPUS/PLAYA PELLUCO',abuelaCampo:'CAMPO (TENO)',tataCampo:'CAMPO (TENO)',secretariaTeno:'PLAZA DE TENO',guardabosque:'VALDIVIA',mensajeraPB:'PIEDRA BRUJA (PROVIDENCIA)' };
 const STN = { fue:'FUE', des:'DES', agi:'AGI', int:'INT' };
 const rewardText = (r,level=S.lvl) => [Object.entries(r.st || {}).map(([k, v]) => '+' + v + ' ' + STN[k]).join(' '), r.maxHp ? '+' + r.maxHp / 2 + ' CORAZÓN' : '', r.coins ? money(questCoins(r,level)) : '', r.spell ? 'HECHIZO ' + SPELLS[r.spell].n.toUpperCase() : '', r.stone ? STONES[r.stone].n : '','+'+questXP(r,level)+' EXP'].filter(Boolean).join(', ');
 const killsOf = ts => ts.reduce((a, t) => a + ((S.kills || {})[t] || 0), 0);
@@ -6193,7 +6208,7 @@ function talkTo(id, npc, skipQuest){
   if (id === 'friend') {
     const c = npc && npc.ch !== undefined ? npc.ch : 0, role = npc && npc.role;
     if(role==='gamer'&&G.roomId==='casaDavis'){davisHomeTalk(npc);return;}
-    if(role==='mayor'&&G.roomId==='teno'){say(['GONZALO: ¡Bienvenido a Teno! Soy el alcalde. Aqui cuidamos a los vecinos, los huertos y esta tranquilidad. Curico esta al lado, por el sendero sur.','La secretaria tiene algunos encargos. Davis vive en la casa de la derecha; mas al este esta el campo de la familia de Matias. Los abuelos hicieron una casita preciosa para Rai.','Si necesitas descansar de la aventura, aqui hay tiempo para conversar y jugar cartas. Hasta mi Counterspell descansa... un ratito.']);return;}
+    if(role==='mayor'&&G.roomId==='teno'){say(['GONZALO: ¡Bienvenido a Teno! Soy el alcalde. Aqui cuidamos a los vecinos, los huertos y esta tranquilidad. Curico esta al lado, por la salida este.','La vecina de la plaza tiene algunos encargos. Davis vive en la casa de la derecha; al oeste esta el campo de la familia de Matias. Los abuelos hicieron una casita preciosa para Rai.','Si necesitas descansar de la aventura, aqui hay tiempo para conversar y jugar cartas. Hasta mi Counterspell descansa... un ratito.']);return;}
     if(role==='campo'&&G.roomId==='campoFamilia'){say(['RAI: ¡Me encanta venir al campo de los tatas! Mira la casita que me hicieron. Tiene mis autitos, bloques y un Osito Tito.','¡Vamos al refalin! Despues hacemos un castillo en la arena y la abuela nos llama a comer. ¡Ven conmigo!']);return;}
 
     say([CHARS[c].n + ': ' + pick(FRIEND_LINES[c]), ...(role ? [CHARS[c].n + ': ' + pick(ROLE_LINES[role])] : []), ...(c === 12 ? ['RAI: ¡Estoy con mi papa Matias! Mira mi autito; hagamos una casita para Osito Tito.'] : [CHARS[c].n + ': ' + pick(['Si juntamos a los tres, en línea, no hay guardián que aguante.','La otra semana gané con un Goblin Lackey en el turno uno. Nadie me cree.'])])]);
@@ -7713,7 +7728,7 @@ const ARCADE_GAMES = [
   { id:'stb', n:'SUPER TRIO BROS', help:'El juego de plataformas de la casa, tipo Mario Bros 3. Paga si terminas el primer nivel.', goal:1, step:2000, win:true },
   { id:'laberinto', n:'COME-MANA', help:'Come todos los puntos del laberinto sin que te pillen los goblins. Las piedras grandes los asustan.', goal:220, step:40 },
   { id:'dkc2', n:'DIDDY Y DIXIE · AVENTURA', help:'Plataformas inspirado en DKC2. Flechas mueven, A salta, B rueda, C cambia a Diddy/Dixie. Con Dixie, mantén A para planear.', goal:1, step:100, win:true },
-  { id:'tenis', n:'SUPER TENIS · ARCADE', help:'Flechas mueven, A golpea, B globo, C golpe fuerte. Gana un set de 3 juegos. MENU permite salir.', goal:1, step:100, win:true },
+  { id:'tenis', n:'SUPER TENIS · ARCADE', help:'Arrastra para moverte o usa stick/flechas. Golpes y saques automaticos. Gana 3 juegos. MENU permite salir.', goal:1, step:100, win:true },
 ];
 ROOMS.arcade.map[3]='kZFZFZFZFZFZFZk';
 ROOMS.casaIvan.map[3]=ROOMS.casaIvan.map[3].slice(0,3)+'Z'+ROOMS.casaIvan.map[3].slice(4);
@@ -8183,26 +8198,52 @@ function drawJungle(A){
 }
 /* ---- Tennis with serves, rallies, lobs, deuce and a short set ---- */
 const TENNIS_COURTS=[{n:'WIMBLEDON',type:'CESPED',court:'#548e55',edge:'#335b35',sky:'#495c80',speed:1.1,bounce:1.15},{n:'ROLAND GARROS',type:'ARCILLA',court:'#bc7147',edge:'#965133',sky:'#706250',speed:.9,bounce:1.4},{n:'US OPEN',type:'PISTA DURA',court:'#4779b9',edge:'#316048',sky:'#363f72',speed:1,bounce:1.25},{n:'AUSTRALIAN OPEN',type:'PISTA DURA',court:'#4296bd',edge:'#32758e',sky:'#48798e',speed:1.04,bounce:1.3}];
-function initTennis(A){A.tennis={court:0,selectCourt:true,px:120,py:126,ox:120,oy:37,bx:120,by:118,bz:3,vx:0,vy:0,vz:0,serve:true,server:0,last:1,points:[0,0],games:[0,0],rally:0,hitCd:0,msg:'A PARA SACAR',pause:0};A.lives=1;}
+function initTennis(A){A.tennis={court:0,selectCourt:true,px:120,py:126,ox:120,oy:37,bx:120,by:118,bz:3,vx:0,vy:0,vz:0,serve:true,server:0,last:1,points:[0,0],games:[0,0],rally:0,hitCd:0,msg:'ACERCATE: GOLPE AUTOMATICO',pause:0,serveTicks:0,drag:null,target:null};A.lives=1;}
 function tennisPoint(A,winner){const t=A.tennis;t.points[winner]++;A.score+=winner===0?100:0;const p=t.points;if(p[winner]>=4&&p[winner]-p[1-winner]>=2){t.games[winner]++;p[0]=p[1]=0;t.server=1-t.server;t.msg=(winner===0?'GANASTE':'RIVAL GANO')+' EL JUEGO';}else t.msg=winner===0?'¡PUNTO!':'PUNTO DEL RIVAL';
- if(t.games[winner]>=3){A.done=true;A.doneT=A.t;A.won=winner===0;A.title=A.won?'¡CAMPEON!':'SET DEL RIVAL';A.resultText=TENNIS_COURTS[t.court].n+' · '+t.games[0]+'-'+t.games[1];}t.pause=75;t.serve=true;t.vx=t.vy=t.vz=0;SFX.move();}
-function updateTennis(A){const t=A.tennis;if(t.selectCourt){if(pressed('up')||pressed('left'))t.court=(t.court+3)%4;if(pressed('down')||pressed('right'))t.court=(t.court+1)%4;if(pressed('a')){t.selectCourt=false;SFX.ok();}return;}const court=TENNIS_COURTS[t.court];if(t.pause>0){t.pause--;return;}if(t.hitCd>0)t.hitCd--;
- t.px=clamp(t.px+((K.right?1:0)-(K.left?1:0))*1.5,29,211);t.py=clamp(t.py+((K.down?1:0)-(K.up?1:0))*1.2,93,140);
- if(t.serve){t.bx=t.server===0?t.px:t.ox;t.by=t.server===0?t.py-8:t.oy+8;t.bz=3;if(t.server===1&&A.t%100===0||t.server===0&&pressed('a')){t.serve=false;t.vx=t.server===0?((K.right?1:0)-(K.left?1:0))*.8:(t.px-t.ox)*.015;t.vy=(t.server===0?-1.8:1.8)*court.speed;t.vz=1.6;t.last=t.server;t.rally=0;t.msg='';}return;}
- t.ox=clamp(t.ox+clamp(t.bx-t.ox,-1.2,1.2),29,211);t.oy=clamp(t.oy+clamp(t.by-15-t.oy,-.7,.7),22,63);
- t.bx+=t.vx;t.by+=t.vy;t.bz+=t.vz;t.vz-=.07;if(t.bz<0){t.bz=0;t.vz=court.bounce;t.rally++;if(t.rally>1){tennisPoint(A,1-t.last);return;}}
- if(t.by>148||t.by<14||t.bx<20||t.bx>220){tennisPoint(A,1-t.last);return;}
+ if(t.games[winner]>=3){A.done=true;A.doneT=A.t;A.won=winner===0;A.title=A.won?'¡CAMPEON!':'SET DEL RIVAL';A.resultText=TENNIS_COURTS[t.court].n+' · '+t.games[0]+'-'+t.games[1];}t.pause=45;t.serveTicks=0;t.serve=true;t.vx=t.vy=t.vz=0;SFX.move();}
+// Posicionamiento libre; saque y golpes automaticos.
+function tennisPointer(p,id,phase='down'){
+ const A=G.state==='arcade'&&G.arc,t=A&&A.tennis;
+ if(!t||A.done||A.exitConfirm)return false;
+ if(phase==='move'&&t.drag!==id)return false;
+ if(phase==='down'){
+  if(p.y<18)return false;
+  if(t.selectCourt){const i=Math.floor((p.y-46)/22);if(p.x>=34&&p.x<=206&&i>=0&&i<4){t.court=i;t.selectCourt=false;SFX.ok();}return true;}
+  if(t.drag!==null&&t.drag!==id)return true;
+  t.drag=id;
+ }
+ t.target={x:clamp(p.x,29,211),y:clamp(p.y,93,140)};return true;
+}
+function releaseTennisPointer(id){const t=G.arc?.tennis;if(t&&(id===undefined||t.drag===id)){t.drag=null;t.target=null;}}
+function updateTennis(A){
+ const t=A.tennis;if(t.selectCourt){if(pressed('up')||pressed('left'))t.court=(t.court+3)%4;if(pressed('down')||pressed('right'))t.court=(t.court+1)%4;if(pressed('a')){t.selectCourt=false;SFX.ok();}return;}
+ const court=TENNIS_COURTS[t.court];if(t.pause>0){t.pause--;return;}if(t.hitCd>0)t.hitCd--;
+ const dx=(K.right?1:0)-(K.left?1:0),dy=(K.down?1:0)-(K.up?1:0);
+ if(t.target){t.px+=clamp(t.target.x-t.px,-4,4);t.py+=clamp(t.target.y-t.py,-3,3);}
+ else{t.px+=dx*2.8;t.py+=dy*2;}
+ t.px=clamp(t.px,29,211);t.py=clamp(t.py,93,140);
+ if(t.serve){t.bx=t.server===0?t.px:t.ox;t.by=t.server===0?t.py-8:t.oy+8;t.bz=3;t.serveTicks=(t.serveTicks||0)+1;
+  if(t.serveTicks>=40||t.server===0&&(pressed('a')||dx||dy||t.target)){
+   t.serve=false;t.landed=false;t.aiWait=0;t.vx=t.server===0?dx*.5:clamp((t.px-t.ox)*.008,-.6,.6);t.vy=(t.server===0?-1.8:1.5)*court.speed;t.vz=1.25;t.last=t.server;t.rally=0;t.msg='';
+  }return;
+ }
+ if(t.aiWait>0)t.aiWait--;else{t.ox=clamp(t.ox+clamp(t.bx-t.ox,-.65,.65),29,211);t.oy=clamp(t.oy+clamp(t.by-15-t.oy,-.4,.4),22,58);}
+ t.bx+=t.vx;t.by+=t.vy;t.bz+=t.vz;t.vz-=.07;
+ if(t.bz<0){t.bz=0;t.vz=Math.max(1.6,court.bounce);t.rally++;if(t.rally>1){tennisPoint(A,t.last);return;}const inside=t.bx>=35&&t.bx<=205&&(t.last===0?t.by>=25&&t.by<80:t.by>80&&t.by<=137);if(!inside){tennisPoint(A,1-t.last);return;}t.landed=true;}
+ if(t.by>148||t.by<14||t.bx<20||t.bx>220){tennisPoint(A,t.landed?t.last:1-t.last);return;}
  if(Math.abs(t.by-80)<2&&t.bz<5){tennisPoint(A,1-t.last);return;}
- if(t.vy>0&&Math.hypot(t.bx-t.px,t.by-t.py)<19&&t.bz<16&&!t.hitCd&&(pressed('a')||pressed('b')||pressed('c'))){t.vy=(pressed('c')?-2.8:-2)*court.speed;t.vx=((K.right?1:0)-(K.left?1:0))*.9+(t.bx-t.px)*.07;t.vz=pressed('b')?2.5:1.4;t.last=0;t.rally=0;t.hitCd=15;SFX.hit();}
- else if(t.vy<0&&Math.hypot(t.bx-t.ox,t.by-t.oy)<16&&t.bz<14){t.vy=1.8*court.speed;t.vx=(t.px<120?.75:-.75);t.vz=1.5;t.last=1;t.rally=0;SFX.hit();}}
+ if(t.vy>0&&Math.hypot(t.bx-t.px,t.by-t.py)<27&&t.bz<27&&!t.hitCd){
+  t.vy=-1.7*court.speed;t.vx=clamp(((t.ox<120?180:60)-t.bx)/55,-1.25,1.25);t.bz=8;t.vz=.8;t.last=0;t.rally=0;t.landed=false;t.aiWait=12;t.hitCd=15;t.msg='¡BUEN GOLPE!';SFX.hit();
+ }else if(t.vy<0&&Math.hypot(t.bx-t.ox,t.by-t.oy)<16&&t.bz<20){t.vy=1.5*court.speed;t.vx=t.px<120?.45:-.45;t.bz=8;t.vz=.8;t.last=1;t.rally=0;t.landed=false;SFX.hit();}
+}
 function drawTennis(A){const t=A.tennis,c=TENNIS_COURTS[t.court];R(0,0,W,H,c.sky);
  if(t.selectCourt){txt('SUPER TENIS',120,12,'#fcd84a','center');tiny('ELIGE TU GRAND SLAM',120,29,'#fff','center');TENNIS_COURTS.forEach((c,i)=>{const y=46+i*22;R(34,y,172,19,i===t.court?'#ebd59c':'#20344a');R(37,y+3,22,13,c.court);ctx.strokeStyle='#fff';ctx.strokeRect(40,y+5,16,9);R(47,y+5,1,9,'#fff');tiny(c.n,65,y+3,i===t.court?'#222238':'#fff');tiny(c.type,65,y+11,i===t.court?'#5a4838':'#92b9d0');});tiny('FLECHAS · A CONFIRMA · MENU SALE',120,146,'#fff','center');return;}
  for(let y=17;y<142;y+=7)for(const side of [3,222]){R(side,y,15,2,'#24314a');for(let i=0;i<3;i++){R(side+1+i*5,y-3,2,2,['#f4d4b3','#e6aa80','#b07954'][(i+y)%3]);R(side+i*5,y-1,4,2,['#d490ae','#e0dba3','#86a9cc'][(i+y)%3]);}}
  R(22,16,196,132,c.edge);R(35,25,170,112,c.court);if(t.court===0)for(let y=25;y<137;y+=14)R(35,y,170,7,'#ffffff0b');else if(t.court===1)for(let i=0;i<50;i++)R(36+i*47%168,26+i*19%109,2,1,'#d89261');
  ctx.strokeStyle='#f8f8f8';ctx.lineWidth=1;ctx.strokeRect(35,25,170,112);ctx.strokeRect(50,25,140,112);ctx.beginPath();ctx.moveTo(50,55);ctx.lineTo(190,55);ctx.moveTo(50,107);ctx.lineTo(190,107);ctx.moveTo(120,55);ctx.lineTo(120,107);ctx.stroke();R(28,80,184,5,'#17303a');for(let x=28;x<212;x+=3)R(x,80,1,4,'#9cbdcc');R(28,79,184,1,'#fff');for(const x of [28,211])R(x,76,2,10,'#e6dcca');R(216,67,8,3,'#c9a770');R(222,70,2,15,'#c9a770');drawPerson(213,53,NPCDEF.juez,0,0);
- const moving=K.left||K.right||K.up||K.down;for(const [x,y,look,dir,walk]of [[t.ox,t.oy,NPCDEF.fan1,0,!t.serve],[t.px,t.py,playerLook(),1,moving]]){softShadow(x+2,y,6,2,.35);drawPerson(x-5,y-16,look,dir,walk?(frame>>3)&1:0);R(x+8,y-9,1,5,'#dedcc9');disc(x+9,y-11,4,'#e8e0c0');disc(x+9,y-11,3,'#5b93a6');for(let k=-2;k<=2;k+=2){R(x+9+k,y-13,1,5,'#b8d7d5');R(x+7,y-11+k,5,1,'#b8d7d5');}}
+ const moving=t.target||K.left||K.right||K.up||K.down;for(const [x,y,look,dir,walk]of [[t.ox,t.oy,NPCDEF.fan1,0,!t.serve],[t.px,t.py,playerLook(),1,moving]]){softShadow(x+2,y,6,2,.35);drawPerson(x-5,y-16,look,dir,walk?(frame>>3)&1:0);R(x+8,y-9,1,5,'#dedcc9');disc(x+9,y-11,4,'#e8e0c0');disc(x+9,y-11,3,'#5b93a6');for(let k=-2;k<=2;k+=2){R(x+9+k,y-13,1,5,'#b8d7d5');R(x+7,y-11+k,5,1,'#b8d7d5');}}
  if(!t.serve){R(t.bx-t.vx*2,t.by-t.bz-t.vy*2,2,2,'#f9ef7a88');R(t.bx-t.vx*4,t.by-t.bz-t.vy*4,1,1,'#f9ef7a55');}softShadow(t.bx,t.by,2,1,.5);disc(t.bx,t.by-t.bz,2,'#fce850');R(t.bx,t.by-t.bz-1,1,1,'#fffbd7');
- const p=t.points,labels=['0','15','30','40'];const point=i=>p[i]>3?(p[i]>p[1-i]?'AD':'40'):labels[p[i]];R(0,0,W,15,'#142838');tiny(c.n,7,4,'#fcd84a');tiny(t.games[0]+'-'+t.games[1]+'  '+point(0)+'-'+point(1),190,4,'#fff','right');if(t.msg){R(62,89,116,10,'#142838dd');tiny(t.msg,120,92,'#fff','center');}R(0,149,W,11,'#142838');tiny('A GOLPE · B GLOBO · C FUERTE',120,151,'#fff','center');}
+ const p=t.points,labels=['0','15','30','40'];const point=i=>p[i]>3?(p[i]>p[1-i]?'AD':'40'):labels[p[i]];R(0,0,W,15,'#142838');tiny(c.n,7,4,'#fcd84a');tiny(t.games[0]+'-'+t.games[1]+'  '+point(0)+'-'+point(1),190,4,'#fff','right');if(t.msg){R(62,89,116,10,'#142838dd');tiny(t.msg,120,92,'#fff','center');}R(0,149,W,11,'#142838');tiny('ARRASTRA O MUEVETE · GOLPE AUTOMATICO',120,151,'#fff','center');}
 
 /* ---- juegos de la casa de Iván (gratis, por diversión) ---- */
 function startFree(game){
@@ -8646,7 +8687,7 @@ function netErrorText(e, code){
   if (t === 'disconnected') return 'Se perdio la conexion con el servidor. Crea o unete a la sala de nuevo.';
   return 'Error online (' + (t || 'desconocido') + '). Vuelve a intentarlo; si sigue, avisame con este texto.';
 }
-const BUILD = 2026101003; // AAAAMMDDnn: subir en cada publicacion
+const BUILD = 2026110601; // AAAAMMDDnn: subir en cada publicacion
 // Aviso de version nueva: compara este BUILD con el del archivo publicado y ofrece recargar
 function checkForUpdate(){
   if (IN_CLAUDE || !/^https?:$/.test(location.protocol) || document.getElementById('updateBar')) return;
@@ -9298,6 +9339,7 @@ cvs.addEventListener('pointerdown', e => {
   audioInit(); cvs.focus();
   const p = canvasPos(e);
   if (location.hash.startsWith('#pokedex') || location.hash === '#monturas' || location.hash === '#bestiario' || location.hash === '#zonas' || location.hash === '#nuevos' || location.hash === '#bestiario2') return;
+  if(e.button===0&&tennisPointer(p,e.pointerId)){try{cvs.setPointerCapture(e.pointerId);}catch(_){}return;}
   if(G.state==='select' && e.button===0){
     if(!Number.isFinite(G.selectScroll))revealSelected();
     selectDrag={id:e.pointerId,startY:p.y,scroll:G.selectScroll,moved:false};
@@ -9307,11 +9349,12 @@ cvs.addEventListener('pointerdown', e => {
   pointerClick(p, e.button === 2);
 });
 cvs.addEventListener('pointermove', e => {
+  if(tennisPointer(canvasPos(e),e.pointerId,'move'))return;
   if(selectDrag && e.pointerId===selectDrag.id){const p=canvasPos(e),delta=p.y-selectDrag.startY;if(Math.abs(delta)>4)selectDrag.moved=true;if(selectDrag.moved)setSelectScroll(selectDrag.scroll-delta);return;}
   if (mouseHeld && G.state === 'world' && G.moveTarget) { const p = canvasPos(e); G.moveTarget.x = p.x; G.moveTarget.y = p.y; G.moveTarget.t = 0; } });
-addEventListener('pointerup',e=>{finishSelectDrag(e);mouseHeld=false;});
-cvs.addEventListener('pointercancel',()=>{selectDrag=null;mouseHeld=false;});
-cvs.addEventListener('lostpointercapture',()=>{selectDrag=null;});
+addEventListener('pointerup',e=>{releaseTennisPointer(e.pointerId);finishSelectDrag(e);mouseHeld=false;});
+cvs.addEventListener('pointercancel',e=>{releaseTennisPointer(e.pointerId);selectDrag=null;mouseHeld=false;});
+cvs.addEventListener('lostpointercapture',e=>{releaseTennisPointer(e.pointerId);selectDrag=null;});
 cvs.addEventListener('contextmenu', e => e.preventDefault());
 addEventListener('pagehide', saveGame);
 // Sillón: el jugador 1 abre la sala apenas entra al mundo y el jugador 2 se une solo; si se corta, se reconectan.

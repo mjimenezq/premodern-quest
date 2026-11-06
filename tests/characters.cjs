@@ -15,7 +15,7 @@ source=source.replace(/\}\)\(\);\s*$/, `globalThis.gameTest={medalProgress,festi
 source=source.replace('gameTest={medalProgress,','gameTest={leagueTalk,pokemonGymTalk,POKEMON_META_DECKS,POKEMON_MATCHUPS,POKEMON_GYM_DECKS,activeDecks,realmCards,pokemonMatchup,magicBestiary,chooseMagicPet,updateSafari,throwBall,MAGIC_SAFARI_POOLS,drawCardBig,drawMetaArt,SAFARI_REGIONS,ashGuidePath,offerAshGuide,updateAshGuide,finishAshGuide,spawnWildPoke,deckLabel,deckChoices,CARDS,SPELLS,REFLECT_SPELLS,REFLECT_GEAR,drawDialog,addXP,levelCap,LEAGUES,finishTour,genDuel,OKTOBER_REGION,festivalStops,stampFestival,regionalFestival,endOctayRace,pokemonDiscovered,portalTalk,pellucoBeer,pellucoDJ,propAction,startOctayRace,updateOctayRace,OCTAY_CHECKPOINTS,medalProgress,');
 source=source.replace("function tiny(s, x, y, col='#fff', al='left', raw=false){","function tiny(s, x, y, col='#fff', al='left', raw=false){(globalThis.renderLabels ||= []).push(String(s));");
 source=source.replace('gameTest={leagueTalk,','gameTest={startBarcaza,updateBarcaza,drawBarcaza,carlitosTalk,drawCyclist,REGIONALS_FOR_NATIONAL,ensureContracts,buildContract,questXP,questKill,spawnQuestItems,addSword,addGear,rareLootNotice,drawCardPop,drawLootPop,RELICS,spinChargeFrames,attackPose,spinAngle,drawSwordAt,drawSword,NET,SPIN_CHARGE,SPIN_DURATION,startAttack,cancelAttackCharge,canChargeAttack,updateAttackCharge,startSpinAttack,updateSpinAttack,drawAttackPower,spinPathClear,setTouchControl,readTouchControl,analogVector,movementInput,stick,padAxis,resetStick,resetHeldInput,direction8,visibleFacing,readInput,newPokemonBattle,pokemonStrike,genPokemonReplay,POKEMON_CARD_STATS,bankTransfer,bankTalk,recoverLife,usePotion,POTIONS,questsOf,questMarker,openPotions,setupDuel,startFree,updateTennis,TENNIS_COURTS,drawMount,drawRider,spawnEnemy,hurtPlayer,hurtHazard,castSpell,hitWithSpell,gainSpellXp,spellProgress,monsterCardChance,reflectedDropCards,meleeDamage,leagueTalk,');
-source=source.replace('gameTest={','gameTest={updateNetPets,netMount,netPetKind,gearLook,playerLook,netStyle,updateNetFx,ARMOR,weaponStyle,WSTYLES,WSTYLE_OF,startSpecial,updateWeaponExtras,drawWeaponExtras,motionU,trackMotion,startAttack,drawSword,SWORD_ORDER,');
+source=source.replace('gameTest={','gameTest={tennisPointer,releaseTennisPointer,vegetationRegion,updateNetPets,netMount,netPetKind,gearLook,playerLook,netStyle,updateNetFx,ARMOR,weaponStyle,WSTYLES,WSTYLE_OF,startSpecial,updateWeaponExtras,drawWeaponExtras,motionU,trackMotion,startAttack,drawSword,SWORD_ORDER,');
 source=source.replace('gameTest={','gameTest={deckPerkBonus,southPropAction,startRefalin,updateRefalin,awardBossDiploma,updateBossDiploma,drawBossDiploma,drawBossDiplomas,ALL_BOSSES,drawPokeCardArt,PK_SPRITES,pokeCardSpecies,');
 vm.runInNewContext(source,sandbox,{timeout:5000});
 const g=sandbox.gameTest;
@@ -542,6 +542,24 @@ async function main(){
  for(const d of g.POKEMON_META_DECKS[0].cards)questSave.cards[d]=1;g.loadRoom('cartasCurico',115,116);g.startTour('pk_dragapult',{rounds:4,league:'curico'});for(let i=0;i<3;i++)g.prepRound();assert.deepEqual(Array.from(g.G.tour.lives),[6,6]);g.G.tour.phase='duel';for(const event of g.G.tour.ev){g.G.tour.cur=event;g.G.tour.pokemon=event.pokemon;g.drawTour();}g.G.tour.phase='res';g.drawTour();g.G.tour=null;g.G.duel=null;
  // All Grand Slam courts are selectable, affect the ball, and free Pong uses tennis too.
  for(let i=0;i<4;i++){g.startArcade('tenis');assert(g.G.arc.tennis.selectCourt);g.G.arc.tennis.court=i;g.drawArcade();g.K.a=1;g.updateArcade();g.K.a=0;assert(!g.G.arc.tennis.selectCourt);g.G.arc.t=101;g.K.a=1;g.updateArcade();g.K.a=0;assert.equal(g.G.arc.tennis.vy,-1.8*g.TENNIS_COURTS[i].speed);for(let point=0;point<12;point++)g.tennisPoint(g.G.arc,0);assert(g.G.arc.done&&g.G.arc.won);assert(g.G.arc.resultText.includes(g.TENNIS_COURTS[i].n));g.drawArcade();g.cancelArcade();}
+ // Tennis needs positioning only: touch selection, automatic serves/returns, safe pointer release.
+ for(let court=0;court<4;court++){
+  g.startFree('pong');g.G.arc.tennis.court=court;const t=g.G.arc.tennis;
+  assert(g.tennisPointer({x:100,y:48+court*22},31));assert(!t.selectCourt);assert.equal(t.court,court);
+  for(let tick=0;tick<40;tick++){g.G.arc.t++;g.updateTennis(g.G.arc);}assert(!t.serve,'Serve must start without A');
+  Object.assign(t,{bx:120,by:115,bz:4,vx:0,vy:1.5,vz:0,px:120,py:126,hitCd:0,rally:0,last:1});g.updateTennis(g.G.arc);assert(t.vy<0&&t.last===0,'Nearby ball must return without a button');
+  assert(g.tennisPointer({x:200,y:130},32));assert(!g.tennisPointer({x:40,y:100},33,'move'));const old=t.px;g.updateTennis(g.G.arc);assert(t.px>old);g.releaseTennisPointer(33);assert(t.target);g.releaseTennisPointer(32);assert.equal(t.target,null);
+  assert(g.tennisPointer({x:100,y:120},32));g.resetHeldInput();assert.equal(t.drag,null);assert.equal(t.target,null);
+  // Two bounces lose the point for the receiver; a long shot without a bounce is a fault.
+  Object.assign(t,{serve:false,pause:0,bz:.01,vz:-1,by:50,bx:90,vx:0,vy:-1,last:0,rally:1,landed:true});const point=t.points[0];g.updateTennis(g.G.arc);assert.equal(t.points[0],point+1);
+  Object.assign(t,{serve:false,pause:0,bz:5,vz:0,by:15,bx:90,vx:0,vy:-2,last:0,rally:0,landed:false});const rival=t.points[1];g.updateTennis(g.G.arc);assert.equal(t.points[1],rival+1);
+  g.cancelArcade();
+  g.startFree('pong');const A=g.G.arc;A.tennis.court=court;A.tennis.selectCourt=false;
+  for(let tick=0;tick<14000&&!A.done;tick++){A.t++;A.tennis.target={x:A.tennis.bx,y:126};g.updateTennis(A);}
+  assert(A.done&&A.won,JSON.stringify({court,done:A.done,won:A.won,games:A.tennis.games,points:A.tennis.points})+' Following the ball should allow winning on '+g.TENNIS_COURTS[court].n);g.cancelArcade();
+ }
+ for(const realm of ['magic','pokemon']){g.getS().realm=realm;g.loadRoom('pelluco',115,84);assert.equal(g.vegetationRegion('sand'),'pelluco');assert.equal(g.G.def.props.filter(p=>p.k==='pellucoShrub').length,4);g.drawWorld();}
+ g.getS().realm='magic';
  g.startFree('pong');assert(g.G.arc.tennis);g.drawArcade();g.requestArcadeExit();assert(g.G.arc.exitConfirm);g.cancelArcade();g.G.preview=false;g.setS(previous);
  console.log('PASS: slow safe recovery and damage delay, potion purchases/use/stock, bank transfers and death protection, reflected quest acceptance/turn-in, gym leaders and no borrowed league decks, pixel-only Pokemon cards, 200 six-prize replays, active Pokemon/bench and four tennis courts.');
  const encoded=await g.encodeSave(custom), decoded=await g.decodeSave(encoded);
