@@ -4,6 +4,8 @@ Proyecto independiente. Hablar con Matías en español de Chile y explicar de fo
 El juego abre directamente desde `index.html`; el historial Git del proyecto se conserva en `.git`.
 
 
+**6 nov — DonPolzen:** cambia el nombre visible de Klaus a DonPolzen en seleccion, NPC, dialogos y rivales. Conserva id klaus, indice 3 y q_klaus para no alterar partidas. BUILD 2026110603.
+
 **6 nov — Lucas:** personaje jugable indice 22, argentino y curicano de toda la vida, fan de PES, tarreos e Iron Maiden. Camiseta celeste/blanca con escudo y dorsal 10, pelo oscuro y audifonos; FUE 4/DES 6/AGI 6/INT 4, crecimiento DES. NPC en Curico [8,4] con charlas de PES/metal y duelo Goblins. CHARS solo append; creador sigue 18, amigos anteriores e indices intactos. BUILD 2026110602.
 
 **6 nov — Pendientes retomados:** tenis de arcade y mesas con saque/golpe automaticos, arrastre con captura de puntero y seleccion tactil de cancha; stick/flechas mas rapidos, rival con reaccion mas lenta y alcance mayor. Soltar/cancelar/perder foco libera arrastre. Corregido punto de doble bote y trayectoria de saques/devoluciones. Pruebas simulan ganar los cuatro Grand Slams sin ataque y verifican faltas y cancelacion. Pelluco usa arbustos costeros verdes y helechos propios sin palmeras, franja verde y matorrales frente al agua dejando claros. Safari tiene PC de compañeros y biblioteca, sin monitores WoW/Diablo. Se conserva Teno como mapa independiente al oeste de Curico, sin municipalidad, y LAN party de Davis hechos por Claude; corregidas referencias viejas a secretaria/municipalidad y direccion hacia Curico. BUILD 2026110601.

@@ -754,7 +754,7 @@ const CHARS = [
   { id:'gucho', n:'GUCHO', tag:'PURA FUERZA', style:'beanie', st:{fue:7,des:4,agi:4,int:5}, main:'fue',
     c:{ hat:'#3f6a2a', hatD:'#243f18', hood:true, hair:'#6a4020', skin:'#e8a878', shirt:'#8a5a30', shirtD:'#5a3418',
         cape:'#3f6a2a', capeD:'#243f18', belt:'#2a1a0c', pants:'#4a3a2a', shoe:'#2a1a0c', sleeve:'#8a5a30' } },
-  { id:'klaus', n:'KLAUS', tag:'EL ESTRATEGA', style:'curly', st:{fue:4,des:5,agi:5,int:7}, main:'int',
+  { id:'klaus', n:'DonPolzen', tag:'EL ESTRATEGA', style:'curly', st:{fue:4,des:5,agi:5,int:7}, main:'int',
     c:{ hair:'#141014', skin:'#e8b088', shirt:'#d86a20', shirtD:'#9a4a14', cape:'#5a3418', capeD:'#3a2010',
         belt:'#2a1a0c', pants:'#4a3a2a', shoe:'#2a1a0c', sleeve:'#d86a20' } },
   { id:'katy', n:'KATY', tag:'LA TRAMPOSA', style:'ponytail', st:{fue:4,des:7,agi:6,int:5}, main:'des', cheat:true,
@@ -845,7 +845,7 @@ const friendCredits = () => friendCast().reduce((lines,c) => { const name=c.n; i
 const NPCDEF = {
   cantinero:{ n:'CANTINERO', style:'bald', c:{ hair:'#3a2418', skin:'#e8b088', shirt:'#f4f1e8', shirtD:'#c8c0b0', pants:'#3a3a48', shoe:'#2a1a10' } },
   coleccionista:{ n:'COLECCIONISTA', style:'wizard', c:{ hat:'#5a2a98', hatD:'#3a1a68', hair:'#e0e0e8', skin:'#f0c8a0', shirt:'#6a3ab0', shirtD:'#4a2a80', pants:'#4a2a80', shoe:'#2a1a40' } },
-  klaus:{ n:'KLAUS', style:'curly', mug:true, c:{ hair:'#141014', skin:'#e8b088', shirt:'#d86a20', shirtD:'#9a4a14', cape:'#5a3418', capeD:'#3a2010', pants:'#4a3a2a', shoe:'#2a1a0c' } },
+  klaus:{ n:'DonPolzen', style:'curly', mug:true, c:{ hair:'#141014', skin:'#e8b088', shirt:'#d86a20', shirtD:'#9a4a14', cape:'#5a3418', capeD:'#3a2010', pants:'#4a3a2a', shoe:'#2a1a0c' } },
   organizador:{ n:'ORGANIZADOR', style:'cap', c:{ hat:'#2a6ad8', hatD:'#1a4a98', hair:'#5a3a1c', skin:'#f1c9a0', shirt:'#f4f1e8', shirtD:'#c8c0b0', pants:'#2a2a38', shoe:'#1a1a22' } },
   vecina:{ n:'VECINA', style:'bun', c:{ hair:'#7a4a28', skin:'#f1c9a0', shirt:'#48a860', shirtD:'#2a7840', pants:'#48a860', shoe:'#5a3018' } },
   cronista:{ n:'CRONISTA', style:'bald', c:{ hair:'#d8d8e0', skin:'#e8b088', shirt:'#8a5a30', shirtD:'#5a3418', pants:'#3a3a48', shoe:'#2a1a10' } },
@@ -5847,7 +5847,7 @@ const FRIEND_LINES = {
   21:['Soy agrónomo y colorín: de día reviso cultivos, de noche reviso mi Burn. Las dos cosas necesitan buen clima y paciencia.','Lightning Bolt: un maná, tres de daño y a la cara. Para ganar rápido no hay nada mejor.','Mazo rojo siempre: Chain Lightning, Fireblast y quemar al rival antes de que robe su tercera carta.'],
   1:['Oe, si vas a la Cripta de Tourach lleva harta vida. El Negator Ancestral pega como camión.','Yo juego Burn: Bolt, Chain, Fireblast y a la cara. Sin miedo.'],
   4:['¿Trampa? Yo no hago trampa... solo tengo mucha suerte con los dados. Mucha.','Si juegas conmigo, mírame las manos. O no, mejor mírame a los ojos.'],
-  3:['Yo no juego rápido, juego bien. Por eso gano los torneos... a veces.','Tip de Klaus: la cerveza sube la INT para el torneo. Es ciencia, cachai.'],
+  3:['Yo no juego rápido, juego bien. Por eso gano los torneos... a veces.','Tip de DonPolzen: la cerveza sube la INT para el torneo. Es ciencia, cachai.'],
   2:['¿Una partida? Te juego mi Replenish contra lo que traigas. Pierde el que paga la ronda.','En las Minas de Mishra hay un Rey Goblin con corona. Me pegó tan fuerte que volví a pie a Tolaria.'],
   5:['¡Por Odín y por Curicó! Terravore y Armageddon: así se juega en el norte... del sur.','Un vikingo no se retira de la Pampa de Terravore. Se retira a la taberna, que es distinto.'],
   6:['Le pedí a una IA que me armara el mazo y me puso cuatro Force of Will. Tenía razón.','En el arcade saco el doble de premio: le hice ingeniería inversa a las máquinas. Sistemas, compadre.'],
@@ -6330,7 +6330,7 @@ function talkTo(id, npc, skipQuest){
   } else if (id === 'cantinero') {
     const beerMax = CH().beer ? 6 : 4;
     if (S.beers >= beerMax) { say([CH().beer ? 'Ya te tomaste seis, Tebax. Ni tú aguantas otra antes del torneo.' : 'Ya te tomaste cuatro. No te vendo más hasta que juegues un torneo.']); return; }
-    say([pick(['Aquí la cerveza es como el Dark Ritual: te da energía al tiro y después te pasa la cuenta.','El que toma para olvidar, que pague antes. Por si acaso.','No fío. Ni al Klaus, que me debe desde el torneo del 2019.','La chela no resuelve los problemas... pero el agua tampoco, así que para qué arriesgarse.']), '¡Bienvenido a la Taberna El Mazo! ¿Una cerveza? Son $1.500. Te recupera la vida y te pone más picado para el torneo.'],
+    say([pick(['Aquí la cerveza es como el Dark Ritual: te da energía al tiro y después te pasa la cuenta.','El que toma para olvidar, que pague antes. Por si acaso.','No fío. Ni al DonPolzen, que me debe desde el torneo del 2019.','La chela no resuelve los problemas... pero el agua tampoco, así que para qué arriesgarse.']), '¡Bienvenido a la Taberna El Mazo! ¿Una cerveza? Son $1.500. Te recupera la vida y te pone más picado para el torneo.'],
       [{ t:'SÍ, UNA ($1.500)', fn:() => {
           if (S.coins < 1500) { say(['No te alcanza. Anda a pegarle a unos monos y vuelve.']); return; }
           S.coins -= 1500; S.hp = S.maxHp; S.beers++; S.beerTotal = (S.beerTotal || 0) + 1; S.buzz = Math.min(CH().beer ? 5 : 3, S.buzz + 1); if (CH().beer) S.mp = maxMp(); if (CH().piscola) PL.piscola = 600; SFX.beer();
@@ -6360,11 +6360,11 @@ function talkTo(id, npc, skipQuest){
     const d = dupes(), miss = missingCards();
     if (d.length && miss.length && Math.random() < 0.6) {
       const give = pick(d), want = pick(miss);
-      say(['¡Hola! Soy Klaus. Te cambio mi ' + CARDS[want].n + ' por tu ' + CARDS[give].n + ' repetida.'],
+      say(['¡Hola! Soy DonPolzen. Te cambio mi ' + CARDS[want].n + ' por tu ' + CARDS[give].n + ' repetida.'],
         [{ t:'TRATO', fn:() => { S.cards[give]--; say(['¡Buena! Salud.'], null, () => addCard(want)); } }, { t:'NO', fn:() => say(['Tú te lo pierdes.']) }]);
     } else {
       say([pick([
-        'Soy Klaus. Llevo tres cervezas y sigo pensando que Burn es el mejor mazo.',
+        'Soy DonPolzen. Llevo tres cervezas y sigo pensando que Burn es el mejor mazo.',
         'Tip: con más INT juegas mejor en el torneo. La cerveza ayuda... un poco.',
         'El Langostino es Phyrexian Dreadnought con Stifle. Dicen que el bicho vive en Chiloé, al sur.',
         'Los goblins del bosque sueltan cartas de Goblins y de Burn. Pégales nomás.',
@@ -6385,10 +6385,10 @@ function talkTo(id, npc, skipQuest){
 }
 
 /* ============ TOURNAMENT ============ */
-const OPP_NAMES = ['TÍO PELAO','LA FEÑA','DON WACHO','EL POLLO','SEBA','LA COTE','EL FLACO','KLAUS','KIKE','LA PANCHI'];
+const OPP_NAMES = ['TÍO PELAO','LA FEÑA','DON WACHO','EL POLLO','SEBA','LA COTE','EL FLACO','DonPolzen','KIKE','LA PANCHI'];
 const LOOKS = ['curly','spiky','bun','bald','cap','beanie'];
 function randomLook(name){
-  if (name === 'KLAUS') return NPCDEF.klaus;
+  if (name === 'DonPolzen') return NPCDEF.klaus;
   const pal = ['#d8402a','#3a7ae8','#48a860','#8a4ad0','#e8a028','#2a2a38','#c83a78'];
   const hair = pick(['#141014','#5a3a1c','#9a4422','#f0d070','#d8d8e0']);
   const sh = pick(pal);
@@ -7421,7 +7421,7 @@ function drawIntro(){
     introBars(cast.length + ' AMIGOS. UN MAZO. MUCHA CERVEZA.');
     return;
   }
-  // Escena 3: Klaus y Tebax brindan, las cartas se abren detras
+  // Escena 3: DonPolzen y Tebax brindan, las cartas se abren detras
   G.introSceneT = t - 610; const k = t - 610;
   R(0, 0, W, H, '#0f380f'); R(0, 16, W, 108, '#306230');
   ['bolt','dread','specter','siege','angel','moxd'].forEach((id, i) => { const up = Math.min(1, k / 60); ctx.save(); ctx.translate(40 + i * 32, 120 - up * 62); ctx.rotate((i - 2.5) * 0.12); drawCardSmall(id, -12, -17, true, 0); ctx.restore(); });
@@ -8707,7 +8707,7 @@ function netErrorText(e, code){
   if (t === 'disconnected') return 'Se perdio la conexion con el servidor. Crea o unete a la sala de nuevo.';
   return 'Error online (' + (t || 'desconocido') + '). Vuelve a intentarlo; si sigue, avisame con este texto.';
 }
-const BUILD = 2026110602; // AAAAMMDDnn: subir en cada publicacion
+const BUILD = 2026110603; // AAAAMMDDnn: subir en cada publicacion
 // Aviso de version nueva: compara este BUILD con el del archivo publicado y ofrece recargar
 function checkForUpdate(){
   if (IN_CLAUDE || !/^https?:$/.test(location.protocol) || document.getElementById('updateBar')) return;
