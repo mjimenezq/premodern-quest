@@ -802,6 +802,8 @@ CHARS.push(friendCharacter('martin','MARTÍN','GYM RAT Y SOCIO COMERCIAL','upspi
 CHARS.push(friendCharacter('gonzalo','GONZALO','EL ALCALDE · ABOGADO','curly',{fue:4,des:5,agi:4,int:7},'int',{blueMaster:true,mayor:true,suit:true},{hair:'#2a2020',hairD:'#141010',skin:'#efc29a',eye:'#3a4a7a',shirt:'#283a68',shirtD:'#18244a',sleeve:'#283a68',emblem:'#c83040',pants:'#202a48',shoe:'#141418',belt:'#141418'}));
 // Divs (3 oct): colorín, agrónomo y fanático del mazo rojo; ama el Lightning Bolt para ganar rápido. Indice 21.
 CHARS.push(friendCharacter('divs','DIVS','EL AGRÓNOMO COLORÍN','spiky',{fue:4,des:6,agi:6,int:4},'des',{freckles:true,plaid:true,burnLover:true},{hair:'#d8562a',hairD:'#9a3418',hairL:'#f08048',skin:'#fbdcc4',eye:'#3a8a3a',shirt:'#5a8a3a',shirtD:'#36602a',sleeve:'#5a8a3a',pants:'#6a5a3a',shoe:'#4a3018',belt:'#4a2a14'}));
+// Lucas se agrega al final: indice 22, sin desplazar ninguna partida.
+CHARS.push(friendCharacter('lucas','LUCAS','PES, METAL Y CURICO','spiky',{fue:4,des:6,agi:6,int:4},'des',{argentinaJersey:true,headphones:true,pes:true,metalFan:true},{hair:'#30251e',hairD:'#19191b',hairL:'#655044',skin:'#edbd94',eye:'#5e4936',shirt:'#f6f5ef',shirtD:'#b7d2da',sleeve:'#f6f5ef',pants:'#182534',shoe:'#f6f5ef',belt:'#182534',phones:'#263341'}));
 // Mazos con azul: el Alcalde los domina en ligas y duelos.
 const BLUE_DECKS = new Set(['langostino','landstill','replenish']);
 function deckPerkBonus(deck){ if (pokemonRealm()) return 0; const ch = CH(); return (ch.blueMaster && BLUE_DECKS.has(deck)) || (ch.burnLover && deck === 'burn') ? 1 : 0; }
@@ -1605,6 +1607,7 @@ ROOMS.sobresTempest = { name:'SOBRES DE RATH', theme:'inside', music:'tavern', i
 ROOMS.vina.npcs.push({ id:'ligaVina', x:8, y:4 });
 // Los amigos por Chile: tomando cerveza, apoyando o como rivales de liga (el que juegas no aparece)
 const FRIENDS_ON_MAP = [
+  { ch:22, room:'valpo', x:8, y:4, role:'curicoGamer' },
   { ch:12, room:'pueblo', x:12, y:5, role:'family' },
   { ch:13, room:'pmontt', x:6, y:7, role:'family' },
   { ch:14, room:'pmontt', x:9, y:6, role:'engineer' },
@@ -1625,8 +1628,9 @@ const FRIENDS_ON_MAP = [
   { ch:11, room:'salaTempest', x:11, y:6, role:'rival' },
 ];
 for (const fr of FRIENDS_ON_MAP) ROOMS[fr.room].npcs = (ROOMS[fr.room].npcs || []).concat({ id:'friend', ch:fr.ch, role:fr.role, x:fr.x, y:fr.y });
-const FRIEND_PLACE = { teno:'Teno', casaDavis:'su casa en Teno', campoFamilia:'el campo de la familia', providencia:'Piedra Bruja', pueblo:'la Villa', arena:'la Arena', bar:'Xcso Club', liga:'la Liga Nacional', arcade:'el Arcade', taberna:'la Taberna El Mazo', pmontt:'Puerto Montt', vina:'la playa de Viña', salaTempest:'la Liga Tempest' };
+const FRIEND_PLACE = { valpo:'Curico', teno:'Teno', casaDavis:'su casa en Teno', campoFamilia:'el campo de la familia', providencia:'Piedra Bruja', pueblo:'la Villa', arena:'la Arena', bar:'Xcso Club', liga:'la Liga Nacional', arcade:'el Arcade', taberna:'la Taberna El Mazo', pmontt:'Puerto Montt', vina:'la playa de Viña', salaTempest:'la Liga Tempest' };
 const ROLE_LINES = {
+  curicoGamer:['Argentino y curicano de toda la vida: PES en la pantalla e Iron Maiden en los audifonos.'],
   family:['¡Un abrazo! La familia te acompaña en esta aventura.'],
   engineer:['Javier y Rodolfo: compañeros de Ingeniería de Katy, inseparables desde la U.'],
   finance:['Con Matías estudiamos Ingeniería Comercial. Después de clases nos íbamos a jugar Tibia.'],
@@ -3359,6 +3363,15 @@ function drawPerson(x, y, P, dir, f){
     p(side ? 5 : 4,9,side ? 6 : 8,1,'#581020');
     p(side ? 5 : 4,12,side ? 6 : 8,1,'#581020');
   }
+  // Camiseta argentina: franjas verticales, escudo dorado y dorsal diez.
+  if(P.argentinaJersey){
+    if(!side){
+      for(let xx=4;xx<12;xx+=2)p(xx,9,2,3,(xx===4||xx===8)?'#78c5ea':'#f7f7f0');
+      if(dir===0){p(10,9,2,2,'#d2af54');p(10,9,1,1,'#f7dc8a');}
+      else{p(6,9,1,3,'#183447');p(8,9,3,3,'#183447');p(9,10,1,1,'#f7f7f0');}
+      p(2,9,1,1,'#78c5ea');p(13,9,1,1,'#78c5ea');p(2,10,1,1,'#292a31');p(13,10,1,1,'#b9413a');
+    }else{p(5,9,1,3,'#78c5ea');p(10,9,1,3,'#78c5ea');p(8+(st?-1:1),10,1,1,'#292a31');}
+  }
   // Gonzalo: terno con camisa blanca y corbata roja de abogado.
   if (P.suit && dir === 0) { p(6,8,4,1,'#f4f4f8'); p(7,8,2,1,C.emblem || '#c83040'); p(7,9,2,3,C.emblem || '#c83040'); }
   if(P.id==='martin'){
@@ -3475,7 +3488,7 @@ function drawPerson(x, y, P, dir, f){
   }
   if (P.headphones) {
     const pc = C.phones || '#e83078';
-    p(3, -4, 10, 2, O); p(4, -4, 8, 1, '#40f0e0');
+    const top=P.id==='lucas'?-2:-4;p(3,top,10,2,O);p(4,top,8,1,P.id==='lucas'?'#78c5ea':'#40f0e0');
     if (!side) { p(0, 1, 3, 6, O); p(1, 2, 2, 4, pc); p(13, 1, 3, 6, O); p(13, 2, 2, 4, pc); p(1, -2, 2, 3, O); p(13, -2, 2, 3, O); }
     else { p(5, 1, 5, 6, O); p(6, 2, 3, 4, pc); p(7, 3, 1, 1, '#40f0e0'); p(7, -2, 2, 3, O); }
   }
@@ -5821,6 +5834,7 @@ function questKill(type){
 }
 
 const FRIEND_LINES = {
+  22:['¡Che, soy Lucas! Argentino, pero Curico es mi casa de toda la vida. Pon el PES, que el tarreo ya empezo.','En el PES leo la jugada antes del pase. En las cartas tambien: hay que saber cuando atacar y cuando aguantar.','Iron Maiden en los audifonos, la camiseta argentina puesta y un buen juego. ¡Con eso estoy listo para la aventura!'],
   19:['¡Wena, amigo! Del gym al carrete, pero primero te acompaño a salvar el mundo. Ningún socio se queda atrás.','Con Matías estudiamos Ingeniería Comercial. Una buena inversión y una buena jugada tienen algo en común: pensar antes de actuar.','Antes coleccionaba cartas Pokémon. También sé jugarlas: no basta con pegar fuerte, hay que leer al rival.'],
   12:['¡Autito! ¡Brrrum! Después hacemos una casita y leemos Osito Tito.','¡Te quiero mucho! Mi superpoder es darte un abrazo gigante y construir cosas lindas.'],
   13:['Jue, soy la tía de Rai y la hermana de Katy. ¡Puerto Montt tiene su magia!','Ven, te leo las cartas. Veo un viaje al sur y una victoria si eliges bien tu estrategia.'],
@@ -6207,6 +6221,12 @@ function talkTo(id, npc, skipQuest){
   if (id === 'premiador') { say(['JUEZA DE PREMIOS: Premios de verdad de la liga: playmats, deck boxes, fundas... se lucen en tu casa y te dan ventajas.'], null, () => openShop('premios', 'PREMIOS DE LA LIGA')); return; }
   if (id === 'friend') {
     const c = npc && npc.ch !== undefined ? npc.ch : 0, role = npc && npc.role;
+    if(c===22){say(['LUCAS: ¡Che! Argentino, pero de Curico de toda la vida. La camiseta no me la saco: aca se juega con la celeste y blanca.','Entre tarreos, PES e Iron Maiden se me pasa la noche. ¿Que hacemos, amigo?'],[
+      {t:'HABLAR DE PES',fn:()=>say(['LUCAS: ¡Una mas y nos vamos! Esa es la mentira clasica del PES. Me gusta armar la jugada, abrir la cancha y meter el pase justo.','Con un buen rival te puedes quedar hasta las tantas. Y si pierdo, revancha, che. ¡No se desconecta el mando!'])},
+      {t:'IRON MAIDEN Y TARREO',fn:()=>say(['LUCAS: Soy full gamer, pero Iron Maiden siempre va conmigo. Audifonos puestos y listo para otra noche de tarreo.','De Curico de toda la vida: los amigos, las partidas y las historias de siempre. Date una vuelta donde Davis en Teno; tiene los PC conectados.'])},
+      {t:'JUGAR CARTAS',fn:()=>setupDuel(npc)},
+      {t:'NOS VEMOS, CHE',fn:null}
+    ]);return;}
     if(role==='gamer'&&G.roomId==='casaDavis'){davisHomeTalk(npc);return;}
     if(role==='mayor'&&G.roomId==='teno'){say(['GONZALO: ¡Bienvenido a Teno! Soy el alcalde. Aqui cuidamos a los vecinos, los huertos y esta tranquilidad. Curico esta al lado, por la salida este.','La vecina de la plaza tiene algunos encargos. Davis vive en la casa de la derecha; al oeste esta el campo de la familia de Matias. Los abuelos hicieron una casita preciosa para Rai.','Si necesitas descansar de la aventura, aqui hay tiempo para conversar y jugar cartas. Hasta mi Counterspell descansa... un ratito.']);return;}
     if(role==='campo'&&G.roomId==='campoFamilia'){say(['RAI: ¡Me encanta venir al campo de los tatas! Mira la casita que me hicieron. Tiene mis autitos, bloques y un Osito Tito.','¡Vamos al refalin! Despues hacemos un castillo en la arena y la abuela nos llama a comer. ¡Ven conmigo!']);return;}
@@ -8464,7 +8484,7 @@ const BEATS = { agro:'combo', ctrl:'agro', combo:'ctrl' };
 const LOSES_TO = { agro:'ctrl', ctrl:'combo', combo:'agro' };
 const DECK_STYLE = { ...Object.fromEntries(POKEMON_META_DECKS.map(d=>[d.id,d.style])), burn:'agro', goblins:'agro', black:'ctrl', life:'ctrl', replenish:'combo', langostino:'combo', terragedon:'agro', landstill:'ctrl', rock:'ctrl', mud:'combo', elfos:'combo' };
 const DUELIST_DECK = {elfoParroquiano:'elfos', pbJugador:'landstill', mechonaPelluco:'terragedon', luchoBarril:'goblins', durandal:'rock',galindo:'landstill',jorgew:'goblins',cesar:'burn',jgu:'replenish',macias:'mud', fan1:'goblins', fan2:'burn', fan3:'black', fan4:'life', klaus:'black', marinero:'langostino', pescador:'replenish', juez:'replenish', coleccionista:'langostino', cantinero:'burn', ligaVina:'terragedon', ligaCurico:'rock', ligaPmontt:'landstill', ligaUrza:'mud', ligaTempest:'landstill' };
-const FRIEND_DECK = ['goblins','burn','replenish','black','langostino','terragedon','rock','landstill','mud','life','goblins','burn','life','replenish','langostino','burn','mud','rock',null,'rock','langostino','burn'];
+const FRIEND_DECK = ['goblins','burn','replenish','black','langostino','terragedon','rock','landstill','mud','life','goblins','burn','life','replenish','langostino','burn','mud','rock',null,'rock','langostino','burn','goblins'];
 const isDuelist = n => n.id === 'friend' || DUELIST_DECK[n.id] !== undefined;
 function offerDuel(n){
   const name = n.id === 'friend' ? CHARS[n.ch].n : NPCDEF[n.id].n;
@@ -8687,7 +8707,7 @@ function netErrorText(e, code){
   if (t === 'disconnected') return 'Se perdio la conexion con el servidor. Crea o unete a la sala de nuevo.';
   return 'Error online (' + (t || 'desconocido') + '). Vuelve a intentarlo; si sigue, avisame con este texto.';
 }
-const BUILD = 2026110601; // AAAAMMDDnn: subir en cada publicacion
+const BUILD = 2026110602; // AAAAMMDDnn: subir en cada publicacion
 // Aviso de version nueva: compara este BUILD con el del archivo publicado y ofrece recargar
 function checkForUpdate(){
   if (IN_CLAUDE || !/^https?:$/.test(location.protocol) || document.getElementById('updateBar')) return;
